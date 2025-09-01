@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.bb'
 version = '0.0.1-SNAPSHOT'
-description = 'where?'
+description = 'eodi-api project'
 
 java {
 	toolchain {
