@@ -1,4 +1,4 @@
-package com.bb.eodi_batch;
+package com.bb.eodi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
