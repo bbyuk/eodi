@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: eodi-batch
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/eodi_db
+    username: eodi_app
+    password: eodi_app_pw
+    driver-class-name: com.mysql.cj.jdbc.Driver
