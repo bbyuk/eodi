@@ -1,7 +1,7 @@
 ### Root-level .gitignore ###
 
 ### 부트스트랩 데이터/정적 리소스 디렉터리 (Git 미관리) ###
-bootstrap/
+# bootstrap/
 
 ### .DS_Store 파일 ###
 .DS_Store
