@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.domain;
+package com.bb.eodi.batch.domain.type;
 
 /**
  * 거래 종류
