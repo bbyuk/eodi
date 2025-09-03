@@ -8,16 +8,22 @@ public enum HousingType implements Type {
     APT("A", "아파트"),
 
     // 연립/다세대
-    MULTIPLEX_HOUSE("M", "연립/다세대 주택"),
+    MULTI_HOUSEHOLD_HOUSE("MH", "연립/다세대 주택"),
 
-    // 단독/다가구
-    DETACHED_HOUSE("D", "단독/다가구 주택"),
+    // 단독
+    DETACHED_HOUSE("D", "단독 주택"),
+
+    // 다가구주택
+    MULTI_UNIT_HOUSE("MU", "다가구 주택"),
 
     // 오피스텔
     OFFICETEL("O", "오피스텔"),
 
-    // 분양/입주권
-    PRESALE_RIGHT("P", "분양/입주권");
+    // 분양권
+    PRE_SALE_RIGHT("PR", "분양권"),
+    
+    // 입주권
+    OCCUPY_RIGHT("OR", "입주권");
 
     private final String code;
     private final String description;
