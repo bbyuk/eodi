@@ -2,7 +2,12 @@ package com.bb.eodi.batch.domain.entity;
 
 import com.bb.eodi.batch.domain.type.HousingType;
 import com.bb.eodi.batch.domain.type.TradeMethodType;
+import com.bb.eodi.batch.domain.vo.Region;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,25 +15,41 @@ import java.time.LocalDate;
 /**
  * 부동산 매매 데이터 엔티티
  */
+@Getter
 @Table(name = "real_esate_sale")
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sale {
+
+    @Builder
+    public Sale(Region region, String roadName, LocalDate contractDate, int price, TradeMethodType tradeMethodType, LocalDate cancelDate, int buildYear, BigDecimal netLeasableArea, BigDecimal landArea, String buyer, String seller, HousingType housingType, LocalDate registrationDate, String buildingName, Integer dong, Integer floor, BigDecimal totalFloorArea, BigDecimal siteArea) {
+        this.region = region;
+        this.roadName = roadName;
+        this.contractDate = contractDate;
+        this.price = price;
+        this.tradeMethodType = tradeMethodType;
+        this.cancelDate = cancelDate;
+        this.buildYear = buildYear;
+        this.netLeasableArea = netLeasableArea;
+        this.landArea = landArea;
+        this.buyer = buyer;
+        this.seller = seller;
+        this.housingType = housingType;
+        this.registrationDate = registrationDate;
+        this.buildingName = buildingName;
+        this.dong = dong;
+        this.floor = floor;
+        this.totalFloorArea = totalFloorArea;
+        this.siteArea = siteArea;
+    }
 
     @Id @GeneratedValue
     @Column(name = "id")
     private Long id;
 
-    // 시도
-    @Column(name = "si_do")
-    private String sido;
-
-    // 시군구
-    @Column(name = "si_gun_gu")
-    private String sigungu;
-
-    // 동
-    @Column(name = "dong")
-    private String dong;
+    // 행정구역
+    @Embedded
+    private Region region;
 
     // 도로명
     @Column(name = "road_name")
@@ -83,8 +104,8 @@ public class Sale {
     private String buildingName;
 
     // 건물 동
-    @Column(name = "unit")
-    private Integer unit;
+    @Column(name = "dong")
+    private Integer dong;
 
     // 층
     @Column(name = "floor")

@@ -10,6 +10,12 @@ public class ApartmentSaleRowProcessor implements ItemProcessor<ApartmentSaleRow
     @Override
     public Sale process(ApartmentSaleRow item) throws Exception {
         // TODO 검증 및 변환 후 리턴
-        return null;
+        // item -> sale mapping
+
+
+
+        return Sale.builder()
+
+                .build();
     }
 }
