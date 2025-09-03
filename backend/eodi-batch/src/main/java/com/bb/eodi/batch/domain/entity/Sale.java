@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.domain.entity;
 
-import com.bb.eodi.batch.domain.type.TradeMethod;
+import com.bb.eodi.batch.domain.type.TradeMethodType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -35,9 +35,9 @@ public abstract class Sale {
     private int price;
 
     // 거래 방법
-    @Column(name = "trade_method")
+    @Column(name = "trade_method_type")
     @Enumerated(EnumType.STRING)
-    private TradeMethod tradeMethod;
+    private TradeMethodType tradeMethodType;
 
     // 해제사유 발생일
     @Column(name = "cancel_date")

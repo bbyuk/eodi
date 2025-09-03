@@ -1,19 +1,24 @@
 package com.bb.eodi.batch.domain.type;
 
-/**
- * 거래 종류
- */
-public enum DealType implements Type {
-    SALE("S", "매매"),   // 매매
-    LEASE("L", "전/월세");   // 전, 월세
+// 거래 방법
+public enum TradeMethodType implements Type {
+    // 직거래
+    DIRECT("D", "직거래"),
 
+    // 중개거래
+    AGENCY("A", "중개거래"),
+
+    // 기타
+    OTHER("O", "기타");
+    
     private final String code;
     private final String description;
 
-    DealType(String code, String description) {
+    TradeMethodType(String code, String description) {
         this.code = code;
         this.description = description;
     }
+
 
     @Override
     public String code() {
