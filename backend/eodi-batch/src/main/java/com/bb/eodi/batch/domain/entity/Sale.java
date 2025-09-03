@@ -1,5 +1,6 @@
 package com.bb.eodi.batch.domain.entity;
 
+import com.bb.eodi.batch.domain.type.HousingType;
 import com.bb.eodi.batch.domain.type.TradeMethodType;
 import jakarta.persistence.*;
 
@@ -7,12 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * 부동산 매매 데이터 공통 엔티티
+ * 부동산 매매 데이터 엔티티
  */
 @Table(name = "real_esate_sale")
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Sale {
+public class Sale {
 
     @Id @GeneratedValue
     @Column(name = "id")
@@ -44,7 +44,6 @@ public abstract class Sale {
 
     // 거래 방법
     @Column(name = "trade_method_type")
-    @Enumerated(EnumType.STRING)
     private TradeMethodType tradeMethodType;
 
     // 해제사유 발생일
@@ -70,4 +69,32 @@ public abstract class Sale {
     // 매도자
     @Column(name = "seller")
     private String seller;
+    
+    // 주택 유형
+    @Column(name = "housing_type")
+    private HousingType housingType;
+
+    // 등기일자
+    @Column(name = "registration_date")
+    private LocalDate registrationDate;
+
+    // 건물 || 단지명
+    @Column(name = "building_name")
+    private String buildingName;
+
+    // 건물 동
+    @Column(name = "unit")
+    private Integer unit;
+
+    // 층
+    @Column(name = "floor")
+    private Integer floor;
+
+    // 연면적
+    @Column(name = "total_floor_area", precision = 10, scale = 4)
+    private BigDecimal totalFloorArea;
+
+    // 대지면적
+    @Column(name = "site_area", precision = 10, scale = 4)
+    private BigDecimal siteArea;
 }
