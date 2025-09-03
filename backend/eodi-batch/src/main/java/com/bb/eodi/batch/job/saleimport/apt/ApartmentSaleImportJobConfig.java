@@ -14,12 +14,4 @@ import org.springframework.core.io.FileSystemResource;
 @Configuration
 public class ApartmentSaleImportJobConfig {
 
-//    @Bean
-//    @StepScope
-//    public ItemReader<ApartmentSaleRow> apartmentSaleRowItemReader(@Value("#{jobParameters['inputFile']}") String inputFile) {
-//        return new FlatFileItemReaderBuilder<ApartmentSaleRow>()
-//                .name("apartmentSaleRowItemReader")
-//                .resource(new FileSystemResource(inputFile))
-//                .delimited()
-//    }
 }
