@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * 부동산 매매 데이터 공통 엔티티
+ */
+@Table(name = "real_esate_sale")
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Sale {
@@ -25,6 +29,10 @@ public abstract class Sale {
     // 동
     @Column(name = "dong")
     private String dong;
+
+    // 도로명
+    @Column(name = "road_name")
+    private String roadName;
 
     // 계약일
     @Column(name = "contract_date")
@@ -55,4 +63,11 @@ public abstract class Sale {
     @Column(name = "land_area", precision = 10, scale = 4)
     private BigDecimal landArea;
 
+    // 매수자
+    @Column(name = "buyer")
+    private String buyer;
+
+    // 매도자
+    @Column(name = "seller")
+    private String seller;
 }
