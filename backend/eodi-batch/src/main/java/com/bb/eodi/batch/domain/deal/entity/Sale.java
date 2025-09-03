@@ -1,8 +1,8 @@
-package com.bb.eodi.batch.domain.entity;
+package com.bb.eodi.batch.domain.deal.entity;
 
-import com.bb.eodi.batch.domain.type.HousingType;
-import com.bb.eodi.batch.domain.type.TradeMethodType;
-import com.bb.eodi.batch.domain.vo.Region;
+import com.bb.eodi.batch.domain.deal.type.HousingType;
+import com.bb.eodi.batch.domain.deal.type.TradeMethodType;
+import com.bb.eodi.batch.domain.deal.vo.Region;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

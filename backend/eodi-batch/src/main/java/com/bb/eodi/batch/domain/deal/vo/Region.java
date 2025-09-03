@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.domain.vo;
+package com.bb.eodi.batch.domain.deal.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

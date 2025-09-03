@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.job.saleimport.apt;
 
-import com.bb.eodi.batch.domain.entity.Sale;
+import com.bb.eodi.batch.domain.deal.entity.Sale;
 import org.springframework.batch.item.ItemProcessor;
 
 /**
