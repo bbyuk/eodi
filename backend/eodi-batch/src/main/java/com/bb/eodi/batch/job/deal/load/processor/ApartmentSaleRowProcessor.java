@@ -5,7 +5,7 @@ import com.bb.eodi.batch.job.deal.load.model.ApartmentSaleRow;
 import org.springframework.batch.item.ItemProcessor;
 
 /**
- * 아파트 매매 데이터 import job processor
+ * 아파트 매매 데이터 적재 배치 processor
  */
 public class ApartmentSaleRowProcessor implements ItemProcessor<ApartmentSaleRow, Sale> {
     @Override

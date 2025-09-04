@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * 아파트 매매 데이터 import job processor
+ * 아파트 매매 데이터 적재 배치 reader
  */
 
 @StepScope
