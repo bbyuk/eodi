@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.deal.load.reader;
+package com.bb.eodi.batch.deal.load.reader;
 
-import com.bb.eodi.batch.job.deal.load.model.ApartmentSaleRow;
+import com.bb.eodi.batch.deal.load.model.ApartmentSaleRow;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;

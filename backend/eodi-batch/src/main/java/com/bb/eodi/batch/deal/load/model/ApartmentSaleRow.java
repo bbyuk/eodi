@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load.model;
+package com.bb.eodi.batch.deal.load.model;
 
 import lombok.Builder;
 import lombok.Data;

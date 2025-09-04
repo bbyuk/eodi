@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load;
+package com.bb.eodi.batch.deal.load;
 
 import org.springframework.context.annotation.Configuration;
 

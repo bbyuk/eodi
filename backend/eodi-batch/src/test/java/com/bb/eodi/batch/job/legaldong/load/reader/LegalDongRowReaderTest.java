@@ -1,10 +1,9 @@
 package com.bb.eodi.batch.job.legaldong.load.reader;
 
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongRow;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
+import com.bb.eodi.batch.legaldong.load.reader.LegalDongRowReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class LegalDongRowReaderTest {
 

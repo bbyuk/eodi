@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong.load.model;
+package com.bb.eodi.batch.legaldong.load.model;
 
 import lombok.Builder;
 import lombok.Data;

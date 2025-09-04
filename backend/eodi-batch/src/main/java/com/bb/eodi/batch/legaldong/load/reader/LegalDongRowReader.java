@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.legaldong.load.reader;
+package com.bb.eodi.batch.legaldong.load.reader;
 
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongRow;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

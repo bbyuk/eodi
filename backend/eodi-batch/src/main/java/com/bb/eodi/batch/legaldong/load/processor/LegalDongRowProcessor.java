@@ -1,7 +1,7 @@
-package com.bb.eodi.batch.job.legaldong.load.processor;
+package com.bb.eodi.batch.legaldong.load.processor;
 
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongRow;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
 import org.springframework.batch.item.ItemProcessor;
 
 /**
