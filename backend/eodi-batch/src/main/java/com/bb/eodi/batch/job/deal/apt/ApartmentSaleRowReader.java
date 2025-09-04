@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.saleimport.apt;
+package com.bb.eodi.batch.job.deal.apt;
 
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;

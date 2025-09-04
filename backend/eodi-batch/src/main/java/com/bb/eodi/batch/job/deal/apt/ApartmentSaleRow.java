@@ -1,9 +1,7 @@
-package com.bb.eodi.batch.job.saleimport.apt;
+package com.bb.eodi.batch.job.deal.apt;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 /**
  * 아파트 매매 데이터 row Model
