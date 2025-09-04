@@ -1,5 +1,7 @@
 package com.bb.eodi.batch.job.deal.apt;
 
+import com.bb.eodi.batch.job.deal.load.model.ApartmentSaleRow;
+import com.bb.eodi.batch.job.deal.load.reader.ApartmentSaleRowReader;
 import org.junit.jupiter.api.Test;
 
 /**

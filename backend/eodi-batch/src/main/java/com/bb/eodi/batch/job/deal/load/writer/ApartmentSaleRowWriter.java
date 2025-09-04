@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.apt;
+package com.bb.eodi.batch.job.deal.load.writer;
 
 import com.bb.eodi.batch.domain.deal.entity.Sale;
 import org.springframework.batch.item.Chunk;
