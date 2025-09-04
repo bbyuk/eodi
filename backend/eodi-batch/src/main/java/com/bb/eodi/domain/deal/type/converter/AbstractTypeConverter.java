@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.domain.deal.type.converter;
+package com.bb.eodi.domain.deal.type.converter;
 
-import com.bb.eodi.batch.domain.deal.type.Type;
+import com.bb.eodi.domain.deal.type.Type;
 import jakarta.persistence.AttributeConverter;
 
 /**

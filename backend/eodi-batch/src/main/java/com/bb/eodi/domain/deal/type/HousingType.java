@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.domain.deal.type;
+package com.bb.eodi.domain.deal.type;
 
 /**
  * 건물용도

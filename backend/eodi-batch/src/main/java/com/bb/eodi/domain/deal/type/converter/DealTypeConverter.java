@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.domain.deal.type.converter;
+package com.bb.eodi.domain.deal.type.converter;
 
-import com.bb.eodi.batch.domain.deal.type.DealType;
+import com.bb.eodi.domain.deal.type.DealType;
 import jakarta.persistence.Converter;
 
 // 거래 유형 타입 컨버터

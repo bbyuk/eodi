@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.job.deal.load.processor;
 
-import com.bb.eodi.batch.domain.deal.entity.Sale;
+import com.bb.eodi.domain.deal.entity.Sale;
 import com.bb.eodi.batch.job.deal.load.model.ApartmentSaleRow;
 import org.springframework.batch.item.ItemProcessor;
 

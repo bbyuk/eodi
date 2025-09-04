@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.job.deal.load.writer;
 
-import com.bb.eodi.batch.domain.deal.entity.Sale;
+import com.bb.eodi.domain.deal.entity.Sale;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 

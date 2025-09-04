@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.domain.deal.type;
+package com.bb.eodi.domain.deal.type;
 
 import java.util.Arrays;
 
