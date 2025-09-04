@@ -43,7 +43,10 @@ public class ApartmentSaleRowReader implements ItemReader<ApartmentSaleRow> {
         /**
          * TODO region, mode job parameter로 파일 경로 생성 로직 구현
          */
-        return Paths.get(region).resolve("apt").resolve("sale_annual_2508.csv");
+        return Paths.get("deal")
+                .resolve(region)
+                .resolve("apt")
+                .resolve("sale_annual_2508.csv");
     }
 
     @Override
