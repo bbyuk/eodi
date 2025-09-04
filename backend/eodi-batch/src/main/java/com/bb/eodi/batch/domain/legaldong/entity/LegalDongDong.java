@@ -15,7 +15,7 @@ public class LegalDongDong {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "code", length = 8)
+    @Column(name = "code", length = 3, unique = true)
     private String code;
 
     @Column(name = "name", length = 50)

@@ -19,7 +19,7 @@ public class LegalDongSido {
     private Long id;
 
     // 코드
-    @Column(name = "code", length = 2)
+    @Column(name = "code", length = 2, unique = true)
     private String code;
 
     @Column(name = "name", length = 50)
