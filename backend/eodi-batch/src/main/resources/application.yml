@@ -13,3 +13,7 @@ spring:
     username: eodi_app
     password: eodi_app_pw
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+app:
+  file:
+    base-path: C:/
