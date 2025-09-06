@@ -38,3 +38,6 @@ out/
 
 ### .DS_Store 파일 ###
 .DS_Store
+
+### .env 파일 ###
+.env
