@@ -6,7 +6,14 @@ spring:
     username: eodi_app
     password: eodi_app_pw
     driver-class-name: com.mysql.cj.jdbc.Driver
+  config:
+    import: optional:classpath:.env[.properties]
 
 app:
   file:
     base-path: C:/
+
+api:
+  legal-dong:
+    url: https://apis.data.go.kr/1741000/StanReginCd
+    key: ${LEGAL_DONG_API_KEY:default}
