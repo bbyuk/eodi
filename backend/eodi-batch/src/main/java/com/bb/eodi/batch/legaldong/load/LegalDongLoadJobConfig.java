@@ -29,8 +29,8 @@ public class LegalDongLoadJobConfig {
     private final LegalDongRowWriter legalDongRowWriter;
 
     @Bean
-    public Job legalDongLoadJob(JobRepository jobRepository, Step legalDongLoadStep) {
-        return new JobBuilder("legalDongLoadJob", jobRepository)
+    public Job legalDongLoad(JobRepository jobRepository, Step legalDongLoadStep) {
+        return new JobBuilder("legalDongLoad", jobRepository)
                 .start(legalDongLoadStep)
                 .build();
     }
