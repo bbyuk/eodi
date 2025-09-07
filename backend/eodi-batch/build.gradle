@@ -27,6 +27,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 	// H2 (로컬 개발 DB)
 	runtimeOnly 'com.h2database:h2'
