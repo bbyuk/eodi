@@ -15,5 +15,6 @@ app:
 
 api:
   legal-dong:
-    url: https://apis.data.go.kr/1741000/StanReginCd
+    url: https://apis.data.go.kr/1741000/StanReginCd/getStanReginCdList
     key: ${LEGAL_DONG_API_KEY:default}
+    key-parameter-name: serviceKey
