@@ -1,6 +1,9 @@
 spring:
   application:
     name: eodi-batch
+  batch:
+    jdbc:
+      initialize-schema: always
   datasource:
     url: jdbc:mysql://localhost:3306/eodi_db
     username: eodi_app
@@ -8,6 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     import: optional:classpath:.env[.properties]
+
 
 app:
   file:
