@@ -1,9 +1,6 @@
 spring:
   application:
     name: eodi-batch
-  batch:
-    jdbc:
-      initialize-schema: always
   datasource:
     url: jdbc:mysql://localhost:3306/eodi_db
     username: eodi_app
