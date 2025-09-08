@@ -17,7 +17,7 @@ public class LegalDongRowProcessor implements ItemProcessor<LegalDongApiResponse
 
     @Override
     public LegalDong process(LegalDongApiResponseRow item) throws Exception {
-        log.debug("법정동 적재 배치 processor start");
+        log.debug("processing = {}", item);
         return null;
     }
 }

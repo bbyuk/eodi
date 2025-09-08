@@ -14,8 +14,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class LegalDongRowWriter implements ItemWriter<LegalDong> {
+
+    private int currentStepProcessedCount = 0;
+
     @Override
     public void write(Chunk<? extends LegalDong> chunk) throws Exception {
-        log.debug("법정동 적재 배치 writer start");
+        log.debug("chunk write = {}", chunk.toString());
+        currentStepProcessedCount += chunk.size();
     }
 }

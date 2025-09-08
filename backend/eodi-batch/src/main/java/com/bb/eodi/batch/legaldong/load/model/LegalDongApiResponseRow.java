@@ -1,5 +1,8 @@
 package com.bb.eodi.batch.legaldong.load.model;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 법정동코드 조회 API 결과 row 데이터 모델
  */
@@ -22,4 +25,7 @@ public record LegalDongApiResponseRow (
         String locat_rm,
         // 상위지역코드
         String locathigh_cd
-) {}
+) implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+}
