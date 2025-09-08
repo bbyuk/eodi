@@ -1,4 +1,4 @@
-package com.bb.eodi.config;
+package com.bb.eodi.infrastructure.legaldong.api;
 
 import com.bb.eodi.infrastructure.legaldong.api.LegalDongApiProperties;
 import org.springframework.context.annotation.Bean;
