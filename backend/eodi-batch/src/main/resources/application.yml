@@ -9,6 +9,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     import: optional:classpath:.env[.properties]
+  main:
+    web-application-type: none
   batch:
     job:
       enabled: false
@@ -23,10 +25,17 @@ eodi:
 
 # 외부 API
 api:
-  legal-dong:
-    url: https://apis.data.go.kr/1741000/StanReginCd/getStanReginCdList
-    key: ${LEGAL_DONG_API_KEY:default}
+  gov-data:
+    base-url: http://apis.data.go.kr
+    page-size: 1000
     key-parameter-name: serviceKey
+    key: ${LEGAL_DONG_API_KEY:default}
+    table:
+      legal-dong:
+        phase: dev
+        path: 1741000/StanReginCd/getStanReginCdList
+        expiration: 2027-09-05
+
 
 # 로깅
 logging:
