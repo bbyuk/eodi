@@ -1,3 +1,4 @@
+# 스프링 설정
 spring:
   application:
     name: eodi-batch
@@ -8,14 +9,26 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   config:
     import: optional:classpath:.env[.properties]
+  batch:
+    job:
+      enabled: false
 
-
-app:
+# 애플리케이션 커스텀 설정
+eodi:
+  batch:
+    job-name-prefix: job.name
+    job-parameter-prefix: job.parameter.
   file:
     base-path: C:/
 
+# 외부 API
 api:
   legal-dong:
     url: https://apis.data.go.kr/1741000/StanReginCd/getStanReginCdList
     key: ${LEGAL_DONG_API_KEY:default}
     key-parameter-name: serviceKey
+
+# 로깅
+logging:
+  level:
+    com.bb: debug

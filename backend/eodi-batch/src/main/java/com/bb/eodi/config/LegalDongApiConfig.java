@@ -1,7 +1,6 @@
 package com.bb.eodi.config;
 
 import com.bb.eodi.infrastructure.legaldong.api.LegalDongApiProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -14,9 +13,7 @@ import java.net.URI;
  * 법정동 API 설정
  */
 @Configuration
-@EnableConfigurationProperties(LegalDongApiProperties.class)
 public class LegalDongApiConfig {
-
 
     @Bean("legalDongApiClient")
     public WebClient legalDongApiClient(LegalDongApiProperties apiProperties) {
