@@ -30,42 +30,41 @@ import java.nio.file.Paths;
 @Component
 public class LegalDongRowReader implements ItemReader<LegalDongRow> {
 
-    private static final int RESPONSE_PAGE_SIZE = 1000;
+//    private static final int RESPONSE_PAGE_SIZE = 1000;
+//
+//    private final WebClient legalDongApiClient;
+//    private final String region;
+//    private final int pageNum;
 
-    private final WebClient legalDongApiClient;
-    private final String region;
-    private final int pageNum;
-
-    public LegalDongRowReader(@Qualifier("legalDongApiClient") WebClient legalDongApiClient,
-                              @Value("#{jobParameters['region']}") String region,
-                              @Value("#{jobParameters['pageNum']}") String pageNum) {
-        this.legalDongApiClient = legalDongApiClient;
-        this.region = region;
-        this.pageNum = Integer.parseInt(pageNum);
+    public LegalDongRowReader() {
+//        this.legalDongApiClient = legalDongApiClient;
+//        this.region = region;
+//        this.pageNum = Integer.parseInt(pageNum);
     }
 
     @Override
     public LegalDongRow read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        // api 요청
-        LegalDongApiResponse response = legalDongApiClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("numOfRows", RESPONSE_PAGE_SIZE)
-                        .queryParam("region", region)
-                        .queryParam("pageNo", pageNum)
-                        .queryParam("type", "json")
-                        .build()
-                )
-                .retrieve()
-                .bodyToMono(LegalDongApiResponse.class)
-                .block();
-
-        if (response.isSuccess()) {
-            System.out.println("성공");
-        }
-        else {
-            System.out.println("실패");
-        }
-
+//        // api 요청
+//        LegalDongApiResponse response = legalDongApiClient.get()
+//                .uri(uriBuilder -> uriBuilder
+//                        .queryParam("numOfRows", RESPONSE_PAGE_SIZE)
+//                        .queryParam("region", region)
+//                        .queryParam("pageNo", pageNum)
+//                        .queryParam("type", "json")
+//                        .build()
+//                )
+//                .retrieve()
+//                .bodyToMono(LegalDongApiResponse.class)
+//                .block();
+//
+//        if (response.isSuccess()) {
+//            System.out.println("성공");
+//        }
+//        else {
+//            System.out.println("실패");
+//        }
+//
+//        return null;
         return null;
     }
 }

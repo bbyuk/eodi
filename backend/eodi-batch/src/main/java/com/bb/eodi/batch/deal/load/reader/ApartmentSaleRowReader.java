@@ -30,7 +30,7 @@ public class ApartmentSaleRowReader implements ItemReader<ApartmentSaleRow> {
     public ApartmentSaleRowReader(
             @Value("#{jobParameters['region']}") String region,
             @Value("#{jobParameters['mode']}") String mode,
-            @Value("${app.file.base-path}") String basePath) throws IOException {
+            @Value("${eodi.file.base-path}") String basePath) throws IOException {
         this.targetFilePath = Paths.get(basePath).resolve(resolveTargetFilePath(region, mode));
         this.reader = Files.newBufferedReader(this.targetFilePath, StandardCharsets.UTF_8);
 

@@ -3,6 +3,7 @@ package com.bb.eodi.batch.legaldong.load;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
 import com.bb.eodi.batch.legaldong.load.processor.LegalDongRowProcessor;
 import com.bb.eodi.batch.legaldong.load.reader.LegalDongRowReader;
+import com.bb.eodi.batch.legaldong.load.tasklet.LegalDongApiFetchTasklet;
 import com.bb.eodi.batch.legaldong.load.writer.LegalDongRowWriter;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,19 @@ public class LegalDongLoadJobConfig {
     private final LegalDongRowReader legalDongRowReader;
     private final LegalDongRowProcessor legalDongRowProcessor;
     private final LegalDongRowWriter legalDongRowWriter;
+    private final LegalDongApiFetchTasklet legalDongApiFetchTasklet;
 
     @Bean
     public Job legalDongLoad(JobRepository jobRepository, Step legalDongLoadStep) {
         return new JobBuilder("legalDongLoad", jobRepository)
                 .start(legalDongLoadStep)
+                .build();
+    }
+
+    @Bean
+    public Step legalDongApiFetchStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("legalDongApiFetchStep", jobRepository)
+                .tasklet(legalDongApiFetchTasklet, transactionManager)
                 .build();
     }
 
