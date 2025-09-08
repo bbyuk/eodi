@@ -31,9 +31,9 @@ public class LegalDongLoadJobConfig {
     private final LegalDongApiFetchTasklet legalDongApiFetchTasklet;
 
     @Bean
-    public Job legalDongLoad(JobRepository jobRepository, Step legalDongLoadStep) {
+    public Job legalDongLoad(JobRepository jobRepository, Step legalDongApiFetchStep, Step legalDongLoadStep) {
         return new JobBuilder("legalDongLoad", jobRepository)
-                .start(legalDongLoadStep)
+                .start(legalDongApiFetchStep)
                 .build();
     }
 
