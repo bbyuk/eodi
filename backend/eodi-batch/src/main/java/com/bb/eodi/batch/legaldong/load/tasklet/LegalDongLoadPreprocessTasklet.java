@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.*;
+
 /**
  * 법정동코드 API fetch 작업
  */
@@ -41,9 +43,9 @@ public class LegalDongLoadPreprocessTasklet implements Tasklet {
         /**
          * 초기 데이터 set
          */
-        ctx.putInt("totalCount", totalCount);
-        ctx.putInt("processedCount", 0);
-        ctx.putInt("pageNum", 0);
+        ctx.putInt(TOTAL_COUNT.name(), totalCount);
+        ctx.putInt(PROCESSED_COUNT.name(), 0);
+        ctx.putInt(PAGE_NUM.name(), 0);
 
         return RepeatStatus.FINISHED;
     }
