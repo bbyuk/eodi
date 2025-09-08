@@ -36,7 +36,7 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
                 .build();
     }
 
-    private LegalDongApiResponse callApiWithRegionParameter(String targetRegion) {
+    private LegalDongApiResponse callApiWithRegionParameter(String targetRegion, int pageSize) {
         String responseBody = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(governmentDataApiProperties.table()
@@ -44,7 +44,7 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
                                 .path()
                         )
                         .queryParam(governmentDataApiProperties.keyParameterName(), governmentDataApiProperties.key())
-                        .queryParam("numOfRows", 1)
+                        .queryParam("numOfRows", pageSize)
                         .queryParam("locatadd_nm", targetRegion)
                         .queryParam("pageNo", 1)
                         .queryParam("type", "json")
@@ -80,7 +80,7 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
     @Override
     public int getTotalCount(String targetRegion) {
         // 전체 count를 가져오기 위한 init api 요청
-        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion);
+        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion, 1);
 
         /**
          * head 파싱해 totalCount get
@@ -91,7 +91,7 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
 
     @Override
     public List<LegalDongApiResponseRow> findByRegion(String targetRegion) {
-        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion);
+        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion, governmentDataApiProperties.pageSize());
         JavaType type = objectMapper
                 .getTypeFactory()
                 .constructCollectionType(List.class, LegalDongApiResponseRow.class);
