@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.legaldong.load.processor;
 
-import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LegalDongRowProcessor implements ItemProcessor<LegalDongRow, LegalDong> {
+public class LegalDongRowProcessor implements ItemProcessor<LegalDongApiResponseRow, LegalDong> {
 
     @Override
-    public LegalDong process(LegalDongRow item) throws Exception {
+    public LegalDong process(LegalDongApiResponseRow item) throws Exception {
         log.debug("법정동 적재 배치 processor start");
         return null;
     }

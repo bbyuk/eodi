@@ -3,7 +3,6 @@ package com.bb.eodi.infrastructure.api.govdata;
 import com.bb.eodi.batch.legaldong.load.api.LegalDongApiClient;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponse;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
-import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 

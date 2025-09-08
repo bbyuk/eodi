@@ -9,5 +9,9 @@ public enum LegalDongLoadKey {
     // 현재 페이지
     PAGE_NUM,
     // 처리된 데이터 수
-    PROCESSED_COUNT
+    PROCESSED_COUNT,
+    // 읽어야할 데이터
+    DATA,
+    // 현재 데이터의 인덱스
+    CURRENT_DATA_INDEX
 }

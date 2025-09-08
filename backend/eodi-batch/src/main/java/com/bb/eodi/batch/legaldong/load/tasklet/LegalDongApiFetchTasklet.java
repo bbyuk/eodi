@@ -2,6 +2,7 @@ package com.bb.eodi.batch.legaldong.load.tasklet;
 
 import com.bb.eodi.batch.legaldong.LegalDongLoadKey;
 import com.bb.eodi.batch.legaldong.load.api.LegalDongApiClient;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -11,6 +12,8 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.*;
 
@@ -34,10 +37,9 @@ public class LegalDongApiFetchTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext ctx = contribution.getStepExecution().getJobExecution().getExecutionContext();
-        String responseBody = legalDongApiClient.findByRegion(targetRegion);
+        List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion);
 
-
-
+        ctx.put(DATA.name(), legalDongApiResponse);
 
         return RepeatStatus.FINISHED;
     }
