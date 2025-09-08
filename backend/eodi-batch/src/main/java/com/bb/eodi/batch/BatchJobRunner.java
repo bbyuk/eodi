@@ -9,14 +9,13 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-/**
 @Component
 @RequiredArgsConstructor
 public class BatchJobRunner implements ApplicationRunner {
 
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
-    private static final String PARAMETER_PREFIX = "job.parameters.";
+    private static final String PARAMETER_PREFIX = "job.parameter.";
     private static final String JOBNAME_PREFIX = "job.name";
 
     @Override
