@@ -46,6 +46,7 @@ public class LegalDongApiFetchTasklet implements Tasklet {
         List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion);
 
         // 1. temp file로 write
+        // TODO temp file remove step 필요
         Path tempFile = Files.createTempFile("legal-dong-page-", ".json");
         try (BufferedWriter bw = Files.newBufferedWriter(tempFile)) {
             for (LegalDongApiResponseRow row : legalDongApiResponse) {
