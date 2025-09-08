@@ -30,8 +30,6 @@ import java.nio.file.Paths;
 @Component
 public class LegalDongRowReader implements ItemReader<LegalDongRow> {
 
-//    private static final int RESPONSE_PAGE_SIZE = 1000;
-//
 //    private final WebClient legalDongApiClient;
 //    private final String region;
 //    private final int pageNum;

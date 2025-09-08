@@ -1,5 +1,10 @@
 package com.bb.eodi.batch.legaldong.load.api;
 
+import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
+
+import java.util.List;
+
 /**
  * 법정동 외부 API 클라이언트
  */
@@ -10,4 +15,11 @@ public interface LegalDongApiClient {
      * @return totalCount
      */
     int getTotalCount(String targetRegion);
+
+    /**
+     * 대상 지역의 법정동 API 응답 body 데이터를 리턴
+     * @param targetRegion
+     * @return responseBody
+     */
+    List<LegalDongApiResponseRow> findByRegion(String targetRegion);
 }

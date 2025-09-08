@@ -2,13 +2,17 @@ package com.bb.eodi.infrastructure.api.govdata;
 
 import com.bb.eodi.batch.legaldong.load.api.LegalDongApiClient;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponse;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
+import com.bb.eodi.batch.legaldong.load.model.LegalDongRow;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +36,7 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
                 .build();
     }
 
-
-    @Override
-    public int getTotalCount(String targetRegion) {
-
-        // 전체 count를 가져오기 위한 init api 요청
+    private LegalDongApiResponse callApiWithRegionParameter(String targetRegion) {
         String responseBody = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(governmentDataApiProperties.table()
@@ -73,10 +73,31 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
             throw new IllegalStateException("공공 데이터 API 요청에 실패했습니다.");
         }
 
+        return legalDongApiResponse;
+    }
+
+
+    @Override
+    public int getTotalCount(String targetRegion) {
+        // 전체 count를 가져오기 위한 init api 요청
+        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion);
+
         /**
          * head 파싱해 totalCount get
          */
         List<Map<String, Object>> heads = (List) legalDongApiResponse.StanReginCd().get(0).get("head");
         return (int) heads.get(0).get("totalCount");
     }
+
+    @Override
+    public List<LegalDongApiResponseRow> findByRegion(String targetRegion) {
+        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion);
+        JavaType type = objectMapper
+                .getTypeFactory()
+                .constructCollectionType(List.class, LegalDongApiResponseRow.class);
+        return objectMapper.convertValue(legalDongApiResponse.StanReginCd().get(1).get("row"), type);
+    }
+
+
+
 }
