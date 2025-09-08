@@ -1,5 +1,6 @@
 package com.bb.eodi.batch.legaldong.load.model;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public record LegalDongApiResponse(
     /**
      * 성공시 StanReginCd가 루트 노드
      * 실패시 RESULT가 루트 노드
-     * @return
+     * @return isSuccess
      */
     public boolean isSuccess() {
         return StanReginCd != null && RESULT == null;
