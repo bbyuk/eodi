@@ -4,6 +4,7 @@ SET time_zone = '+09:00';
 
 /* --------------------------------------------------------------------------------------- */
 -- create
+DROP TABLE IF EXISTS sale;
 
 CREATE TABLE sale
 (
@@ -24,8 +25,10 @@ CREATE TABLE sale
     registration_date   DATE    COMMENT '등기일자',
     target_name         VARCHAR(100) NOT NULL COMMENT '대상명',
     dong                VARCHAR(10) COMMENT '동',
-    floor               INTEGER COMMENT '층'
-) COMMENT = '매매'
+    floor               INTEGER COMMENT '층',
+    created_at          TIMESTAMP COMMENT '생성일시',
+    updated_at          TIMESTAMP COMMENT '수정일시'
+) COMMENT = '매매';
 
 /* --------------------------------------------------------------------------------------- */
 -- constraint
