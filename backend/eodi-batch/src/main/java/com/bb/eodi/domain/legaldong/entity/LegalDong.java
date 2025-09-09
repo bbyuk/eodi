@@ -20,8 +20,20 @@ public class LegalDong {
     // 법정동 코드
     private String code;
 
+    // 시/도 코드
+    private String sidoCode;
+
+    // 시/군/구 코드
+    private String sigunguCode;
+
+    // 동 코드
+    private String dongCode;
+
     // 법정동 명
     private String name;
+
+    // 법정동 서열
+    private int order;
 
     // 상위 법정동 ID
     private Long parentId;
@@ -36,9 +48,13 @@ public class LegalDong {
     private LocalDateTime updatedAt;
 
     @Builder
-    public LegalDong(String code, String name, Long parentId, boolean isActive) {
+    public LegalDong(String code, String sidoCode, String sigunguCode, String dongCode, String name, int order, Long parentId, boolean isActive) {
         this.code = code;
+        this.sidoCode = sidoCode;
+        this.sigunguCode = sigunguCode;
+        this.dongCode = dongCode;
         this.name = name;
+        this.order = order;
         this.parentId = parentId;
         this.isActive = isActive;
         this.createdAt = LocalDateTime.now();

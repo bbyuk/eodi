@@ -16,8 +16,17 @@ import org.springframework.stereotype.Component;
 public class LegalDongRowProcessor implements ItemProcessor<LegalDongApiResponseRow, LegalDong> {
 
     @Override
-    public LegalDong process(LegalDongApiResponseRow item) throws Exception {
-        log.debug("processing = {}", item);
-        return null;
+    public LegalDong process(LegalDongApiResponseRow readItem) throws Exception {
+        log.debug("load processing = {}", readItem);
+        // parentId는 다음 step에서 처리
+        return LegalDong.builder()
+                .code(readItem.region_cd())
+                .sidoCode(readItem.sido_cd())
+                .sigunguCode(readItem.sgg_cd())
+                .dongCode(readItem.umd_cd())
+                .name(readItem.locatadd_nm())
+                .order(readItem.locat_order())
+                .isActive(true)
+                .build();
     }
 }
