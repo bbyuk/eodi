@@ -1,4 +1,4 @@
-package com.bb.eodi.batch;
+package com.bb.eodi.batch.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

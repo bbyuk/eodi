@@ -1,5 +1,6 @@
-package com.bb.eodi.batch;
+package com.bb.eodi.batch.config;
 
+import com.bb.eodi.batch.config.EodiBatchProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

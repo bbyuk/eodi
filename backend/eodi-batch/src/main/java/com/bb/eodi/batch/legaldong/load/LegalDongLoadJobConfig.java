@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.legaldong.load;
 
-import com.bb.eodi.batch.EodiBatchProperties;
+import com.bb.eodi.batch.config.EodiBatchProperties;
 import com.bb.eodi.batch.legaldong.load.decider.HasMorePageDecider;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
