@@ -5,5 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "eodi.batch")
 public record EodiBatchProperties(
         String jobNamePrefix,
-        String jobParameterPrefix
+        String jobParameterPrefix,
+        int batchSize
 ) {}
