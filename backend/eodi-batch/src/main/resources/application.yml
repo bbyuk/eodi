@@ -27,7 +27,7 @@ eodi:
 api:
   gov-data:
     base-url: http://apis.data.go.kr
-    page-size: 1000
+    page-size: 500
     key-parameter-name: serviceKey
     key: ${LEGAL_DONG_API_KEY:default}
     table:
