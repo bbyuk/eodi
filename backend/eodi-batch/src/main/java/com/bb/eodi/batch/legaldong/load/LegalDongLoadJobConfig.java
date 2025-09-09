@@ -1,7 +1,6 @@
 package com.bb.eodi.batch.legaldong.load;
 
 import com.bb.eodi.batch.config.EodiBatchProperties;
-import com.bb.eodi.batch.legaldong.load.decider.HasMorePageDecider;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -35,32 +35,37 @@ public class LegalDongLoadJobConfig {
     private final StepExecutionListener processedDataCounter;
 
     @Bean
-    public Job legalDongLoad(JobRepository jobRepository,
-                             HasMorePageDecider decider,
-                             Step legalDongLoadPreprocessStep,
-                             Step legalDongApiFetchStep,
-                             Step legalDongLoadStep) {
+    public Job legalDongLoad(
+            JobRepository jobRepository,
+            JobExecutionDecider hasMorePageDecider,
+            Step legalDongLoadPreprocessStep,
+            Step legalDongApiFetchStep,
+            Step legalDongLoadStep) {
         return new JobBuilder("legalDongLoad", jobRepository)
                 .start(legalDongLoadPreprocessStep)                        // API 메타 데이터 total size, page size 등 init
                 .next(legalDongApiFetchStep)                                // 현재 Page 데이터 요청
                 .next(legalDongLoadStep)                                    // chunk 단위 load
-                .next(decider)
+                .next(hasMorePageDecider)
                     .on("CONTINUE").to(legalDongApiFetchStep)            // CONTINUE 로직
-                .from(decider)
-                    .on("*").end()                                   // FINISHED/STOP 로직
+                .from(hasMorePageDecider)
+                    .on("*").end()                                       // FINISHED/STOP 로직
                 .end()
                 .build();
     }
 
     @Bean
-    public Step legalDongLoadPreprocessStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step legalDongLoadPreprocessStep(
+            JobRepository jobRepository,
+            PlatformTransactionManager transactionManager) {
         return new StepBuilder("legalDongLoadPreprocessStep", jobRepository)
                 .tasklet(legalDongLoadPreprocessTasklet, transactionManager)
                 .build();
     }
 
     @Bean
-    public Step legalDongApiFetchStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step legalDongApiFetchStep(
+            JobRepository jobRepository,
+            PlatformTransactionManager transactionManager) {
         return new StepBuilder("legalDongApiFetchStep", jobRepository)
                 .tasklet(legalDongApiFetchTasklet, transactionManager)
                 .build();
