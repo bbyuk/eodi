@@ -96,6 +96,8 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
         return objectMapper.convertValue(legalDongApiResponse.StanReginCd().get(1).get("row"), type);
     }
 
-
-
+    @Override
+    public int getPageSize() {
+        return governmentDataApiProperties.pageSize();
+    }
 }

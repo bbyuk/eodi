@@ -20,8 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.DATA_FILE;
-import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.PAGE_NUM;
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.*;
 
 /**
  * 법정동 코드 API 요청 Tasklet
@@ -43,23 +42,30 @@ public class LegalDongApiFetchTasklet implements Tasklet {
         this.objectMapper = objectMapper;
     }
 
+
+    /**
+     * API 요청 및 임시파일에 데이터 append
+     * 페이지 수만큼 API 요청해 file에 append
+     */
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext ctx = contribution.getStepExecution().getJobExecution().getExecutionContext();
-        int pageNum = ctx.getInt(PAGE_NUM.name());
-
-        List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion, pageNum);
-
+        int totalCount = ctx.getInt(TOTAL_COUNT.name());
+        int pageCount = (totalCount / legalDongApiClient.getPageSize()) + 1;
         Path tempFile = Paths.get(ctx.getString(DATA_FILE.name()));
 
-        // 1. temp file로 write
-        // TODO temp file remove step 필요
-        try (BufferedWriter bw = Files.newBufferedWriter(tempFile,
-                StandardOpenOption.CREATE,      // 없으면 새로 생성
-                StandardOpenOption.APPEND )) {  // 있으면 이어쓰기
-            for (LegalDongApiResponseRow row : legalDongApiResponse) {
-                bw.write(objectMapper.writeValueAsString(row));
-                bw.newLine();
+        for (int pageNum = 1; pageNum <= pageCount; pageNum++) {
+            List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion, pageNum);
+            // TODO temp file remove step 필요
+            try (BufferedWriter bw = Files.newBufferedWriter(tempFile, StandardOpenOption.APPEND )) {
+                for (LegalDongApiResponseRow row : legalDongApiResponse) {
+                    bw.write(objectMapper.writeValueAsString(row));
+                    bw.newLine();
+                }
+            }
+            catch(Exception e) {
+                log.error(e.getMessage(), e);
+                throw new RuntimeException(e);
             }
         }
 

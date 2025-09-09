@@ -21,4 +21,10 @@ public interface LegalDongApiClient {
      * @return responseBody
      */
     List<LegalDongApiResponseRow> findByRegion(String targetRegion, int pageNum);
+
+    /**
+     * API page size 리턴
+     * @return pageSize
+     */
+    int getPageSize();
 }

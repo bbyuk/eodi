@@ -35,29 +35,30 @@ public class LegalDongLoadPreprocessTasklet implements Tasklet {
         this.legalDongApiClient = legalDongApiClient;
     }
 
+    /**
+     * 1. API 요청으로 대상 지역 total count 조회
+     * 2. 임시 파일 생성
+     * 3. 초기 context 변수 setting
+     */
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        int totalCount = legalDongApiClient.getTotalCount(region);
-
-        log.debug("{} total count : {}", region, totalCount);
-
         ExecutionContext ctx = contribution.getStepExecution().getJobExecution().getExecutionContext();
+
+        // total count 조회
+        int totalCount = legalDongApiClient.getTotalCount(region);
+        log.debug("{} total count : {}", region, totalCount);
 
         // job temp file 생성
         Path tempFile = Files.createTempFile("legal-dong", ".json");
-        // 2. Page File context 저장 -> reader에서 파일 read
-        ctx.putString(DATA_FILE.name(), tempFile.toString());
 
         /**
-         * 초기 데이터 set
-         * pageNum은 1이 최소
+         * 초기 context 변수 setting
          */
         ctx.putInt(READ_START_OFFSET.name(), 0);
-        ctx.putInt(PAGE_SIZE.name(), 500);
-
+        ctx.putString(DATA_FILE.name(), tempFile.toString());
         ctx.putInt(TOTAL_COUNT.name(), totalCount);
         ctx.putInt(PROCESSED_COUNT.name(), 0);
-        ctx.putInt(PAGE_NUM.name(), 1);
+        ctx.putInt(READ_START_OFFSET.name(), 0);
 
         return RepeatStatus.FINISHED;
     }

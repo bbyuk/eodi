@@ -13,7 +13,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,6 +32,17 @@ public class LegalDongLoadJobConfig {
     private final EodiBatchProperties batchProperties;
     private final StepExecutionListener processedDataCounter;
 
+
+    /**
+     * 1. 전처리 Step
+     *      1.1. API 요청으로 totalCount 조회
+     *      1.2. 임시 파일 생성
+     *      1.3. 초기 context 변수 setting
+     * 2. API 조회 및 임시 파일에 데이터 append
+     *      1.2. 페이지 수만큼 API 요청
+     * 3. 법정동 Chunk load step
+     * 4. 법정동 Chunk paren mapping step
+     */
     @Bean
     public Job legalDongLoad(
             JobExecutionDecider hasMorePageDecider,
@@ -41,16 +51,10 @@ public class LegalDongLoadJobConfig {
             Step legalDongLoadStep,
             Step legalDongParentMappingStep) {
         return new JobBuilder("legalDongLoad", jobRepository)
-                .start(legalDongLoadPreprocessStep)                        // API 메타 데이터 total size, page size 등 init
-                .next(legalDongApiFetchStep)                                // 현재 Page 데이터 요청
-                .next(legalDongLoadStep)                                    // chunk 단위 load
-                .next(hasMorePageDecider)
-                    .on("CONTINUE").to(legalDongApiFetchStep)            // CONTINUE 로직
-                .from(hasMorePageDecider)
-                    .on("COMPLETED").to(legalDongParentMappingStep)
-                .from(hasMorePageDecider)
-                    .on("FAILED").fail()
-                .end()
+                .start(legalDongLoadPreprocessStep)                              // batch job 초기 context data set
+                .next(legalDongApiFetchStep)                                     // 현재 Page 데이터 요청
+                .next(legalDongLoadStep)                                         // chunk 단위 load
+                .next(legalDongParentMappingStep)                                // parentMapping
                 .build();
     }
 
@@ -79,7 +83,6 @@ public class LegalDongLoadJobConfig {
                 .reader(legalDongLoadStepReader)
                 .processor(legalDongLoadStepProcessor)
                 .writer(legalDongLoadStepWriter)
-                .listener(processedDataCounter)
                 .build();
     }
 
@@ -94,7 +97,6 @@ public class LegalDongLoadJobConfig {
                 .reader(legalDongLoadStepReader)
                 .processor(legalDongLoadStepProcessor)
                 .writer(legalDongParentMappingStepWriter)
-                .listener(processedDataCounter)
                 .build();
     }
 
