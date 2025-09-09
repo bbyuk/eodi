@@ -27,9 +27,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class LegalDongLoadJobConfig {
 
     private final EodiBatchProperties batchProperties;
-    private final ItemStreamReader<LegalDongApiResponseRow> legalDongRowReader;
-    private final ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongRowProcessor;
-    private final ItemWriter<LegalDong> legalDongRowWriter;
+    private final ItemStreamReader<LegalDongApiResponseRow> legalDongLoadStepReader;
+    private final ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongLoadStepProcessor;
+    private final ItemWriter<LegalDong> legalDongLoadStepWriter;
     private final Tasklet legalDongLoadPreprocessTasklet;
     private final Tasklet legalDongApiFetchTasklet;
     private final StepExecutionListener processedDataCounter;
@@ -78,9 +78,9 @@ public class LegalDongLoadJobConfig {
     ) {
         return new StepBuilder("legalDongLoadStep", jobRepository)
                 .<LegalDongApiResponseRow, LegalDong>chunk(batchProperties.batchSize(), transactionManager)
-                .reader(legalDongRowReader)
-                .processor(legalDongRowProcessor)
-                .writer(legalDongRowWriter)
+                .reader(legalDongLoadStepReader)
+                .processor(legalDongLoadStepProcessor)
+                .writer(legalDongLoadStepWriter)
                 .listener(processedDataCounter)
                 .build();
     }

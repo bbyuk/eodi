@@ -20,7 +20,7 @@ import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.CURRENT_DATA_INDEX;
 @Slf4j
 @StepScope
 @Component
-public class LegalDongRowReader implements ItemStreamReader<LegalDongApiResponseRow> {
+public class LegalDongLoadStepReader implements ItemStreamReader<LegalDongApiResponseRow> {
 
     private final String path;
     private final ObjectMapper objectMapper;
@@ -28,8 +28,8 @@ public class LegalDongRowReader implements ItemStreamReader<LegalDongApiResponse
     private BufferedReader br;
     private int lineIdx = 0;
 
-    public LegalDongRowReader(@Value("#{jobExecutionContext['DATA_FILE']}") String path,
-                              ObjectMapper objectMapper) {
+    public LegalDongLoadStepReader(@Value("#{jobExecutionContext['DATA_FILE']}") String path,
+                                   ObjectMapper objectMapper) {
         this.path = path;
         this.objectMapper = objectMapper;
     }

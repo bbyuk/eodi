@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LegalDongRowProcessor implements ItemProcessor<LegalDongApiResponseRow, LegalDong> {
+public class LegalDongLoadStepProcessor implements ItemProcessor<LegalDongApiResponseRow, LegalDong> {
 
     @Override
     public LegalDong process(LegalDongApiResponseRow readItem) throws Exception {

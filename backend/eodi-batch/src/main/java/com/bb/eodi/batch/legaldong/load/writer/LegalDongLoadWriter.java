@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LegalDongRowWriter implements ItemWriter<LegalDong> {
+public class LegalDongLoadWriter implements ItemWriter<LegalDong> {
 
     private final LegalDongRepository legalDongRepository;
 
