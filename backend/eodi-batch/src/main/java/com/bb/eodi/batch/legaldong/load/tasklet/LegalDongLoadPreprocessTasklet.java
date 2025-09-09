@@ -42,10 +42,11 @@ public class LegalDongLoadPreprocessTasklet implements Tasklet {
 
         /**
          * 초기 데이터 set
+         * pageNum은 1이 최소
          */
         ctx.putInt(TOTAL_COUNT.name(), totalCount);
         ctx.putInt(PROCESSED_COUNT.name(), 0);
-        ctx.putInt(PAGE_NUM.name(), 0);
+        ctx.putInt(PAGE_NUM.name(), 1);
 
         return RepeatStatus.FINISHED;
     }

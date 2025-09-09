@@ -33,7 +33,7 @@ public class LegalDong {
     private String name;
 
     // 법정동 서열
-    private int order;
+    private int legalDongOrder;
 
     // 상위 법정동 ID
     private Long parentId;
@@ -48,13 +48,13 @@ public class LegalDong {
     private LocalDateTime updatedAt;
 
     @Builder
-    public LegalDong(String code, String sidoCode, String sigunguCode, String dongCode, String name, int order, Long parentId, boolean isActive) {
+    public LegalDong(String code, String sidoCode, String sigunguCode, String dongCode, String name, int legalDongOrder, Long parentId, boolean isActive) {
         this.code = code;
         this.sidoCode = sidoCode;
         this.sigunguCode = sigunguCode;
         this.dongCode = dongCode;
         this.name = name;
-        this.order = order;
+        this.legalDongOrder = legalDongOrder;
         this.parentId = parentId;
         this.isActive = isActive;
         this.createdAt = LocalDateTime.now();

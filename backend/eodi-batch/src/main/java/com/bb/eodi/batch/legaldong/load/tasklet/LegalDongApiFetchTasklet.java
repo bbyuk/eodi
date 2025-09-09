@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.DATA_FILE;
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.PAGE_NUM;
 
 /**
  * 법정동 코드 API 요청 Tasklet
@@ -43,7 +44,9 @@ public class LegalDongApiFetchTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext ctx = contribution.getStepExecution().getJobExecution().getExecutionContext();
-        List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion);
+        int pageNum = ctx.getInt(PAGE_NUM.name());
+
+        List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion, pageNum);
 
         // 1. temp file로 write
         // TODO temp file remove step 필요

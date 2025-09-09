@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
  * 법정동코드 Spring Data Jdbc Repository
  */
 @Repository
-public interface LegalDongJdbcRepository extends LegalDongRepository, CrudRepository<Long, LegalDong> {
+public interface LegalDongJdbcRepository extends CrudRepository<Long, LegalDong> {
+
 }

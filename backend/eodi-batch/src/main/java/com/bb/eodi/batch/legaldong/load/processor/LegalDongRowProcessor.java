@@ -25,7 +25,7 @@ public class LegalDongRowProcessor implements ItemProcessor<LegalDongApiResponse
                 .sigunguCode(readItem.sgg_cd())
                 .dongCode(readItem.umd_cd())
                 .name(readItem.locatadd_nm())
-                .order(readItem.locat_order())
+                .legalDongOrder(readItem.locat_order())
                 .isActive(true)
                 .build();
     }

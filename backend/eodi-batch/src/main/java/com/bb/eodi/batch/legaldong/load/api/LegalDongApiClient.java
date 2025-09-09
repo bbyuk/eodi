@@ -20,5 +20,5 @@ public interface LegalDongApiClient {
      * @param targetRegion
      * @return responseBody
      */
-    List<LegalDongApiResponseRow> findByRegion(String targetRegion);
+    List<LegalDongApiResponseRow> findByRegion(String targetRegion, int pageNum);
 }

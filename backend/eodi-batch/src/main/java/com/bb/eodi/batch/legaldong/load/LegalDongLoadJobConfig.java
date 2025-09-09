@@ -1,5 +1,6 @@
 package com.bb.eodi.batch.legaldong.load;
 
+import com.bb.eodi.batch.EodiBatchProperties;
 import com.bb.eodi.batch.legaldong.load.decider.HasMorePageDecider;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
@@ -25,8 +26,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 public class LegalDongLoadJobConfig {
 
-    private static final int CHUNK_SIZE = 1000;
-
+    private final EodiBatchProperties batchProperties;
     private final ItemStreamReader<LegalDongApiResponseRow> legalDongRowReader;
     private final ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongRowProcessor;
     private final ItemWriter<LegalDong> legalDongRowWriter;
@@ -72,7 +72,7 @@ public class LegalDongLoadJobConfig {
             PlatformTransactionManager transactionManager
     ) {
         return new StepBuilder("legalDongLoadStep", jobRepository)
-                .<LegalDongApiResponseRow, LegalDong>chunk(CHUNK_SIZE, transactionManager)
+                .<LegalDongApiResponseRow, LegalDong>chunk(batchProperties.batchSize(), transactionManager)
                 .reader(legalDongRowReader)
                 .processor(legalDongRowProcessor)
                 .writer(legalDongRowWriter)

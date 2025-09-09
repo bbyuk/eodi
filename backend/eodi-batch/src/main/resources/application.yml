@@ -20,6 +20,7 @@ eodi:
   batch:
     job-name-prefix: job.name
     job-parameter-prefix: job.parameter.
+    batch-size: 500
   file:
     base-path: C:/
 

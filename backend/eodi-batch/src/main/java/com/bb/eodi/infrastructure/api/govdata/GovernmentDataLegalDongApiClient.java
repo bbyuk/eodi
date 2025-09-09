@@ -34,7 +34,7 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
                 .build();
     }
 
-    private LegalDongApiResponse callApiWithRegionParameter(String targetRegion, int pageSize) {
+    private LegalDongApiResponse callApiWithRegionParameter(String targetRegion, int pageNum) {
         String responseBody = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(governmentDataApiProperties.table()
@@ -42,9 +42,9 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
                                 .path()
                         )
                         .queryParam(governmentDataApiProperties.keyParameterName(), governmentDataApiProperties.key())
-                        .queryParam("numOfRows", pageSize)
+                        .queryParam("numOfRows", governmentDataApiProperties.pageSize())
                         .queryParam("locatadd_nm", targetRegion)
-                        .queryParam("pageNo", 1)
+                        .queryParam("pageNo", pageNum)
                         .queryParam("type", "json")
                         .build()
                 )
@@ -88,8 +88,8 @@ public class GovernmentDataLegalDongApiClient implements LegalDongApiClient {
     }
 
     @Override
-    public List<LegalDongApiResponseRow> findByRegion(String targetRegion) {
-        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion, governmentDataApiProperties.pageSize());
+    public List<LegalDongApiResponseRow> findByRegion(String targetRegion, int pageNum) {
+        LegalDongApiResponse legalDongApiResponse = callApiWithRegionParameter(targetRegion, pageNum);
         JavaType type = objectMapper
                 .getTypeFactory()
                 .constructCollectionType(List.class, LegalDongApiResponseRow.class);

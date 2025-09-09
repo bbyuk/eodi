@@ -1,6 +1,7 @@
 package com.bb.eodi.batch.legaldong.load.writer;
 
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
+import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
@@ -15,11 +16,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LegalDongRowWriter implements ItemWriter<LegalDong> {
 
-    private int currentStepProcessedCount = 0;
+    private final LegalDongRepository legalDongRepository;
 
     @Override
     public void write(Chunk<? extends LegalDong> chunk) throws Exception {
-        log.debug("chunk write = {}", chunk.toString());
-        currentStepProcessedCount += chunk.size();
+        log.debug("[writer] chunk write");
+        legalDongRepository.mergeBatch(chunk.getItems());
+        log.debug("[writer] chunk write success");
     }
 }
