@@ -6,6 +6,7 @@ import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -31,6 +32,7 @@ public class LegalDongLoadJobConfig {
     private final ItemWriter<LegalDong> legalDongRowWriter;
     private final Tasklet legalDongLoadPreprocessTasklet;
     private final Tasklet legalDongApiFetchTasklet;
+    private final StepExecutionListener processedDataCounter;
 
     @Bean
     public Job legalDongLoad(JobRepository jobRepository,
@@ -74,6 +76,7 @@ public class LegalDongLoadJobConfig {
                 .reader(legalDongRowReader)
                 .processor(legalDongRowProcessor)
                 .writer(legalDongRowWriter)
+                .listener(processedDataCounter)
                 .build();
     }
 
