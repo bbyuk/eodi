@@ -12,6 +12,8 @@ public enum LegalDongLoadKey {
     PROCESSED_COUNT,
     // 읽어야할 데이터
     DATA_FILE,
-    // 현재 데이터의 인덱스
-    CURRENT_DATA_INDEX
+    // read start offset
+    READ_START_OFFSET,
+    // page size
+    PAGE_SIZE
 }

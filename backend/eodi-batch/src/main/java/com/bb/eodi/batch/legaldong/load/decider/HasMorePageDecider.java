@@ -30,6 +30,6 @@ public class HasMorePageDecider implements JobExecutionDecider {
             return new FlowExecutionStatus("CONTINUE");
         }
 
-        return FlowExecutionStatus.COMPLETED;
+        return new FlowExecutionStatus("COMPLETED");
     }
 }
