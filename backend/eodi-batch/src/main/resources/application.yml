@@ -17,6 +17,14 @@ spring:
 
 # 애플리케이션 커스텀 설정
 eodi:
+  # 추후 공통 설정으로 분리 예정
+  service:
+    # 서비스 대상 위치 목록
+    locations:
+      - 서울특별시
+      - 경기도
+      - 인천광역시
+
   batch:
     job-name-prefix: job.name
     job-parameter-prefix: job.parameter.
