@@ -18,5 +18,6 @@ public class LegalDongParentMappingStepWriter implements ItemWriter<LegalDong> {
     @Override
     public void write(Chunk<? extends LegalDong> chunk) throws Exception {
         log.debug("legal dong parent mapping writer");
+        legalDongRepository.mappingParentIdBatch(chunk.getItems());
     }
 }

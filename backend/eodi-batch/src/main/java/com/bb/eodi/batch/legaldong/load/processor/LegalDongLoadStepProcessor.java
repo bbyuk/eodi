@@ -25,6 +25,7 @@ public class LegalDongLoadStepProcessor implements ItemProcessor<LegalDongApiRes
                 .sigunguCode(readItem.sgg_cd())
                 .dongCode(readItem.umd_cd())
                 .name(readItem.locatadd_nm())
+                .parentCode(readItem.locathigh_cd())
                 .legalDongOrder(readItem.locat_order())
                 .isActive(true)
                 .build();

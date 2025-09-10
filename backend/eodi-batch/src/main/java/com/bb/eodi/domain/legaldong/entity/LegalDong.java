@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +39,10 @@ public class LegalDong {
     // 상위 법정동 ID
     private Long parentId;
 
+    // 상위 법정동 코드
+    @Transient
+    private String parentCode;
+    
     // 활성여부
     private boolean isActive;
 
@@ -46,14 +51,17 @@ public class LegalDong {
 
     // 변경 일시
     private LocalDateTime updatedAt;
+    
+
 
     @Builder
-    public LegalDong(String code, String sidoCode, String sigunguCode, String dongCode, String name, int legalDongOrder, Long parentId, boolean isActive) {
+    public LegalDong(String code, String sidoCode, String sigunguCode, String dongCode, String name, String parentCode, int legalDongOrder, Long parentId, boolean isActive) {
         this.code = code;
         this.sidoCode = sidoCode;
         this.sigunguCode = sigunguCode;
         this.dongCode = dongCode;
         this.name = name;
+        this.parentCode = parentCode;
         this.legalDongOrder = legalDongOrder;
         this.parentId = parentId;
         this.isActive = isActive;

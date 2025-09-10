@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.sql.BatchUpdateException;
 import java.util.List;
 
 /**
@@ -47,23 +46,41 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
                 ON DUPLICATE KEY UPDATE
                     code    = new.code
                 """;
-        try {
-            jdbcTemplate
-                    .batchUpdate(sql, data.stream()
-                            .map(row -> new MapSqlParameterSource()
-                                    .addValue("code", row.getCode())
-                                    .addValue("sidoCode", row.getSidoCode())
-                                    .addValue("sigunguCode", row.getSigunguCode())
-                                    .addValue("dongCode", row.getDongCode())
-                                    .addValue("name", row.getName())
-                                    .addValue("legalDongOrder", row.getLegalDongOrder())
-                                    .addValue("isActive", row.isActive())
-                            )
-                            .toArray(SqlParameterSource[]::new));
-        }
-        catch(RuntimeException e) {
-            log.error(e.getMessage(), e);
-            throw e;
-        }
+        jdbcTemplate
+                .batchUpdate(sql, data.stream()
+                        .map(row -> new MapSqlParameterSource()
+                                .addValue("code", row.getCode())
+                                .addValue("sidoCode", row.getSidoCode())
+                                .addValue("sigunguCode", row.getSigunguCode())
+                                .addValue("dongCode", row.getDongCode())
+                                .addValue("name", row.getName())
+                                .addValue("legalDongOrder", row.getLegalDongOrder())
+                                .addValue("isActive", row.isActive())
+                        )
+                        .toArray(SqlParameterSource[]::new));
+    }
+
+    @Override
+    public void mappingParentIdBatch(List<? extends LegalDong> data) {
+        String sql = """
+                UPDATE  legal_dong ld_sub JOIN legal_dong ld 
+                        ON      ld.code     = :parentCode
+                        AND     ld_sub.code = :code
+                SET     ld_sub.parent_id = ld.id
+                """;
+
+        jdbcTemplate.batchUpdate(sql, data.stream()
+                .map(row -> {
+                            log.debug("running query : \n{}", sql
+                                    .replace(":parentCode", "'" + row.getParentCode() + "'")
+                                    .replace(":code", "'" + row.getCode() + "'"));
+                            if (row.getCode().equals("4159035033")) {
+                                System.out.println("row = " + row);
+                            }
+                            return new MapSqlParameterSource()
+                                    .addValue("parentCode", row.getParentCode())
+                                    .addValue("code", row.getCode());
+                        }
+                ).toArray(SqlParameterSource[]::new));
     }
 }
