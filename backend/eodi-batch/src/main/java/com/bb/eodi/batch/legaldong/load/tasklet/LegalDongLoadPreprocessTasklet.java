@@ -1,5 +1,6 @@
 package com.bb.eodi.batch.legaldong.load.tasklet;
 
+import com.bb.eodi.batch.legaldong.LegalDongLoadBatchJobProperties;
 import com.bb.eodi.batch.legaldong.load.api.LegalDongApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -27,12 +28,15 @@ public class LegalDongLoadPreprocessTasklet implements Tasklet {
 
     private final String region;
     private final LegalDongApiClient legalDongApiClient;
+    private final LegalDongLoadBatchJobProperties batchJobProperties;
 
     public LegalDongLoadPreprocessTasklet(
             @Value("#{jobParameters['region']}") String region,
-            LegalDongApiClient legalDongApiClient) {
+            LegalDongApiClient legalDongApiClient,
+            LegalDongLoadBatchJobProperties batchJobProperties) {
         this.region = StringUtils.hasText(region) ? region : "";
         this.legalDongApiClient = legalDongApiClient;
+        this.batchJobProperties = batchJobProperties;
     }
 
     /**
@@ -49,7 +53,7 @@ public class LegalDongLoadPreprocessTasklet implements Tasklet {
         log.debug("{} total count : {}", region, totalCount);
 
         // job temp file 생성
-        Path tempFile = Files.createTempFile("legal-dong", ".json");
+        Path tempFile = Files.createTempFile(batchJobProperties.tempFileName(), batchJobProperties.tempFileSuffix());
 
         /**
          * 초기 context 변수 setting

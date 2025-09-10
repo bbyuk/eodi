@@ -20,7 +20,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.*;
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.DATA_FILE;
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.TOTAL_COUNT;
 
 /**
  * 법정동 코드 API 요청 Tasklet
@@ -56,7 +57,6 @@ public class LegalDongApiFetchTasklet implements Tasklet {
 
         for (int pageNum = 1; pageNum <= pageCount; pageNum++) {
             List<LegalDongApiResponseRow> legalDongApiResponse = legalDongApiClient.findByRegion(targetRegion, pageNum);
-            // TODO temp file remove step 필요
             try (BufferedWriter bw = Files.newBufferedWriter(tempFile, StandardOpenOption.APPEND )) {
                 for (LegalDongApiResponseRow row : legalDongApiResponse) {
                     bw.write(objectMapper.writeValueAsString(row));
