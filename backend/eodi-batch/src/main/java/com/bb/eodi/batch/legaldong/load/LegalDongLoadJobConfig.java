@@ -8,7 +8,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -29,6 +28,7 @@ public class LegalDongLoadJobConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
+
     private final EodiBatchProperties batchProperties;
     private final StepExecutionListener processedDataCounter;
 
@@ -42,19 +42,21 @@ public class LegalDongLoadJobConfig {
      *      1.2. 페이지 수만큼 API 요청
      * 3. 법정동 Chunk load step
      * 4. 법정동 Chunk paren mapping step
+     * 5. 임시 파일 삭제
      */
     @Bean
     public Job legalDongLoad(
-            JobExecutionDecider hasMorePageDecider,
             Step legalDongLoadPreprocessStep,
             Step legalDongApiFetchStep,
             Step legalDongLoadStep,
-            Step legalDongParentMappingStep) {
+            Step legalDongParentMappingStep,
+            Step legalDongLoadPostprocessStep) {
         return new JobBuilder("legalDongLoad", jobRepository)
                 .start(legalDongLoadPreprocessStep)                              // batch job 초기 context data set
                 .next(legalDongApiFetchStep)                                     // 현재 Page 데이터 요청
                 .next(legalDongLoadStep)                                         // chunk 단위 load
                 .next(legalDongParentMappingStep)                                // parentMapping
+                .next(legalDongLoadPostprocessStep)
                 .build();
     }
 
@@ -102,5 +104,11 @@ public class LegalDongLoadJobConfig {
                 .build();
     }
 
+    @Bean
+    public Step legalDongLoadPostprocessStep(Tasklet legalDongLoadPostprocessTasklet) {
+        return new StepBuilder("legalDongLoadPostprocessStep", jobRepository)
+                .tasklet(legalDongLoadPostprocessTasklet, transactionManager)
+                .build();
+    }
 
 }
