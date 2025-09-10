@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.READ_START_OFFSET;
 
 /**
  * 법정동 코드 데이터 reader
@@ -26,10 +25,10 @@ public class LegalDongLoadStepReader implements ItemStreamReader<LegalDongApiRes
 
     private final String path;
     private final ObjectMapper objectMapper;
-    private BufferedReader br;
-    private final EodiBatchProperties eodiBatchProperties;
 
-    private int lineIdx = 0;
+    private BufferedReader br;
+
+    private final EodiBatchProperties eodiBatchProperties;
 
     public LegalDongLoadStepReader(@Value("#{jobExecutionContext['DATA_FILE']}") String path,
                                    EodiBatchProperties eodiBatchProperties,
@@ -41,31 +40,19 @@ public class LegalDongLoadStepReader implements ItemStreamReader<LegalDongApiRes
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
-        int startOffset = executionContext.getInt(READ_START_OFFSET.name(), 0);
-
         try {
-            this.br = Files.newBufferedReader(Paths.get(path), StandardCharsets.UTF_8);
-
-            // 재시작/루프 진입 지점으로 스킵
-            // (파일 기준 글로벌 인덱스는 startOffset부터 시작)
-            for (int i = 0; i < startOffset; i++) {
-                if (br.readLine() == null) break;
-            }
-
-            log.info("LegalDongLoadStepReader opened. file={}, startOffset={}, limit={}", path, startOffset, eodiBatchProperties.batchSize());
-        } catch (Exception e) {
-            log.error("Failed to open reader: {}", e.getMessage(), e);
+            br = Files.newBufferedReader(Paths.get(path), StandardCharsets.UTF_8);
+            log.info("LegalDongLoadStepReader opened. file={}, limit={}", path, eodiBatchProperties.batchSize());
+        }
+        catch(IOException e) {
+            log.error("대상 파일을 open 하는 도중 문제가 발생했습니다.");
             throw new ItemStreamException(e);
         }
     }
 
     @Override
     public LegalDongApiResponseRow read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        // 이번 루프에서 읽을 최대 개수에 도달하면 종료
-        if (lineIdx >= eodiBatchProperties.batchSize()) {
-            return null;
-        }
-
+        // read
         String line;
         while (true) {
             line = br.readLine();
@@ -73,35 +60,21 @@ public class LegalDongLoadStepReader implements ItemStreamReader<LegalDongApiRes
                 return null; // EOF
             }
 
-            // 빈 줄/공백 라인 방지
             if (!line.isBlank()) break;
         }
-        lineIdx++;
 
-        try {
-            return objectMapper.readValue(line, LegalDongApiResponseRow.class);
-        } catch (Exception ex) {
-            // 파싱 실패는 상황에 따라 skip/retry 정책으로 넘길 수도 있음
-            log.warn("JSON parse failed at line {}: {}", ex.getMessage());
-            throw ex;
-        }
-    }
-
-    @Override
-    public void update(ExecutionContext executionContext) throws ItemStreamException {
-        int startOffset = executionContext.getInt(READ_START_OFFSET.name(), 0);
-        executionContext.putInt(READ_START_OFFSET.name(), startOffset + lineIdx);
+        return objectMapper.readValue(line, LegalDongApiResponseRow.class);
     }
 
     @Override
     public void close() throws ItemStreamException {
         try {
-            if (br != null) {
-                br.close();
-            }
-        } catch (Exception e) {
-            log.error("Failed to close reader: {}", e.getMessage(), e);
+            br.close();
+        }
+        catch (IOException e) {
+            log.error("대상 파일 close 중 에러가 발생했습니다.");
             throw new ItemStreamException(e);
         }
+
     }
 }

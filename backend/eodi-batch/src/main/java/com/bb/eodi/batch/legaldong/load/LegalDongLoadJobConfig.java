@@ -13,7 +13,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemStreamReader;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -74,7 +74,7 @@ public class LegalDongLoadJobConfig {
 
     @Bean
     public Step legalDongLoadStep(
-            ItemStreamReader<LegalDongApiResponseRow> legalDongLoadStepReader,
+            ItemReader<LegalDongApiResponseRow> legalDongLoadStepReader,
             ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongLoadStepProcessor,
             @Qualifier("legalDongLoadStepWriter") ItemWriter<LegalDong> legalDongLoadStepWriter
     ) {
@@ -83,12 +83,13 @@ public class LegalDongLoadJobConfig {
                 .reader(legalDongLoadStepReader)
                 .processor(legalDongLoadStepProcessor)
                 .writer(legalDongLoadStepWriter)
+                .listener(processedDataCounter)
                 .build();
     }
 
     @Bean
     public Step legalDongParentMappingStep(
-            ItemStreamReader<LegalDongApiResponseRow> legalDongLoadStepReader,
+            ItemReader<LegalDongApiResponseRow> legalDongLoadStepReader,
             ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongLoadStepProcessor,
             @Qualifier("legalDongParentMappingStepWriter") ItemWriter<LegalDong> legalDongParentMappingStepWriter
     ) {
@@ -97,6 +98,7 @@ public class LegalDongLoadJobConfig {
                 .reader(legalDongLoadStepReader)
                 .processor(legalDongLoadStepProcessor)
                 .writer(legalDongParentMappingStepWriter)
+                .listener(processedDataCounter)
                 .build();
     }
 

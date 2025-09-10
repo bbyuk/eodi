@@ -8,6 +8,9 @@ import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.*;
+import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.READ_START_OFFSET;
+
 /**
  * Chunk 처리 step 이후 처리 데이터 카운터
  */
@@ -16,12 +19,17 @@ import org.springframework.stereotype.Component;
 public class ProcessedDataCounter implements StepExecutionListener {
 
     @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        ExecutionContext ctx = stepExecution.getJobExecution().getExecutionContext();
+    public void beforeStep(StepExecution stepExecution) {
+        ExecutionContext ctx = stepExecution.getExecutionContext();
+        ctx.putInt(PROCESSED_COUNT.name(), 0);
+    }
 
-        int processedCount = ctx.getInt(LegalDongLoadKey.PROCESSED_COUNT.name(), 0)
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        ExecutionContext ctx = stepExecution.getExecutionContext();
+        int processedCount = ctx.getInt(PROCESSED_COUNT.name(), 0)
                         + (int) stepExecution.getWriteCount();
-        ctx.putInt(LegalDongLoadKey.PROCESSED_COUNT.name(), processedCount);
+        ctx.putInt(PROCESSED_COUNT.name(), processedCount);
 
         return stepExecution.getExitStatus();
     }

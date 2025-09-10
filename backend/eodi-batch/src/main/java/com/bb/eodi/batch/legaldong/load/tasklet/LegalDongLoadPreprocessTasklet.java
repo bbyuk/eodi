@@ -57,8 +57,6 @@ public class LegalDongLoadPreprocessTasklet implements Tasklet {
         ctx.putInt(READ_START_OFFSET.name(), 0);
         ctx.putString(DATA_FILE.name(), tempFile.toString());
         ctx.putInt(TOTAL_COUNT.name(), totalCount);
-        ctx.putInt(PROCESSED_COUNT.name(), 0);
-        ctx.putInt(READ_START_OFFSET.name(), 0);
 
         return RepeatStatus.FINISHED;
     }
