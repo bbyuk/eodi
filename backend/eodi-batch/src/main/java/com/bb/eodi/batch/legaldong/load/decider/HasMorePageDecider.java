@@ -1,5 +1,6 @@
 package com.bb.eodi.batch.legaldong.load.decider;
 
+import com.bb.eodi.batch.enums.BatchExecutionStatus;
 import com.bb.eodi.batch.legaldong.LegalDongLoadKey;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
@@ -8,6 +9,7 @@ import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
+import static com.bb.eodi.batch.enums.BatchExecutionStatus.*;
 import static com.bb.eodi.batch.legaldong.LegalDongLoadKey.*;
 
 /**
@@ -27,9 +29,9 @@ public class HasMorePageDecider implements JobExecutionDecider {
             int nextPage = ctx.getInt(PAGE_NUM.name(), 0) + 1;
             ctx.putInt(PAGE_NUM.name(), nextPage);
 
-            return new FlowExecutionStatus("CONTINUE");
+            return new FlowExecutionStatus(CONTINUE.name());
         }
 
-        return new FlowExecutionStatus("COMPLETED");
+        return new FlowExecutionStatus(COMPLETED.name());
     }
 }
