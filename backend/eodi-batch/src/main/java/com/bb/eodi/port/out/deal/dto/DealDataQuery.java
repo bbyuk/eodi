@@ -5,10 +5,8 @@ package com.bb.eodi.port.out.deal.dto;
  */
 public record DealDataQuery(
         // 지역코드, 각 지역별 코드 행정표준코드관리시스템(www.code.go.kr)의 법정동코드 10자리 중 앞 5자리
-        String LAWD_CD,
+        String legalDongCode,
         // 계약월, 실거래 자료의 계약년월(6자리)
-        String DEAL_YMD,
-        // 공공데이터포털에서 요청하는 인증키
-        String serviceKey
+        String dealDate
 ) {
 }
