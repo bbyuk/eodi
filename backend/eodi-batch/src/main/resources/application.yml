@@ -33,9 +33,7 @@ eodi:
   service:
     # 서비스 대상 위치 목록
     locations:
-      - 서울특별시
-      - 경기도
-      - 인천광역시
+      - 전국
 
   batch:
     job-name-prefix: job.name
@@ -49,18 +47,65 @@ eodi:
 # 외부 API
 api:
   gov-data:
-    base-url: http://apis.data.go.kr
+    base-url: https://apis.data.go.kr
     page-size: 500
     key-parameter-name: serviceKey
     key: ${GOV_DATA_API_KEY:default}
     table:
+      # 행정안전부 - 법정동 코드 조회
       legal-dong:
         phase: dev
         path: 1741000/StanReginCd/getStanReginCdList
         expiration: 2027-09-05
+      # 국토교통부 - 아파트 매매 실거래가
       apt-sale:
         phase: dev
         path: 1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade
+        expiration: 2027-09-11
+      # 국토교통부 - 아파트 매매 실거래가 상세
+      apt-sale-detail:
+        phase: dev
+        path: 1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTradeDev
+        expiration: 2027-09-11
+      # 국토교통부 - 연립/다세대주택 매매 실거래가
+      multi-household-sale:
+        phase: dev
+        path: 1613000/RTMSDataSvcRHTrade/getRTMSDataSvcRHTrade
+        expiration: 2027-09-11
+      # 국토교통부 - 단독/다가구주택 매매 실거래가
+      multi-unit-detached-sale:
+        phase: dev
+        path: 1613000/RTMSDataSvcSHTrade/getRTMSDataSvcSHTrade
+        expiration: 2027-09-11
+      # 국토교통부 - 오피스텔 매매 실거래가
+      officetel-sale:
+        phase: dev
+        path: 1613000/RTMSDataSvcOffiTrade/getRTMSDataSvcOffiTrade
+        expiration: 2027-09-11
+      # 국토교통부 - 분양권전매 실거래가
+      pre-sale-right:
+        phase: dev
+        path: 1613000/RTMSDataSvcSilvTrade/getRTMSDataSvcSilvTrade
+        expiration: 2027-09-11
+      # 국토교통부 - 아파트 전월세 실거래가
+      apt-lease:
+        phase: dev
+        path: 1613000/RTMSDataSvcAptRent/getRTMSDataSvcAptRent
+        expiration: 2027-09-11
+      # 국토교통부 - 연립/다세대주택 전월세 실거래가
+      multi-household-lease:
+        phase: dev
+        path: 1613000/RTMSDataSvcRHRent/getRTMSDataSvcRHRent
+        expiration: 2027-09-11
+      # 국토교통부 - 단독/다가구주택 전월세 실거래가
+      multi-unit-detached-lease:
+        phase: dev
+        path: 1613000/RTMSDataSvcSHRent/getRTMSDataSvcSHRent
+        expiration: 2027-09-11
+      # 국토교통부 - 오피스텔 전월세 실거래가
+      officetel-lease:
+        phase: dev
+        path: 1613000/RTMSDataSvcOffiRent/getRTMSDataSvcOffiRetn
         expiration: 2027-09-11
 
 
