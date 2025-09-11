@@ -52,12 +52,16 @@ api:
     base-url: http://apis.data.go.kr
     page-size: 500
     key-parameter-name: serviceKey
-    key: ${LEGAL_DONG_API_KEY:default}
+    key: ${GOV_DATA_API_KEY:default}
     table:
       legal-dong:
         phase: dev
         path: 1741000/StanReginCd/getStanReginCdList
         expiration: 2027-09-05
+      apt-sale:
+        phase: dev
+        path: 1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade
+        expiration: 2027-09-11
 
 
 # 로깅
