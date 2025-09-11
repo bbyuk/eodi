@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 법정동 배치처리 Repository
@@ -20,6 +21,12 @@ import java.util.List;
 public class LegalDongRepositoryImpl implements LegalDongRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final LegalDongJdbcRepository legalDongJdbcRepository;
+
+    @Override
+    public Optional<LegalDong> findByCode(String code) {
+        return legalDongJdbcRepository.findByCode(code);
+    }
 
     @Override
     public void mergeBatch(List<? extends LegalDong> data) {

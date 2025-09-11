@@ -1,21 +1,22 @@
 package com.bb.eodi.domain.legaldong.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
 /**
  * 법정동코드
  */
+@Table("legal_dong")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LegalDong {
 
     // 법정동 ID
+    @Id
     private Long id;
 
     // 법정동 코드
@@ -40,9 +41,10 @@ public class LegalDong {
     private Long parentId;
 
     // 상위 법정동 코드
+    @Setter
     @Transient
     private String parentCode;
-    
+
     // 활성여부
     private boolean isActive;
 
@@ -51,8 +53,6 @@ public class LegalDong {
 
     // 변경 일시
     private LocalDateTime updatedAt;
-    
-
 
     @Builder
     public LegalDong(String code, String sidoCode, String sigunguCode, String dongCode, String name, String parentCode, int legalDongOrder, Long parentId, boolean isActive) {

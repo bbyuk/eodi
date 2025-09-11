@@ -92,13 +92,13 @@ public class LegalDongLoadJobConfig {
     @Bean
     public Step legalDongParentMappingStep(
             ItemReader<LegalDongApiResponseRow> legalDongLoadStepReader,
-            ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongLoadStepProcessor,
+            @Qualifier("legalDongParentMappingStepProcessor") ItemProcessor<LegalDongApiResponseRow, LegalDong> legalDongParentMappingStepProcessor,
             @Qualifier("legalDongParentMappingStepWriter") ItemWriter<LegalDong> legalDongParentMappingStepWriter
     ) {
         return new StepBuilder("legalDongParentMappingStep", jobRepository)
                 .<LegalDongApiResponseRow, LegalDong>chunk(batchProperties.batchSize(), transactionManager)
                 .reader(legalDongLoadStepReader)
-                .processor(legalDongLoadStepProcessor)
+                .processor(legalDongParentMappingStepProcessor)
                 .writer(legalDongParentMappingStepWriter)
                 .listener(processedDataCounter)
                 .build();
