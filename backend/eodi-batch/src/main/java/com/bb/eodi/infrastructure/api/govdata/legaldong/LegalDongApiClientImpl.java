@@ -1,5 +1,6 @@
 package com.bb.eodi.infrastructure.api.govdata.legaldong;
 
+import com.bb.eodi.batch.legaldong.load.api.LegalDongApiClient;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponse;
 import com.bb.eodi.batch.legaldong.load.model.LegalDongApiResponseRow;
 import com.bb.eodi.infrastructure.api.govdata.GovernmentDataApiProperties;
@@ -19,14 +20,14 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class LegalDongApiClient implements com.bb.eodi.batch.legaldong.load.api.LegalDongApiClient {
+public class LegalDongApiClientImpl implements LegalDongApiClient {
 
     private final ObjectMapper objectMapper;
     private final GovernmentDataApiProperties governmentDataApiProperties;
     private final WebClient webClient;
 
 
-    public LegalDongApiClient(GovernmentDataApiProperties governmentDataApiProperties, ObjectMapper objectMapper) {
+    public LegalDongApiClientImpl(GovernmentDataApiProperties governmentDataApiProperties, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.governmentDataApiProperties = governmentDataApiProperties;
         this.webClient = WebClient.builder()
