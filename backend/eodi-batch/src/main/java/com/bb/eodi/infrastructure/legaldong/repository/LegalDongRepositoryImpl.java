@@ -21,11 +21,11 @@ import java.util.Optional;
 public class LegalDongRepositoryImpl implements LegalDongRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final LegalDongJdbcRepository legalDongJdbcRepository;
+    private final LegalDongJpaRepository legalDongJpaRepository;
 
     @Override
     public Optional<LegalDong> findByCode(String code) {
-        return legalDongJdbcRepository.findByCode(code);
+        return legalDongJpaRepository.findByCode(code);
     }
 
     @Override

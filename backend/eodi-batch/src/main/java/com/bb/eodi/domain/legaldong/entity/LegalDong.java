@@ -1,43 +1,49 @@
 package com.bb.eodi.domain.legaldong.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
 /**
  * 법정동코드
  */
-@Table("legal_dong")
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LegalDong {
 
     // 법정동 ID
-    @Id
+    @Id @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     // 법정동 코드
+    @Column(name = "code")
     private String code;
 
     // 시/도 코드
+    @Column(name = "sido_code")
     private String sidoCode;
 
     // 시/군/구 코드
+    @Column(name = "sigungu_code")
     private String sigunguCode;
 
     // 동 코드
+    @Column(name = "dong_code")
     private String dongCode;
 
     // 법정동 명
+    @Column(name = "name")
     private String name;
 
     // 법정동 서열
+    @Column(name = "legalDongOrder")
     private int legalDongOrder;
 
     // 상위 법정동 ID
+    @Column(name = "parent_id")
     private Long parentId;
 
     // 상위 법정동 코드
@@ -46,12 +52,15 @@ public class LegalDong {
     private String parentCode;
 
     // 활성여부
+    @Column(name = "is_active")
     private boolean isActive;
 
     // 생성일시
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     // 변경 일시
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Builder
