@@ -20,7 +20,7 @@ public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
     private final String dealMonth;
 
     public MonthlyDealDataLoadPreprocessStepTasklet(
-            @Value("#{jobParameters['dealMonth']}") String dealMonth
+            @Value("#{jobParameters['deal-month']}") String dealMonth
     ) {
         this.dealMonth = dealMonth;
     }
