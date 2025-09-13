@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
  * 부동산 매매 데이터 엔티티
  */
 @Getter
-public class Sale {
+public class RealEstateDeal {
 
     @Builder
-    public Sale(Region region, String roadName, LocalDate contractDate, int price, TradeMethodType tradeMethodType, LocalDate cancelDate, int buildYear, BigDecimal netLeasableArea, BigDecimal landArea, String buyer, String seller, HousingType housingType, LocalDate registrationDate, String targetName, String dong, Integer floor, BigDecimal totalFloorArea, BigDecimal siteArea) {
+    public RealEstateDeal(Region region, String roadName, LocalDate contractDate, int price, TradeMethodType tradeMethodType, LocalDate cancelDate, int buildYear, BigDecimal netLeasableArea, BigDecimal landArea, String buyer, String seller, HousingType housingType, LocalDate registrationDate, String targetName, String dong, Integer floor, BigDecimal totalFloorArea, BigDecimal siteArea) {
         this.region = region;
         this.roadName = roadName;
         this.contractDate = contractDate;
