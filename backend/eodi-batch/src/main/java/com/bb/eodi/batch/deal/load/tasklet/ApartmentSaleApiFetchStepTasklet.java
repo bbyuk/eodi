@@ -79,10 +79,6 @@ public class ApartmentSaleApiFetchStepTasklet implements Tasklet {
             Files.delete(tempFilePath);
             throw new RuntimeException(e);
         }
-        finally {
-            log.debug("temp file {} deleted", tempFilePath);
-            Files.delete(tempFilePath);
-        }
 
         return RepeatStatus.FINISHED;
     }
