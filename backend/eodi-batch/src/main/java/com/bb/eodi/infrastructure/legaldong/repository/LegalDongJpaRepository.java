@@ -1,11 +1,13 @@
 package com.bb.eodi.infrastructure.legaldong.repository;
 
+import com.bb.eodi.domain.legaldong.dto.LegalDongSummaryDto;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,4 +22,13 @@ public interface LegalDongJpaRepository extends JpaRepository<LegalDong, Long> {
             where   ld.code = :code
             """)
     Optional<LegalDong> findByCode(@Param("code") String code);
+
+    @Query("""
+            select  distinct new com.bb.eodi.domain.legaldong.dto.LegalDongSummaryDto(
+                            ld.sidoCode,
+                            ld.sigunguCode
+                    )
+            from    LegalDong ld
+            """)
+    List<LegalDongSummaryDto> findAllSummary();
 }

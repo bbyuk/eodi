@@ -26,10 +26,12 @@ public class MonthlyDealDataLoadJobConfig {
 
     @Bean
     public Job monthlyDealDataLoad(
-            Step monthlyDealDataLoadPreprocessStep
+            Step monthlyDealDataLoadPreprocessStep,
+            Step apartmentSaleApiFetchStep
     ) {
         return new JobBuilder("monthlyDealDataLoad", jobRepository)
-                .start(monthlyDealDataLoadPreprocessStep)
+                .start(monthlyDealDataLoadPreprocessStep)   // 전처리
+                .next(apartmentSaleApiFetchStep)            // 아파트 매매 데이터 API fetch step
                 .build();
     }
 
@@ -37,6 +39,13 @@ public class MonthlyDealDataLoadJobConfig {
     public Step monthlyDealDataLoadPreprocessStep(Tasklet monthlyDealDataLoadPreprocessStepTasklet) {
         return new StepBuilder("monthlyDealDataLoadPreprocessStep", jobRepository)
                 .tasklet(monthlyDealDataLoadPreprocessStepTasklet, transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step apartmentSaleApiFetchStep(Tasklet apartmentSaleApiFetchStepTasklet) {
+        return new StepBuilder("apartmentSaleApiFetchStep", jobRepository)
+                .tasklet(apartmentSaleApiFetchStepTasklet, transactionManager)
                 .build();
     }
 }

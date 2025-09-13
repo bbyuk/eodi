@@ -1,6 +1,7 @@
 package com.bb.eodi.batch.deal.load.tasklet;
 
 import com.bb.eodi.batch.deal.load.MonthlyDealDataLoadJobKey;
+import com.bb.eodi.batch.deal.load.MonthlyDealDataLoadJobProperties;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -17,12 +18,15 @@ import org.springframework.stereotype.Component;
 @StepScope
 public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
 
+    private final MonthlyDealDataLoadJobProperties properties;
     private final String dealMonth;
 
     public MonthlyDealDataLoadPreprocessStepTasklet(
-            @Value("#{jobParameters['dealMonth']}") String dealMonth
+            @Value("#{jobParameters['deal-month']}") String dealMonth,
+            MonthlyDealDataLoadJobProperties properties
     ) {
         this.dealMonth = dealMonth;
+        this.properties = properties;
     }
 
     @Override
@@ -30,6 +34,7 @@ public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
         jobCtx.putString(MonthlyDealDataLoadJobKey.DEAL_MONTH.name(), dealMonth);
+        jobCtx.putString(MonthlyDealDataLoadJobKey.APT_SALE_TEMP_FILE.name(), properties.aptSaleTempFileName());
 
         return null;
     }
