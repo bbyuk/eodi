@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 @StepScope
 public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
 
-    private final MonthlyDealDataLoadJobProperties properties;
     private final String dealMonth;
 
     public MonthlyDealDataLoadPreprocessStepTasklet(
@@ -26,7 +25,6 @@ public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
             MonthlyDealDataLoadJobProperties properties
     ) {
         this.dealMonth = dealMonth;
-        this.properties = properties;
     }
 
     @Override
@@ -34,7 +32,6 @@ public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
         jobCtx.putString(MonthlyDealDataLoadJobKey.DEAL_MONTH.name(), dealMonth);
-        jobCtx.putString(MonthlyDealDataLoadJobKey.APT_SALE_TEMP_FILE.name(), properties.aptSaleTempFileName());
 
         return null;
     }

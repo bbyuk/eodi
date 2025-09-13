@@ -55,7 +55,7 @@ public class ApartmentSaleApiFetchStepTasklet implements Tasklet {
                 .collect(Collectors.toList());
 
         // temp file 생성
-        Path tempFilePath = Files.createTempFile(jobCtx.getString(APT_SALE_TEMP_FILE.name()), null);
+        Path tempFilePath = Files.createTempFile(APT_SALE_TEMP_FILE.name(), null);
 
         /**
          * 전국 대상 API 요청 후 파일에 작성
@@ -79,6 +79,12 @@ public class ApartmentSaleApiFetchStepTasklet implements Tasklet {
             Files.delete(tempFilePath);
             throw new RuntimeException(e);
         }
+
+        /**
+         * 임시 파일명 jobContext에 저장
+         */
+        jobCtx.putString(APT_SALE_TEMP_FILE.name(), tempFilePath.toString());
+
 
         return RepeatStatus.FINISHED;
     }
