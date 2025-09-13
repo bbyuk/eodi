@@ -1,6 +1,6 @@
 package com.bb.eodi.infrastructure.legaldong.repository;
 
-import com.bb.eodi.domain.legaldong.dto.LegalDongSummaryView;
+import com.bb.eodi.domain.legaldong.dto.LegalDongSummaryDto;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +93,7 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     }
 
     @Override
-    public List<LegalDongSummaryView> findAllSummary() {
+    public List<LegalDongSummaryDto> findAllSummary() {
         return legalDongJpaRepository.findAllSummary();
     }
 }

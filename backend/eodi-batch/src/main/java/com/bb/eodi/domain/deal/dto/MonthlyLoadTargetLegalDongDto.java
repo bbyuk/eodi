@@ -5,8 +5,6 @@ package com.bb.eodi.domain.deal.dto;
  * legal_dong 테이블에서 조회
  */
 public record MonthlyLoadTargetLegalDongDto(
-        Long targetLegalDongId,
-        String regionCode,
-        String regionName
+        String regionCode
 ) {
 }

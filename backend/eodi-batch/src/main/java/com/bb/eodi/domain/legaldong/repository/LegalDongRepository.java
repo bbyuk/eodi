@@ -1,6 +1,6 @@
 package com.bb.eodi.domain.legaldong.repository;
 
-import com.bb.eodi.domain.legaldong.dto.LegalDongSummaryView;
+import com.bb.eodi.domain.legaldong.dto.LegalDongSummaryDto;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 
 import java.util.List;
@@ -35,6 +35,6 @@ public interface LegalDongRepository {
      * Cross domain context 제공
      * @return 법정동 요약 정보 view list
      */
-    List<LegalDongSummaryView> findAllSummary();
+    List<LegalDongSummaryDto> findAllSummary();
 
 }

@@ -36,13 +36,11 @@ public class ApartmentSaleApiFetchStepTasklet implements Tasklet {
         List<MonthlyLoadTargetLegalDongDto> monthlyLoadTargetLegalDongList = legalDongRepository.findAllSummary()
                 .stream()
                 .map(legalDongSummaryView -> new MonthlyLoadTargetLegalDongDto(
-                        legalDongSummaryView.getId(),
-                        legalDongSummaryView.getSidoCode() + legalDongSummaryView.getSigunguCode(),
-                        legalDongSummaryView.getName()))
+                        legalDongSummaryView.sidoCode() + legalDongSummaryView.sigunguCode()))
                 .collect(Collectors.toList());
 
         for (MonthlyLoadTargetLegalDongDto monthlyLoadTargetLegalDongDto : monthlyLoadTargetLegalDongList) {
-            log.debug(monthlyLoadTargetLegalDongDto.regionName());
+            log.debug(monthlyLoadTargetLegalDongDto.regionCode());
         }
 
 
