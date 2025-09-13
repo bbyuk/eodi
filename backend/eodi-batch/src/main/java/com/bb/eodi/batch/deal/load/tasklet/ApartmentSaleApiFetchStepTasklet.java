@@ -77,6 +77,7 @@ public class ApartmentSaleApiFetchStepTasklet implements Tasklet {
         catch (Exception e) {
             log.error(e.getMessage(), e);
             Files.delete(tempFilePath);
+            log.info("ApartmentSaleApiFetchStepTasklet -> temp file deleted. file={}", tempFilePath);
             throw new RuntimeException(e);
         }
 
