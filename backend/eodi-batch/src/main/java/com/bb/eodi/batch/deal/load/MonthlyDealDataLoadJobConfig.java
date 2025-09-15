@@ -1,7 +1,7 @@
 package com.bb.eodi.batch.deal.load;
 
 import com.bb.eodi.batch.config.EodiBatchProperties;
-import com.bb.eodi.domain.deal.entity.RealEstateDeal;
+import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -59,11 +59,11 @@ public class MonthlyDealDataLoadJobConfig {
     @Bean
     public Step apartmentSaleDataLoadStep(
             ItemReader<ApartmentSellDataItem> apartmentSellDataItemReader,
-            ItemProcessor<ApartmentSellDataItem, RealEstateDeal> apartmentSellDataItemProcessor,
-            ItemWriter<RealEstateDeal> realEstateDealItemWriter
+            ItemProcessor<ApartmentSellDataItem, RealEstateSell> apartmentSellDataItemProcessor,
+            ItemWriter<RealEstateSell> realEstateDealItemWriter
     ) {
         return new StepBuilder("apartmentSaleDataLoadStep", jobRepository)
-                .<ApartmentSellDataItem, RealEstateDeal>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .<ApartmentSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(apartmentSellDataItemReader)
                 .processor(apartmentSellDataItemProcessor)
                 .writer(realEstateDealItemWriter)

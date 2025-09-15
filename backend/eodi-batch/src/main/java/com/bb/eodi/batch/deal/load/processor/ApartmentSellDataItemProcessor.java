@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.deal.load.processor;
 
-import com.bb.eodi.domain.deal.entity.RealEstateDeal;
+import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.deal.type.TradeMethodType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSellDataItem, RealEstateDeal> {
+public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSellDataItem, RealEstateSell> {
 
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
@@ -31,7 +31,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
     private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
-    public RealEstateDeal process(ApartmentSellDataItem item) throws Exception {
+    public RealEstateSell process(ApartmentSellDataItem item) throws Exception {
         log.info("ApartmentSellDataItemProcessor.process called");
         log.debug("item : {}", item);
 
@@ -39,7 +39,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
-        return RealEstateDeal.builder()
+        return RealEstateSell.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(legalDong.getName())
                 .contractDate(

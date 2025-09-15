@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Entity
-@Table(name = "real_estate_deal")
+@Table(name = "real_estate_sell")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RealEstateDeal {
+public class RealEstateSell {
 
     @Builder
-    public RealEstateDeal(Long regionId, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
+    public RealEstateSell(Long regionId, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
         this.regionId = regionId;
         this.legalDongName = legalDongName;
         this.contractDate = contractDate;
@@ -53,7 +53,7 @@ public class RealEstateDeal {
     private Long regionId;
 
     // 법정동명
-    @Column(name = "legal_dong")
+    @Column(name = "legal_dong_name")
     private String legalDongName;
 
     // 계약일
@@ -77,15 +77,15 @@ public class RealEstateDeal {
     private Integer buildYear;
 
     // 전용면적
-    @Column(name = "net_leasable_area")
+    @Column(name = "net_leasable_area", precision = 10, scale = 4)
     private BigDecimal netLeasableArea;
 
     // 대지면적
-    @Column(name = "land_area")
+    @Column(name = "land_area", precision = 10, scale = 4)
     private BigDecimal landArea;
 
     // 연면적
-    @Column(name = "total_floor_area")
+    @Column(name = "total_floor_area", precision = 10, scale = 4)
     private BigDecimal totalFloorArea;
 
     // 매수자

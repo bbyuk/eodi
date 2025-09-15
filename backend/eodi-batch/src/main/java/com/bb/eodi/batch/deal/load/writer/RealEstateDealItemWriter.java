@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.deal.load.writer;
 
-import com.bb.eodi.domain.deal.entity.RealEstateDeal;
+import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -15,10 +15,12 @@ import org.springframework.stereotype.Component;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class RealEstateDealItemWriter implements ItemWriter<RealEstateDeal> {
+public class RealEstateDealItemWriter implements ItemWriter<RealEstateSell> {
 
     @Override
-    public void write(Chunk<? extends RealEstateDeal> chunk) throws Exception {
+    public void write(Chunk<? extends RealEstateSell> chunk) throws Exception {
         log.info("RealEstateDealItemWriter.write called");
+        log.info("write chunk size = {}", chunk.size());
+
     }
 }
