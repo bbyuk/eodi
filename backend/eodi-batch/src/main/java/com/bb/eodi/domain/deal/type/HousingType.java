@@ -1,9 +1,11 @@
 package com.bb.eodi.domain.deal.type;
 
+import com.bb.eodi.common.type.TypeCode;
+
 /**
  * 건물용도
  */
-public enum HousingType implements Type {
+public enum HousingType implements TypeCode {
     // 아파트
     APT("AP", "아파트"),
 

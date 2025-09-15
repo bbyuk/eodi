@@ -1,7 +1,9 @@
 package com.bb.eodi.domain.deal.type;
 
+import com.bb.eodi.common.type.TypeCode;
+
 // 거래 방법
-public enum TradeMethodType implements Type {
+public enum TradeMethodType implements TypeCode {
     // 직거래
     DIRECT("D", "직거래"),
 
