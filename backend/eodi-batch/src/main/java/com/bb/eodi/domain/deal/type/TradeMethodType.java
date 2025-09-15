@@ -21,7 +21,6 @@ public enum TradeMethodType implements TypeCode {
         this.description = description;
     }
 
-
     @Override
     public String code() {
         return code;
@@ -30,5 +29,19 @@ public enum TradeMethodType implements TypeCode {
     @Override
     public String description() {
         return description;
+    }
+
+    /**
+     * 원천 데이터로부터 type 가져오기
+     * @param data
+     * @return 원천데이터와 매핑되는 TypeCode enum
+     */
+    public static TradeMethodType fromData(String data) {
+        for (TradeMethodType e : values()) {
+            if (e.description.equals(data)) {
+                return e;
+            }
+        }
+        return OTHER;
     }
 }

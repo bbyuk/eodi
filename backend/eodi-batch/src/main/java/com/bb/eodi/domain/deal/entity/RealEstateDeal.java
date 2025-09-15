@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class RealEstateDeal {
 
     @Builder
-    public RealEstateDeal(Long regionId, String legalDongName, LocalDate contractDate, int price, TradeMethodType tradeMethodType, LocalDate cancelDate, int buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, boolean isLandLease) {
+    public RealEstateDeal(Long regionId, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
         this.regionId = regionId;
         this.legalDongName = legalDongName;
         this.contractDate = contractDate;
@@ -62,7 +62,7 @@ public class RealEstateDeal {
 
     // 거래금액 (만원)
     @Column(name = "price")
-    private int price;
+    private Long price;
 
     // 거래 방법
     @Column(name = "trade_method_type")
@@ -74,7 +74,7 @@ public class RealEstateDeal {
 
     // 건축년도
     @Column(name = "build_year")
-    private int buildYear;
+    private Integer buildYear;
 
     // 전용면적
     @Column(name = "net_leasable_area")
@@ -118,7 +118,7 @@ public class RealEstateDeal {
     
     // 토지임대부 여부
     @Column(name = "is_land_lease")
-    private boolean isLandLease;
+    private Boolean isLandLease;
 
     // 생성일시
     @Column(name = "created_at")
