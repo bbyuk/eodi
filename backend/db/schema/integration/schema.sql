@@ -71,15 +71,15 @@ CREATE TABLE real_estate_sell
     land_area               DECIMAL(10, 4) COMMENT '대지면적',
     total_floor_area        DECIMAL(10, 4) COMMENT '연면적',
     buyer                   VARCHAR(50) COMMENT '매수자',
-    real_estate_seller                  VARCHAR(50) COMMENT '매도자',
+    seller                  VARCHAR(50) COMMENT '매도자',
     housing_type            ENUM('AP', 'MH', 'DT', 'MU', 'OF', 'PR', 'DR', 'O') NOT NULL DEFAULT 'O' COMMENT '주택유형',
     date_of_registration    DATE    COMMENT '등기일자',
     target_name             VARCHAR(100) NOT NULL COMMENT '대상명',
-    building_dong           VARCHAR(10) COMMENT '동',
+    building_dong           VARCHAR(50) COMMENT '건물 동',
     floor                   INTEGER COMMENT '층',
     is_land_lease           TINYINT(1) NOT NULL DEFAULT 0 COMMENT '활성 여부',
-    created_at              TIMESTAMP COMMENT '생성일시',
-    updated_at              TIMESTAMP COMMENT '수정일시'
+    created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시'
 ) COMMENT = '매매';
 -- -----------------------------------------------------------------------------------------
 -- constraint
