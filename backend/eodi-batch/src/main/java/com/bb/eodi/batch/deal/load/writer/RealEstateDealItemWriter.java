@@ -1,6 +1,7 @@
 package com.bb.eodi.batch.deal.load.writer;
 
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
+import com.bb.eodi.domain.deal.repository.RealEstateSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -17,10 +18,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RealEstateDealItemWriter implements ItemWriter<RealEstateSell> {
 
+    private final RealEstateSellRepository realEstateSellRepository;
+
     @Override
     public void write(Chunk<? extends RealEstateSell> chunk) throws Exception {
         log.info("RealEstateDealItemWriter.write called");
         log.info("write chunk size = {}", chunk.size());
 
+        realEstateSellRepository.saveAllChunk(chunk.getItems());
     }
 }
