@@ -28,7 +28,7 @@ public class ApartmentSellDataItemReader implements ItemStreamReader<ApartmentSe
     private BufferedReader br;
 
     public ApartmentSellDataItemReader(
-            @Value("#{jobExecutionContext['APT_SALE_TEMP_FILE']}") String tempFilePath,
+            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper) {
         this.tempFilePath = Paths.get(tempFilePath);
         this.objectMapper = objectMapper;
