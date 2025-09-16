@@ -5,5 +5,5 @@ package com.bb.eodi.batch.enums;
  */
 public enum BatchExecutionStatus {
     CONTINUE,
-    COMPLETED
+    COMPLETED;
 }
