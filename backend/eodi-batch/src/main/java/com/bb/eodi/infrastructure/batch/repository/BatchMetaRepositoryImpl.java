@@ -1,6 +1,6 @@
 package com.bb.eodi.infrastructure.batch.repository;
 
-import com.bb.eodi.common.batch.repository.BatchMetaRepository;
+import com.bb.eodi.batch.core.repository.BatchMetaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
