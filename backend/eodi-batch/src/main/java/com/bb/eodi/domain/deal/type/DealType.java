@@ -1,9 +1,11 @@
 package com.bb.eodi.domain.deal.type;
 
+import com.bb.eodi.common.type.TypeCode;
+
 /**
  * 거래 종류
  */
-public enum DealType implements Type {
+public enum DealType implements TypeCode {
     SALE("S", "매매"),   // 매매
     LEASE("L", "전/월세");   // 전, 월세
 

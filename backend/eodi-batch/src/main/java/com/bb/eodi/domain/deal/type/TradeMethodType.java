@@ -1,7 +1,9 @@
 package com.bb.eodi.domain.deal.type;
 
+import com.bb.eodi.common.type.TypeCode;
+
 // 거래 방법
-public enum TradeMethodType implements Type {
+public enum TradeMethodType implements TypeCode {
     // 직거래
     DIRECT("D", "직거래"),
 
@@ -19,7 +21,6 @@ public enum TradeMethodType implements Type {
         this.description = description;
     }
 
-
     @Override
     public String code() {
         return code;
@@ -28,5 +29,19 @@ public enum TradeMethodType implements Type {
     @Override
     public String description() {
         return description;
+    }
+
+    /**
+     * 원천 데이터로부터 type 가져오기
+     * @param data
+     * @return 원천데이터와 매핑되는 TypeCode enum
+     */
+    public static TradeMethodType fromData(String data) {
+        for (TradeMethodType e : values()) {
+            if (e.description.equals(data)) {
+                return e;
+            }
+        }
+        return OTHER;
     }
 }

@@ -2,10 +2,9 @@
 SET NAMES utf8mb4;
 SET time_zone = '+09:00';
 
-/* --------------------------------------------------------------------------------------- */
--- create
 DROP TABLE IF EXISTS legal_dong;
-
+-- -----------------------------------------------------------------------------------------
+-- create
 CREATE TABLE legal_dong
 (
     id                  BIGINT          AUTO_INCREMENT PRIMARY KEY COMMENT '법정동 ID',
@@ -20,8 +19,7 @@ CREATE TABLE legal_dong
     created_at          TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     updated_at          TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시'
 ) COMMENT = '법정동';
-
-/* --------------------------------------------------------------------------------------- */
+-- -----------------------------------------------------------------------------------------
 -- constraint
 ALTER TABLE legal_dong
     ADD CONSTRAINT fk_ld__parent_id
@@ -29,12 +27,10 @@ ALTER TABLE legal_dong
             REFERENCES legal_dong(id)
             ON UPDATE RESTRICT
             ON DELETE RESTRICT;
-
 ALTER TABLE legal_dong
     ADD CONSTRAINT uq_ld__code
         UNIQUE (code);
-
-/* --------------------------------------------------------------------------------------- */
+-- -----------------------------------------------------------------------------------------
 -- index
 CREATE INDEX idx_ld__parent_id         ON legal_dong(parent_id);
 CREATE INDEX idx_ld__code              ON legal_dong(code);
