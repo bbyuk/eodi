@@ -33,7 +33,7 @@ import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.*;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class ApartmentSaleApiFetchStepTasklet implements Tasklet {
+public class ApartmentSellApiFetchStepTasklet implements Tasklet {
 
     private final LegalDongRepository legalDongRepository;
     private final DealDataApiClient dealDataApiClient;

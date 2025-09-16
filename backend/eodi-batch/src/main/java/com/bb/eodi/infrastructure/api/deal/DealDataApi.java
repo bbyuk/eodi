@@ -46,7 +46,7 @@ public interface DealDataApi {
      * @return 아파트 분양권 전매 데이터 API 응답
      */
     @GetExchange("/RTMSDataSvcSilvTrade/getRTMSDataSvcSilvTrade")
-    DealDataResponse<ApartmentPreSaleRightSaleDataItem> getApartmentPreSaleRightSaleData(
+    DealDataResponse<ApartmentPreSaleRightSellDataItem> getApartmentPreSaleRightSaleData(
             @RequestParam("LAWD_CD") String legalDongCode,
             @RequestParam("DEAL_YMD") String dealMonth);
 
