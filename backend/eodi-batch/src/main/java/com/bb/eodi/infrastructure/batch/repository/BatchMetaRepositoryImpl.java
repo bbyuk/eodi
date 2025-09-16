@@ -45,6 +45,6 @@ public class BatchMetaRepositoryImpl implements BatchMetaRepository {
                 "targetYearMonth", targetYearMonth
         );
 
-        return Integer.valueOf(1).equals(jdbcTemplate.queryForObject(sql, params, Integer.class));
+        return 0 < jdbcTemplate.queryForObject(sql, params, Integer.class);
     }
 }

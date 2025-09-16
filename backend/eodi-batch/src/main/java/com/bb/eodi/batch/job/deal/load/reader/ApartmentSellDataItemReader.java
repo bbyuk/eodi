@@ -30,19 +30,8 @@ public class ApartmentSellDataItemReader extends AbstractRealEstateDealDataItemS
 
     @Override
     public ApartmentSellDataItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        String line;
-        while (true) {
-            line = br.readLine();
-            if (line == null) {
-                return null;
-            }
-
-            if (!line.isBlank()) {
-                break;
-            }
-        }
-
+        String line = nextLine();
         log.info("ApartmentSellDataItemReader -> read line={}", line);
-        return objectMapper.readValue(line, ApartmentSellDataItem.class);
+        return line == null ? null : objectMapper.readValue(line, ApartmentSellDataItem.class);
     }
 }

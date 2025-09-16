@@ -22,9 +22,24 @@ public class AbstractRealEstateDealDataItemStream implements ItemStream {
     protected final ObjectMapper objectMapper;
     protected BufferedReader br;
 
-    public AbstractRealEstateDealDataItemStream(Path tempFilePath, ObjectMapper objectMapper) {
+    protected AbstractRealEstateDealDataItemStream(Path tempFilePath, ObjectMapper objectMapper) {
         this.tempFilePath = tempFilePath;
         this.objectMapper = objectMapper;
+    }
+
+    protected String nextLine() throws IOException {
+        String line;
+        while (true) {
+            line = br.readLine();
+            if (line == null) {
+                return null;
+            }
+
+            if (!line.isBlank()) {
+                break;
+            }
+        }
+        return line;
     }
 
     @Override
