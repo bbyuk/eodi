@@ -41,6 +41,8 @@ public class RealEstateSell {
         this.buildingDong = buildingDong;
         this.floor = floor;
         this.isLandLease = isLandLease;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @Id
