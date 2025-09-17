@@ -21,7 +21,7 @@ CREATE TABLE real_estate_sell
     total_floor_area        DECIMAL(10, 4) COMMENT '연면적',
     buyer                   VARCHAR(50) COMMENT '매수자',
     seller                  VARCHAR(50) COMMENT '매도자',
-    housing_type            ENUM('AP', 'MH', 'DT', 'MU', 'OF', 'PR', 'DR', 'O') NOT NULL DEFAULT 'O' COMMENT '주택유형',
+    housing_type            ENUM('AP', 'MH', 'DT', 'MU', 'OF', 'PR', 'OR', 'O') NOT NULL DEFAULT 'O' COMMENT '주택유형',
     date_of_registration    DATE    COMMENT '등기일자',
     target_name             VARCHAR(100) NOT NULL COMMENT '대상명',
     building_dong           VARCHAR(50) COMMENT '건물 동',
