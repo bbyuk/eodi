@@ -63,7 +63,7 @@ public class ApartmentPresaleRightSellDataItemProcessor
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType(HousingType.OCCUPY_RIGHT)
+                .housingType("입".equals(item.ownershipGbn()) ? HousingType.OCCUPY_RIGHT : HousingType.PRESALE_RIGHT)
                 .targetName(item.aptNm())
                 .floor(Integer.parseInt(item.floor()))
                 .isLandLease(false)

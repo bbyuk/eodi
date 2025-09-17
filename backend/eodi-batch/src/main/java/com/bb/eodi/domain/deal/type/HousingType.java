@@ -22,7 +22,7 @@ public enum HousingType implements TypeCode {
     OFFICETEL("OF", "오피스텔"),
 
     // 분양권
-    PRE_SALE_RIGHT("PR", "분양권"),
+    PRESALE_RIGHT("PR", "분양권"),
     
     // 입주권
     OCCUPY_RIGHT("OR", "입주권"),
