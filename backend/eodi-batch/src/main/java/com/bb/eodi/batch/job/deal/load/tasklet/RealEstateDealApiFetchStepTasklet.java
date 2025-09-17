@@ -90,7 +90,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         if(targetClass.equals(ApartmentLeaseDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getApartmentLeaseData(query);
         }
-        else if (targetClass.equals(ApartmentPreSaleRightSellDataItem.class)) {
+        else if (targetClass.equals(ApartmentPresaleRightSellDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getApartmentPresaleRightSellData(query);
         }
         else if (targetClass.equals(ApartmentSellDataItem.class)) {

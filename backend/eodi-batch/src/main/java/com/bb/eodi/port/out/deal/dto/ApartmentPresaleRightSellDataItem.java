@@ -3,7 +3,7 @@ package com.bb.eodi.port.out.deal.dto;
 /**
  * 아파트 분양권 전매 데이터
  */
-public record ApartmentPreSaleRightSellDataItem(
+public record ApartmentPresaleRightSellDataItem(
         // 지역코드
         String sggCd,
         // 시군구 명

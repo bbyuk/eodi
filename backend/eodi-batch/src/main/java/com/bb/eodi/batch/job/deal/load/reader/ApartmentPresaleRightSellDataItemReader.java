@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.job.deal.load.reader;
 
-import com.bb.eodi.port.out.deal.dto.ApartmentPreSaleRightSellDataItem;
+import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 @StepScope
 @Component
 public class ApartmentPresaleRightSellDataItemReader extends AbstractRealEstateDealDataItemStream
-        implements ItemReader<ApartmentPreSaleRightSellDataItem> {
+        implements ItemReader<ApartmentPresaleRightSellDataItem> {
 
     public ApartmentPresaleRightSellDataItemReader(
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
@@ -30,10 +30,10 @@ public class ApartmentPresaleRightSellDataItemReader extends AbstractRealEstateD
     }
 
     @Override
-    public ApartmentPreSaleRightSellDataItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public ApartmentPresaleRightSellDataItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         String line = nextLine();
         log.info("ApartmentPresaleRightSellDataItemReader -> read line={}", line);
-        return line == null ? null : objectMapper.readValue(line, ApartmentPreSaleRightSellDataItem.class);
+        return line == null ? null : objectMapper.readValue(line, ApartmentPresaleRightSellDataItem.class);
     }
 
 

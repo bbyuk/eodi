@@ -25,7 +25,7 @@ public class DealDataApiClient implements DealDataPort {
     }
 
     @Override
-    public DealDataResponse<ApartmentPreSaleRightSellDataItem> getApartmentPresaleRightSellData(DealDataQuery query) {
+    public DealDataResponse<ApartmentPresaleRightSellDataItem> getApartmentPresaleRightSellData(DealDataQuery query) {
         return dealDataApi.getApartmentPreSaleRightSaleData(query.regionCode(), query.dealMonth());
     }
 

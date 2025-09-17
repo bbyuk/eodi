@@ -7,7 +7,7 @@ import com.bb.eodi.batch.job.deal.load.tasklet.RealEstateDealApiFetchStepTasklet
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import com.bb.eodi.infrastructure.api.deal.DealDataApiClient;
-import com.bb.eodi.port.out.deal.dto.ApartmentPreSaleRightSellDataItem;
+import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
 import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -105,28 +105,6 @@ public class MonthlyDealDataLoadJobConfig {
                 .end();
     }
 
-    /**
-     * 아파트 분양권 매매 데이터 적재 flow
-     *
-     * @param apartmentPresaleRightSellApiFetchStep 아파트 분양권 매매 데이터 API 요청 step
-     * @return 아파트 분양권 매매 데이터 적재 flow
-     */
-    @Bean
-    public Flow apartmentPresaleRightSellDataLoadFlow(
-            Step apartmentPresaleRightSellApiFetchStep
-    ) {
-        String flowName = "apartmentPresaleRightSellDataLoadFlow";
-        FlowSkipDecider flowSkipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
-        return new FlowBuilder<Flow>(flowName)
-                .start(flowSkipDecider)
-                    .on(CONTINUE.name())
-                        .to(apartmentPresaleRightSellApiFetchStep)
-                .from(flowSkipDecider)
-                    .on(COMPLETED.name())
-                        .end()
-                .end();
-    }
-
 
     /**
      * 월별 부동산 거래 데이터 적재 batch job 전처리 Step
@@ -181,21 +159,45 @@ public class MonthlyDealDataLoadJobConfig {
      *
      * @param apartmentSellDataItemReader    아파트 매매 데이터 적재 chunk ItemReader
      * @param apartmentSellDataItemProcessor 아파트 매매 대이터 적재 chunk ItemProcessor
-     * @param realEstateDealItemWriter       부동산 매매 데이터 적재 chunk ItemWriter
+     * @param realEstateSellItemWriter       부동산 매매 데이터 적재 chunk ItemWriter
      * @return 아파트 매매 데이터 적재 step
      */
     @Bean
     public Step apartmentSellDataLoadStep(
             ItemReader<ApartmentSellDataItem> apartmentSellDataItemReader,
             ItemProcessor<ApartmentSellDataItem, RealEstateSell> apartmentSellDataItemProcessor,
-            ItemWriter<RealEstateSell> realEstateDealItemWriter
+            ItemWriter<RealEstateSell> realEstateSellItemWriter
     ) {
         return new StepBuilder("apartmentSellDataLoadStep", jobRepository)
                 .<ApartmentSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(apartmentSellDataItemReader)
                 .processor(apartmentSellDataItemProcessor)
-                .writer(realEstateDealItemWriter)
+                .writer(realEstateSellItemWriter)
                 .build();
+    }
+
+    /**
+     * 아파트 분양권 매매 데이터 적재 flow
+     *
+     * @param apartmentPresaleRightSellApiFetchStep 아파트 분양권 매매 데이터 API 요청 step
+     * @return 아파트 분양권 매매 데이터 적재 flow
+     */
+    @Bean
+    public Flow apartmentPresaleRightSellDataLoadFlow(
+            Step apartmentPresaleRightSellApiFetchStep,
+            Step apartmentPresaleRightSellDataLoadStep
+    ) {
+        String flowName = "apartmentPresaleRightSellDataLoadFlow";
+        FlowSkipDecider flowSkipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+        return new FlowBuilder<Flow>(flowName)
+                .start(flowSkipDecider)
+                    .on(CONTINUE.name())
+                        .to(apartmentPresaleRightSellApiFetchStep)
+                        .next(apartmentPresaleRightSellDataLoadStep)
+                .from(flowSkipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .end();
     }
 
     /**
@@ -227,10 +229,32 @@ public class MonthlyDealDataLoadJobConfig {
             ObjectMapper objectMapper
     ) {
         return new RealEstateDealApiFetchStepTasklet<>(
-                ApartmentPreSaleRightSellDataItem.class,
+                ApartmentPresaleRightSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper
         );
     }
+
+    /**
+     * 아파트 분양권 매매 데이터 적재 step
+     * @param apartmentPresaleRightSellDataItemItemReader 아파트 분양권 매매 데이터 ItemReader
+     * @param apartmentPresaleRightSellDataItemProcessor 아파트 분양권 매매 데이터 ItemProcessor
+     * @param realEstateSellItemWriter 부동산 매매 데이터 ItemWriter
+     * @return 아파트 분양권 매매 데이터 적재 step
+     */
+    @Bean
+    public Step apartmentPresaleRightSellDataLoadStep(
+            ItemReader<ApartmentPresaleRightSellDataItem> apartmentPresaleRightSellDataItemItemReader,
+            ItemProcessor<ApartmentPresaleRightSellDataItem, RealEstateSell> apartmentPresaleRightSellDataItemProcessor,
+            ItemWriter<RealEstateSell> realEstateSellItemWriter
+    ) {
+        return new StepBuilder("apartmentPresaleRightSellDataLoadStep", jobRepository)
+                .<ApartmentPresaleRightSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(apartmentPresaleRightSellDataItemItemReader)
+                .processor(apartmentPresaleRightSellDataItemProcessor)
+                .writer(realEstateSellItemWriter)
+                .build();
+    }
+
 }
