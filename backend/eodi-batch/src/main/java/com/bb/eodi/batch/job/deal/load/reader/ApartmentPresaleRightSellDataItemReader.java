@@ -1,32 +1,39 @@
 package com.bb.eodi.batch.job.deal.load.reader;
 
-import com.bb.eodi.port.out.deal.dto.ApartmentPreSaleRightSellDataItem;
-import lombok.RequiredArgsConstructor;
+import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.NonTransientResourceException;
+import org.springframework.batch.item.ParseException;
+import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.nio.file.Paths;
 
 /**
  * 아파트 분양권 매매 데이터 ItemReader
  */
+@Slf4j
 @StepScope
 @Component
-@RequiredArgsConstructor
-public class ApartmentPresaleRightSellDataItemReader implements ItemStreamReader<ApartmentPreSaleRightSellDataItem> {
+public class ApartmentPresaleRightSellDataItemReader extends AbstractRealEstateDealDataItemStream
+        implements ItemReader<ApartmentPresaleRightSellDataItem> {
 
-    @Override
-    public void open(ExecutionContext executionContext) throws ItemStreamException {
-        ItemStreamReader.super.open(executionContext);
+    public ApartmentPresaleRightSellDataItemReader(
+            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
+            ObjectMapper objectMapper
+    ) {
+        super(Paths.get(tempFilePath), objectMapper);
     }
 
     @Override
-    public ApartmentPreSaleRightSellDataItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        return null;
-    }
-
-    @Override
-    public void close() throws ItemStreamException {
-        ItemStreamReader.super.close();
+    public ApartmentPresaleRightSellDataItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+        String line = nextLine();
+        log.info("ApartmentPresaleRightSellDataItemReader -> read line={}", line);
+        return line == null ? null : objectMapper.readValue(line, ApartmentPresaleRightSellDataItem.class);
     }
 
 

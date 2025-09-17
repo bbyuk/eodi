@@ -26,7 +26,7 @@ public interface DealDataPort {
      * @param query 부동산 거래 데이터 API 요청 쿼리 파라미터
      * @return 아파트 분양권 전매 데이터 API 응답
      */
-    DealDataResponse<ApartmentPreSaleRightSellDataItem> getApartmentPreSaleRightSaleData(DealDataQuery query);
+    DealDataResponse<ApartmentPresaleRightSellDataItem> getApartmentPresaleRightSellData(DealDataQuery query);
 
     /**
      * 연립/다세대 주택 매매 데이터 API 요청
