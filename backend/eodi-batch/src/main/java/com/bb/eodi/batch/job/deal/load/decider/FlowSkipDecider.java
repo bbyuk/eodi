@@ -3,6 +3,7 @@ package com.bb.eodi.batch.job.deal.load.decider;
 import com.bb.eodi.batch.core.enums.BatchExecutionStatus;
 import com.bb.eodi.batch.core.repository.BatchMetaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
@@ -12,6 +13,7 @@ import org.springframework.batch.core.job.flow.JobExecutionDecider;
 /**
  * 월별 데이터 적재 flow 스킵 여부를 결정하는 decider
  */
+@Slf4j
 @RequiredArgsConstructor
 public class FlowSkipDecider implements JobExecutionDecider {
 
@@ -27,6 +29,7 @@ public class FlowSkipDecider implements JobExecutionDecider {
         // 조건 체크
         String targetYearMonth = params.getString("year-month");
         if (batchMetaRepository.isCompletedMonthlyStep(jobName, stepName, targetYearMonth)) {
+            log.info("flow skip ::: step:{}, targetYearMonth:{}", stepName, jobName);
             return new FlowExecutionStatus(BatchExecutionStatus.COMPLETED.name());
         }
 
