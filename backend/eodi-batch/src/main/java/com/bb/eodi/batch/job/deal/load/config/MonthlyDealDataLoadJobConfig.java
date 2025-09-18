@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load;
+package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.core.repository.BatchMetaRepository;
@@ -140,27 +140,6 @@ public class MonthlyDealDataLoadJobConfig {
                 .build();
     }
 
-    /**
-     * 아파트 매매 데이터 API 요청 step tasklet
-     *
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient   거래 데이터 API client
-     * @param objectMapper        object mapper
-     * @return 아파트 매매 데이터 API 요청 step tasklet
-     */
-    @Bean
-    @StepScope
-    public Tasklet apartmentSellApiFetchStepTasklet(LegalDongRepository legalDongRepository,
-                                                    DealDataApiClient dealDataApiClient,
-                                                    ObjectMapper objectMapper) {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                ApartmentSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper
-        );
-    }
-
 
     /**
      * 아파트 매매 데이터 적재 step
@@ -222,29 +201,6 @@ public class MonthlyDealDataLoadJobConfig {
     }
 
     /**
-     * 아파트 분양권 매매 데이터 API 요청 step tasklet
-     *
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient   부동산 거래 데이터 API Client
-     * @param objectMapper        objectMapper
-     * @return 아파트 분양권 매매 데이터 API 요청 step tasklet
-     */
-    @Bean
-    @StepScope
-    public Tasklet apartmentPresaleRightSellApiFetchStepTasklet(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ) {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                ApartmentPresaleRightSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper
-        );
-    }
-
-    /**
      * 아파트 분양권 매매 데이터 적재 step
      * @param apartmentPresaleRightSellDataItemItemReader 아파트 분양권 매매 데이터 ItemReader
      * @param apartmentPresaleRightSellDataItemProcessor 아파트 분양권 매매 데이터 ItemProcessor
@@ -290,26 +246,16 @@ public class MonthlyDealDataLoadJobConfig {
                 .build();
     }
 
+
     /**
      * 단독/다가구주택 매매 데이터 API 요청 step
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient 부동산 실거래가 데이터 API client
-     * @param objectMapper objectMapper
+     * @param multiUnitDetachedSellApiFetchStepTasklet 단독/다가구주택 매매 데이터 API 요청 Step Tasklet
      * @return 단독/다가구주택 매매 데이터 API 요청 step
      */
     @Bean
-    public Step multiUnitDetachedSellApiFetchStep(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ) {
+    public Step multiUnitDetachedSellApiFetchStep(Tasklet multiUnitDetachedSellApiFetchStepTasklet) {
         return new StepBuilder("multiUnitDetachedSellApiFetchStep", jobRepository)
-                .tasklet(new RealEstateDealApiFetchStepTasklet<>(
-                        MultiUnitDetachedSellDataItem.class,
-                        legalDongRepository,
-                        dealDataApiClient,
-                        objectMapper
-                ), transactionManager)
+                .tasklet(multiUnitDetachedSellApiFetchStepTasklet, transactionManager)
                 .build();
     }
 
@@ -334,20 +280,4 @@ public class MonthlyDealDataLoadJobConfig {
                 .writer(realEstateSellItemWriter)
                 .build();
     }
-
-    /**
-     * 단독/다가구주택 매매 데이터 ItemStreamReader
-     * @param tempFilePath jobExecutionContext 변수 - 임시 파일 경로
-     * @param objectMapper objectMapper
-     * @return 단독/다가구주택 매매 데이터 ItemStreamReader
-     */
-    @Bean
-    @StepScope
-    public ItemStreamReader<MultiUnitDetachedSellDataItem> multiUnitDetachedSellDataItemReader(
-            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
-            ObjectMapper objectMapper
-    ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, MultiUnitDetachedSellDataItem.class);
-    }
-
 }
