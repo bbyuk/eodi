@@ -31,7 +31,7 @@ public class BatchMetaRepositoryImpl implements BatchMetaRepository {
                 		ON bje.JOB_EXECUTION_ID = bse.JOB_EXECUTION_ID
                  JOIN	BATCH_JOB_EXECUTION_PARAMS bjep
                 		ON bje.JOB_EXECUTION_ID  = bjep.JOB_EXECUTION_ID
-                WHERE 	bje.STATUS = 'COMPLETED'
+                WHERE 	1=1
                   AND	bse.EXIT_CODE = 'COMPLETED'
                   AND	bjep.PARAMETER_NAME = 'year-month'
                   AND	bji.JOB_NAME = :jobName
