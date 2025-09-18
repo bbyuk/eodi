@@ -14,26 +14,10 @@ import org.springframework.context.annotation.Configuration;
 import java.nio.file.Paths;
 
 /**
- * 부동산 실거래가 데이터 ItemStreamReader 설정
+ * 부동산 실거래가 데이터 적재 배치 Chunk 구성요소 설정
  */
 @Configuration
-public class RealEstateDealDataItemStreamReaderConfig {
-
-
-    /**
-     * 단독/다가구주택 매매 데이터 ItemStreamReader
-     * @param tempFilePath jobExecutionContext 변수 - 임시 파일 경로
-     * @param objectMapper objectMapper
-     * @return 단독/다가구주택 매매 데이터 ItemStreamReader
-     */
-    @Bean
-    @StepScope
-    public ItemStreamReader<MultiUnitDetachedSellDataItem> multiUnitDetachedSellDataItemReader(
-            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
-            ObjectMapper objectMapper
-    ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, MultiUnitDetachedSellDataItem.class);
-    }
+public class MonthlyDealDataLoadChunkConfig {
 
     /**
      * 아파트 매매 데이터 적재 chunk ItemReader
@@ -63,5 +47,20 @@ public class RealEstateDealDataItemStreamReaderConfig {
             ObjectMapper objectMapper
     ) {
         return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, ApartmentPresaleRightSellDataItem.class);
+    }
+
+    /**
+     * 단독/다가구주택 매매 데이터 ItemStreamReader
+     * @param tempFilePath jobExecutionContext 변수 - 임시 파일 경로
+     * @param objectMapper objectMapper
+     * @return 단독/다가구주택 매매 데이터 ItemStreamReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<MultiUnitDetachedSellDataItem> multiUnitDetachedSellDataItemReader(
+            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
+            ObjectMapper objectMapper
+    ) {
+        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, MultiUnitDetachedSellDataItem.class);
     }
 }
