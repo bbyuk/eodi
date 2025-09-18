@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load;
+package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.core.repository.BatchMetaRepository;
