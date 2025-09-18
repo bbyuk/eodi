@@ -334,20 +334,4 @@ public class MonthlyDealDataLoadJobConfig {
                 .writer(realEstateSellItemWriter)
                 .build();
     }
-
-    /**
-     * 단독/다가구주택 매매 데이터 ItemStreamReader
-     * @param tempFilePath jobExecutionContext 변수 - 임시 파일 경로
-     * @param objectMapper objectMapper
-     * @return 단독/다가구주택 매매 데이터 ItemStreamReader
-     */
-    @Bean
-    @StepScope
-    public ItemStreamReader<MultiUnitDetachedSellDataItem> multiUnitDetachedSellDataItemReader(
-            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
-            ObjectMapper objectMapper
-    ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, MultiUnitDetachedSellDataItem.class);
-    }
-
 }
