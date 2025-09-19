@@ -5,7 +5,7 @@ import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.deal.type.TradeMethodType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
+import com.bb.eodi.port.out.deal.dto.OfficetelSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -21,17 +21,16 @@ import java.time.format.DateTimeFormatter;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSellDataItem, RealEstateSell> {
+public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSellDataItem, RealEstateSell> {
 
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
     private static final String cancelDateFormat = "yy.MM.dd";
-    private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
-    public RealEstateSell process(ApartmentSellDataItem item) throws Exception {
+    public RealEstateSell process(OfficetelSellDataItem item) throws Exception {
         log.info("ApartmentSellDataItemProcessor.process called");
         log.debug("item : {}", item);
 
@@ -64,18 +63,9 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
                 .housingType(HousingType.APT)
-                .dateOfRegistration(
-                        StringUtils.hasText(item.rgstDate())
-                                ? LocalDate.parse(
-                                item.rgstDate(),
-                                DateTimeFormatter.ofPattern(dateOfRegistrationFormat)
-                        )
-                                : null
-                )
-                .targetName(item.aptNm())
-                .buildingDong(item.aptDong())
+                .targetName(item.offiNm())
                 .floor(Integer.parseInt(item.floor()))
-                .isLandLease(item.landLeaseholdGbn().equals("Y"))
+                .isLandLease(false)
                 .build();
     }
 }

@@ -63,7 +63,7 @@ public class MultiHouseholdHouseSellDataItemProcessor
                         )
                                 : null
                 )
-                .buildYear(Integer.parseInt(item.buildYear()))
+                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .landArea(new BigDecimal(item.landAr()))
                 .buyer(item.buyerGbn())

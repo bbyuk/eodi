@@ -1,10 +1,7 @@
 package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.job.deal.load.reader.RealEstateDealDataItemStreamReader;
-import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
-import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
-import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
-import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
+import com.bb.eodi.port.out.deal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemStreamReader;
@@ -78,5 +75,14 @@ public class MonthlyDealDataLoadChunkConfig {
             ObjectMapper objectMapper
     ) {
         return new RealEstateDealDataItemStreamReader<>(MultiHouseholdHouseSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+    }
+
+    @Bean
+    @StepScope
+    public ItemStreamReader<OfficetelSellDataItem> officetelSellDataItemReader(
+            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
+            ObjectMapper objectMapper
+    ) {
+        return new RealEstateDealDataItemStreamReader<>(OfficetelSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 }

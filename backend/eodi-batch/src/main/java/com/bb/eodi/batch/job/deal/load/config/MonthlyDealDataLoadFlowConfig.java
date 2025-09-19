@@ -134,4 +134,27 @@ public class MonthlyDealDataLoadFlowConfig {
                 .build();
     }
 
+    /**
+     * 오피스텔 매매 실거래가 데이터 적재 배치 job flow
+     * @param officetelSellApiFetchStep 오피스텔 매매 실거래가 데이터 API 요청 step
+     * @param officetelSellDataLoadStep 오피스텔 매매 실거래가 데이터 적재 step
+     * @return 오피스텔 매매 실거래가 데이터 적재 배치 job flow
+     */
+    @Bean
+    public Flow officetelSellDataLoadFlow(
+            Step officetelSellApiFetchStep,
+            Step officetelSellDataLoadStep
+    ) {
+        String flowName = "officetelSellDataLoadFlow";
+        FlowSkipDecider skipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+        return new FlowBuilder<Flow>(flowName)
+                .start(skipDecider)
+                    .on(CONTINUE.name())
+                        .to(officetelSellApiFetchStep)
+                        .next(officetelSellDataLoadStep)
+                .from(skipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .build();
+    }
 }
