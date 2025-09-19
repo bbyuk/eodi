@@ -3,6 +3,7 @@ package com.bb.eodi.batch.job.deal.load.config;
 import com.bb.eodi.batch.job.deal.load.reader.RealEstateDealDataItemStreamReader;
 import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
 import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
+import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
 import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -31,7 +32,7 @@ public class MonthlyDealDataLoadChunkConfig {
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper
     ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, ApartmentSellDataItem.class);
+        return new RealEstateDealDataItemStreamReader<>(ApartmentSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 
     /**
@@ -46,7 +47,7 @@ public class MonthlyDealDataLoadChunkConfig {
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper
     ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, ApartmentPresaleRightSellDataItem.class);
+        return new RealEstateDealDataItemStreamReader<>(ApartmentPresaleRightSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 
     /**
@@ -61,6 +62,21 @@ public class MonthlyDealDataLoadChunkConfig {
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper
     ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, MultiUnitDetachedSellDataItem.class);
+        return new RealEstateDealDataItemStreamReader<>(MultiUnitDetachedSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+    }
+
+    /**
+     * 연립/다세대주택 매매 데이터 적재 배치 chunk ItemReader
+     * @param tempFilePath jobExecutionContext 변수 - 임시 파일 경로
+     * @param objectMapper objectMapper
+     * @return 연립/다세대주택 매매 데이터 적재 배치 chunk ItemReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<MultiHouseholdHouseSellDataItem> multiHouseholdSellDataItemReader(
+            @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
+            ObjectMapper objectMapper
+    ) {
+        return new RealEstateDealDataItemStreamReader<>(MultiHouseholdHouseSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 }

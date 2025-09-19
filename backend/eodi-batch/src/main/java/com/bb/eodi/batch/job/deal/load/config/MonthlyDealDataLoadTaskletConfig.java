@@ -5,6 +5,7 @@ import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import com.bb.eodi.infrastructure.api.deal.DealDataApiClient;
 import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
 import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
+import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
 import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -77,6 +78,29 @@ public class MonthlyDealDataLoadTaskletConfig {
     ) {
         return new RealEstateDealApiFetchStepTasklet<>(
                 MultiUnitDetachedSellDataItem.class,
+                legalDongRepository,
+                dealDataApiClient,
+                objectMapper
+        );
+    }
+
+
+    /**
+     * 연립/다세대주택 매매 데이터 API 요청 step tasklet
+     * @param legalDongRepository 법정동 repository
+     * @param dealDataApiClient   부동산 거래 데이터 API Client
+     * @param objectMapper        objectMapper
+     * @return 연립/다세대주택 매매 데이터 API 요청 step tasklet
+     */
+    @Bean
+    @StepScope
+    public Tasklet multiHouseholdHouseSellApiFetchStepTasklet(
+            LegalDongRepository legalDongRepository,
+            DealDataApiClient dealDataApiClient,
+            ObjectMapper objectMapper
+    ) {
+        return new RealEstateDealApiFetchStepTasklet<>(
+                MultiHouseholdHouseSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper

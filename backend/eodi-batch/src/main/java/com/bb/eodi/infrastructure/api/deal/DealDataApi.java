@@ -58,7 +58,7 @@ public interface DealDataApi {
      * @return 연립/다세대 주택 매매 데이터 API 응답
      */
     @GetExchange("/RTMSDataSvcRHTrade/getRTMSDataSvcRHTrade")
-    DealDataResponse<MultiHouseholdSellDataItem> getMultiHouseholdSellData(
+    DealDataResponse<MultiHouseholdHouseSellDataItem> getMultiHouseholdSellData(
             @RequestParam("LAWD_CD") String legalDongCode,
             @RequestParam("DEAL_YMD") String dealMonth);
 
@@ -70,7 +70,7 @@ public interface DealDataApi {
      * @return 연립/다세대 주택 전/월세 데이터 API 응답
      */
     @GetExchange("/RTMSDataSvcRHRent/getRTMSDataSvcRHRent")
-    DealDataResponse<MultiHouseholdLeaseDataItem> getMultiHouseholdLeaseData(
+    DealDataResponse<MultiHouseholdHouseLeaseDataItem> getMultiHouseholdLeaseData(
             @RequestParam("LAWD_CD") String legalDongCode,
             @RequestParam("DEAL_YMD") String dealMonth);
 

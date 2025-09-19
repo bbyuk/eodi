@@ -33,14 +33,14 @@ public interface DealDataPort {
      * @param query 부동산 거래 데이터 API 요청 쿼리 파라미터
      * @return 연립/다세대 주택 매매 데이터 API 응답
      */
-    DealDataResponse<MultiHouseholdSellDataItem> getMultiHouseholdSellData(DealDataQuery query);
+    DealDataResponse<MultiHouseholdHouseSellDataItem> getMultiHouseholdSellData(DealDataQuery query);
 
     /**
      * 연립/다세대 주택 전/월세 데이터 API 요청
      * @param query 부동산 거래 데이터 API 요청 쿼리 파라미터
      * @return 연립/다세대 주택 전/월세 데이터 API 응답
      */
-    DealDataResponse<MultiHouseholdLeaseDataItem> getMultiHouseholdLeaseData(DealDataQuery query);
+    DealDataResponse<MultiHouseholdHouseLeaseDataItem> getMultiHouseholdLeaseData(DealDataQuery query);
 
     /**
      * 단독/다가구 주택 매매 데이터 API 요청

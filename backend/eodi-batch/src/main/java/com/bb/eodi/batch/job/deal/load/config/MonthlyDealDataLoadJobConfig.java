@@ -30,7 +30,8 @@ public class MonthlyDealDataLoadJobConfig {
             Flow monthlyDealDataLoadPreprocessFlow,
             Flow apartmentSellDataLoadFlow,
             Flow apartmentPresaleRightSellDataLoadFlow,
-            Flow multiUnitDetachedSellDataLoadFlow
+            Flow multiUnitDetachedSellDataLoadFlow,
+            Flow multiHouseholdHouseSellDataLoadFlow
     ) {
 
         return new JobBuilder("monthlyDealDataLoad", jobRepository)
@@ -38,6 +39,7 @@ public class MonthlyDealDataLoadJobConfig {
                 .next(apartmentSellDataLoadFlow)                // 아파트 매매
                 .next(apartmentPresaleRightSellDataLoadFlow)    // 아파트 분양권 매매
                 .next(multiUnitDetachedSellDataLoadFlow)        // 단독/다가구주택 매매
+                .next(multiHouseholdHouseSellDataLoadFlow)      // 연립/다세대주택 매매
                 .end()
                 .build();
     }

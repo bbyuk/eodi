@@ -108,4 +108,30 @@ public class MonthlyDealDataLoadFlowConfig {
                 .build();
     }
 
+
+    /**
+     * 연립/다세대주택 매매 데이터 적재 flow
+     * @param multiHouseholdHouseSellApiFetchStep 연립 다세대주택 매매 데이터 API 요청 step
+     * @param multiHouseholdHouseSellDataLoadStep 연립 다세대주택 매매 데이터 적재 step
+     * @return 연립/다세대주택 매매 데이터 적재 flow
+     */
+    @Bean
+    public Flow multiHouseholdHouseSellDataLoadFlow(
+            Step multiHouseholdHouseSellApiFetchStep,
+            Step multiHouseholdHouseSellDataLoadStep
+    ) {
+        String flowName = "multiHouseholdHouseSellDataLoadFlow";
+        FlowSkipDecider skipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+
+        return new FlowBuilder<Flow>(flowName)
+                .start(skipDecider)
+                    .on(CONTINUE.name())
+                        .to(multiHouseholdHouseSellApiFetchStep)
+                        .next(multiHouseholdHouseSellDataLoadStep)
+                .from(skipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .build();
+    }
+
 }

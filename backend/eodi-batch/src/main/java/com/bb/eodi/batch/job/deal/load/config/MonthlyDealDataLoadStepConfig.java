@@ -4,6 +4,7 @@ import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
 import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
+import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
 import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
@@ -141,6 +142,39 @@ public class MonthlyDealDataLoadStepConfig {
                 .<MultiUnitDetachedSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(multiUnitDetachedSellDataItemReader)
                 .processor(multiUnitDetachedSellDataItemProcessor)
+                .writer(realEstateSellItemWriter)
+                .build();
+    }
+
+    /**
+     * 연립/다세대주택 매매 데이터 API 요청 step
+     * @param multiHouseholdHouseSellApiFetchStepTasklet 연립/다세대주택 매매 데이터 API 요청 step tasklet
+     * @return 연립/다세대주택 매매 데이터 API 요청 step
+     */
+    @Bean
+    public Step multiHouseholdHouseSellApiFetchStep(Tasklet multiHouseholdHouseSellApiFetchStepTasklet) {
+        return new StepBuilder("multiHouseholdHouseSellApiFetchStep", jobRepository)
+                .tasklet(multiHouseholdHouseSellApiFetchStepTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * 연립/다세대주택 매매 데이터 적재 step
+     * @param multiHouseholdSellDataItemReader 연립/다세대주택 매매 데이터 적재 chunk step ItemReader
+     * @param multiHouseholdSellDataItemProcessor 연립/다세대주택 매매 데이터 적재 chunk step ItemProcessor
+     * @param realEstateSellItemWriter 부동산 매매 데이터 chunk ItemWriter
+     * @return 연립/다세대주택 매매 데이터 적재 step
+     */
+    @Bean
+    public Step multiHouseholdHouseSellDataLoadStep(
+            ItemReader<MultiHouseholdHouseSellDataItem> multiHouseholdSellDataItemReader,
+            ItemProcessor<MultiHouseholdHouseSellDataItem, RealEstateSell> multiHouseholdSellDataItemProcessor,
+            ItemWriter<RealEstateSell> realEstateSellItemWriter
+    ) {
+        return new StepBuilder("multiHouseholdHouseSellDataLoadStep", jobRepository)
+                .<MultiHouseholdHouseSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(multiHouseholdSellDataItemReader)
+                .processor(multiHouseholdSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
                 .build();
     }
