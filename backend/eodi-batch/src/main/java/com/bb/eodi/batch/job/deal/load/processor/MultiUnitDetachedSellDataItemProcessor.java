@@ -62,7 +62,7 @@ public class MultiUnitDetachedSellDataItemProcessor
                         )
                                 : null
                 )
-                .buildYear(Integer.parseInt(item.buildYear()))
+                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
                 .landArea(new BigDecimal(item.plottageAr()))
                 .totalFloorArea(new BigDecimal(item.totalFloorAr()))
                 .buyer(item.buyerGbn())

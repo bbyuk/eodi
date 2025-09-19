@@ -2,10 +2,7 @@ package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
-import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
-import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
-import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
-import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
+import com.bb.eodi.port.out.deal.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
@@ -175,6 +172,39 @@ public class MonthlyDealDataLoadStepConfig {
                 .<MultiHouseholdHouseSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(multiHouseholdSellDataItemReader)
                 .processor(multiHouseholdSellDataItemProcessor)
+                .writer(realEstateSellItemWriter)
+                .build();
+    }
+
+    /**
+     * 오피스텔 매매 실거레가 데이터 API 요청 step
+     * @param officetelSellApiFetchStepTasklet 오피스텔 매매 실거레가 데이터 API 요청 step tasklet
+     * @return 오피스텔 매매 실거레가 데이터 API 요청 step
+     */
+    @Bean
+    public Step officetelSellApiFetchStep(Tasklet officetelSellApiFetchStepTasklet) {
+        return new StepBuilder("officetelSellApiFetchStep", jobRepository)
+                .tasklet(officetelSellApiFetchStepTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * 오피스텔 매매 실거래가 데이터 적재 step
+     * @param officetelSellDataItemReader 오피스텔 매매 실거래가 데이터 적재 step chunk ItemReader
+     * @param officetelSellDataItemProcessor 오피스텔 매매 실거래가 데이터 적재 step chunk ItemProcessor
+     * @param realEstateSellItemWriter 부동산 매매 실거래가 데이터 chunk ItemWriter
+     * @return
+     */
+    @Bean
+    public Step officetelSellDataLoadStep(
+            ItemReader<OfficetelSellDataItem> officetelSellDataItemReader,
+            ItemProcessor<OfficetelSellDataItem, RealEstateSell> officetelSellDataItemProcessor,
+            ItemWriter<RealEstateSell> realEstateSellItemWriter
+    ) {
+        return new StepBuilder("officetelSellDataLoadStep", jobRepository)
+                .<OfficetelSellDataItem, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(officetelSellDataItemReader)
+                .processor(officetelSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
                 .build();
     }

@@ -3,10 +3,7 @@ package com.bb.eodi.batch.job.deal.load.config;
 import com.bb.eodi.batch.job.deal.load.tasklet.RealEstateDealApiFetchStepTasklet;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import com.bb.eodi.infrastructure.api.deal.DealDataApiClient;
-import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
-import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
-import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
-import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
+import com.bb.eodi.port.out.deal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -101,6 +98,21 @@ public class MonthlyDealDataLoadTaskletConfig {
     ) {
         return new RealEstateDealApiFetchStepTasklet<>(
                 MultiHouseholdHouseSellDataItem.class,
+                legalDongRepository,
+                dealDataApiClient,
+                objectMapper
+        );
+    }
+
+    @Bean
+    @StepScope
+    public Tasklet officetelSellApiFetchStepTasklet(
+            LegalDongRepository legalDongRepository,
+            DealDataApiClient dealDataApiClient,
+            ObjectMapper objectMapper
+    ){
+        return new RealEstateDealApiFetchStepTasklet<>(
+                OfficetelSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper
