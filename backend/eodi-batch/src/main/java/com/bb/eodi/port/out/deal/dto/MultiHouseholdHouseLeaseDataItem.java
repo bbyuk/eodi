@@ -3,7 +3,7 @@ package com.bb.eodi.port.out.deal.dto;
 /**
  * 연립/다세대 전월세 실거래가 데이터
  */
-public record MultiHouseholdLeaseDataItem(
+public record MultiHouseholdHouseLeaseDataItem(
         // 지역코드
         String sggCd,
         // 법정동 명

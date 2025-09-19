@@ -30,12 +30,12 @@ public class DealDataApiClient implements DealDataPort {
     }
 
     @Override
-    public DealDataResponse<MultiHouseholdSellDataItem> getMultiHouseholdSellData(DealDataQuery query) {
+    public DealDataResponse<MultiHouseholdHouseSellDataItem> getMultiHouseholdSellData(DealDataQuery query) {
         return dealDataApi.getMultiHouseholdSellData(query.regionCode(), query.dealMonth());
     }
 
     @Override
-    public DealDataResponse<MultiHouseholdLeaseDataItem> getMultiHouseholdLeaseData(DealDataQuery query) {
+    public DealDataResponse<MultiHouseholdHouseLeaseDataItem> getMultiHouseholdLeaseData(DealDataQuery query) {
         return dealDataApi.getMultiHouseholdLeaseData(query.regionCode(), query.dealMonth());
     }
 

@@ -3,7 +3,7 @@ package com.bb.eodi.port.out.deal.dto;
 /**
  * 연립/다세대주택 매매 데이터
  */
-public record MultiHouseholdSellDataItem(
+public record MultiHouseholdHouseSellDataItem(
         // 지역코드
         String sggCd,
         // 법정동 명
@@ -33,7 +33,7 @@ public record MultiHouseholdSellDataItem(
         // 해제사유발생일
         String cdealDay,
         // 거래유형(중개 및 직거래 여부)
-        String delingGbn,
+        String dealingGbn,
         // 중개사소재지(시군구 단위)
         String estateAgentSggNm,
         // 등기일자
