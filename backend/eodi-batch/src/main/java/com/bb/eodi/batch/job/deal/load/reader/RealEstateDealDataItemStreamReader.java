@@ -12,19 +12,19 @@ import java.nio.file.Path;
 
 @Slf4j
 public class RealEstateDealDataItemStreamReader<T> implements ItemStreamReader<T> {
+    private Class<T> targetClass;
     private final Path tempFilePath;
     private final ObjectMapper objectMapper;
     private BufferedReader br;
-    private Class<T> targetClass;
 
     public RealEstateDealDataItemStreamReader(
+            Class<T> targetClass,
         Path tempFilePath,
-        ObjectMapper objectMapper,
-        Class<T> targetClass
+        ObjectMapper objectMapper
     ) {
+        this.targetClass = targetClass;
         this.tempFilePath = tempFilePath;
         this.objectMapper = objectMapper;
-        this.targetClass = targetClass;
     }
 
     @Override

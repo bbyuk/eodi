@@ -31,7 +31,7 @@ public class MonthlyDealDataLoadChunkConfig {
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper
     ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, ApartmentSellDataItem.class);
+        return new RealEstateDealDataItemStreamReader<>(ApartmentSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 
     /**
@@ -46,7 +46,7 @@ public class MonthlyDealDataLoadChunkConfig {
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper
     ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, ApartmentPresaleRightSellDataItem.class);
+        return new RealEstateDealDataItemStreamReader<>(ApartmentPresaleRightSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 
     /**
@@ -61,6 +61,6 @@ public class MonthlyDealDataLoadChunkConfig {
             @Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath,
             ObjectMapper objectMapper
     ) {
-        return new RealEstateDealDataItemStreamReader<>(Paths.get(tempFilePath), objectMapper, MultiUnitDetachedSellDataItem.class);
+        return new RealEstateDealDataItemStreamReader<>(MultiUnitDetachedSellDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 }
