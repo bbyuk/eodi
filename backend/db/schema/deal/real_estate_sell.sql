@@ -12,7 +12,7 @@ CREATE TABLE real_estate_sell
     region_id               BIGINT  NOT NULL COMMENT '대상지역 법정동 ID',
     legal_dong_name         VARCHAR(50) COMMENT '법정동 명',
     contract_date           DATE    COMMENT '계약일',
-    price                   INT COMMENT '거래금액',
+    price                   BIGINT COMMENT '거래금액',
     trade_method_type       ENUM('D', 'A', 'O') NOT NULL DEFAULT 'O' COMMENT '거래방법',
     cancel_date             DATE    COMMENT '해제사유 발생일',
     build_year              INTEGER COMMENT '건축년도',
