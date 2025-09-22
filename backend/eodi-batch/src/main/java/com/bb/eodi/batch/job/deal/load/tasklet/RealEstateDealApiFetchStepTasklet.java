@@ -16,6 +16,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,18 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
+
+        // 이전에 생성되어 있는 파일이 있는지 확인 후 API 요청 스킵여부 결정
+        if (jobCtx.containsKey(TEMP_FILE.name())) {
+            if (Files.exists(Paths.get(jobCtx.getString(TEMP_FILE.name())))) {
+                log.info("이전 실행에서 생성된 임시파일 발견. API 요청 skip. file={}", jobCtx.getString(TEMP_FILE.name()));
+                return RepeatStatus.FINISHED;
+            }
+            else {
+                log.warn("JobExecutionContext에는 경로가 있으나 실제 파일 없음. 새로 생성");
+            }
+        }
+
 
         String dealMonth = jobCtx.getString(DEAL_MONTH.name());
 
