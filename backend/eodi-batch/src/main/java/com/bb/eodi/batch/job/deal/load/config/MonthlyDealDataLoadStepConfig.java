@@ -275,4 +275,30 @@ public class MonthlyDealDataLoadStepConfig {
                 .writer(realEstateLeaseItemWriter)
                 .build();
     }
+
+    /**
+     * 연립/다세대주택 전월세 실거래가 데이터 API 요청 step
+     * @param multiHouseholdHouseLeaseApiFetchStepTasklet 연립/다세대주택 전월세 실거래가 데이터 API 요청 step tasklet
+     * @return 연립/다세대주택 전월세 실거래가 데이터 API 요청 step
+     */
+    @Bean
+    public Step multiHouseholdHouseLeaseApiFetchStep(Tasklet multiHouseholdHouseLeaseApiFetchStepTasklet) {
+        return new StepBuilder("multiHouseholdHouseLeaseApiFetchStep", jobRepository)
+                .tasklet(multiHouseholdHouseLeaseApiFetchStepTasklet, transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step multiHouseholdHouseLeaseDataLoadStep(
+            ItemReader<MultiHouseholdHouseLeaseDataItem> multiHouseholdHouseLeaseDataItemReader,
+            ItemProcessor<MultiHouseholdHouseLeaseDataItem, RealEstateLease> multiHouseholdHouseLeaseDataItemProcessor,
+            ItemWriter<RealEstateLease> realEstateLeaseItemWriter
+    ) {
+        return new StepBuilder("multiHouseholdHouseLeaseDataLoadStep", jobRepository)
+                .<MultiHouseholdHouseLeaseDataItem, RealEstateLease>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(multiHouseholdHouseLeaseDataItemReader)
+                .processor(multiHouseholdHouseLeaseDataItemProcessor)
+                .writer(realEstateLeaseItemWriter)
+                .build();
+    }
 }

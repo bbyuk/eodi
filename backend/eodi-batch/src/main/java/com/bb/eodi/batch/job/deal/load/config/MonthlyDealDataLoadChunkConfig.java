@@ -86,12 +86,22 @@ public class MonthlyDealDataLoadChunkConfig {
 
 
     /**
-     * 단독/다가구주택 임대차 실거래가 데이터 적재 배치 chunk step ItemReaderz
-     * @return 단독/다가구주택 임대차 실거래가 데이터 적재 배치 chunk step ItemReaderz
+     * 단독/다가구주택 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
+     * @return 단독/다가구주택 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
      */
     @Bean
     @StepScope
     public ItemStreamReader<MultiUnitDetachedLeaseDataItem> multiUnitDetachedLeaseDataItemReader() {
         return new RealEstateDealDataItemStreamReader<>(MultiUnitDetachedLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
+    }
+
+    /**
+     * 연립/다세대주택 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
+     * @return 연립/다세대주택 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<MultiHouseholdHouseLeaseDataItem> multiHouseholdHouseLeaseDataItemReader() {
+        return new RealEstateDealDataItemStreamReader<>(MultiHouseholdHouseLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 }

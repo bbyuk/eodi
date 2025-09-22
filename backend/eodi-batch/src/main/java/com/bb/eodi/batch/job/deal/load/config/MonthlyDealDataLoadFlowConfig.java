@@ -207,4 +207,29 @@ public class MonthlyDealDataLoadFlowConfig {
                         .end()
                 .build();
     }
+
+    /**
+     * 연립/다세대주택 전월세 실거래가 데이터 적재 flow
+     * @param multiHouseholdHouseLeaseApiFetchStep 연립/다세대주택 전월세 실거래가 데이터 API 요청 step
+     * @param multiHouseholdHouseLeaseDataLoadStep 연립/다세대주택 전월세 실거래가 데이터 적재 step
+     * @return 연립/다세대주택 전월세 실거래가 데이터 적재 flow
+     */
+    @Bean
+    public Flow multiHouseholdHouseLeaseDataLoadFlow(
+            Step multiHouseholdHouseLeaseApiFetchStep,
+            Step multiHouseholdHouseLeaseDataLoadStep
+    ) {
+        String flowName = "multiHouseholdHouseLeaseDataLoadFlow";
+        FlowSkipDecider skipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+        return new FlowBuilder<Flow>(flowName)
+                .start(skipDecider)
+                    .on(CONTINUE.name())
+                        .to(multiHouseholdHouseLeaseApiFetchStep)
+                        .next(multiHouseholdHouseLeaseDataLoadStep)
+                .from(skipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .build();
+
+    }
 }
