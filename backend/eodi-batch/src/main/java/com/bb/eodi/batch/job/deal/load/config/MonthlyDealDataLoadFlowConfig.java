@@ -157,4 +157,29 @@ public class MonthlyDealDataLoadFlowConfig {
                         .end()
                 .build();
     }
+
+    /**
+     * 아파트 임대차 실거래가 데이터 적재 배치 job flow
+     * @param apartmentLeaseApiFetchStep 아파트 임대차 API 요청 step
+     * @param apartmentLeaseDataLoadStep 아파트 임대차 데이터 적재 step
+     * @return 아파트 임대차 실거래가 데이터 적재 배치 job flow
+     */
+    @Bean
+    public Flow apartmentLeaseDataLoadFlow(
+            Step apartmentLeaseApiFetchStep,
+            Step apartmentLeaseDataLoadStep
+    ) {
+        String flowName = "apartmentLeaseDataLoadFlow";
+        FlowSkipDecider skipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+
+        return new FlowBuilder<Flow>(flowName)
+                .start(skipDecider)
+                    .on(CONTINUE.name())
+                        .to(apartmentLeaseApiFetchStep)
+                        .next(apartmentLeaseDataLoadStep)
+                .from(skipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .build();
+    }
 }

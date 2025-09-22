@@ -1,6 +1,7 @@
 package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
+import com.bb.eodi.domain.deal.entity.RealEstateLease;
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.port.out.deal.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -206,6 +207,39 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(officetelSellDataItemReader)
                 .processor(officetelSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
+                .build();
+    }
+
+    /**
+     * 아파트 임대차 실거래가 API 요청 step
+     * @param apartmentLeaseApiFetchStepTasklet 아파트 임대차 실거래가 API 요청 step tasklet
+     * @return 아파트 임대차 실거래가 API 요청 step
+     */
+    @Bean
+    public Step apartmentLeaseApiFetchStep(Tasklet apartmentLeaseApiFetchStepTasklet) {
+        return new StepBuilder("apartmentLeaseApiFetchStep", jobRepository)
+                .tasklet(apartmentLeaseApiFetchStepTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * 아파트 임대차 실거래가 데이터 적재 step
+     * @param apartmentLeaseDataItemReader 아파트 임대차 데이터 chunk step ItemReader
+     * @param apartmentLeaseDataItemProcessor 아파트 임대차 데이터 chunk step ItemProcessor
+     * @param realEstateLeaseItemWriter 아파트 임대차 데이터 chunk step ItemProcessor
+     * @return 아파트 임대차 실거래가 데이터 적재 step
+     */
+    @Bean
+    public Step apartmentLeaseDataLoadStep(
+            ItemReader<ApartmentLeaseDataItem> apartmentLeaseDataItemReader,
+            ItemProcessor<ApartmentLeaseDataItem, RealEstateLease> apartmentLeaseDataItemProcessor,
+            ItemWriter<RealEstateLease> realEstateLeaseItemWriter
+    ) {
+        return new StepBuilder("apartmentLeaseDataLoadStep", jobRepository)
+                .<ApartmentLeaseDataItem, RealEstateLease>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(apartmentLeaseDataItemReader)
+                .processor(apartmentLeaseDataItemProcessor)
+                .writer(realEstateLeaseItemWriter)
                 .build();
     }
 }
