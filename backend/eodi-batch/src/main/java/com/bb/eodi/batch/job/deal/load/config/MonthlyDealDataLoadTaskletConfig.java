@@ -2,9 +2,11 @@ package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.job.deal.load.tasklet.RealEstateDealApiFetchStepTasklet;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
+import com.bb.eodi.infrastructure.api.GovernmentDataApiProperties;
 import com.bb.eodi.infrastructure.api.deal.DealDataApiClient;
 import com.bb.eodi.port.out.deal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.context.annotation.Bean;
@@ -14,137 +16,114 @@ import org.springframework.context.annotation.Configuration;
  * 월별 부동산 매매데이터 적재 배치 Tasklet bean 설정
  */
 @Configuration
+@RequiredArgsConstructor
 public class MonthlyDealDataLoadTaskletConfig {
+
+    private final GovernmentDataApiProperties governmentDataApiProperties;
+    private final LegalDongRepository legalDongRepository;
+    private final DealDataApiClient dealDataApiClient;
+    private final ObjectMapper objectMapper;
+
     /**
      * 아파트 매매 데이터 API 요청 step tasklet
      *
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient   거래 데이터 API client
-     * @param objectMapper        object mapper
      * @return 아파트 매매 데이터 API 요청 step tasklet
      */
     @Bean
     @StepScope
-    public Tasklet apartmentSellApiFetchStepTasklet(LegalDongRepository legalDongRepository,
-                                                    DealDataApiClient dealDataApiClient,
-                                                    ObjectMapper objectMapper) {
+    public Tasklet apartmentSellApiFetchStepTasklet() {
         return new RealEstateDealApiFetchStepTasklet<>(
                 ApartmentSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
-                objectMapper
+                objectMapper,
+                governmentDataApiProperties.pageSize()
         );
     }
 
     /**
      * 아파트 분양권 매매 데이터 API 요청 step tasklet
      *
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient   부동산 거래 데이터 API Client
-     * @param objectMapper        objectMapper
      * @return 아파트 분양권 매매 데이터 API 요청 step tasklet
      */
     @Bean
     @StepScope
-    public Tasklet apartmentPresaleRightSellApiFetchStepTasklet(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ) {
+    public Tasklet apartmentPresaleRightSellApiFetchStepTasklet() {
         return new RealEstateDealApiFetchStepTasklet<>(
                 ApartmentPresaleRightSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
-                objectMapper
+                objectMapper,
+                governmentDataApiProperties.pageSize()
         );
     }
 
     /**
      * 단독/다가구주택 매매 데이터 API 요청 Step tasklet
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient   부동산 거래 데이터 API Client
-     * @param objectMapper        objectMapper
+     *
      * @return
      */
     @Bean
     @StepScope
-    public Tasklet multiUnitDetachedSellApiFetchStepTasklet(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ) {
+    public Tasklet multiUnitDetachedSellApiFetchStepTasklet() {
         return new RealEstateDealApiFetchStepTasklet<>(
                 MultiUnitDetachedSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
-                objectMapper
+                objectMapper,
+                governmentDataApiProperties.pageSize()
         );
     }
 
 
     /**
      * 연립/다세대주택 매매 데이터 API 요청 step tasklet
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient   부동산 거래 데이터 API Client
-     * @param objectMapper        objectMapper
+     *
      * @return 연립/다세대주택 매매 데이터 API 요청 step tasklet
      */
     @Bean
     @StepScope
-    public Tasklet multiHouseholdHouseSellApiFetchStepTasklet(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ) {
+    public Tasklet multiHouseholdHouseSellApiFetchStepTasklet() {
         return new RealEstateDealApiFetchStepTasklet<>(
                 MultiHouseholdHouseSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
-                objectMapper
+                objectMapper,
+                governmentDataApiProperties.pageSize()
         );
     }
 
     /**
      * 오피스텔 매매 실거래가 데이터 API 요청 step
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient 실거래가 데이터 API Client
-     * @param objectMapper objectMapper
+     *
      * @return 오피스텔 매매 실거래가 데이터 API 요청 step
      */
     @Bean
     @StepScope
-    public Tasklet officetelSellApiFetchStepTasklet(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ){
+    public Tasklet officetelSellApiFetchStepTasklet() {
         return new RealEstateDealApiFetchStepTasklet<>(
                 OfficetelSellDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
-                objectMapper
+                objectMapper,
+                governmentDataApiProperties.pageSize()
         );
     }
 
     /**
      * 아파트 임대차 실거래가 데이터 API 요청 step tasklet
-     * @param legalDongRepository 법정동 repository
-     * @param dealDataApiClient 실거래가 데이터 API Client
-     * @param objectMapper objectMapper
+     *
      * @return 아파트 임대차 실거래가 데이터 API 요청 step tasklet
      */
     @Bean
     @StepScope
-    public Tasklet apartmentLeaseApiFetchStepTasklet(
-            LegalDongRepository legalDongRepository,
-            DealDataApiClient dealDataApiClient,
-            ObjectMapper objectMapper
-    ) {
+    public Tasklet apartmentLeaseApiFetchStepTasklet() {
         return new RealEstateDealApiFetchStepTasklet<>(
                 ApartmentLeaseDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
-                objectMapper
+                objectMapper,
+                governmentDataApiProperties.pageSize()
         );
     }
 }

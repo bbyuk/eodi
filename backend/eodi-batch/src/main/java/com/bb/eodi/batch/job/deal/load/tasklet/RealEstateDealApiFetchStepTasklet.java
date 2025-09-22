@@ -34,6 +34,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     private final LegalDongRepository legalDongRepository;
     private final DealDataApiClient dealDataApiClient;
     private final ObjectMapper objectMapper;
+    private final int pageSize;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -55,21 +56,44 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
          * 전국 대상 API 요청 후 파일에 작성
          * 실패시 생성된 임시 파일 삭제
          */
-        try(BufferedWriter bw = Files.newBufferedWriter(tempFilePath, StandardOpenOption.APPEND)) {
+        try (BufferedWriter bw = Files.newBufferedWriter(tempFilePath, StandardOpenOption.APPEND)) {
             for (MonthlyLoadTargetLegalDongDto monthlyLoadTargetLegalDongDto : monthlyLoadTargetLegalDongList) {
+                /**
+                 * fetch를 1회 실행 해 totalCount 가져오기
+                 *
+                 */
+                DealDataResponse<T> countResponse = fetchByType(
+                        new DealDataQuery(
+                                monthlyLoadTargetLegalDongDto.regionCode(),
+                                dealMonth,
+                                0,
+                                0
+                        )
+                );
+                int totalCount = countResponse.body().getTotalCount();
+                int maxPageNum = (totalCount / pageSize) + 1;
 
-                DealDataResponse<T> apiResponse = fetchByType(new DealDataQuery(monthlyLoadTargetLegalDongDto.regionCode(), dealMonth));
-                List<T> apartmentSellDataItems = apiResponse.body().getItems();
+                log.debug("totalRowCount : {} at region code : {}", totalCount, monthlyLoadTargetLegalDongDto.regionCode());
+                log.debug("maxPageNum:{}", maxPageNum);
 
-                log.debug("write to file for region code : {}", monthlyLoadTargetLegalDongDto.regionCode());
+                for (int pageNum = 1; pageNum <= maxPageNum; pageNum++) {
+                    log.debug("pageNum : {}", pageNum);
+                    DealDataResponse<T> apiResponse = fetchByType(
+                            new DealDataQuery(
+                                    monthlyLoadTargetLegalDongDto.regionCode(),
+                                    dealMonth,
+                                    pageSize,
+                                    pageNum)
+                    );
+                    List<T> apartmentSellDataItems = apiResponse.body().getItems();
 
-                for (Object item : apartmentSellDataItems) {
-                    bw.write(objectMapper.writeValueAsString(item));
-                    bw.newLine();
+                    for (Object item : apartmentSellDataItems) {
+                        bw.write(objectMapper.writeValueAsString(item));
+                        bw.newLine();
+                    }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             Files.delete(tempFilePath);
             log.info("ApartmentSaleApiFetchStepTasklet -> temp file deleted. file={}", tempFilePath);
@@ -87,31 +111,23 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
 
     @SuppressWarnings("unchecked")
     private DealDataResponse<T> fetchByType(DealDataQuery query) {
-        if(targetClass.equals(ApartmentLeaseDataItem.class)) {
+        if (targetClass.equals(ApartmentLeaseDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getApartmentLeaseData(query);
-        }
-        else if (targetClass.equals(ApartmentPresaleRightSellDataItem.class)) {
+        } else if (targetClass.equals(ApartmentPresaleRightSellDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getApartmentPresaleRightSellData(query);
-        }
-        else if (targetClass.equals(ApartmentSellDataItem.class)) {
+        } else if (targetClass.equals(ApartmentSellDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getApartmentSellData(query);
-        }
-        else if (targetClass.equals(MultiHouseholdHouseLeaseDataItem.class)) {
+        } else if (targetClass.equals(MultiHouseholdHouseLeaseDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getMultiHouseholdLeaseData(query);
-        }
-        else if (targetClass.equals(MultiHouseholdHouseSellDataItem.class)) {
+        } else if (targetClass.equals(MultiHouseholdHouseSellDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getMultiHouseholdSellData(query);
-        }
-        else if (targetClass.equals(MultiUnitDetachedLeaseDataItem.class)) {
+        } else if (targetClass.equals(MultiUnitDetachedLeaseDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getMultiUnitDetachedLeaseData(query);
-        }
-        else if (targetClass.equals(MultiUnitDetachedSellDataItem.class)) {
+        } else if (targetClass.equals(MultiUnitDetachedSellDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getMultiUnitDetachedSellData(query);
-        }
-        else if (targetClass.equals(OfficetelLeaseDataItem.class)) {
+        } else if (targetClass.equals(OfficetelLeaseDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getOfficetelLeaseData(query);
-        }
-        else if (targetClass.equals(OfficetelSellDataItem.class)) {
+        } else if (targetClass.equals(OfficetelSellDataItem.class)) {
             return (DealDataResponse<T>) dealDataApiClient.getOfficetelSellData(query);
         }
 
