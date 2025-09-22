@@ -18,14 +18,16 @@ public class MonthlyDealDataLoadJobConfig {
     private final JobRepository jobRepository;
 
     /**
-     * 월별 부동산 거래 데이터 적재 batch job
+     * 월별 부동산 실거래가 데이터 적재 batch job
      *
      * @param monthlyDealDataLoadPreprocessFlow         월별 부동산 거래 데이터 적재 batch 전처리 step
-     * @param apartmentSellDataLoadFlow                 아파트 매매 데이터 적재 flow
-     * @param apartmentPresaleRightSellDataLoadFlow     아파트 분양권 매매 데이터 적재 flow
-     * @param multiUnitDetachedSellDataLoadFlow         단독/다가구주택 매매 데이터 적재 flow
-     * @param multiHouseholdHouseSellDataLoadFlow       연립/다세대주택 매매 데이터 적재 flow
-     * @param officetelSellDataLoadFlow                 오피스텔 매매 데이터 적재 flow
+     * @param apartmentSellDataLoadFlow                 아파트 매매 실거래가 데이터 적재 flow
+     * @param apartmentPresaleRightSellDataLoadFlow     아파트 분양권 매매 실거래가 데이터 적재 flow
+     * @param multiUnitDetachedSellDataLoadFlow         단독/다가구주택 매매 실거래가 데이터 적재 flow
+     * @param multiHouseholdHouseSellDataLoadFlow       연립/다세대주택 매매 실거래가 데이터 적재 flow
+     * @param officetelSellDataLoadFlow                 오피스텔 매매 실거래가 데이터 적재 flow
+     * @param apartmentLeaseDataLoadFlow                아파트 전월세 실거래가 데이터 적재 flow
+     * @param multiUnitDetachedLeaseDataLoadFlow        단독/다가구주택 전월세 실거래가 데이터 적재 flow
      * @return 월별 부동산 거래 데이터 적재 batch job
      */
     @Bean
@@ -36,7 +38,8 @@ public class MonthlyDealDataLoadJobConfig {
             Flow multiUnitDetachedSellDataLoadFlow,
             Flow multiHouseholdHouseSellDataLoadFlow,
             Flow officetelSellDataLoadFlow,
-            Flow apartmentLeaseDataLoadFlow
+            Flow apartmentLeaseDataLoadFlow,
+            Flow multiUnitDetachedLeaseDataLoadFlow
     ) {
 
         return new JobBuilder("monthlyDealDataLoad", jobRepository)
@@ -47,6 +50,7 @@ public class MonthlyDealDataLoadJobConfig {
                 .next(multiHouseholdHouseSellDataLoadFlow)      // 연립/다세대주택 매매
                 .next(officetelSellDataLoadFlow)                // 오피스텔 매매
                 .next(apartmentLeaseDataLoadFlow)               // 아파트 임대차
+                .next(multiUnitDetachedLeaseDataLoadFlow)       // 단독/다가구주택 전월세 실거래가 데이터 적재 flow
                 .end()
                 .build();
     }

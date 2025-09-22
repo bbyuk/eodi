@@ -126,4 +126,21 @@ public class MonthlyDealDataLoadTaskletConfig {
                 governmentDataApiProperties.pageSize()
         );
     }
+
+    /**
+     * 단독/다가구주택 전월세 실거래가 데이터 API 요청 step tasklet
+     *
+     * @return 단독/다가구주택 전월세 실거래가 데이터 API 요청 step tasklet
+     */
+    @Bean
+    @StepScope
+    public Tasklet multiUnitDetachedLeaseApiFetchStepTasklet() {
+        return new RealEstateDealApiFetchStepTasklet<>(
+                MultiUnitDetachedLeaseDataItem.class,
+                legalDongRepository,
+                dealDataApiClient,
+                objectMapper,
+                governmentDataApiProperties.pageSize()
+        );
+    }
 }
