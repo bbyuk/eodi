@@ -104,6 +104,13 @@ public class MonthlyDealDataLoadTaskletConfig {
         );
     }
 
+    /**
+     * 오피스텔 매매 실거래가 데이터 API 요청 step
+     * @param legalDongRepository 법정동 repository
+     * @param dealDataApiClient 실거래가 데이터 API Client
+     * @param objectMapper objectMapper
+     * @return 오피스텔 매매 실거래가 데이터 API 요청 step
+     */
     @Bean
     @StepScope
     public Tasklet officetelSellApiFetchStepTasklet(
@@ -113,6 +120,28 @@ public class MonthlyDealDataLoadTaskletConfig {
     ){
         return new RealEstateDealApiFetchStepTasklet<>(
                 OfficetelSellDataItem.class,
+                legalDongRepository,
+                dealDataApiClient,
+                objectMapper
+        );
+    }
+
+    /**
+     * 아파트 임대차 실거래가 데이터 API 요청 step tasklet
+     * @param legalDongRepository 법정동 repository
+     * @param dealDataApiClient 실거래가 데이터 API Client
+     * @param objectMapper objectMapper
+     * @return 아파트 임대차 실거래가 데이터 API 요청 step tasklet
+     */
+    @Bean
+    @StepScope
+    public Tasklet apartmentLeaseApiFetchStepTasklet(
+            LegalDongRepository legalDongRepository,
+            DealDataApiClient dealDataApiClient,
+            ObjectMapper objectMapper
+    ) {
+        return new RealEstateDealApiFetchStepTasklet<>(
+                ApartmentLeaseDataItem.class,
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper

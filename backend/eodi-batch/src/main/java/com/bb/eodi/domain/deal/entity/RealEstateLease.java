@@ -3,8 +3,10 @@ package com.bb.eodi.domain.deal.entity;
 import com.bb.eodi.domain.deal.type.HousingType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,8 +18,29 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RealEstateLease {
 
+    @Builder
+    public RealEstateLease(Long regionId, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
+        this.regionId = regionId;
+        this.legalDongName = legalDongName;
+        this.contractDate = contractDate;
+        this.contractStartMonth = contractStartMonth;
+        this.contractEndMonth = contractEndMonth;
+        this.deposit = deposit;
+        this.monthlyRent = monthlyRent;
+        this.previousDeposit = previousDeposit;
+        this.previousMonthlyRent = previousMonthlyRent;
+        this.buildYear = buildYear;
+        this.netLeasableArea = netLeasableArea;
+        this.housingType = housingType;
+        this.targetName = targetName;
+        this.floor = floor;
+        this.useRRRight = useRRRight;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -36,11 +59,11 @@ public class RealEstateLease {
 
     // 계약시작 월
     @Column(name = "contract_start_month")
-    private LocalDate contractStartMonth;
+    private Integer contractStartMonth;
 
     // 계약종료 월
     @Column(name = "contract_end_month")
-    private LocalDate contractEndMonth;
+    private Integer contractEndMonth;
 
     // 보증금
     @Column(name = "deposit")
@@ -77,6 +100,10 @@ public class RealEstateLease {
     // 층
     @Column(name = "floor")
     private Integer floor;
+
+    // 갱신계약청구권 사용
+    @Column(name = "use_rr_right")
+    private boolean useRRRight;
 
     // 생성일시
     @Column(name = "created_at")
