@@ -6,5 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record EodiBatchProperties(
         String jobNamePrefix,
         String jobParameterPrefix,
-        int batchSize
+        int batchSize,
+        String forceNewInstanceParameter
 ) {}

@@ -26,11 +26,15 @@ public class BatchJobRunner implements ApplicationRunner {
         log.debug("BatchRunner run ====== jobName : {}", jobName);
 
         JobParametersBuilder jobParameterBuilder = new JobParametersBuilder();
-//                .addLong("time", System.currentTimeMillis());
         for (String optionName : args.getOptionNames()) {
+            if (eodiBatchProperties.forceNewInstanceParameter().equals(optionName)) {
+                jobParameterBuilder.addLong("run.id", System.currentTimeMillis());
+                continue;
+            }
             if (!optionName.startsWith(eodiBatchProperties.jobParameterPrefix())) {
                 continue;
             }
+
             String parameterName = optionName.substring(eodiBatchProperties.jobParameterPrefix().length());
             jobParameterBuilder.addString(parameterName, args.getOptionValues(optionName).get(0));
         }
