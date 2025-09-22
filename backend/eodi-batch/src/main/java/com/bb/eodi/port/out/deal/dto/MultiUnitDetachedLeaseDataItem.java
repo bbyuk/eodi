@@ -18,6 +18,8 @@ public record MultiUnitDetachedLeaseDataItem(
         String dealDay,
         // 보증금액(만원)
         String deposit,
+        // 주택 타입
+        String houseType,
         // 월세금액(만원)
         String monthlyRent,
         // 건축년도

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -178,6 +179,30 @@ public class MonthlyDealDataLoadFlowConfig {
                         .to(apartmentLeaseApiFetchStep)
                         .next(apartmentLeaseDataLoadStep)
                 .from(skipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .build();
+    }
+
+    /**
+     * 단독/다가구주택 전월세 실거래가 데이터 적재 배치 job flow
+     * @param multiUnitDetachedLeaseApiFetchStep 단독/다가구주택 전월세 실거래가 데이터 API 요청 step
+     * @param multiUnitDetachedLeaseDataLoadStep 단독/다가구주택 전월세 실거랙 데이터 적재 step
+     * @return 단독/다가구주택 전월세 실거래가 데이터 적재 배치 job flow
+     */
+    @Bean
+    public Flow multiUnitDetachedLeaseDataLoadFLow(
+            Step multiUnitDetachedLeaseApiFetchStep,
+            Step multiUnitDetachedLeaseDataLoadStep
+    ) {
+        String flowName = "multiUnitDetachedLeaseDataLoadFLow";
+        FlowSkipDecider flowSkipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+        return new FlowBuilder<Flow>(flowName)
+                .start(flowSkipDecider)
+                    .on(CONTINUE.name())
+                        .to(multiUnitDetachedLeaseApiFetchStep)
+                        .next(multiUnitDetachedLeaseDataLoadStep)
+                .from(flowSkipDecider)
                     .on(COMPLETED.name())
                         .end()
                 .build();
