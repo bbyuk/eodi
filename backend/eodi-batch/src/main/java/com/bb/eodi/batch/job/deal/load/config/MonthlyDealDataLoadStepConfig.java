@@ -255,6 +255,13 @@ public class MonthlyDealDataLoadStepConfig {
                 .build();
     }
 
+    /**
+     * 단독/다가구주택 전월세 실거래가 데이터 적재 step
+     * @param multiUnitDetachedLeaseDataItemReader 단독/다가구주택 전월세 실거래가 데이터 적재 step chunk ItemReader
+     * @param multiUnitDetachedLeaseDataItemProcessor 단독/다가구주택 전월세 실거래가 데이터 적재 step chunk ItemProcessor
+     * @param realEstateLeaseItemWriter 부동산 전월세 실거래가 데이터 적재 step chunk ItemWriter
+     * @return 단독/다가구주택 전월세 실거래가 데이터 적재 step
+     */
     @Bean
     public Step multiUnitDetachedLeaseDataLoadStep(
             ItemReader<MultiUnitDetachedLeaseDataItem> multiUnitDetachedLeaseDataItemReader,
