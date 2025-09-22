@@ -191,7 +191,7 @@ public class MonthlyDealDataLoadFlowConfig {
      * @return 단독/다가구주택 전월세 실거래가 데이터 적재 배치 job flow
      */
     @Bean
-    public Flow multiUnitDetachedLeaseDataLoadFLow(
+    public Flow multiUnitDetachedLeaseDataLoadFlow(
             Step multiUnitDetachedLeaseApiFetchStep,
             Step multiUnitDetachedLeaseDataLoadStep
     ) {
