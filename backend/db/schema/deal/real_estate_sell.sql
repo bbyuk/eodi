@@ -19,7 +19,7 @@ CREATE TABLE real_estate_sell
     seller                  VARCHAR(50) COMMENT '매도자',
     housing_type            ENUM('AP', 'MH', 'DT', 'MU', 'OF', 'PR', 'OR', 'O') NOT NULL DEFAULT 'O' COMMENT '주택유형',
     date_of_registration    DATE    COMMENT '등기일자',
-    target_name             VARCHAR(100) NOT NULL COMMENT '대상명',
+    target_name             VARCHAR(100) COMMENT '대상명',
     building_dong           VARCHAR(50) COMMENT '건물 동',
     floor                   INTEGER COMMENT '층',
     is_land_lease           TINYINT(1) NOT NULL DEFAULT 0 COMMENT '토지임대부 여부',
