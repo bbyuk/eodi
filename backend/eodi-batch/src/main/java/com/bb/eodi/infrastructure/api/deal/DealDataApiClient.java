@@ -16,46 +16,46 @@ public class DealDataApiClient implements DealDataPort {
 
     @Override
     public DealDataResponse<ApartmentSellDataItem> getApartmentSellData(DealDataQuery query) {
-        return dealDataApi.getApartmentSellData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getApartmentSellData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<ApartmentLeaseDataItem> getApartmentLeaseData(DealDataQuery query) {
-        return dealDataApi.getApartmentLeaseData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getApartmentLeaseData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<ApartmentPresaleRightSellDataItem> getApartmentPresaleRightSellData(DealDataQuery query) {
-        return dealDataApi.getApartmentPreSaleRightSaleData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getApartmentPreSaleRightSaleData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<MultiHouseholdHouseSellDataItem> getMultiHouseholdSellData(DealDataQuery query) {
-        return dealDataApi.getMultiHouseholdSellData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getMultiHouseholdSellData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<MultiHouseholdHouseLeaseDataItem> getMultiHouseholdLeaseData(DealDataQuery query) {
-        return dealDataApi.getMultiHouseholdLeaseData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getMultiHouseholdLeaseData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<MultiUnitDetachedSellDataItem> getMultiUnitDetachedSellData(DealDataQuery query) {
-        return dealDataApi.getMultiUnitDetachedSellData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getMultiUnitDetachedSellData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<MultiUnitDetachedLeaseDataItem> getMultiUnitDetachedLeaseData(DealDataQuery query) {
-        return dealDataApi.getMultiUnitDetachedLeaseData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getMultiUnitDetachedLeaseData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<OfficetelSellDataItem> getOfficetelSellData(DealDataQuery query) {
-        return dealDataApi.getOfficetelSellData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getOfficetelSellData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 
     @Override
     public DealDataResponse<OfficetelLeaseDataItem> getOfficetelLeaseData(DealDataQuery query) {
-        return dealDataApi.getOfficetelLeaseData(query.regionCode(), query.dealMonth());
+        return dealDataApi.getOfficetelLeaseData(query.regionCode(), query.dealMonth(), query.pageSize(), query.pageNum());
     }
 }
