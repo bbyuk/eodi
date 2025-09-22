@@ -310,5 +310,37 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
 
+    /**
+     * 오피스텔 전월세 실거래가 데이터 API 요청 step
+     * @param officetelLeaseApiFetchStepTasklet 오피스텔 전월세 실거래가 데이터 API 요청 step tasklet
+     * @return 오피스텔 전월세 실거래가 데이터 API 요청 step
+     */
+    @Bean
+    public Step officetelLeaseApiFetchStep(Tasklet officetelLeaseApiFetchStepTasklet) {
+        return new StepBuilder("officetelLeaseApiFetchStep", jobRepository)
+                .tasklet(officetelLeaseApiFetchStepTasklet, transactionManager)
+                .build();
+    }
+
+    /**
+     * 오피스텔 전월세 실거래가 데이터 적재 step
+     * @param officetelLeaseDataItemReader 오피스텔 전월세 실거래가 데이터 적재 step chunk ItemReader
+     * @param officetelLeaseDataItemProcessor 오피스텔 전월세 실거래가 데이터 적재 step chunk ItemProcessor
+     * @param realEstateLeaseItemWriter 부동산 전월세 실거래가 데이터 적재 step chunk ItemWriter
+     * @return 오피스텔 전월세 실거래가 데이터 적재 step
+     */
+    @Bean
+    public Step officetelLeaseDataLoadStep(
+            ItemReader<OfficetelLeaseDataItem> officetelLeaseDataItemReader,
+            ItemProcessor<OfficetelLeaseDataItem, RealEstateLease> officetelLeaseDataItemProcessor,
+            ItemWriter<RealEstateLease> realEstateLeaseItemWriter
+    ) {
+        return new StepBuilder("officetelLeaseDataLoadStep", jobRepository)
+                .<OfficetelLeaseDataItem, RealEstateLease>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(officetelLeaseDataItemReader)
+                .processor(officetelLeaseDataItemProcessor)
+                .writer(realEstateLeaseItemWriter)
+                .build();
+    }
 
 }

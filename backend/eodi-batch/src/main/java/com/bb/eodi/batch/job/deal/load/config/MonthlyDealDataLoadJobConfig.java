@@ -28,7 +28,8 @@ public class MonthlyDealDataLoadJobConfig {
      * @param officetelSellDataLoadFlow                 오피스텔 매매 실거래가 데이터 적재 flow
      * @param apartmentLeaseDataLoadFlow                아파트 전월세 실거래가 데이터 적재 flow
      * @param multiUnitDetachedLeaseDataLoadFlow        단독/다가구주택 전월세 실거래가 데이터 적재 flow
-     * @param multiHouseholdHOuseLeaseDataLoadFlow      연립/다세대주택 전월세 실거래가 데이터 적재 flow
+     * @param multiHouseholdHouseLeaseDataLoadFlow      연립/다세대주택 전월세 실거래가 데이터 적재 flow
+     * @param officetelLeaseDataLoadFlow                오피스텔 전월세 실거래가 데이터 적재 flow
      * @return 월별 부동산 거래 데이터 적재 batch job
      */
     @Bean
@@ -41,7 +42,8 @@ public class MonthlyDealDataLoadJobConfig {
             Flow officetelSellDataLoadFlow,
             Flow apartmentLeaseDataLoadFlow,
             Flow multiUnitDetachedLeaseDataLoadFlow,
-            Flow multiHouseholdHouseLeaseDataLoadFlow
+            Flow multiHouseholdHouseLeaseDataLoadFlow,
+            Flow officetelLeaseDataLoadFlow
     ) {
 
         return new JobBuilder("monthlyDealDataLoad", jobRepository)
@@ -54,6 +56,7 @@ public class MonthlyDealDataLoadJobConfig {
                 .next(apartmentLeaseDataLoadFlow)               // 아파트 임대차
                 .next(multiUnitDetachedLeaseDataLoadFlow)       // 단독/다가구주택 전월세 실거래가 데이터 적재 flow
                 .next(multiHouseholdHouseLeaseDataLoadFlow)     // 연립/다세대주택 전월세 실거래가 데이터 적재 flow
+                .next(officetelLeaseDataLoadFlow)               // 오피스텔 전월세 실거래가 데이터 적재 flow
                 .end()
                 .build();
     }

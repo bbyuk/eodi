@@ -160,4 +160,20 @@ public class MonthlyDealDataLoadTaskletConfig {
                 governmentDataApiProperties.pageSize()
         );
     }
+
+    /**
+     * 오피스텔 전월세 실거래가 데이터 API 요청 step tasklet
+     * @return 오피스텔 전월세 실거래가 데이터 API 요청 step tasklet
+     */
+    @Bean
+    @StepScope
+    public Tasklet officetelLeaseApiFetchStepTasklet() {
+        return new RealEstateDealApiFetchStepTasklet<>(
+                OfficetelLeaseDataItem.class,
+                legalDongRepository,
+                dealDataApiClient,
+                objectMapper,
+                governmentDataApiProperties.pageSize()
+        );
+    }
 }
