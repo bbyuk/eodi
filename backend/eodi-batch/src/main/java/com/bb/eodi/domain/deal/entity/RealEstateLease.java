@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class RealEstateLease {
 
     @Builder
-    public RealEstateLease(Long regionId, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor) {
+    public RealEstateLease(Long regionId, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
         this.regionId = regionId;
         this.legalDongName = legalDongName;
         this.contractDate = contractDate;
@@ -33,10 +34,13 @@ public class RealEstateLease {
         this.housingType = housingType;
         this.targetName = targetName;
         this.floor = floor;
+        this.useRRRight = useRRRight;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -96,6 +100,10 @@ public class RealEstateLease {
     // 층
     @Column(name = "floor")
     private Integer floor;
+
+    // 갱신계약청구권 사용
+    @Column(name = "use_rr_right")
+    private boolean useRRRight;
 
     // 생성일시
     @Column(name = "created_at")
