@@ -3,6 +3,7 @@ package com.bb.eodi.domain.deal.entity;
 import com.bb.eodi.domain.deal.type.HousingType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,24 @@ import java.time.LocalDateTime;
 @Table(name = "real_estate_lease")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RealEstateLease {
+
+    @Builder
+    public RealEstateLease(Long regionId, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor) {
+        this.regionId = regionId;
+        this.legalDongName = legalDongName;
+        this.contractDate = contractDate;
+        this.contractStartMonth = contractStartMonth;
+        this.contractEndMonth = contractEndMonth;
+        this.deposit = deposit;
+        this.monthlyRent = monthlyRent;
+        this.previousDeposit = previousDeposit;
+        this.previousMonthlyRent = previousMonthlyRent;
+        this.buildYear = buildYear;
+        this.netLeasableArea = netLeasableArea;
+        this.housingType = housingType;
+        this.targetName = targetName;
+        this.floor = floor;
+    }
 
     @Id
     @GeneratedValue
@@ -36,11 +55,11 @@ public class RealEstateLease {
 
     // 계약시작 월
     @Column(name = "contract_start_month")
-    private LocalDate contractStartMonth;
+    private Integer contractStartMonth;
 
     // 계약종료 월
     @Column(name = "contract_end_month")
-    private LocalDate contractEndMonth;
+    private Integer contractEndMonth;
 
     // 보증금
     @Column(name = "deposit")
