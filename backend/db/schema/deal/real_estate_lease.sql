@@ -14,6 +14,7 @@ CREATE TABLE real_estate_lease
     monthly_rent            INT     COMMENT '월세',
     previous_deposit        INT     COMMENT '이전 계약 보증금',
     previous_monthly_rent   INT     COMMENT '이전 계약 월세',
+    total_floor_area        DECIMAL(10, 4) NOT NULL COMMENT '연면적',
     build_year              INTEGER COMMENT '건축년도',
     net_leasable_area       DECIMAL(10, 4) NOT NULL COMMENT '전용면적',
     housing_type            ENUM('AP', 'MH', 'DT', 'MU', 'OF', 'O') NOT NULL DEFAULT 'O' COMMENT '주택유형',
