@@ -1,15 +1,21 @@
 spring:
   application:
     name: eodi-api
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
   datasource:
     url: jdbc:mysql://localhost:3306/eodi_db
     username: eodi_app
     password: eodi_app_pw
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        jdbc: 1000
+
+logging:
+  level:
+    org.springframework: debug
+    com.bb: debug
