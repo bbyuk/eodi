@@ -232,4 +232,29 @@ public class MonthlyDealDataLoadFlowConfig {
                 .build();
 
     }
+
+    /**
+     * 오피스텔 전월세 실거래가 데이터 적재 flow
+     * @param officetelLeaseApiFetchStep 오피스텔 전월세 실거래가 데이터 API 요청 step
+     * @param officetelLeaseDataLoadStep 오피스텔 전월세 실거래가 데이터 적재 step
+     * @return 오피스텔 전월세 실거래가 데이터 적재 flow
+     */
+    @Bean
+    public Flow officetelLeaseDataLoadFlow(
+            Step officetelLeaseApiFetchStep,
+            Step officetelLeaseDataLoadStep
+    ) {
+        String flowName = "officetelLeaseDataLoadFlow";
+        FlowSkipDecider skipDecider = new FlowSkipDecider(flowName, batchMetaRepository);
+
+        return new FlowBuilder<Flow>(flowName)
+                .start(skipDecider)
+                    .on(CONTINUE.name())
+                        .to(officetelLeaseApiFetchStep)
+                        .next(officetelLeaseDataLoadStep)
+                .from(skipDecider)
+                    .on(COMPLETED.name())
+                        .end()
+                .build();
+    }
 }

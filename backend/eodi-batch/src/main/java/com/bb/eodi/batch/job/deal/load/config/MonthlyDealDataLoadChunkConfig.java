@@ -109,4 +109,14 @@ public class MonthlyDealDataLoadChunkConfig {
     public ItemStreamReader<MultiHouseholdHouseLeaseDataItem> multiHouseholdHouseLeaseDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
         return new RealEstateDealDataItemStreamReader<>(MultiHouseholdHouseLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
+
+    /**
+     * 오피스텔 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
+     * @return 오피스텔 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<OfficetelLeaseDataItem> officetelLeaseDataItemReader() {
+        return new RealEstateDealDataItemStreamReader<>(OfficetelLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
+    }
 }
