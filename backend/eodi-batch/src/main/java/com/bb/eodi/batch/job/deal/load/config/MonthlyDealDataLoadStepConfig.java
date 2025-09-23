@@ -1,6 +1,7 @@
 package com.bb.eodi.batch.job.deal.load.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
+import com.bb.eodi.batch.job.deal.load.listener.TempFileCleanupStepListener;
 import com.bb.eodi.domain.deal.entity.RealEstateLease;
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.port.out.deal.dto.*;
@@ -27,6 +28,7 @@ public class MonthlyDealDataLoadStepConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
+    private final TempFileCleanupStepListener tempFileCleanupStepListener;
 
     /**
      * 월별 부동산 거래 데이터 적재 batch job 전처리 Step
@@ -73,6 +75,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(apartmentSellDataItemReader)
                 .processor(apartmentSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -107,6 +110,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(apartmentPresaleRightSellDataItemItemReader)
                 .processor(apartmentPresaleRightSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -127,7 +131,7 @@ public class MonthlyDealDataLoadStepConfig {
      * @param multiUnitDetachedSellDataItemReader 단독/다가구주택 매매 데이터 chunk ItemReader
      * @param multiUnitDetachedSellDataItemProcessor 단독/다가구주택 매매 데이터 chunk ItemProcessor
      * @param realEstateSellItemWriter 부동산 매매 데이터 chunk ItemWriter
-     * @return
+     * @return 단독/다가구주택 매매 데이터 적재 step
      */
     @Bean
     public Step multiUnitDetachedSellDataLoadStep(
@@ -141,6 +145,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(multiUnitDetachedSellDataItemReader)
                 .processor(multiUnitDetachedSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -174,6 +179,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(multiHouseholdSellDataItemReader)
                 .processor(multiHouseholdSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -207,6 +213,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(officetelSellDataItemReader)
                 .processor(officetelSellDataItemProcessor)
                 .writer(realEstateSellItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -240,6 +247,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(apartmentLeaseDataItemReader)
                 .processor(apartmentLeaseDataItemProcessor)
                 .writer(realEstateLeaseItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -273,6 +281,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(multiUnitDetachedLeaseDataItemReader)
                 .processor(multiUnitDetachedLeaseDataItemProcessor)
                 .writer(realEstateLeaseItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 
@@ -299,6 +308,7 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(multiHouseholdHouseLeaseDataItemReader)
                 .processor(multiHouseholdHouseLeaseDataItemProcessor)
                 .writer(realEstateLeaseItemWriter)
+                .listener(tempFileCleanupStepListener)
                 .build();
     }
 }

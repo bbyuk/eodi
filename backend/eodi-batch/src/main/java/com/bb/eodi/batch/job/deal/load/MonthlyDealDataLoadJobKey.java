@@ -9,5 +9,7 @@ public enum MonthlyDealDataLoadJobKey {
     // 거래년월 (6자리)
     DEAL_MONTH,
     // 부동산 거래 데이터 API 응답 임시 파일
-    TEMP_FILE
+    TEMP_FILE,
+    // 재시작 로직 처리를 위한 키
+    CURRENT_INDEX
 }

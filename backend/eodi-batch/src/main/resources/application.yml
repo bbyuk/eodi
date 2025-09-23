@@ -38,6 +38,8 @@ eodi:
   batch:
     job-name-prefix: job.name
     job-parameter-prefix: job.parameter.
+    force-new-instance-parameter: new
+    force-new-instance-parameter-key: run.id
     batch-size: 1000
     job:
       legal-dong-load:
