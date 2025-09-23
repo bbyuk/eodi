@@ -112,11 +112,12 @@ public class MonthlyDealDataLoadChunkConfig {
 
     /**
      * 오피스텔 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
+     * @param tempFilePath jobExecutionContext 값 임시 파일 경로
      * @return 오피스텔 임대차 실거래가 데이터 적재 배치 chunk step ItemReader
      */
     @Bean
     @StepScope
-    public ItemStreamReader<OfficetelLeaseDataItem> officetelLeaseDataItemReader() {
+    public ItemStreamReader<OfficetelLeaseDataItem> officetelLeaseDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
         return new RealEstateDealDataItemStreamReader<>(OfficetelLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
     }
 }
