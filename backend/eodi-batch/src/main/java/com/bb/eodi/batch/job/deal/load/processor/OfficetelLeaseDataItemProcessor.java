@@ -52,12 +52,12 @@ public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelL
                         )
                 )
                 .contractStartMonth(
-                        StringUtils.hasText(contractTerm)
+                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 : null
                 )
                 .contractEndMonth(
-                        StringUtils.hasText(contractTerm)
+                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 :null
                 )

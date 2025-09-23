@@ -50,12 +50,12 @@ public class MultiUnitDetachedLeaseDataItemProcessor implements ItemProcessor<Mu
                         )
                 )
                 .contractStartMonth(
-                        StringUtils.hasText(contractTerm)
+                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 : null
                 )
                 .contractEndMonth(
-                        StringUtils.hasText(contractTerm)
+                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 :null
                 )

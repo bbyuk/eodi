@@ -41,6 +41,8 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
+
+
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(legalDong.getName())
@@ -52,12 +54,12 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                         )
                 )
                 .contractStartMonth(
-                        StringUtils.hasText(contractTerm)
+                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 : null
                 )
                 .contractEndMonth(
-                        StringUtils.hasText(contractTerm)
+                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 :null
                 )
