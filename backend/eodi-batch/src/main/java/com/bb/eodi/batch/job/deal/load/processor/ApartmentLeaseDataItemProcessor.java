@@ -45,7 +45,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
 
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(legalDong.getName())
+                .legalDongName(item.umdNm())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

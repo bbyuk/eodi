@@ -41,7 +41,7 @@ public class MultiUnitDetachedLeaseDataItemProcessor implements ItemProcessor<Mu
 
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(legalDong.getName())
+                .legalDongName(item.umdNm())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

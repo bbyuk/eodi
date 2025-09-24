@@ -42,7 +42,7 @@ public class ApartmentPresaleRightSellDataItemProcessor
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(legalDong.getName())
+                .legalDongName(item.umdNm())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
