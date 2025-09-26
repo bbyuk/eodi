@@ -46,17 +46,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-def querydslDir = layout.buildDirectory.dir("generated/querydsl")
-
-sourceSets {
-	main {
-		java {
-			srcDir(querydslDir)
-		}
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	options.annotationProcessorPath = configurations.annotationProcessor
-	options.annotationProcessorGeneratedSourcesDirectory = querydslDir.get().asFile
+test {
+	useJUnitPlatform()
 }
