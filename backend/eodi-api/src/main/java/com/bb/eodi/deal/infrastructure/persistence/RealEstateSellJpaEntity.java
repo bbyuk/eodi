@@ -2,11 +2,9 @@ package com.bb.eodi.deal.infrastructure.persistence;
 
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.domain.type.TradeMethodType;
+import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,40 +17,19 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "real_estate_sell")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class RealEstateSellJpaEntity {
-
-    @Builder
-    public RealEstateSellJpaEntity(Long regionId, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
-        this.regionId = regionId;
-        this.legalDongName = legalDongName;
-        this.contractDate = contractDate;
-        this.price = price;
-        this.tradeMethodType = tradeMethodType;
-        this.cancelDate = cancelDate;
-        this.buildYear = buildYear;
-        this.netLeasableArea = netLeasableArea;
-        this.landArea = landArea;
-        this.totalFloorArea = totalFloorArea;
-        this.buyer = buyer;
-        this.seller = seller;
-        this.housingType = housingType;
-        this.dateOfRegistration = dateOfRegistration;
-        this.targetName = targetName;
-        this.buildingDong = buildingDong;
-        this.floor = floor;
-        this.isLandLease = isLandLease;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    // 대상 지역 법정동 ID (법정동코드 앞 5자리에 해당하는 법정동 ID)
-    @Column(name = "region_id")
-    private Long regionId;
+    // 대상 지역 법정동
+    @JoinColumn(name = "region_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private LegalDongJpaEntity region;
 
     // 법정동명
     @Column(name = "legal_dong_name")
