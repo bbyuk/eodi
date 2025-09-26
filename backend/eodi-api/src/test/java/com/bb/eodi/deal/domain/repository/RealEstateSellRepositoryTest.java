@@ -1,10 +1,12 @@
 package com.bb.eodi.deal.domain.repository;
 
+import com.bb.eodi.config.QuerydslConfig;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellRepositoryImpl;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongMapperImpl;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,11 +18,9 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 @DisplayName("small - 부동산 매매 실거래가 데이터 repository small test")
-@Import({
-        RealEstateSellRepositoryImpl.class,
-        RealEstateSellMapperImpl.class,
-        LegalDongMapperImpl.class
-})
+@Import({RealEstateSellRepositoryImpl.class,
+                QuerydslConfig.class,
+                RealEstateSellMapperImpl.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class RealEstateSellRepositoryTest {
