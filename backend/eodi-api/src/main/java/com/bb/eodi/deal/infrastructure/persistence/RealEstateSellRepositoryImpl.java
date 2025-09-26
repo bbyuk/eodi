@@ -3,9 +3,13 @@ package com.bb.eodi.deal.infrastructure.persistence;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,19 +27,35 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     private final RealEstateSellMapper mapper;
 
     @Override
-    public List<RealEstateSell> findBy(RealEstateSellQuery query) {
+    public Page<RealEstateSell> findBy(RealEstateSellQuery query, Pageable pageable) {
         QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
-        JPAQuery<RealEstateSellJpaEntity> jpaQuery = queryFactory
-                .selectFrom(realEstateSell)
-                .where(realEstateSell.price.between(query.getMinPrice(), query.getMaxPrice()));
+
+
+        BooleanBuilder condition = new BooleanBuilder(
+                realEstateSell.price.between(query.getMinPrice(), query.getMaxPrice())
+        );
 
         if (query.getHousingType() != null) {
-            jpaQuery = jpaQuery.where(realEstateSell.housingType.eq(query.getHousingType()));
+            condition.and(realEstateSell.housingType.eq(query.getHousingType()));
         }
 
-        return jpaQuery.fetch()
+
+        List<RealEstateSell> content = queryFactory
+                .selectFrom(realEstateSell)
+                .where(condition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(realEstateSell.id.desc())
+                .fetch()
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
+
+        Long total = queryFactory.select(realEstateSell.count())
+                .from(realEstateSell)
+                .where(condition)
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total != null ? total : 0);
     }
 }
