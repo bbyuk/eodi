@@ -68,7 +68,7 @@ public class MultiHouseholdHouseSellDataItemProcessor
                 .landArea(new BigDecimal(item.landAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType(HousingType.APT)
+                .housingType(HousingType.MULTI_HOUSEHOLD_HOUSE)
                 .dateOfRegistration(
                         StringUtils.hasText(item.rgstDate())
                                 ? LocalDate.parse(

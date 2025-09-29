@@ -75,7 +75,7 @@ public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelL
                 .netLeasableArea(StringUtils.hasText(item.excluUseAr())
                         ? new BigDecimal(item.excluUseAr())
                         : null)
-                .housingType(HousingType.APT)
+                .housingType(HousingType.OFFICETEL)
                 .floor(StringUtils.hasText(item.floor())
                         ? Integer.parseInt(item.floor())
                         :null)
