@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,37 +21,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RealEstateLeaseJpaEntity {
 
-    @Builder
-    public RealEstateLeaseJpaEntity(Long regionId, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
-        this.regionId = regionId;
-        this.legalDongName = legalDongName;
-        this.contractDate = contractDate;
-        this.contractStartMonth = contractStartMonth;
-        this.contractEndMonth = contractEndMonth;
-        this.deposit = deposit;
-        this.monthlyRent = monthlyRent;
-        this.previousDeposit = previousDeposit;
-        this.previousMonthlyRent = previousMonthlyRent;
-        this.totalFloorArea = totalFloorArea;
-        this.buildYear = buildYear;
-        this.netLeasableArea = netLeasableArea;
-        this.housingType = housingType;
-        this.targetName = targetName;
-        this.floor = floor;
-        this.useRRRight = useRRRight;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-
     // 대상지역 법정동 ID
-    @Column(name = "region_id")
-    private Long regionId;
+    @JoinColumn(name = "region_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private LegalDongJpaEntity region;
 
     // 법정동 명
     @Column(name = "legal_dong_name")
