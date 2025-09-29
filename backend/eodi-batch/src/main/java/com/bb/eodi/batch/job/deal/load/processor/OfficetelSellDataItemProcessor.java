@@ -62,7 +62,7 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType(HousingType.APT)
+                .housingType(HousingType.OFFICETEL)
                 .targetName(item.offiNm())
                 .floor(Integer.parseInt(item.floor()))
                 .isLandLease(false)

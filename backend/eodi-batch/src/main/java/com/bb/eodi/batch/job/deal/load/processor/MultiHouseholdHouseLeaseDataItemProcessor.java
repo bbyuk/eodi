@@ -72,7 +72,7 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
                 .netLeasableArea(StringUtils.hasText(item.excluUseAr())
                         ? new BigDecimal(item.excluUseAr())
                         : null)
-                .housingType(HousingType.APT)
+                .housingType(HousingType.MULTI_HOUSEHOLD_HOUSE)
                 .floor(StringUtils.hasText(item.floor())
                         ? Integer.parseInt(item.floor())
                         :null)
