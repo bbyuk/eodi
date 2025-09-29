@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -38,11 +40,13 @@ class RealEstateSellRepositoryTest {
                 .maxPrice(70000)
                 .build();
 
+        ;
+
         // when
-        List<RealEstateSell> results = realEstateSellRepository.findBy(query);
+        Page<RealEstateSell> results = realEstateSellRepository.findBy(query, PageRequest.of(0, 5));
 
         // then
-        Assertions.assertThat(results).isNotEmpty();
+        Assertions.assertThat(results.getContent()).isNotEmpty();
     }
 
 }
