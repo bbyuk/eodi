@@ -39,8 +39,10 @@ public class RealEstateSellController {
                                         .builder()
                                         .maxPrice(requestParameter.maxPrice())
                                         .minPrice(requestParameter.minPrice())
-                                        .floor(requestParameter.floor())
-                                        .housingType(requestParameter.housingType())
+                                        .startYearMonth(requestParameter.startYearMonth())
+                                        .endYearMonth(requestParameter.endYearMonth())
+                                        .targetHousingTypes(requestParameter.targetHousingTypes())
+                                        .targetRegionIds(requestParameter.targetRegionIds())
                                         .build(),
                                 pageable
                         )

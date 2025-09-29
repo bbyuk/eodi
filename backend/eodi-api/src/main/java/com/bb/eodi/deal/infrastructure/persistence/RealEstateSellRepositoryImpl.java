@@ -4,7 +4,6 @@ import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
 
-    private final RealEstateSellJpaRepository realEstateSellJpaRepository;
     private final JPAQueryFactory queryFactory;
     private final RealEstateSellMapper mapper;
 
@@ -30,15 +28,31 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     public Page<RealEstateSell> findBy(RealEstateSellQuery query, Pageable pageable) {
         QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
 
+        BooleanBuilder condition = new BooleanBuilder();
 
-        BooleanBuilder condition = new BooleanBuilder(
-                realEstateSell.price.between(query.getMinPrice(), query.getMaxPrice())
-        );
-
-        if (query.getHousingType() != null) {
-            condition.and(realEstateSell.housingType.eq(query.getHousingType()));
+        if (query.getMaxPrice() != null) {
+            condition.and(realEstateSell.price.loe(query.getMaxPrice()));
         }
 
+        if (query.getMinPrice() != null) {
+            condition.and(realEstateSell.price.goe(query.getMinPrice()));
+        }
+
+        if (query.getEndYearMonth() != null) {
+            condition.and(realEstateSell.contractDate.loe(query.getEndYearMonth().atEndOfMonth()));
+        }
+
+        if (query.getStartYearMonth() != null) {
+            condition.and(realEstateSell.contractDate.goe(query.getStartYearMonth().atDay(1)));
+        }
+
+        if (query.getTargetRegionIds() != null && !query.getTargetRegionIds().isEmpty()) {
+            condition.and(realEstateSell.region.id.in(query.getTargetRegionIds()));
+        }
+
+        if (query.getTargetHousingTypes() != null && !query.getTargetHousingTypes().isEmpty()) {
+            condition.and(realEstateSell.housingType.in(query.getTargetHousingTypes()));
+        }
 
         List<RealEstateSell> content = queryFactory
                 .selectFrom(realEstateSell)
