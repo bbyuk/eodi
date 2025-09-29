@@ -10,6 +10,7 @@ import java.time.LocalDate;
  */
 public record RealEstateSellSummaryDto(
         Long id,
+        Long regionId,
         String legalDongName,
         LocalDate contractDate,
         Long price,
