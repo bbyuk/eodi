@@ -50,6 +50,37 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
          */
 
 
+
+
         return RepeatStatus.FINISHED;
+    }
+
+    /**
+     * 대상 년월을 파라미터로 받아 임시파일명을 리턴한다.
+     * @param yearMonth 대상년월
+     * @return 임시파일명
+     */
+    private String getTempFileName(String yearMonth) {
+        if (targetClass.equals(ApartmentLeaseDataItem.class)) {
+            return "lease-apt-" + yearMonth + ".csv";
+        } else if (targetClass.equals(ApartmentPresaleRightSellDataItem.class)) {
+            return "sell-apr-" + yearMonth + ".csv";
+        } else if (targetClass.equals(ApartmentSellDataItem.class)) {
+            return "sell-apt-" + yearMonth + ".csv";
+        } else if (targetClass.equals(MultiHouseholdHouseLeaseDataItem.class)) {
+            return "lease-mhh-" + yearMonth + ".csv";
+        } else if (targetClass.equals(MultiHouseholdHouseSellDataItem.class)) {
+            return "sell-mhh-" + yearMonth + ".csv";
+        } else if (targetClass.equals(MultiUnitDetachedLeaseDataItem.class)) {
+            return "lease-mud-" + yearMonth + ".csv";
+        } else if (targetClass.equals(MultiUnitDetachedSellDataItem.class)) {
+            return "sell-mud-" + yearMonth + ".csv";
+        } else if (targetClass.equals(OfficetelLeaseDataItem.class)) {
+            return "lease-off-" + yearMonth + ".csv";
+        } else if (targetClass.equals(OfficetelSellDataItem.class)) {
+            return "sell-off-" + yearMonth + ".csv";
+        }
+
+        throw new RuntimeException("Unsupported target class: " + targetClass);
     }
 }
