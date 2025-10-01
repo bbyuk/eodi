@@ -32,13 +32,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet apartmentSellApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                ApartmentSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(ApartmentSellDataItem.class);
     }
 
     /**
@@ -49,13 +43,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet apartmentPresaleRightSellApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                ApartmentPresaleRightSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(ApartmentPresaleRightSellDataItem.class);
     }
 
     /**
@@ -66,13 +54,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet multiUnitDetachedSellApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                MultiUnitDetachedSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(MultiUnitDetachedSellDataItem.class);
     }
 
 
@@ -84,13 +66,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet multiHouseholdHouseSellApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                MultiHouseholdHouseSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(MultiHouseholdHouseSellDataItem.class);
     }
 
     /**
@@ -101,13 +77,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet officetelSellApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                OfficetelSellDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(OfficetelSellDataItem.class);
     }
 
     /**
@@ -118,13 +88,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet apartmentLeaseApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                ApartmentLeaseDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(ApartmentLeaseDataItem.class);
     }
 
     /**
@@ -135,13 +99,7 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet multiUnitDetachedLeaseApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                MultiUnitDetachedLeaseDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(MultiUnitDetachedLeaseDataItem.class);
     }
 
     /**
@@ -152,28 +110,17 @@ public class MonthlyDealDataLoadTaskletConfig {
     @Bean
     @StepScope
     public Tasklet multiHouseholdHouseLeaseApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                MultiHouseholdHouseLeaseDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(MultiHouseholdHouseLeaseDataItem.class);
     }
 
     /**
      * 오피스텔 전월세 실거래가 데이터 API 요청 step tasklet
+     *
      * @return 오피스텔 전월세 실거래가 데이터 API 요청 step tasklet
      */
     @Bean
     @StepScope
     public Tasklet officetelLeaseApiFetchStepTasklet() {
-        return new RealEstateDealApiFetchStepTasklet<>(
-                OfficetelLeaseDataItem.class,
-                legalDongRepository,
-                dealDataApiClient,
-                objectMapper,
-                governmentDataApiProperties.pageSize()
-        );
+        return new RealEstateDealApiFetchStepTasklet<>(OfficetelLeaseDataItem.class);
     }
 }

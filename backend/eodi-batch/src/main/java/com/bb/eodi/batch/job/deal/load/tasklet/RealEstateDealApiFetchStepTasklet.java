@@ -1,5 +1,6 @@
 package com.bb.eodi.batch.job.deal.load.tasklet;
 
+import com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey;
 import com.bb.eodi.domain.deal.dto.MonthlyLoadTargetLegalDongDto;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import com.bb.eodi.infrastructure.api.deal.DealDataApiClient;
@@ -21,8 +22,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.DEAL_MONTH;
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.TEMP_FILE;
+import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.*;
 
 /**
  * 부동산 거래 데이터 API 요청 Tasklet
@@ -32,10 +32,6 @@ import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.TEMP_FIL
 public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
 
     private final Class<T> targetClass;
-    private final LegalDongRepository legalDongRepository;
-    private final DealDataApiClient dealDataApiClient;
-    private final ObjectMapper objectMapper;
-    private final int pageSize;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -48,8 +44,13 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
          * 2. 파라미터 조합해 대상 파일 경로 get
          * 3. jobExecutionContext에 TEMP_FILE.name() key로 setString()
          */
-
-
+        jobCtx.putString(
+                TEMP_FILE.name(),
+                getTempFileName(
+                        jobCtx.getString(TEMP_FILE_ROOT.name()),
+                        jobCtx.getString(DEAL_MONTH.name())
+                ).toString()
+        );
 
 
         return RepeatStatus.FINISHED;
@@ -57,28 +58,29 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
 
     /**
      * 대상 년월을 파라미터로 받아 임시파일명을 리턴한다.
+     *
      * @param yearMonth 대상년월
      * @return 임시파일명
      */
-    private String getTempFileName(String yearMonth) {
+    private Path getTempFileName(String tempFileRoot, String yearMonth) {
         if (targetClass.equals(ApartmentLeaseDataItem.class)) {
-            return "lease-apt-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "lease_apt.csv");
         } else if (targetClass.equals(ApartmentPresaleRightSellDataItem.class)) {
-            return "sell-apr-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "sell_apr.csv");
         } else if (targetClass.equals(ApartmentSellDataItem.class)) {
-            return "sell-apt-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "sell_apt.csv");
         } else if (targetClass.equals(MultiHouseholdHouseLeaseDataItem.class)) {
-            return "lease-mhh-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "lease_mhh.csv");
         } else if (targetClass.equals(MultiHouseholdHouseSellDataItem.class)) {
-            return "sell-mhh-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "sell_mhh.csv");
         } else if (targetClass.equals(MultiUnitDetachedLeaseDataItem.class)) {
-            return "lease-mud-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "lease_mud.csv");
         } else if (targetClass.equals(MultiUnitDetachedSellDataItem.class)) {
-            return "sell-mud-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "sell_mud.csv");
         } else if (targetClass.equals(OfficetelLeaseDataItem.class)) {
-            return "lease-off-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "lease_off.csv");
         } else if (targetClass.equals(OfficetelSellDataItem.class)) {
-            return "sell-off-" + yearMonth + ".csv";
+            return Paths.get(tempFileRoot, yearMonth, "sell_off.csv");
         }
 
         throw new RuntimeException("Unsupported target class: " + targetClass);
