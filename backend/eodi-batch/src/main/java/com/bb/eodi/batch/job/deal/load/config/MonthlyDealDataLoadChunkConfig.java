@@ -1,6 +1,6 @@
 package com.bb.eodi.batch.job.deal.load.config;
 
-import com.bb.eodi.batch.job.deal.load.reader.RealEstateDealDataItemStreamReader;
+import com.bb.eodi.batch.job.deal.load.reader.*;
 import com.bb.eodi.port.out.deal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,6 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 public class MonthlyDealDataLoadChunkConfig {
 
-    private final ObjectMapper objectMapper;
-    
     /**
      * 아파트 매매 데이터 적재 chunk ItemReader
      * @param tempFilePath jobExecutionContext 값 임시 파일 경로
@@ -29,7 +27,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<ApartmentSellDataItem> apartmentSellDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(ApartmentSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new ApartmentSellDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -40,7 +38,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<ApartmentPresaleRightSellDataItem> apartmentPresaleRightSellDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(ApartmentPresaleRightSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new ApartmentPresaleRightSellDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -51,7 +49,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<MultiUnitDetachedSellDataItem> multiUnitDetachedSellDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(MultiUnitDetachedSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new MultiUnitDetachedSellDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -62,7 +60,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<MultiHouseholdHouseSellDataItem> multiHouseholdSellDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(MultiHouseholdHouseSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new MultiHouseholdHouseSellDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -73,7 +71,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<OfficetelSellDataItem> officetelSellDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(OfficetelSellDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new OfficetelSellDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -84,7 +82,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<ApartmentLeaseDataItem> apartmentLeaseDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(ApartmentLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new ApartmentLeaseDataItemReader(Paths.get(tempFilePath));
     }
 
 
@@ -96,7 +94,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<MultiUnitDetachedLeaseDataItem> multiUnitDetachedLeaseDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(MultiUnitDetachedLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new MultiUnitDetachedLeaseDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -107,7 +105,7 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<MultiHouseholdHouseLeaseDataItem> multiHouseholdHouseLeaseDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(MultiHouseholdHouseLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new MultiHouseholdHouseLeaseDataItemReader(Paths.get(tempFilePath));
     }
 
     /**
@@ -118,6 +116,6 @@ public class MonthlyDealDataLoadChunkConfig {
     @Bean
     @StepScope
     public ItemStreamReader<OfficetelLeaseDataItem> officetelLeaseDataItemReader(@Value("#{jobExecutionContext['TEMP_FILE']}") String tempFilePath) {
-        return new RealEstateDealDataItemStreamReader<>(OfficetelLeaseDataItem.class, Paths.get(tempFilePath), objectMapper);
+        return new OfficetelLeaseDataItemReader(Paths.get(tempFilePath));
     }
 }

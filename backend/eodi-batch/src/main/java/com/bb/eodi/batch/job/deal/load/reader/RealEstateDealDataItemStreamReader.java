@@ -1,9 +1,9 @@
 package com.bb.eodi.batch.job.deal.load.reader;
 
-import com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
+import org.springframework.batch.item.ItemStreamReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,37 +11,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.*;
+import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
 
 @Slf4j
-public class RealEstateDealDataItemStreamReader<T> implements ItemStreamReader<T> {
-    private final Class<T> targetClass;
-    private final Path tempFilePath;
-    private final ObjectMapper objectMapper;
-    private BufferedReader br;
+public abstract class RealEstateDealDataItemStreamReader<T> implements ItemStreamReader<T> {
+    protected final Path tempFilePath;
+    protected BufferedReader br;
+    protected int readCounter = 0;
 
-    private int readCounter = 0;
-
-    public RealEstateDealDataItemStreamReader(
-            Class<T> targetClass,
-        Path tempFilePath,
-        ObjectMapper objectMapper
-    ) {
-        this.targetClass = targetClass;
+    public RealEstateDealDataItemStreamReader(Path tempFilePath) {
         this.tempFilePath = tempFilePath;
-        this.objectMapper = objectMapper;
     }
 
-    @Override
-    public T read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        String line = nextLine();
-
-        readCounter++;
-        log.info("RealEstateDealDataItemStreamReader -> {} read line={}", targetClass.getName() ,line);
-        return line == null ? null : objectMapper.readValue(line, targetClass);
-    }
-
-    private String nextLine() throws IOException {
+    protected String nextLine() throws IOException {
         String line;
         while (true) {
             line = br.readLine();
@@ -85,7 +67,6 @@ public class RealEstateDealDataItemStreamReader<T> implements ItemStreamReader<T
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
         executionContext.putInt(CURRENT_INDEX.name(), readCounter);
-//        ItemStreamReader.super.update(executionContext);
     }
 
     @Override
