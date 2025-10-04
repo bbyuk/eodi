@@ -10,6 +10,8 @@ public enum MonthlyDealDataLoadJobKey {
     DEAL_MONTH,
     // 부동산 거래 데이터 API 응답 임시 파일
     TEMP_FILE,
+    // hotfix 임시 파일 root 경로
+    TEMP_FILE_ROOT,
     // 재시작 로직 처리를 위한 키
     CURRENT_INDEX
 }

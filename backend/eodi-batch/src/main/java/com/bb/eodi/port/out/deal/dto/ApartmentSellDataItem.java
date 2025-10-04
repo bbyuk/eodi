@@ -43,6 +43,8 @@ public record ApartmentSellDataItem(
         // 거래주체정보_매수자(개인/법인/공공기관/기타)
         String buyerGbn,
         // 토지임대부 아파트 여부
-        String landLeaseholdGbn
+        String landLeaseholdGbn,
+        // 임시 법정동명
+        String tempSggNm
 ) {
 }
