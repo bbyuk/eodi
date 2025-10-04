@@ -7,6 +7,7 @@ import org.springframework.batch.item.ItemStreamReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ public abstract class RealEstateDealDataItemStreamReader<T> implements ItemStrea
     protected final Path tempFilePath;
     protected BufferedReader br;
     protected int readCounter = 0;
+    private int skipCount = 16;
 
     public RealEstateDealDataItemStreamReader(Path tempFilePath) {
         this.tempFilePath = tempFilePath;
@@ -41,7 +43,11 @@ public abstract class RealEstateDealDataItemStreamReader<T> implements ItemStrea
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
         try {
-            br = Files.newBufferedReader(tempFilePath, StandardCharsets.UTF_8);
+            br = Files.newBufferedReader(tempFilePath, Charset.forName("EUC-KR"));
+
+            for (int i = 0; i < skipCount; i++) {
+                br.readLine();
+            }
 
             if (executionContext.containsKey(CURRENT_INDEX.name())) {
                 int lastIndex = executionContext.getInt(CURRENT_INDEX.name());
