@@ -31,7 +31,7 @@ public class MultiHouseholdHouseSellDataItemProcessor
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
-    private static final String cancelDateFormat = "yy.MM.dd";
+    private static final String cancelDateFormat = "yyyyMMdd";
     private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
@@ -40,12 +40,12 @@ public class MultiHouseholdHouseSellDataItemProcessor
         log.debug("item : {}", item);
 
         // 법정동코드 조회
-        LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
+        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.umdNm())
+                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
@@ -57,13 +57,16 @@ public class MultiHouseholdHouseSellDataItemProcessor
                 .tradeMethodType(TradeMethodType.fromData(item.dealingGbn()))
                 .cancelDate(
                         StringUtils.hasText(item.cdealDay().trim())
+                                && !"-".equals(item.cdealDay().trim())
                                 ? LocalDate.parse(
                                 item.cdealDay(),
                                 DateTimeFormatter.ofPattern(cancelDateFormat)
-                        )
-                                : null
+                        ) : null
                 )
-                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
+                .buildYear(
+                        StringUtils.hasText(item.buildYear())
+                                && !"-".equals(item.buildYear())
+                                ? Integer.parseInt(item.buildYear()) : null)
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .landArea(new BigDecimal(item.landAr()))
                 .buyer(item.buyerGbn())
@@ -71,6 +74,7 @@ public class MultiHouseholdHouseSellDataItemProcessor
                 .housingType(HousingType.MULTI_HOUSEHOLD_HOUSE)
                 .dateOfRegistration(
                         StringUtils.hasText(item.rgstDate())
+                                && !"-".equals(item.rgstDate())
                                 ? LocalDate.parse(
                                 item.rgstDate(),
                                 DateTimeFormatter.ofPattern(dateOfRegistrationFormat)

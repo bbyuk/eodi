@@ -37,6 +37,7 @@ public record MultiHouseholdHouseLeaseDataItem(
         // 종전계약보증금
         String preDeposit,
         // 종전계약월세
-        String preMonthlyRent
+        String preMonthlyRent,
+        String tempSggNm
 ) {
 }
