@@ -35,16 +35,17 @@ public interface LegalDongJpaRepository extends JpaRepository<LegalDong, Long> {
     // 이름으로 대상 legaldong을 찾고 대상 legaldong code의 앞 5자리 + 0 5자리인 코드를 갖고 있는
     @Query(value = """
             SELECT
-                    ld_1.id                 AS id,
-                    ld_1.code               AS code,
-                    ld_1.sido_code          AS sidoCode,
-                    ld_1.sigungu_code       AS sigunguCode,
-                    ld_1.dong_code          AS doncCode,
-                    ld_1.name               AS name,
-                    ld_1.legal_dong_order   AS legalDongOrder,
-                    ld_1.parent_id          AS parentId,
-                    ld_1.created_at         AS createdAt,
-                    ld_1.updated_at         AS updatedAt
+                    ld_1.id,
+                    ld_1.code,
+                    ld_1.sido_code,
+                    ld_1.sigungu_code,
+                    ld_1.dong_code,
+                    ld_1.name,
+                    ld_1.legal_dong_order,
+                    ld_1.parent_id,
+                    ld_1.is_active,
+                    ld_1.created_at,
+                    ld_1.updated_at
             FROM    legal_dong ld_1
             WHERE   ld_1.code =
                         (
