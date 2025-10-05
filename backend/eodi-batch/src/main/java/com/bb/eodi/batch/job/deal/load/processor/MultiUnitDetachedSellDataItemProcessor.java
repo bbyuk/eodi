@@ -39,12 +39,12 @@ public class MultiUnitDetachedSellDataItemProcessor
         log.info("multi unit-detached sell item process: {}", item);
 
         // 법정동코드 조회
-        LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
+        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.umdNm())
+                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
@@ -56,13 +56,17 @@ public class MultiUnitDetachedSellDataItemProcessor
                 .tradeMethodType(TradeMethodType.fromData(item.dealingGbn()))
                 .cancelDate(
                         StringUtils.hasText(item.cdealDay().trim())
+                                && !"-".equals(item.cdealDay().trim())
                                 ? LocalDate.parse(
                                 item.cdealDay(),
                                 DateTimeFormatter.ofPattern(cancelDateFormat)
                         )
                                 : null
                 )
-                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
+                .buildYear(
+                        StringUtils.hasText(item.buildYear())
+                                && !"-".equals(item.buildYear())
+                                ? Integer.parseInt(item.buildYear()) : null)
                 .landArea(new BigDecimal(item.plottageAr()))
                 .totalFloorArea(new BigDecimal(item.totalFloorAr()))
                 .buyer(item.buyerGbn())
