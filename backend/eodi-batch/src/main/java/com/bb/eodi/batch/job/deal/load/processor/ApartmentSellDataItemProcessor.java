@@ -27,7 +27,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
-    private static final String cancelDateFormat = "yy.MM.dd";
+    private static final String cancelDateFormat = "yyyyMMdd";
     private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
@@ -36,12 +36,17 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
         log.debug("item : {}", item);
 
         // 법정동코드 조회
-        LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
+        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
+
+        // item.tempSggNm() -> 서울특별시 강남구 대치동
+        // legalDong.name() -> 서울틁별시 강남구
+
+
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.umdNm())
+                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
@@ -51,8 +56,9 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
                 )
                 .price(Long.parseLong(item.dealAmount().replace(",", "")))
                 .tradeMethodType(TradeMethodType.fromData(item.dealingGbn()))
+                // item.cdealDay -> "-"인 case 존재
                 .cancelDate(
-                        StringUtils.hasText(item.cdealDay().trim())
+                        StringUtils.hasText(item.cdealDay().trim()) && !item.cdealDay().equals("-")
                                 ? LocalDate.parse(
                                 item.cdealDay(),
                                 DateTimeFormatter.ofPattern(cancelDateFormat)
@@ -65,7 +71,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
                 .seller(item.slerGbn())
                 .housingType(HousingType.APT)
                 .dateOfRegistration(
-                        StringUtils.hasText(item.rgstDate())
+                        StringUtils.hasText(item.rgstDate()) && !item.rgstDate().equals("-")
                                 ? LocalDate.parse(
                                 item.rgstDate(),
                                 DateTimeFormatter.ofPattern(dateOfRegistrationFormat)
