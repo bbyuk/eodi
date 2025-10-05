@@ -37,12 +37,13 @@ public class ApartmentPresaleRightSellDataItemProcessor
         log.debug("item : {}", item);
 
         // 법정동코드 조회
-        LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
+        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
+
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.umdNm())
+                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
@@ -54,6 +55,7 @@ public class ApartmentPresaleRightSellDataItemProcessor
                 .tradeMethodType(TradeMethodType.fromData(item.dealingGbn()))
                 .cancelDate(
                         StringUtils.hasText(item.cdealDay().trim())
+                                &&!"-".equals(item.cdealDay().trim())
                                 ? LocalDate.parse(
                                 item.cdealDay(),
                                 DateTimeFormatter.ofPattern(cancelDateFormat)
@@ -63,7 +65,7 @@ public class ApartmentPresaleRightSellDataItemProcessor
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType("입".equals(item.ownershipGbn()) ? HousingType.OCCUPY_RIGHT : HousingType.PRESALE_RIGHT)
+                .housingType("입주권".equals(item.ownershipGbn()) ? HousingType.OCCUPY_RIGHT : HousingType.PRESALE_RIGHT)
                 .targetName(item.aptNm())
                 .floor(Integer.parseInt(item.floor()))
                 .isLandLease(false)

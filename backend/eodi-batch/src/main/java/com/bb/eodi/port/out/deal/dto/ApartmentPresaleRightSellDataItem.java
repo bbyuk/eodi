@@ -39,7 +39,8 @@ public record ApartmentPresaleRightSellDataItem(
         // 거래주체정보_매도자(개인/법인/공공기관/기타)
         String slerGbn,
         // 거래주체정보_매수자(개인/법인/공공기관/기타)
-        String buyerGbn
+        String buyerGbn,
+        String tempSggNm
 
 
 ) {
