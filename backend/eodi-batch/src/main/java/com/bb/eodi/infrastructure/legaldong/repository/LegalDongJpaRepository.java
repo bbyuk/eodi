@@ -51,7 +51,7 @@ public interface LegalDongJpaRepository extends JpaRepository<LegalDong, Long> {
                         (
                             SELECT  RPAD(SUBSTR(ld_2.code, 1, 5), 10, '0')
                             FROM    legal_dong ld_2
-                            WHERE   ld_2.name = :name
+                            WHERE   REPLACE(ld_2.name, ' ', '') = REPLACE(:name, ' ', '')
                             LIMIT   1
                         )
             """, nativeQuery = true)

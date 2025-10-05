@@ -35,4 +35,18 @@ class LegalDongJpaRepositoryTest {
         Assertions.assertThat(legalDong.getCode()).isEqualTo("1168000000");
 
     }
+
+    @Test
+    @DisplayName("법정동 명 사이에 빈칸이 여러번 들어가 있는 경우도 찾을 수 있다.")
+    public void testFindTopSigunguCodeByCodeWithoutWhitespace() throws Exception {
+        // given
+        String name = "세종특별자치시  소정면 운당리";
+
+        // when
+        LegalDong legalDong = legalDongJpaRepository.findTopSigunguCodeByName(name).get();
+
+        // then
+
+        Assertions.assertThat(legalDong.getCode()).isEqualTo("3611000000");
+    }
 }
