@@ -23,27 +23,29 @@ public class TempFileCleanupStepListener implements StepExecutionListener {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        ExecutionContext jobCtx = stepExecution.getJobExecution().getExecutionContext();
+//        ExecutionContext jobCtx = stepExecution.getJobExecution().getExecutionContext();
+//
+//        if (stepExecution.getStatus() == BatchStatus.COMPLETED) {
+//            if (jobCtx.containsKey(TEMP_FILE.name())) {
+//                Path tempFilePath = Paths.get(jobCtx.getString(TEMP_FILE.name()));
+//
+//                try {
+//                    Files.deleteIfExists(tempFilePath);
+//                    log.info("Step 완료 -> temp file 삭제. file={}", tempFilePath);
+//                }
+//                catch (Exception e) {
+//                    log.error("temp file 삭제 실패. file={}", tempFilePath, e);
+//                }
+//            }
+//            else {
+//                log.warn("JobExecutionContext에 temp file path({}}가 없음.", TEMP_FILE.name());
+//            }
+//        }
+//        else {
+//            log.warn("Step이 실패하여 temp file을 삭제하지 않음. status={}", stepExecution.getStatus());
+//        }
 
-        if (stepExecution.getStatus() == BatchStatus.COMPLETED) {
-            if (jobCtx.containsKey(TEMP_FILE.name())) {
-                Path tempFilePath = Paths.get(jobCtx.getString(TEMP_FILE.name()));
-
-                try {
-                    Files.deleteIfExists(tempFilePath);
-                    log.info("Step 완료 -> temp file 삭제. file={}", tempFilePath);
-                }
-                catch (Exception e) {
-                    log.error("temp file 삭제 실패. file={}", tempFilePath, e);
-                }
-            }
-            else {
-                log.warn("JobExecutionContext에 temp file path({}}가 없음.", TEMP_FILE.name());
-            }
-        }
-        else {
-            log.warn("Step이 실패하여 temp file을 삭제하지 않음. status={}", stepExecution.getStatus());
-        }
+        log.debug("임시 브랜치 적용으로 파일 삭제하지않음.");
 
         return stepExecution.getExitStatus();
     }
