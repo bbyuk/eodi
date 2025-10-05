@@ -79,7 +79,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
                                 : null
                 )
                 .targetName(item.aptNm())
-                .buildingDong(item.aptDong())
+                .buildingDong("-".equals(item.aptDong()) ? null : item.aptDong())
                 .floor(Integer.parseInt(item.floor()))
                 .isLandLease(item.landLeaseholdGbn().equals("Y"))
                 .build();
