@@ -31,7 +31,7 @@ public class MultiUnitDetachedSellDataItemProcessor
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
-    private static final String cancelDateFormat = "yy.MM.dd";
+    private static final String cancelDateFormat = "yyyyMMdd";
 
 
     @Override
