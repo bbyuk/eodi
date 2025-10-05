@@ -27,7 +27,7 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
-    private static final String cancelDateFormat = "yy.MM.dd";
+    private static final String cancelDateFormat = "yyyyMMdd";
 
     @Override
     public RealEstateSell process(OfficetelSellDataItem item) throws Exception {
@@ -52,13 +52,17 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
                 .tradeMethodType(TradeMethodType.fromData(item.dealingGbn()))
                 .cancelDate(
                         StringUtils.hasText(item.cdealDay().trim())
+                                && !"-".equals(item.cdealDay().trim())
                                 ? LocalDate.parse(
                                 item.cdealDay(),
                                 DateTimeFormatter.ofPattern(cancelDateFormat)
                         )
                                 : null
                 )
-                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
+                .buildYear(
+                        StringUtils.hasText(item.buildYear())
+                                && !"-".equals(item.buildYear())
+                                ? Integer.parseInt(item.buildYear()) : null)
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
