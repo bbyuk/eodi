@@ -32,7 +32,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
     private static final String contractTermDelimiter = "~";
     private static final String contractTermYearMonthDelimiter = ".";
     private static final String numberDelimiter = ",";
-    private static final int yearFixValue = 200000;
+    private static final int yearFixValue = 0;
 
     @Override
     public RealEstateLease process(ApartmentLeaseDataItem item) throws Exception {
@@ -45,7 +45,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
 
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.umdNm())
+                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
