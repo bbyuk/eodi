@@ -39,7 +39,7 @@ public class LegalDong {
     private String name;
 
     // 법정동 서열
-    @Column(name = "legalDongOrder")
+    @Column(name = "legal_dong_order")
     private int legalDongOrder;
 
     // 상위 법정동 ID

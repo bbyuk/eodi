@@ -69,6 +69,11 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     }
 
     @Override
+    public Optional<LegalDong> findTopSigunguCodeByName(String name) {
+        return legalDongJpaRepository.findTopSigunguCodeByName(name);
+    }
+
+    @Override
     public void mappingParentIdBatch(List<? extends LegalDong> data) {
         String sql = """
                 UPDATE  legal_dong ld_sub JOIN legal_dong ld 

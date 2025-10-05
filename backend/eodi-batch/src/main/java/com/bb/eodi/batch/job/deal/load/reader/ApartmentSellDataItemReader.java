@@ -70,7 +70,7 @@ public class ApartmentSellDataItemReader extends RealEstateDealDataItemStreamRea
             // 거래주체정보_매수자(개인/법인/공공기관/기타)
             String buyerGbn = values[13];
             // 토지임대부 아파트 여부
-            String landLeaseholdGbn;
+            String landLeaseholdGbn = "N";
             String tempSggNm = values[1];
 
             return new ApartmentSellDataItem(
@@ -93,7 +93,7 @@ public class ApartmentSellDataItemReader extends RealEstateDealDataItemStreamRea
                     aptDong,
                     slerGbn,
                     buyerGbn,
-                    null,
+                    landLeaseholdGbn,
                     tempSggNm
             );
         }

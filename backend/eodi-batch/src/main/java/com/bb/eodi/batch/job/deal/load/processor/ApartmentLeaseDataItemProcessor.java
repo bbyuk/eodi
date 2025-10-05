@@ -32,12 +32,12 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
     private static final String contractTermDelimiter = "~";
     private static final String contractTermYearMonthDelimiter = ".";
     private static final String numberDelimiter = ",";
-    private static final int yearFixValue = 200000;
+    private static final int yearFixValue = 0;
 
     @Override
     public RealEstateLease process(ApartmentLeaseDataItem item) throws Exception {
 
-        LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
+        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
@@ -45,7 +45,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
 
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.umdNm())
+                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
@@ -54,23 +54,31 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                         )
                 )
                 .contractStartMonth(
-                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
+                        StringUtils.hasText(contractTerm)
+                                && !"-".equals(contractTerm)
+                                && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[0].replace(contractTermYearMonthDelimiter, ""))
                                 : null
                 )
                 .contractEndMonth(
-                        StringUtils.hasText(contractTerm) && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
+                        StringUtils.hasText(contractTerm)
+                                && !"-".equals(contractTerm)
+                                && StringUtils.hasText(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
                                 ? yearFixValue + Integer.parseInt(contractTerm.split(contractTermDelimiter)[1].replace(contractTermYearMonthDelimiter, ""))
-                                :null
+                                : null
                 )
                 .deposit(Integer.parseInt(item.deposit().replace(numberDelimiter, "")))
                 .monthlyRent(Integer.parseInt(item.monthlyRent().replace(numberDelimiter, "")))
-                .previousDeposit(StringUtils.hasText(item.preDeposit().trim())
-                        ? Integer.parseInt(item.preDeposit().replace(numberDelimiter, ""))
-                        : null)
-                .previousMonthlyRent(StringUtils.hasText(item.preMonthlyRent().trim())
-                        ? Integer.parseInt(item.preMonthlyRent().replace(numberDelimiter, ""))
-                        : null)
+                .previousDeposit(
+                        StringUtils.hasText(item.preDeposit().trim())
+                                && !"-".equals(item.preDeposit().trim())
+                                ? Integer.parseInt(item.preDeposit().replace(numberDelimiter, ""))
+                                : null)
+                .previousMonthlyRent(
+                        StringUtils.hasText(item.preMonthlyRent().trim())
+                                && !"-".equals(item.preMonthlyRent().trim())
+                                ? Integer.parseInt(item.preMonthlyRent().replace(numberDelimiter, ""))
+                                : null)
                 .buildYear(StringUtils.hasText(item.buildYear().trim())
                         ? Integer.parseInt(item.buildYear())
                         : null)
@@ -78,9 +86,9 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                         ? new BigDecimal(item.excluUseAr())
                         : null)
                 .housingType(HousingType.APT)
-                .floor(StringUtils.hasText(item.floor())
+                .floor(StringUtils.hasText(item.floor()) && !"-".equals(item.floor())
                         ? Integer.parseInt(item.floor())
-                        :null)
+                        : null)
                 .useRRRight("사용".equals(item.useRRRight()))
                 .targetName(item.aptNm())
                 .build();
