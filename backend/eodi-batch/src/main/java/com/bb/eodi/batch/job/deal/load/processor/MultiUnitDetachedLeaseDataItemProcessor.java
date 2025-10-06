@@ -29,7 +29,7 @@ public class MultiUnitDetachedLeaseDataItemProcessor implements ItemProcessor<Mu
     private static final String contractTermDelimiter = "~";
     private static final String contractTermYearMonthDelimiter = ".";
     private static final String numberDelimiter = ",";
-    private static final int yearFixValue = 200000;
+    private static final int yearFixValue = 0;
 
     @Override
     public RealEstateLease process(MultiUnitDetachedLeaseDataItem item) throws Exception {
