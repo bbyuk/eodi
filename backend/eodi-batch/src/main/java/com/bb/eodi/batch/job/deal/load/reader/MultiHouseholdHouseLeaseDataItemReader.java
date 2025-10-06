@@ -68,7 +68,7 @@ public class MultiHouseholdHouseLeaseDataItemReader extends RealEstateDealDataIt
             return new MultiHouseholdHouseLeaseDataItem(
                     null,
                     null,
-                    null,
+                    mhouseNm,
                     jibun,
                     buildYear,
                     excluUseAr,
