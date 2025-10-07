@@ -19,11 +19,11 @@ public interface LegalDongRepository {
     Optional<LegalDong> findByCode(String code);
 
     /**
-     * 법정동 명으로 시군구 최상위 코드 조회
+     * 법정동 명으로 조회
      * @param name 명
-     * @return 대상 명에 해당하는 시군구 최상위 코드
+     * @return 대상 명에 해당하는 법정동 조회
      */
-    Optional<LegalDong> findTopSigunguCodeByName(String name);
+    Optional<LegalDong> findByName(String name);
 
     /**
      * 법정동 적재 배치 merge

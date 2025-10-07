@@ -72,7 +72,7 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     }
 
     @Override
-    public Optional<LegalDong> findTopSigunguCodeByName(String name) {
+    public Optional<LegalDong> findByName(String name) {
         String key = name.replace(" ", "");
 
         if (IN_MEMORY_MAP.containsKey(key)) {
@@ -81,7 +81,9 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
 
         legalDongJpaRepository.findAll()
                 .stream()
-                .forEach(legalDong -> IN_MEMORY_MAP.put(legalDong.getName().replace(" ", ""), legalDong));
+                .forEach(legalDong
+                        -> IN_MEMORY_MAP.put(
+                                legalDong.getName().replace(" ", ""), legalDong));
 
         return Optional.of(IN_MEMORY_MAP.get(key));
     }
