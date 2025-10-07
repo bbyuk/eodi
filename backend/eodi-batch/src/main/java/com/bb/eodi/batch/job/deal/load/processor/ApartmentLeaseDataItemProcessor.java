@@ -14,7 +14,6 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 아파트 임대차 실거래가 데이터 적재 배치 chunk step ItemProcessor
@@ -37,15 +36,17 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
     @Override
     public RealEstateLease process(ApartmentLeaseDataItem item) throws Exception {
 
-        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
+        LegalDong legalDong = legalDongRepository.findByName(item.tempSggNm())
+                .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
+        LegalDong topSigunguLegalDong = legalDongRepository.findByCode(legalDong.getCode().substring(0, 5) + legalDongCodePostfix)
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
 
 
         return RealEstateLease.builder()
-                .regionId(legalDong.getId())
-                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
+                .regionId(topSigunguLegalDong.getId())
+                .legalDongName(legalDong.getName())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

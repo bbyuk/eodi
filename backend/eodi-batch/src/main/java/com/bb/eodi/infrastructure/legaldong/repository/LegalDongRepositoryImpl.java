@@ -10,7 +10,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -23,6 +25,7 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final LegalDongJpaRepository legalDongJpaRepository;
+    private final static Map<String, LegalDong> IN_MEMORY_MAP = new HashMap<>();
 
     @Override
     public Optional<LegalDong> findByCode(String code) {
@@ -69,8 +72,20 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     }
 
     @Override
-    public Optional<LegalDong> findTopSigunguCodeByName(String name) {
-        return legalDongJpaRepository.findTopSigunguCodeByName(name);
+    public Optional<LegalDong> findByName(String name) {
+        String key = name.replace(" ", "");
+
+        if (IN_MEMORY_MAP.containsKey(key)) {
+            return Optional.of(IN_MEMORY_MAP.get(key));
+        }
+
+        legalDongJpaRepository.findAll()
+                .stream()
+                .forEach(legalDong
+                        -> IN_MEMORY_MAP.put(
+                                legalDong.getName().replace(" ", ""), legalDong));
+
+        return Optional.of(IN_MEMORY_MAP.get(key));
     }
 
     @Override

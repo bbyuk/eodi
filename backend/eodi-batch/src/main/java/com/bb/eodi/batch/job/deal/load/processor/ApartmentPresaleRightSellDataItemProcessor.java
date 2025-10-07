@@ -37,13 +37,14 @@ public class ApartmentPresaleRightSellDataItemProcessor
         log.debug("item : {}", item);
 
         // 법정동코드 조회
-        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
+        LegalDong legalDong = legalDongRepository.findByName(item.tempSggNm())
+                .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
+        LegalDong topSigunguLegalDong = legalDongRepository.findByCode(legalDong.getCode().substring(0, 5) + legalDongCodePostfix)
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
-
         return RealEstateSell.builder()
-                .regionId(legalDong.getId())
-                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
+                .regionId(topSigunguLegalDong.getId())
+                .legalDongName(legalDong.getName())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
