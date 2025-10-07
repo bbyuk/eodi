@@ -34,12 +34,14 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
     @Override
     public RealEstateLease process(MultiHouseholdHouseLeaseDataItem item) throws Exception {
 
-        LegalDong legalDong = legalDongRepository.findTopSigunguCodeByName(item.tempSggNm())
+        LegalDong legalDong = legalDongRepository.findByName(item.tempSggNm())
+                .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
+        LegalDong topSigunguLegalDong = legalDongRepository.findByCode(legalDong.getCode().substring(0, 5) + legalDongCodePostfix)
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
         return RealEstateLease.builder()
-                .regionId(legalDong.getId())
+                .regionId(topSigunguLegalDong.getId())
                 .legalDongName(legalDong.getName())
                 .contractDate(
                         LocalDate.of(
