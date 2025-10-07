@@ -40,7 +40,7 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
+                .legalDongName(legalDong.getName())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

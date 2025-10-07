@@ -40,7 +40,7 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
         String contractTerm = item.contractTerm().trim();
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
+                .legalDongName(legalDong.getName())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

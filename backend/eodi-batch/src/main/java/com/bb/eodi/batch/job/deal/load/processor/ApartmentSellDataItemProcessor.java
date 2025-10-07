@@ -46,7 +46,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
-                .legalDongName(item.tempSggNm().substring(legalDong.getName().length()).trim())
+                .legalDongName(legalDong.getName())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
