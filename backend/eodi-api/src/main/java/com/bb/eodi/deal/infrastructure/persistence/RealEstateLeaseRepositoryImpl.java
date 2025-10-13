@@ -53,6 +53,14 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
             condition.and(realEstateLease.netLeasableArea.goe(query.getMinNetLeasableArea()));
         }
 
+        if (query.getStartYearMonth() != null) {
+            condition.and(realEstateLease.contractDate.goe(query.getStartYearMonth().atDay(1)));
+        }
+
+        if (query.getEndYearMonth() != null) {
+            condition.and(realEstateLease.contractDate.loe(query.getEndYearMonth().atEndOfMonth()));
+        }
+
         if (query.getTargetHousingTypes() != null && !query.getTargetHousingTypes().isEmpty()) {
             condition.and(realEstateLease.housingType.in(query.getTargetHousingTypes()));
         }

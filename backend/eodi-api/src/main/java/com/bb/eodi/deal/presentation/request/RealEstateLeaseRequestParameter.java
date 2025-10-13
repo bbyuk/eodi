@@ -4,7 +4,9 @@ import com.bb.eodi.deal.domain.type.HousingType;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.YearMonth;
 import java.util.List;
 
 /**
@@ -24,6 +26,13 @@ public record RealEstateLeaseRequestParameter(
         Integer maxNetLeasableArea,
         @Parameter(description = "최소 전용면적", example = "39")
         Integer minNetLeasableArea,
+        @Parameter(description = "조회 계약년월 시작월", example = "202409")
+        @DateTimeFormat(pattern = "yyyyMM")
+        YearMonth startYearMonth,
+        @Parameter(description = "조회 계약년월 종료월", example = "202409")
+        @DateTimeFormat(pattern = "yyyyMM")
+        YearMonth endYearMonth,
+        @Parameter(description = "")
         @Parameter(
                 description = "조회 대상 지역 ID 목록",
                 example = "[14285,1612]",
