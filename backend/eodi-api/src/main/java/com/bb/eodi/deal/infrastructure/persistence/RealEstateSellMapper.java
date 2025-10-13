@@ -9,6 +9,5 @@ import org.mapstruct.Mapping;
  */
 @Mapper(componentModel = "spring")
 public interface RealEstateSellMapper {
-    @Mapping(source = "region.id", target = "regionId")
     RealEstateSell toDomain(RealEstateSellJpaEntity entity);
 }

@@ -66,7 +66,7 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
         }
 
         if (query.getTargetRegionIds() != null && !query.getTargetRegionIds().isEmpty()) {
-            condition.and(realEstateLease.region.id.in(query.getTargetRegionIds()));
+            condition.and(realEstateLease.regionId.in(query.getTargetRegionIds()));
         }
 
         List<RealEstateLease> content = queryFactory
