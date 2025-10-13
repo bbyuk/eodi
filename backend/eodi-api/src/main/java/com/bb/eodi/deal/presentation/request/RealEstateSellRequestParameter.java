@@ -1,25 +1,50 @@
 package com.bb.eodi.deal.presentation.request;
 
 import com.bb.eodi.deal.domain.type.HousingType;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.YearMonth;
 import java.util.List;
 
-/**
- * 부동산 매매 실거래가 데이터 요청 파라미터
- */
+@Schema(description = "부동산 매매 실거래가 데이터 요청 파라미터")
 public record RealEstateSellRequestParameter(
-        // 최대 가격
+        @Parameter(description = "최대 거래가 (단위: 만원)", example = "100000")
         Integer maxPrice,
-        // 최소 가격
+        @Parameter(description = "최소 거래가 (단위: 만원)", example = "40000")
         Integer minPrice,
-        // 조회기간 시작월
+        @Parameter(description = "조회 계약년월 시작월", example = "202409")
+        @DateTimeFormat(pattern = "yyyyMM")
         YearMonth startYearMonth,
-        // 조회기간 종료월
+        @Parameter(description = "조회 계약년월 종료월", example = "202409")
+        @DateTimeFormat(pattern = "yyyyMM")
         YearMonth endYearMonth,
-        // 대상 지역 ID 리스트
+
+        @Parameter(
+                description = "조회 대상 지역 ID 목록",
+                example = "14285,1612",
+                array = @ArraySchema(
+                        schema = @Schema(
+                                type = "integer",
+                                format = "int64",
+                                example = "14285"
+                        )
+                )
+        )
         List<Long> targetRegionIds,
-        // 대상 주택유형 리스트
+        @Parameter(
+                description = "조회 대상 주택 유형 목록",
+                example = "AP,PR,OR",
+                array = @ArraySchema(
+                        schema = @Schema(
+                                type = "string",
+                                allowableValues = {"AP", "MH", "DT", "MU", "OF", "PR", "OR", "O"}
+                        )
+                )
+        )
         List<HousingType> targetHousingTypes
+
 ) {
 }

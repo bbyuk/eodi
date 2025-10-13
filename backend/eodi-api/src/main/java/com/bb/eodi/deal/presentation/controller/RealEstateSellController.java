@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,8 @@ public class RealEstateSellController {
             description = "거래 가격, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
     @GetMapping("deals")
     public ResponseEntity<PageResponse<RealEstateSellSummaryDto>> getRecentRealEstateSells(
-            RealEstateSellRequestParameter requestParameter, Pageable pageable) {
+            @ParameterObject RealEstateSellRequestParameter requestParameter,
+            @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateSellService.findRealEstateSells(
