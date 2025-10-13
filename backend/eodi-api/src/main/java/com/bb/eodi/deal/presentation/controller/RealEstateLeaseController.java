@@ -8,6 +8,7 @@ import com.bb.eodi.deal.presentation.request.RealEstateLeaseRequestParameter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,8 @@ public class RealEstateLeaseController {
     @Operation(summary = "부동산 임대차 거래 목록 조회",
             description = "보증금, 월세, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
     public ResponseEntity<PageResponse<RealEstateLeaseSummaryDto>> getRealEstateLeaseDeals(
-            RealEstateLeaseRequestParameter requestParameter, Pageable pageable) {
+            @ParameterObject RealEstateLeaseRequestParameter requestParameter,
+            @ParameterObject Pageable pageable) {
 
         return ResponseEntity.ok(
                 PageResponse.from(
