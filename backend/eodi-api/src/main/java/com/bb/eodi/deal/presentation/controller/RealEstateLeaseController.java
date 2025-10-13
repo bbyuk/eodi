@@ -51,6 +51,8 @@ public class RealEstateLeaseController {
                                         .minMonthlyRentFee(requestParameter.minMonthlyRentFee())
                                         .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
                                         .minNetLeasableArea(requestParameter.minNetLeasableArea())
+                                        .startYearMonth(requestParameter.startYearMonth())
+                                        .endYearMonth(requestParameter.endYearMonth())
                                         .targetRegionIds(requestParameter.targetRegionIds())
                                         .targetHousingTypes(requestParameter.targetHousingTypes())
                                         .build(),
