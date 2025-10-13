@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS real_estate_lease_new;
 -- create
 CREATE TABLE real_estate_lease_new
 (
-    id                      BIGINT  AUTO_INCREMENT PRIMARY KEY COMMENT '임대차 실거래가 ID',
+    id                      BIGINT  NOT NULL AUTO_INCREMENT COMMENT '임대차 실거래가 ID',
     region_id               BIGINT  NOT NULL COMMENT '대상지역 법정동 ID',
     legal_dong_name         VARCHAR(50) COMMENT '법정동 명',
     contract_date           DATE    COMMENT '계약일',
@@ -22,8 +22,9 @@ CREATE TABLE real_estate_lease_new
     floor                   INTEGER COMMENT '층',
     use_rr_right            TINYINT(1) NOT NULL DEFAULT 0 COMMENT '갱신계약 청구권 사용여부',
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
-    updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시'
-)
+    updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
+    PRIMARY KEY (id, contract_date)
+) COMMENT = '부동산 임대차 실거래가'
 PARTITION BY RANGE (YEAR(contract_date)*100 + MONTH(contract_date)) (
     PARTITION p202409 VALUES LESS THAN (202410),
     PARTITION p202410 VALUES LESS THAN (202411),
@@ -53,8 +54,7 @@ PARTITION BY RANGE (YEAR(contract_date)*100 + MONTH(contract_date)) (
     PARTITION p202610 VALUES LESS THAN (202611),
     PARTITION p202611 VALUES LESS THAN (202612),
     PARTITION p202612 VALUES LESS THAN (202701)
-)
-COMMENT = '부동산 임대차 실거래가';
+);
 -- -----------------------------------------------------------------------------------------
 -- index
 -- 계약일
