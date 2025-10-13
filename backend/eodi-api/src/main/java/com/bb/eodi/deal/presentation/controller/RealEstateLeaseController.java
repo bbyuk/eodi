@@ -5,6 +5,8 @@ import com.bb.eodi.deal.application.dto.RealEstateLeaseSummaryDto;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.presentation.request.RealEstateLeaseRequestParameter;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 부동산 임대차 실거래가 데이터 API 컨트롤러
  */
+@Tag(name = "부동산 임대차 실거래가", description = "부동산 임대차 실거래가 데이터 API")
 @RequestMapping("real-estate/lease")
 @RestController
 @RequiredArgsConstructor
@@ -27,9 +30,11 @@ public class RealEstateLeaseController {
      * 부동산 임대차 거래 목록 페이징 조회
      * @param requestParameter 요청 파라미터 dto
      * @param pageable 페이징 dto
-     * @return 부동산 임대차 거래 목록 페이지
+     * @return 부동산 임대차 거래 목록 Page
      */
-    @GetMapping("recent/deals")
+    @GetMapping("deals")
+    @Operation(summary = "부동산 임대차 거래 목록 조회",
+            description = "보증금, 월세, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
     public ResponseEntity<PageResponse<RealEstateLeaseSummaryDto>> getRealEstateLeaseDeals(
             RealEstateLeaseRequestParameter requestParameter, Pageable pageable) {
 
