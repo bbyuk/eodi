@@ -45,11 +45,11 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
             condition.and(realEstateLease.monthlyRent.goe(query.getMinMonthlyRentFee()));
         }
 
-        if (query.getMinNetLeasableArea() != null) {
+        if (query.getMaxNetLeasableArea() != null) {
             condition.and(realEstateLease.netLeasableArea.loe(query.getMaxNetLeasableArea()));
         }
 
-        if (query.getMaxNetLeasableArea() != null) {
+        if (query.getMinNetLeasableArea() != null) {
             condition.and(realEstateLease.netLeasableArea.goe(query.getMinNetLeasableArea()));
         }
 
