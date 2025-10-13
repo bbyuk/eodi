@@ -5,6 +5,8 @@ import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
 import com.bb.eodi.deal.application.service.RealEstateSellService;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.presentation.request.RealEstateSellRequestParameter;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 부동산 매매 실거래가 데이터 조회 controller
  */
+@Tag(name = "부동산 매매 실거래가", description = "부동산 매매 실거래가 데이터 API")
 @Slf4j
 @RestController
 @RequestMapping("real-estate/sell")
@@ -25,13 +28,16 @@ public class RealEstateSellController {
     private final RealEstateSellService realEstateSellService;
 
     /**
-     * 최근 부동산 실거래가 Page 조회
+     * 부동산 매매 거래 목록 Page 조회
      * @param requestParameter API 요청 파라미터
      * @param pageable paging 파라미터
-     * @return 최근 부동산 실거래가 PageResponse
+     * @return 부동산 매매 거래 목록 Page
      */
-    @GetMapping("recent/deals")
-    public ResponseEntity<PageResponse<RealEstateSellSummaryDto>> getRecentRealEstateSells(RealEstateSellRequestParameter requestParameter, Pageable pageable) {
+    @Operation(summary = "부동산 매매 거래 목록 조회",
+            description = "거래 가격, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
+    @GetMapping("deals")
+    public ResponseEntity<PageResponse<RealEstateSellSummaryDto>> getRecentRealEstateSells(
+            RealEstateSellRequestParameter requestParameter, Pageable pageable) {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateSellService.findRealEstateSells(
