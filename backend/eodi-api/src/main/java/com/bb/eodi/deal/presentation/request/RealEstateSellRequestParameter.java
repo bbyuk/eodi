@@ -9,7 +9,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.YearMonth;
 import java.util.List;
 
-@Schema(description = "부동산 매매 실거래가 데이터 요청 파라미터")
+/**
+ * 부동산 매매 실거래가 데이터 요청 파라미터
+ */
 public record RealEstateSellRequestParameter(
         @Parameter(description = "최대 거래가 (단위: 만원)", example = "100000")
         Integer maxPrice,
@@ -21,10 +23,9 @@ public record RealEstateSellRequestParameter(
         @Parameter(description = "조회 계약년월 종료월", example = "202409")
         @DateTimeFormat(pattern = "yyyyMM")
         YearMonth endYearMonth,
-
         @Parameter(
                 description = "조회 대상 지역 ID 목록",
-                example = "14285,1612",
+                example = "[14285,1612]",
                 array = @ArraySchema(
                         schema = @Schema(
                                 type = "integer",
@@ -36,7 +37,7 @@ public record RealEstateSellRequestParameter(
         List<Long> targetRegionIds,
         @Parameter(
                 description = "조회 대상 주택 유형 목록",
-                example = "AP,PR,OR",
+                example = "[]",
                 array = @ArraySchema(
                         schema = @Schema(
                                 type = "string",
