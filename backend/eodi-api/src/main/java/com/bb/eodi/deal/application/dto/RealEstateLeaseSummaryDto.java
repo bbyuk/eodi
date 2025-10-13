@@ -1,7 +1,5 @@
 package com.bb.eodi.deal.application.dto;
 
-import com.bb.eodi.deal.domain.type.HousingType;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -35,7 +33,7 @@ public record RealEstateLeaseSummaryDto(
         // 전용면적
         BigDecimal netLeasableArea,
         // 주택유형
-        HousingType housingType,
+        String housingType,
         // 대상명
         String targetName,
         // 층
