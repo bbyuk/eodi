@@ -4,6 +4,7 @@ import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.YearMonth;
 import java.util.List;
 
 /**
@@ -25,6 +26,10 @@ public class RealEstateLeaseQuery {
     private Integer maxNetLeasableArea;
     // 최소 전용면적
     private Integer minNetLeasableArea;
+    // 조회 계약년월 시작월
+    private YearMonth startYearMonth;
+    // 조회 계약년월 종료월
+    private YearMonth endYearMonth;
     // 대상 지역 ID 리스트
     private List<Long> targetRegionIds;
     // 대상 주택유형 리스트
