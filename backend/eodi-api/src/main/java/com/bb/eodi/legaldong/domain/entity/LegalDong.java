@@ -25,7 +25,7 @@ public class LegalDong {
     private int legalDongOrder;
 
     // 상위 법정동
-    private LegalDong parent;
+    private Long parentId;
 
     // 활성여부
     private boolean active;
@@ -64,15 +64,15 @@ public class LegalDong {
         return legalDongOrder;
     }
 
-    public LegalDong getParent() {
-        return parent;
+    public Long getParentId() {
+        return parentId;
     }
 
     public boolean isActive() {
         return active;
     }
 
-    public LegalDong(Long id, String code, String sidoCode, String sigunguCode, String dongCode, String name, int legalDongOrder, LegalDong parent, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public LegalDong(Long id, String code, String sidoCode, String sigunguCode, String dongCode, String name, int legalDongOrder, Long parentId, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.code = code;
         this.sidoCode = sidoCode;
@@ -80,7 +80,7 @@ public class LegalDong {
         this.dongCode = dongCode;
         this.name = name;
         this.legalDongOrder = legalDongOrder;
-        this.parent = parent;
+        this.parentId = parentId;
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
