@@ -27,9 +27,8 @@ public class RealEstateSellJpaEntity {
     private Long id;
 
     // 대상 지역 법정동
-    @JoinColumn(name = "region_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private LegalDongJpaEntity region;
+    @Column(name = "region_id")
+    private Long regionId;
 
     // 법정동명
     @Column(name = "legal_dong_name")

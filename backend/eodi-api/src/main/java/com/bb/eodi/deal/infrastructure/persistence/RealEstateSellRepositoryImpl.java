@@ -47,7 +47,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
         }
 
         if (query.getTargetRegionIds() != null && !query.getTargetRegionIds().isEmpty()) {
-            condition.and(realEstateSell.region.id.in(query.getTargetRegionIds()));
+            condition.and(realEstateSell.regionId.in(query.getTargetRegionIds()));
         }
 
         if (query.getTargetHousingTypes() != null && !query.getTargetHousingTypes().isEmpty()) {
