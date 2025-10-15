@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
@@ -15,15 +16,12 @@ export default function HomePage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("입력된 값:", form);
-    alert("입력 완료! 콘솔을 확인하세요 :)");
+    console.log("입력값:", form);
   };
 
   return (
     <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-white/70 backdrop-blur-md border border-white/50">
-      <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
-        내 상황을 입력해주세요 💡
-      </h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">내 상황을 입력해주세요</h2>
 
       <form className="space-y-5" onSubmit={handleSubmit}>
         <Input
@@ -55,7 +53,7 @@ export default function HomePage() {
           ]}
         />
 
-        <Button type="submit" label="결과 확인하기 →" />
+        <Button type="submit" label="결과 확인하기" />
       </form>
     </div>
   );
