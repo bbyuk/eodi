@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class LegalDong {
 
     // 법정동 ID
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

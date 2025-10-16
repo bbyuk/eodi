@@ -25,6 +25,11 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     private final LegalDongJpaRepository legalDongJpaRepository;
 
     @Override
+    public Optional<LegalDong> findById(Long id) {
+        return legalDongJpaRepository.findById(id);
+    }
+
+    @Override
     public Optional<LegalDong> findByCode(String code) {
         return legalDongJpaRepository.findByCode(code);
     }

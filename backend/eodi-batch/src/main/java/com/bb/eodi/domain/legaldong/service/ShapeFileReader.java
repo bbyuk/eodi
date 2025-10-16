@@ -1,4 +1,4 @@
-package com.bb.eodi.domain.geo.service;
+package com.bb.eodi.domain.legaldong.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.geotools.api.data.FileDataStore;
@@ -39,7 +39,7 @@ public class ShapeFileReader {
     private final WKBWriter wkbWriter = new WKBWriter();
 
 
-    public ShapeFileReader(@Value("${file.geo-path}") String filePath) {
+    public ShapeFileReader(@Value("${eodi.batch.job.make-legal-dong-adjacency-table.file}") String filePath) {
         this.filePath = Paths.get(filePath);
         initialRead();
     }
