@@ -22,6 +22,11 @@ configurations {
 
 repositories {
 	mavenCentral()
+
+	// geotools repository
+	maven {
+		url = uri("https://repo.osgeo.org/repository/release/")
+	}
 }
 
 dependencies {
@@ -31,6 +36,9 @@ dependencies {
 
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
+	// shp 파일 read
+	implementation 'org.geotools:gt-main:34-M0'
+	implementation 'org.geotools:gt-shapefile:34-M0'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
