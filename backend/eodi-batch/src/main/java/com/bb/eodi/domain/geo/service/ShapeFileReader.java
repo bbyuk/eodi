@@ -7,12 +7,14 @@ import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.geometry.jts.WKBReader;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,10 +31,11 @@ public class ShapeFileReader {
     private static final String CODE_KEY = "BJCD";
 
     private final Path filePath;
-    private final Map<String, Integer> INDEX_MAP = new HashMap<>();
-    private final Set<String> TARGET_LEGAL_DONG_CODE_SET = new HashSet<>();
 
     private FileDataStore dataStore;
+
+    private final Map<String, byte[]> GEOMETRY_MAP = new HashMap<>();
+
 
     public ShapeFileReader(@Value("${file.geo-path}") String filePath) {
         this.filePath = Paths.get(filePath);
@@ -43,6 +46,8 @@ public class ShapeFileReader {
      * shp 파일을 읽어 법정동 코드 기준 인덱스 맵, 법정동 set을 생성해 필드에 저장한다.
      */
     public void initialRead() {
+        WKBWriter wkbWriter = new WKBWriter();
+
         try {
             FileDataStore dataStore = FileDataStoreFinder.getDataStore(filePath.toFile());
             if (!(dataStore instanceof ShapefileDataStore shapefileStore)) {
@@ -61,9 +66,7 @@ public class ShapeFileReader {
                 while (it.hasNext()) {
                     SimpleFeature f = it.next();
                     String legalDongCode = String.valueOf(f.getAttribute(CODE_KEY));
-
-                    INDEX_MAP.put(legalDongCode, idx++);
-                    TARGET_LEGAL_DONG_CODE_SET.add(legalDongCode);
+                    GEOMETRY_MAP.putIfAbsent(legalDongCode, wkbWriter.write((Geometry) f.getDefaultGeometry()));
                 }
             }
         }
@@ -80,29 +83,13 @@ public class ShapeFileReader {
      */
     public Geometry getGeometry(String legalDongCode) {
         try {
-            SimpleFeatureSource featureSource = dataStore.getFeatureSource();
-            int count = 0;
-            int index = INDEX_MAP.get(legalDongCode);
-
-            try (SimpleFeatureIterator it = featureSource.getFeatures().features()) {
-                while (it.hasNext()) {
-                    SimpleFeature f = it.next();
-                    if (count++ == index) {
-                        return (Geometry) f.getDefaultGeometry();
-                    }
-                }
-            }
+            WKBReader wkbReader = new WKBReader();
+            return wkbReader.read(GEOMETRY_MAP.get(legalDongCode));
         }
-        catch (MalformedURLException e) {
+        catch(ParseException e) {
             log.error(e.getMessage(), e);
-            throw new RuntimeException("shp 파일을 읽는 중 에러가 발생했습니다.");
+            throw new RuntimeException("Geometry 파싱 중 에러가 발생했습니다.");
         }
-        catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException("Geometry를 파싱하는 중 에러가 발생했습니다.");
-        }
-
-        return null;
     }
 
     /**
@@ -111,9 +98,8 @@ public class ShapeFileReader {
      * @return 법정동 코드 기준 행정경계 인접 테이블
      */
     public Map<String, Set<String>> makeAdjacencyMap() {
-        int count = 0;
         Map<String, Set<String>> adjacencyMap = new LinkedHashMap<>();
-        List<String> targetLegalDongCodes = new ArrayList<>(TARGET_LEGAL_DONG_CODE_SET);
+        List<String> targetLegalDongCodes = new ArrayList<>(GEOMETRY_MAP.keySet());
 
         for (int i = 0; i < targetLegalDongCodes.size(); i++) {
             String sourceLegalDongCode = targetLegalDongCodes.get(i);
