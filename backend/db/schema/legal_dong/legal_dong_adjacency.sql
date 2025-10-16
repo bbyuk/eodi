@@ -11,6 +11,9 @@ CREATE TABLE legal_dong_adjacency
     updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시'
 )   COMMENT = '법정동 인접 정보';
 -- -----------------------------------------------------------------------------------------
+-- constraint
+ALTER TABLE legal_dong_adjacency
+ADD CONSTRAINT uk_source_target UNIQUE (source_id, target_id);
 
 -- index
 CREATE INDEX idx_legal_dong_adjacency__source_id ON legal_dong_adjacency(source_id);
