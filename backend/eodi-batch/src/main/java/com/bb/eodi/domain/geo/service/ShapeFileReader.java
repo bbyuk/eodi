@@ -35,6 +35,8 @@ public class ShapeFileReader {
     private FileDataStore dataStore;
 
     private final Map<String, byte[]> GEOMETRY_MAP = new HashMap<>();
+    private final WKBReader wkbReader = new WKBReader();
+    private final WKBWriter wkbWriter = new WKBWriter();
 
 
     public ShapeFileReader(@Value("${file.geo-path}") String filePath) {
@@ -46,8 +48,6 @@ public class ShapeFileReader {
      * shp 파일을 읽어 법정동 코드 기준 인덱스 맵, 법정동 set을 생성해 필드에 저장한다.
      */
     public void initialRead() {
-        WKBWriter wkbWriter = new WKBWriter();
-
         try {
             FileDataStore dataStore = FileDataStoreFinder.getDataStore(filePath.toFile());
             if (!(dataStore instanceof ShapefileDataStore shapefileStore)) {
@@ -83,7 +83,6 @@ public class ShapeFileReader {
      */
     public Geometry getGeometry(String legalDongCode) {
         try {
-            WKBReader wkbReader = new WKBReader();
             return wkbReader.read(GEOMETRY_MAP.get(legalDongCode));
         }
         catch(ParseException e) {
