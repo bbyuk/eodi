@@ -41,8 +41,6 @@ eodi:
         temp-file-suffix: .json
       monthly-deal-data-load:
         apt-sale-temp-file-name: APT_SALE_TEMP_FILE
-      make-legal-dong-adjacency-table:
-        file: /Users/kanghyuk/Desktop/workspace/eodi/bootstrap/init/geo/N3A_G0100000/N3A_G0100000.shp
 
 # 외부 API
 api:
