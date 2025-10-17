@@ -1,8 +1,9 @@
-import path from "path";
+// next.config.js
+const path = require("path");
 
 const nextConfig = {
   experimental: {
-    disableTurbopack: true, // ✅ Webpack 사용
+    disableTurbopack: true, // Turbopack 비활성화 (Webpack 사용)
   },
   webpack: (config) => {
     config.resolve.alias["@"] = path.resolve(process.cwd(), "app");
@@ -13,4 +14,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

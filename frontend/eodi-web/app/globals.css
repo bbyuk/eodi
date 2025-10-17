@@ -17,3 +17,24 @@ body {
 ::selection {
   @apply bg-blue-600 text-white;
 }
+
+/**
+ * 애니메이션
+ */
+@layer utilities {
+  @keyframes progressFill {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: 0 0;
+    }
+  }
+
+  .animate-progress-fill {
+    background-image: linear-gradient(to right, #2563eb 100%, #2563eb 100%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    animation: progressFill 0.8s ease-out forwards;
+  }
+}
