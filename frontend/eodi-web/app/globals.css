@@ -9,6 +9,7 @@ html,
 body {
   @apply bg-white text-slate-900 antialiased scroll-smooth;
   font-family: 'Inter', system-ui, sans-serif;
+  scrollbar-gutter: stable;
 }
 
 /* -----------------------------
