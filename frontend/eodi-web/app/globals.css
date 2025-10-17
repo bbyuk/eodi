@@ -7,7 +7,7 @@
 ------------------------------ */
 html,
 body {
-  @apply bg-white text-slate-900 antialiased scroll-smooth;
+  @apply bg-white text-text-primary antialiased scroll-smooth;
   font-family: 'Inter', system-ui, sans-serif;
   scrollbar-gutter: stable;
 }
@@ -16,26 +16,23 @@ body {
    텍스트 선택 영역 스타일
 ------------------------------ */
 ::selection {
-  @apply bg-blue-600 text-white;
+  background-color: theme('colors.primary.DEFAULT');
+  color: white;
 }
 
 /**
  * 애니메이션
  */
 @layer utilities {
-  @keyframes progressFill {
-    0% {
-      background-position: 100% 0;
-    }
-    100% {
-      background-position: 0 0;
-    }
+  @keyframes progress-fill {
+    from { width: 0; }
+    to   { width: 100%; }
   }
-
-  .animate-progress-fill {
-    background-image: linear-gradient(to right, #2563eb 100%, #2563eb 100%);
-    background-size: 200% 100%;
-    background-position: 100% 0;
-    animation: progressFill 0.8s ease-out forwards;
+  @keyframes dot-pop {
+    0%   { transform: scale(0.9); }
+    60%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
+  .animate-progress { animation: progress-fill 180ms ease-in-out forwards; }
+  .animate-dot      { animation: dot-pop 180ms ease-out; }
 }

@@ -6,13 +6,17 @@
 export default function StepCash({ cash, onChangeCash, onNext }) {
   return (
     <div className="max-w-xl mx-auto text-center">
-      <h1 className="text-4xl font-bold tracking-tight mb-4">Enter your budget</h1>
-      <p className="text-slate-500 mb-10">
+      {/* 타이틀 */}
+      <h1 className="text-4xl font-bold tracking-tight mb-4 text-text-primary">
+        Enter your budget
+      </h1>
+      <p className="text-text-secondary mb-10">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
       </p>
 
+      {/* 입력 섹션 */}
       <div className="text-left mb-12">
-        <label className="block text-sm font-medium text-slate-600 mb-2">
+        <label className="block text-sm font-medium text-text-secondary mb-2">
           Cash (in 10,000 KRW)
         </label>
 
@@ -25,17 +29,22 @@ export default function StepCash({ cash, onChangeCash, onNext }) {
               value={cash}
               onChange={(e) => onChangeCash(e.target.value.replace(/[^0-9]/g, ""))}
               placeholder="e.g. 50000"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-right pr-12"
+              className="w-full px-4 py-3 border border-border rounded-lg text-right pr-12 text-text-primary
+                         focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
             />
-            <span className="absolute right-4 bottom-[13px] text-slate-500 text-sm">만원</span>
+            <span className="absolute right-4 bottom-[13px] text-text-secondary text-sm">만원</span>
           </div>
 
+          {/* Continue 버튼 */}
           <button
             onClick={onNext}
             disabled={!cash}
-            className={`whitespace-nowrap px-6 py-3 rounded-lg text-white font-medium transition ${
-              cash ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-300 cursor-not-allowed"
-            }`}
+            className={`whitespace-nowrap px-6 py-3 rounded-lg text-white font-medium shadow-sm transition-all duration-200
+              ${
+                cash
+                  ? "bg-primary hover:bg-primary-hover hover:translate-y-[1px]"
+                  : "bg-border cursor-not-allowed text-text-secondary"
+              }`}
           >
             Continue
           </button>
