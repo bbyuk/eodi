@@ -1,4 +1,4 @@
-package com.bb.eodi.domain.geo.service;
+package com.bb.eodi.domain.legaldong.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

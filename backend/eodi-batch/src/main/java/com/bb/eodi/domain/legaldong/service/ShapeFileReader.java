@@ -1,4 +1,4 @@
-package com.bb.eodi.domain.geo.service;
+package com.bb.eodi.domain.legaldong.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.geotools.api.data.FileDataStore;
@@ -11,6 +11,7 @@ import org.geotools.geometry.jts.WKBReader;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBWriter;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ import java.util.*;
  * shp 파일을 읽어 공간정보를 파싱하기 위한 파서 서비스
  */
 @Slf4j
+@StepScope
 @Component
 public class ShapeFileReader {
 
@@ -39,7 +41,7 @@ public class ShapeFileReader {
     private final WKBWriter wkbWriter = new WKBWriter();
 
 
-    public ShapeFileReader(@Value("${file.geo-path}") String filePath) {
+    public ShapeFileReader(@Value("#{jobParameters['file-path']}") String filePath) {
         this.filePath = Paths.get(filePath);
         initialRead();
     }
