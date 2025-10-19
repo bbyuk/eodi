@@ -6,16 +6,9 @@ import RegionsGrid from "./RegionsGrid";
 import OptionalFilters from "./OptionalFilters";
 import StepIndicator from "./StepIndicator";
 
-export default function Wizard() {
-  const [step, setStep] = useState(1);
-  const [prevStep, setPrevStep] = useState(1);
+export default function Wizard({ step, prevStep, goToStep }) {
   const [cash, setCash] = useState("");
   const [selectedRegion, setSelectedRegion] = useState(null);
-
-  const goToStep = (next) => {
-    setPrevStep(step);
-    setStep(next);
-  };
 
   const isForward = step > prevStep;
 
@@ -28,11 +21,6 @@ export default function Wizard() {
 
   return (
     <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[12vh] min-h-[70vh] overflow-hidden">
-      {/* ▲ 위쪽 고정 영역: 스텝 인디케이터 */}
-      <div className="flex justify-center mb-10">
-        <StepIndicator step={step} prevStep={prevStep} />
-      </div>
-
       {/* ▼ 전환되는 콘텐츠 영역만 grid 겹침 */}
       <div className="grid min-h-[40vh]" style={{ gridTemplate: "1fr / 1fr" }}>
         <AnimatePresence custom={isForward} mode="wait">
