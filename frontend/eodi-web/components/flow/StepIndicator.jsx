@@ -76,11 +76,11 @@ export default function StepIndicator({ step, prevStep }) {
   return (
     <div className="w-full flex items-center justify-center mb-8">
       <div className="w-full max-w-3xl grid grid-cols-[auto_1fr_auto_1fr_auto] items-center gap-2">
-        <Dot index={1} label="현금입력" />
+        <Dot index={1} label="예산입력" />
         <Line lineIndex={1} />
-        <Dot index={2} label="지역선택" />
+        <Dot index={2} label="가능한 지역 확인" />
         <Line lineIndex={2} />
-        <Dot index={3} label="조건추가" />
+        <Dot index={3} label="맞춤 조건 설정" />
       </div>
     </div>
   );

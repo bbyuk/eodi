@@ -8,16 +8,16 @@ export default function StepCash({ cash, onChangeCash, onNext }) {
     <div className="max-w-xl mx-auto text-center">
       {/* 타이틀 */}
       <h1 className="text-4xl font-bold tracking-tight mb-4 text-text-primary">
-        Enter your budget
+        예산을 입력해주세요.
       </h1>
       <p className="text-text-secondary mb-10">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        입력한 금액으로 매수·전월세가 가능한 지역을 바로 찾아드릴게요.
       </p>
 
       {/* 입력 섹션 */}
       <div className="text-left mb-12">
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Cash (in 10,000 KRW)
+          보유 예산 (만원 단위)
         </label>
 
         {/* 인풋 + 버튼 한 줄 배치 */}
@@ -28,7 +28,7 @@ export default function StepCash({ cash, onChangeCash, onNext }) {
               inputMode="numeric"
               value={cash}
               onChange={(e) => onChangeCash(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="e.g. 50000"
+              placeholder="예: 50000"
               className="w-full px-4 py-3 border border-border rounded-lg text-right pr-12 text-text-primary
                          focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition"
             />
@@ -46,7 +46,7 @@ export default function StepCash({ cash, onChangeCash, onNext }) {
                   : "bg-border cursor-not-allowed text-text-secondary"
               }`}
           >
-            Continue
+            찾아보기
           </button>
         </div>
       </div>
