@@ -106,10 +106,10 @@ export default function RegionsGrid({ cash, onSelect }) {
       {/* Header */}
       <header className="mb-14">
         <h1 className="text-3xl md:text-4xl font-semibold text-text-primary mb-3 leading-tight">
-          최근 실거래 데이터를 기반으로 살펴볼 만한 지역을 찾았어요
+          살펴볼 만한 지역을 찾았어요
         </h1>
         <p className="text-base text-text-secondary leading-relaxed">
-          입력하신 예산을 참고해 산출한 결과이며,
+          입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,
           <br className="hidden sm:block" />
           실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.
         </p>
