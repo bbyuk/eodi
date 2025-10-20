@@ -6,7 +6,7 @@ export default function Hero({ onStart }) {
       <div className="-translate-y-[8vh]">
         <h1 className="text-4xl md:text-6xl font-semibold text-gray-900 leading-tight">
           내 예산으로 살 수 있는 동네
-          <br className="hidden md:block" /> 바로 확인해보세요.
+          <br className="hidden md:block" /> 바로 확인해보세요
         </h1>
         <p className="mt-4 text-lg text-gray-600">
           실거래가 데이터를 기반으로 매수, 전·월세 가능한 지역을 찾아드립니다.
