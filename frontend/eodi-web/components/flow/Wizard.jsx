@@ -57,7 +57,7 @@ export default function Wizard({ step, prevStep, goToStep }) {
   }, [step]);
 
   return (
-    <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[16vh] min-h-[70vh] overflow-hidden">
+    <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[16vh] min-h-[60vh] overflow-hidden">
       {/* 콘텐츠 영역 */}
       <div className="grid min-h-[40vh]" style={{ gridTemplate: "1fr / 1fr" }}>
         <AnimatePresence custom={isForward} mode="wait">

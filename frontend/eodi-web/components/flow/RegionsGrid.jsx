@@ -3,7 +3,7 @@
  */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RegionsGrid({ cash, onSelect }) {
   const sellRegions = [
@@ -48,8 +48,9 @@ export default function RegionsGrid({ cash, onSelect }) {
   };
 
   // 선택 변화 감지 (렌더 후 콜백)
-  // useEffect로 호출해도 되지만 단순한 구조라 직접 핸들링 가능
-  if (onSelect) handleSelectionChange();
+  useEffect(() => {
+    if (onSelect) handleSelectionChange();
+  }, [selectedSell, selectedLease, onSelect]);
 
   const renderGrid = (dealType, regions) => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
