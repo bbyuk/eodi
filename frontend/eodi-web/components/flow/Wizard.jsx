@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import StepCash from "./StepCash";
 import RegionsGrid from "./RegionsGrid";
@@ -51,6 +51,10 @@ export default function Wizard({ step, prevStep, goToStep }) {
   const handlePrev = () => {
     if (step > 1) goToStep(step - 1);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [step]);
 
   return (
     <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[16vh] min-h-[70vh] overflow-hidden">
