@@ -1,3 +1,6 @@
+/**
+ * Step 3 - 맞춤 조건 설정
+ */
 "use client";
 
 import { useState } from "react";
@@ -5,11 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
-  const [sellFilters, setSellFilters] = useState({
-    minArea: "",
-    maxArea: "",
-  });
-
+  const [sellFilters, setSellFilters] = useState({ minArea: "", maxArea: "" });
   const [leaseFilters, setLeaseFilters] = useState({
     minArea: "",
     maxArea: "",
@@ -29,16 +28,21 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.25 }}
-      className="max-w-6xl mx-auto px-6 py-[10vh]"
+      className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]"
     >
-      <div className="space-y-12">
-        <h2 className="text-2xl font-bold tracking-tight">맞춤 조건 설정</h2>
-        <p className="text-text-secondary">
-          선택한 지역별로 세부 조건을 설정할 수 있어요.
-          <br />
-          아래 항목은 모두 선택사항이에요.
+      {/* Header */}
+      <header className="mb-14">
+        <h1 className="text-3xl md:text-4xl font-semibold text-text-primary mb-3 leading-tight">
+          맞춤 조건 설정
+        </h1>
+        <p className="text-base text-text-secondary leading-relaxed">
+          매매와 전·월세 각각에 적용할 조건을 설정할 수 있어요.
+          <br className="hidden sm:block" />
+          면적, 월세 등 항목은 모두 선택사항이에요.
         </p>
+      </header>
 
+      <div className="space-y-14">
         {hasSell && (
           <FilterGroup
             title="매매 조건"
@@ -48,7 +52,7 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
             onChange={handleChange(setSellFilters)}
             optional={[
               {
-                title: "면적 선택 (m²)",
+                title: "면적 선택 (㎡)",
                 type: "area",
                 fields: [
                   { key: "minArea", label: "최소" },
@@ -61,14 +65,14 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
 
         {hasLease && (
           <FilterGroup
-            title="전월세 조건"
-            subtitle="전월세 가능한 지역"
+            title="전·월세 조건"
+            subtitle="전·월세 가능한 지역"
             regions={leaseRegions}
             filters={leaseFilters}
             onChange={handleChange(setLeaseFilters)}
             optional={[
               {
-                title: "면적 선택 (m²)",
+                title: "면적 선택 (㎡)",
                 type: "area",
                 fields: [
                   { key: "minArea", label: "최소" },
@@ -86,21 +90,22 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
             ]}
           />
         )}
+      </div>
 
-        <div className="flex justify-end gap-4 pt-4">
-          <button
-            onClick={onBack}
-            className="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
-          >
-            Back
-          </button>
-          <button
-            onClick={() => onApply({ sellFilters, leaseFilters })}
-            className="px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover transition"
-          >
-            Apply
-          </button>
-        </div>
+      {/* Buttons */}
+      <div className="flex justify-end gap-4 pt-14">
+        <button
+          onClick={onBack}
+          className="px-5 py-2 rounded-lg border border-border text-sm text-text-secondary hover:bg-primary-bg transition"
+        >
+          이전 단계
+        </button>
+        <button
+          onClick={() => onApply({ sellFilters, leaseFilters })}
+          className="px-6 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition"
+        >
+          조건 적용하기
+        </button>
       </div>
     </motion.section>
   );
@@ -110,9 +115,9 @@ function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) 
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-6 border-t border-gray-200 pt-8">
-      <div>
-        <h3 className="text-xl font-semibold text-text-primary">{title}</h3>
+    <section className="border-t border-border pt-8">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
         <p className="text-sm text-text-secondary mt-1">{subtitle}</p>
         <p className="text-sm text-text-secondary mt-1">
           선택 지역:{" "}
@@ -120,7 +125,7 @@ function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) 
         </p>
       </div>
 
-      <div className="pt-2">
+      <div>
         <button
           onClick={() => setOpen((v) => !v)}
           className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-hover transition"
@@ -136,7 +141,7 @@ function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) 
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25 }}
-              className="mt-4 space-y-6"
+              className="mt-6 space-y-8"
             >
               {optional.map((group) => (
                 <FilterBox key={group.title} group={group} filters={filters} onChange={onChange} />
@@ -145,14 +150,14 @@ function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) 
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </section>
   );
 }
 
 function FilterBox({ group, filters, onChange }) {
   return (
-    <div className="p-5 rounded-xl border border-gray-100 bg-gray-50/60">
-      <h4 className="text-sm font-medium text-gray-700 mb-3">{group.title}</h4>
+    <div className="p-5 rounded-xl border border-border bg-primary-bg/40">
+      <h4 className="text-sm font-medium text-text-primary mb-3">{group.title}</h4>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {group.fields.map((f) =>
           group.type === "area" ? (
@@ -180,7 +185,7 @@ function AreaSelector({ label, value, onChange }) {
   const options = ["33", "59", "74", "84", "99", "120"];
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-xs text-gray-500">{label}</label>
+      <label className="text-xs text-text-secondary">{label}</label>
       <div className="grid grid-cols-3 gap-2">
         {options.map((opt) => {
           const isActive = value === opt;
@@ -189,7 +194,9 @@ function AreaSelector({ label, value, onChange }) {
               key={opt}
               onClick={() => onChange(isActive ? "" : opt)}
               className={`rounded-lg border px-2 py-2 text-sm transition ${
-                isActive ? "border-primary bg-primary text-white" : "border-gray-300 hover:bg-white"
+                isActive
+                  ? "border-primary bg-primary text-white"
+                  : "border-border hover:bg-primary-bg"
               }`}
             >
               {opt}㎡
@@ -204,13 +211,13 @@ function AreaSelector({ label, value, onChange }) {
 function NumberInput({ label, value, onChange }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-xs text-gray-500">{label}</label>
+      <label className="text-xs text-text-secondary">{label}</label>
       <input
         type="number"
         value={value || ""}
         onChange={onChange}
         placeholder="입력"
-        className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-light focus:outline-none"
+        className="rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-primary-light focus:outline-none"
       />
     </div>
   );
