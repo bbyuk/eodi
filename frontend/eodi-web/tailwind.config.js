@@ -3,6 +3,9 @@ module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Pretendard"', "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
         primary: {
           DEFAULT: "#2563EB", // blue-600
