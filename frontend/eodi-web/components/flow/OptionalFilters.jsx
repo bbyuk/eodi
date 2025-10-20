@@ -91,22 +91,6 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
           />
         )}
       </div>
-
-      {/* Buttons */}
-      <div className="flex justify-end gap-4 pt-14">
-        <button
-          onClick={onBack}
-          className="px-5 py-2 rounded-lg border border-border text-sm text-text-secondary hover:bg-primary-bg transition"
-        >
-          이전 단계
-        </button>
-        <button
-          onClick={() => onApply({ sellFilters, leaseFilters })}
-          className="px-6 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition"
-        >
-          조건 적용하기
-        </button>
-      </div>
     </motion.section>
   );
 }

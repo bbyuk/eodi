@@ -12,16 +12,49 @@ export default function Wizard({ step, prevStep, goToStep }) {
 
   const isForward = step > prevStep;
 
-  // absolute 제거, x/opacity만 사용
   const slideVariants = {
     enter: (direction) => ({ x: direction ? 80 : -80, opacity: 0 }),
     center: { x: 0, opacity: 1 },
     exit: (direction) => ({ x: direction ? -80 : 80, opacity: 0 }),
   };
 
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return <StepCash cash={cash} onChangeCash={setCash} />;
+      case 2:
+        return (
+          <RegionsGrid
+            cash={cash}
+            onSelect={(sellRegions, leaseRegions) => {
+              setSelectedSellRegion(sellRegions);
+              setSelectedLeaseRegion(leaseRegions);
+            }}
+          />
+        );
+      case 3:
+        return (
+          <OptionalFilters sellRegions={selectedSellRegion} leaseRegions={selectedLeaseRegion} />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleNext = () => {
+    if (step === 1 && !cash) return;
+    if (step === 2 && !selectedSellRegion?.size && !selectedLeaseRegion?.size) return;
+    if (step < 3) goToStep(step + 1);
+    else alert("필터 적용 완료!");
+  };
+
+  const handlePrev = () => {
+    if (step > 1) goToStep(step - 1);
+  };
+
   return (
-    <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[12vh] min-h-[70vh] overflow-hidden">
-      {/* ▼ 전환되는 콘텐츠 영역만 grid 겹침 */}
+    <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[16vh] min-h-[70vh] overflow-hidden">
+      {/* 콘텐츠 영역 */}
       <div className="grid min-h-[40vh]" style={{ gridTemplate: "1fr / 1fr" }}>
         <AnimatePresence custom={isForward} mode="wait">
           <motion.div
@@ -36,34 +69,43 @@ export default function Wizard({ step, prevStep, goToStep }) {
               opacity: { duration: 0.25 },
             }}
             className="w-full"
-            style={{ gridArea: "1 / 1 / 2 / 2" }} // 같은 셀에 겹치기
+            style={{ gridArea: "1 / 1 / 2 / 2" }}
           >
-            {step === 1 && (
-              <StepCash cash={cash} onChangeCash={setCash} onNext={() => cash && goToStep(2)} />
-            )}
-
-            {step === 2 && (
-              <RegionsGrid
-                cash={cash}
-                onBack={() => goToStep(1)}
-                onNext={(sellRegions, leaseRegions) => {
-                  setSelectedSellRegion(sellRegions);
-                  setSelectedLeaseRegion(leaseRegions);
-                  goToStep(3);
-                }}
-              />
-            )}
-
-            {step === 3 && (
-              <OptionalFilters
-                sellRegions={selectedSellRegion}
-                leaseRegions={selectedLeaseRegion}
-                onBack={() => goToStep(2)}
-                onApply={() => {}}
-              />
-            )}
+            {renderStep()}
           </motion.div>
         </AnimatePresence>
+      </div>
+
+      {/* ▼ 하단 고정 버튼 바 */}
+      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-border py-4 px-6 z-50">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          {step > 1 ? (
+            <button
+              onClick={handlePrev}
+              className="px-6 py-3 rounded-xl border text-sm font-medium text-text-secondary hover:bg-primary-bg transition-all"
+            >
+              이전으로
+            </button>
+          ) : (
+            <div /> // 첫 스텝에는 이전 버튼 없음
+          )}
+
+          <button
+            onClick={handleNext}
+            disabled={
+              (step === 1 && !cash) ||
+              (step === 2 && !selectedSellRegion?.size && !selectedLeaseRegion?.size)
+            }
+            className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm ${
+              (step === 1 && !cash) ||
+              (step === 2 && !selectedSellRegion?.size && !selectedLeaseRegion?.size)
+                ? "bg-border text-text-secondary cursor-not-allowed"
+                : "bg-primary text-white hover:bg-primary-hover"
+            }`}
+          >
+            {step === 3 ? "찾아보기" : "다음으로"}
+          </button>
+        </div>
       </div>
     </section>
   );

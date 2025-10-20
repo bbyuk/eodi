@@ -38,18 +38,6 @@ export default function StepCash({ cash, onChangeCash, onNext }) {
               만원
             </span>
           </div>
-
-          <button
-            onClick={onNext}
-            disabled={!cash}
-            className={`whitespace-nowrap px-6 py-3 rounded-lg font-medium text-white shadow-sm transition-all duration-200 ${
-              cash
-                ? "bg-primary hover:bg-primary-hover hover:translate-y-[1px]"
-                : "bg-border cursor-not-allowed text-text-secondary"
-            }`}
-          >
-            찾아보기
-          </button>
         </div>
       </section>
     </section>
