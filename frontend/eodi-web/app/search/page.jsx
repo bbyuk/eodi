@@ -13,7 +13,7 @@ export default function MainSearchPage() {
   };
 
   return (
-    <div className="pt-24 w-full">
+    <div className="pt-24 w-full min-h-[100vh]">
       <div className="flex justify-center mb-10">
         <StepIndicator step={step} prevStep={prevStep} />
       </div>

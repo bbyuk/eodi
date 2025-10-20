@@ -7,7 +7,7 @@
 html, body {
   @apply bg-white text-text-primary antialiased scroll-smooth;
   @apply font-sans bg-white text-text-primary antialiased scroll-smooth;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
 }
 
 ::selection {
