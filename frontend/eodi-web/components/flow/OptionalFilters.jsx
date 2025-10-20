@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export default function OptionalFilters({ region, onBack, onApply }) {
+export default function OptionalFilters({ sellRegion, leaseRegion, onBack, onApply }) {
   const [minArea, setMinArea] = useState(null);
   const [maxArea, setMaxArea] = useState(null);
   const areaOptions = [33, 59, 74, 84, 99, 120];
@@ -13,7 +13,12 @@ export default function OptionalFilters({ region, onBack, onApply }) {
         <div>
           <h2 className="text-3xl font-semibold text-text-primary">Refine your search</h2>
           <p className="text-text-secondary">
-            Selected region: <span className="font-medium text-text-primary">{region || "-"}</span>
+            Selected sell region:{" "}
+            <span className="font-medium text-text-primary">{sellRegion || "-"}</span>
+          </p>
+          <p className="text-text-secondary">
+            Selected lease region:{" "}
+            <span className="font-medium text-text-primary">{leaseRegion || "-"}</span>
           </p>
           <p className="text-text-secondary mt-1">All fields below are optional.</p>
         </div>

@@ -20,25 +20,36 @@ export default function RegionsGrid({ cash, onBack, onNext }) {
     "Ipsum-dong F",
   ];
 
-  const [selected, setSelected] = useState(new Set());
+  const [selectedSell, setSelectedSell] = useState(new Set());
+  const [selectedLease, setSelectedLease] = useState(new Set());
 
-  const toggleRegion = (name) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
-    });
+  const toggleRegion = (dealType, name) => {
+    if (dealType === "sell") {
+      setSelectedSell((prev) => {
+        const next = new Set(prev);
+        next.has(name) ? next.delete(name) : next.add(name);
+        return next;
+      });
+    } else if (dealType === "lease") {
+      setSelectedLease((prev) => {
+        const next = new Set(prev);
+        next.has(name) ? next.delete(name) : next.add(name);
+        return next;
+      });
+    }
   };
 
-  const renderGrid = (regions) => (
+  const renderGrid = (dealType, regions) => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
       {regions.map((name) => {
-        const isActive = selected.has(name);
+        const isActive =
+          (dealType === "sell" && selectedSell.has(name)) ||
+          (dealType === "lease" && selectedLease.has(name));
         return (
           <button
             key={name}
             type="button"
-            onClick={() => toggleRegion(name)}
+            onClick={() => toggleRegion(dealType, name)}
             className={`w-full px-4 py-3 rounded-lg border text-left transition-all duration-200
               ${
                 isActive
@@ -53,7 +64,7 @@ export default function RegionsGrid({ cash, onBack, onNext }) {
     </div>
   );
 
-  const selectedCount = selected.size;
+  const selectedCount = selectedSell.size + selectedLease.size;
 
   return (
     <div className="space-y-14 pb-24">
@@ -92,27 +103,20 @@ export default function RegionsGrid({ cash, onBack, onNext }) {
       {/* 매수 가능 */}
       <section>
         <h3 className="text-xl font-semibold mb-4 text-text-primary">매수 기준 지역</h3>
-        {renderGrid(sellRegions)}
+        {renderGrid("sell", sellRegions)}
       </section>
 
       {/* 전월세 가능 */}
       <section>
         <h3 className="text-xl font-semibold mb-4 text-text-primary">전월세 기준 지역</h3>
-        {renderGrid(rentRegions)}
+        {renderGrid("lease", rentRegions)}
       </section>
-
-      {/* 선택 결과 (퍼블용) */}
-      {selectedCount > 0 && (
-        <div className="text-sm text-text-secondary">
-          선택된 지역: <span className="font-medium">{[...selected].join(", ")}</span>
-        </div>
-      )}
 
       {/* ✅ 하단 고정 Next 버튼 */}
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center">
         <button
           type="button"
-          onClick={() => onNext && onNext([...selected])}
+          onClick={() => onNext && onNext(selectedSell, selectedLease)}
           disabled={selectedCount === 0}
           className={`w-full max-w-md py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-200
             ${

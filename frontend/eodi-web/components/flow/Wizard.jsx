@@ -4,11 +4,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import StepCash from "./StepCash";
 import RegionsGrid from "./RegionsGrid";
 import OptionalFilters from "./OptionalFilters";
-import StepIndicator from "./StepIndicator";
 
 export default function Wizard({ step, prevStep, goToStep }) {
   const [cash, setCash] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedSellRegion, setSelectedSellRegion] = useState(null);
+  const [selectedLeaseRegion, setSelectedLeaseRegion] = useState(null);
 
   const isForward = step > prevStep;
 
@@ -46,8 +46,9 @@ export default function Wizard({ step, prevStep, goToStep }) {
               <RegionsGrid
                 cash={cash}
                 onBack={() => goToStep(1)}
-                onNext={(regions) => {
-                  setSelectedRegion(regions);
+                onNext={(sellRegions, leaseRegions) => {
+                  setSelectedSellRegion(sellRegions);
+                  setSelectedLeaseRegion(leaseRegions);
                   goToStep(3);
                 }}
               />
@@ -55,7 +56,8 @@ export default function Wizard({ step, prevStep, goToStep }) {
 
             {step === 3 && (
               <OptionalFilters
-                region={selectedRegion}
+                sellRegion={selectedSellRegion}
+                leaseRegion={selectedLeaseRegion}
                 onBack={() => goToStep(2)}
                 onApply={() => {}}
               />
