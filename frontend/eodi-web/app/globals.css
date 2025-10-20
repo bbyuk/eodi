@@ -1,11 +1,13 @@
+@import url('/fonts/pretendard.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html, body {
   @apply bg-white text-text-primary antialiased scroll-smooth;
-  font-family: 'Inter', system-ui, sans-serif;
-  scrollbar-gutter: stable;
+  @apply font-sans bg-white text-text-primary antialiased scroll-smooth;
+  scrollbar-gutter: stable both-edges;
 }
 
 ::selection {

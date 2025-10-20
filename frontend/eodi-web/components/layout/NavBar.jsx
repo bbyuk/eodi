@@ -23,18 +23,18 @@ export default function Navbar() {
           href="/"
           className="text-lg font-semibold tracking-tight text-text-primary hover:text-primary transition-colors"
         >
-          Lorem.
+          어디살까?
         </Link>
 
         {/* 내비게이션 */}
-        <nav className="flex items-center gap-6 text-sm font-medium text-text-secondary">
-          <Link href="#sell" className="transition-colors hover:text-primary">
-            Sell
-          </Link>
-          <Link href="#rent" className="transition-colors hover:text-primary">
-            Rent
-          </Link>
-        </nav>
+        {/*<nav className="flex items-center gap-6 text-sm font-medium text-text-secondary">*/}
+        {/*  <Link href="#sell" className="transition-colors hover:text-primary">*/}
+        {/*    Sell*/}
+        {/*  </Link>*/}
+        {/*  <Link href="#rent" className="transition-colors hover:text-primary">*/}
+        {/*    Rent*/}
+        {/*  </Link>*/}
+        {/*</nav>*/}
       </div>
     </header>
   );

@@ -2,25 +2,19 @@ import Link from "next/link";
 
 export default function Hero({ onStart }) {
   return (
-    <section className="flex flex-col items-center justify-center text-center min-h-[80vh] px-6">
-      <div className="max-w-3xl">
-        {/* 헤딩 */}
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-text-primary mb-6 leading-tight">
-          Find your next home with ease
+    <section className="relative text-center px-6 py-[10vh] max-w-4xl mx-auto">
+      <div className="-translate-y-[8vh]">
+        <h1 className="text-4xl md:text-6xl font-semibold text-gray-900 leading-tight">
+          내 예산으로 살 수 있는 동네
+          <br className="hidden md:block" /> 바로 확인해보세요
         </h1>
-
-        {/* 설명 */}
-        <p className="text-lg text-text-secondary mb-10 max-w-xl mx-auto">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Enter your budget and explore
-          where you can live.
+        <p className="mt-4 text-lg text-gray-600">
+          실거래가 데이터를 기반으로 매수, 전·월세 가능한 지역을 찾아드립니다.
         </p>
-
-        {/* CTA 버튼 */}
-        <Link
-          href="/search"
-          className="inline-block px-8 py-4 rounded-lg font-medium text-lg text-white bg-primary hover:bg-primary-hover transition-all duration-200 shadow-md hover:translate-y-[1px]"
-        >
-          Get Started
+        <Link href="/search">
+          <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition-colors">
+            내 예산으로 알아보기
+          </button>
         </Link>
       </div>
     </section>

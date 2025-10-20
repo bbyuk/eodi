@@ -2,9 +2,7 @@
 const path = require("path");
 
 const nextConfig = {
-  experimental: {
-    disableTurbopack: true, // Turbopack 비활성화 (Webpack 사용)
-  },
+  experimental: {},
   webpack: (config) => {
     config.resolve.alias["@"] = path.resolve(process.cwd(), "app");
     return config;
