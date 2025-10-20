@@ -1,95 +1,217 @@
 "use client";
-import { useState } from "react";
 
-export default function OptionalFilters({ sellRegion, leaseRegion, onBack, onApply }) {
-  const [minArea, setMinArea] = useState(null);
-  const [maxArea, setMaxArea] = useState(null);
-  const areaOptions = [33, 59, 74, 84, 99, 120];
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+
+export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
+  const [sellFilters, setSellFilters] = useState({
+    minArea: "",
+    maxArea: "",
+  });
+
+  const [leaseFilters, setLeaseFilters] = useState({
+    minArea: "",
+    maxArea: "",
+    rentMin: "",
+    rentMax: "",
+  });
+
+  const handleChange = (setFn) => (key, value) => setFn((prev) => ({ ...prev, [key]: value }));
+
+  const hasSell = sellRegions?.size > 0;
+  const hasLease = leaseRegions?.size > 0;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-3xl font-semibold text-text-primary">Refine your search</h2>
-          <p className="text-text-secondary">
-            Selected sell region:{" "}
-            <span className="font-medium text-text-primary">{sellRegion || "-"}</span>
-          </p>
-          <p className="text-text-secondary">
-            Selected lease region:{" "}
-            <span className="font-medium text-text-primary">{leaseRegion || "-"}</span>
-          </p>
-          <p className="text-text-secondary mt-1">All fields below are optional.</p>
+    <motion.section
+      key="optional-filters"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.25 }}
+      className="max-w-6xl mx-auto px-6 py-[10vh]"
+    >
+      <div className="space-y-12">
+        <h2 className="text-2xl font-bold tracking-tight">맞춤 조건 설정</h2>
+        <p className="text-text-secondary">
+          선택한 지역별로 세부 조건을 설정할 수 있어요.
+          <br />
+          아래 항목은 모두 선택사항이에요.
+        </p>
+
+        {hasSell && (
+          <FilterGroup
+            title="매매 조건"
+            subtitle="매매 가능한 지역"
+            regions={sellRegions}
+            filters={sellFilters}
+            onChange={handleChange(setSellFilters)}
+            optional={[
+              {
+                title: "면적 선택 (m²)",
+                type: "area",
+                fields: [
+                  { key: "minArea", label: "최소" },
+                  { key: "maxArea", label: "최대" },
+                ],
+              },
+            ]}
+          />
+        )}
+
+        {hasLease && (
+          <FilterGroup
+            title="전월세 조건"
+            subtitle="전월세 가능한 지역"
+            regions={leaseRegions}
+            filters={leaseFilters}
+            onChange={handleChange(setLeaseFilters)}
+            optional={[
+              {
+                title: "면적 선택 (m²)",
+                type: "area",
+                fields: [
+                  { key: "minArea", label: "최소" },
+                  { key: "maxArea", label: "최대" },
+                ],
+              },
+              {
+                title: "월세 (만원)",
+                type: "number",
+                fields: [
+                  { key: "rentMin", label: "최소" },
+                  { key: "rentMax", label: "최대" },
+                ],
+              },
+            ]}
+          />
+        )}
+
+        <div className="flex justify-end gap-4 pt-4">
+          <button
+            onClick={onBack}
+            className="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+          >
+            Back
+          </button>
+          <button
+            onClick={() => onApply({ sellFilters, leaseFilters })}
+            className="px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover transition"
+          >
+            Apply
+          </button>
         </div>
+      </div>
+    </motion.section>
+  );
+}
+
+function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="space-y-6 border-t border-gray-200 pt-8">
+      <div>
+        <h3 className="text-xl font-semibold text-text-primary">{title}</h3>
+        <p className="text-sm text-text-secondary mt-1">{subtitle}</p>
+        <p className="text-sm text-text-secondary mt-1">
+          선택 지역:{" "}
+          <span className="font-medium text-text-primary">{[...regions].join(", ")}</span>
+        </p>
+      </div>
+
+      <div className="pt-2">
         <button
-          onClick={onBack}
-          className="px-4 py-2 rounded-lg border border-border text-sm text-text-secondary hover:bg-primary-bg transition-colors"
+          onClick={() => setOpen((v) => !v)}
+          className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-hover transition"
         >
-          Back
+          <ChevronDown size={18} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+          {open ? "추가 조건 닫기" : "추가 조건 펼치기"}
         </button>
-      </div>
 
-      {/* 옵션 그리드 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        {/* Min Area */}
-        <div>
-          <p className="text-sm font-medium text-left text-text-secondary mb-3">
-            Min area (㎡) — optional
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {areaOptions.map((val) => (
-              <button
-                key={`min-${val}`}
-                type="button"
-                onClick={() => setMinArea(val === minArea ? null : val)}
-                className={`px-4 py-2 rounded-lg border text-sm transition-all duration-200
-                  ${
-                    minArea === val
-                      ? "bg-primary text-white border-primary shadow-sm scale-[1.02]"
-                      : "border-border text-text-secondary hover:bg-primary-bg hover:text-primary"
-                  }`}
-              >
-                {val}㎡
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Max Area */}
-        <div>
-          <p className="text-sm font-medium text-left text-text-secondary mb-3">
-            Max area (㎡) — optional
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {areaOptions.map((val) => (
-              <button
-                key={`max-${val}`}
-                type="button"
-                onClick={() => setMaxArea(val === maxArea ? null : val)}
-                className={`px-4 py-2 rounded-lg border text-sm transition-all duration-200
-                  ${
-                    maxArea === val
-                      ? "bg-primary text-white border-primary shadow-sm scale-[1.02]"
-                      : "border-border text-text-secondary hover:bg-primary-bg hover:text-primary"
-                  }`}
-              >
-                {val}㎡
-              </button>
-            ))}
-          </div>
-        </div>
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mt-4 space-y-6"
+            >
+              {optional.map((group) => (
+                <FilterBox key={group.title} group={group} filters={filters} onChange={onChange} />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+    </div>
+  );
+}
 
-      {/* Apply 버튼 */}
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={onApply}
-          className="px-6 py-3 rounded-lg font-medium text-white bg-primary hover:bg-primary-hover shadow-md transition-all duration-200 hover:translate-y-[1px]"
-        >
-          Apply
-        </button>
+function FilterBox({ group, filters, onChange }) {
+  return (
+    <div className="p-5 rounded-xl border border-gray-100 bg-gray-50/60">
+      <h4 className="text-sm font-medium text-gray-700 mb-3">{group.title}</h4>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {group.fields.map((f) =>
+          group.type === "area" ? (
+            <AreaSelector
+              key={f.key}
+              label={f.label}
+              value={filters[f.key]}
+              onChange={(val) => onChange(f.key, val)}
+            />
+          ) : (
+            <NumberInput
+              key={f.key}
+              label={f.label}
+              value={filters[f.key]}
+              onChange={(e) => onChange(f.key, e.target.value)}
+            />
+          )
+        )}
       </div>
+    </div>
+  );
+}
+
+function AreaSelector({ label, value, onChange }) {
+  const options = ["33", "59", "74", "84", "99", "120"];
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs text-gray-500">{label}</label>
+      <div className="grid grid-cols-3 gap-2">
+        {options.map((opt) => {
+          const isActive = value === opt;
+          return (
+            <button
+              key={opt}
+              onClick={() => onChange(isActive ? "" : opt)}
+              className={`rounded-lg border px-2 py-2 text-sm transition ${
+                isActive ? "border-primary bg-primary text-white" : "border-gray-300 hover:bg-white"
+              }`}
+            >
+              {opt}㎡
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function NumberInput({ label, value, onChange }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs text-gray-500">{label}</label>
+      <input
+        type="number"
+        value={value || ""}
+        onChange={onChange}
+        placeholder="입력"
+        className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-light focus:outline-none"
+      />
     </div>
   );
 }

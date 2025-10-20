@@ -56,8 +56,8 @@ export default function Wizard({ step, prevStep, goToStep }) {
 
             {step === 3 && (
               <OptionalFilters
-                sellRegion={selectedSellRegion}
-                leaseRegion={selectedLeaseRegion}
+                sellRegions={selectedSellRegion}
+                leaseRegions={selectedLeaseRegion}
                 onBack={() => goToStep(2)}
                 onApply={() => {}}
               />
