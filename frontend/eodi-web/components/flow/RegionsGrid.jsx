@@ -65,7 +65,7 @@ export default function RegionsGrid({ cash, onSelect }) {
     </div>
   );
 
-  /** ✅ 시군구 grid (세로 스크롤 리스트) */
+  /** ✅ 시군구 grid (전체 페이지 스크롤에 맞게 확장) */
   const renderGrid = (dealType, regions) => (
     <div className="relative">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -121,22 +121,18 @@ export default function RegionsGrid({ cash, onSelect }) {
         </p>
       </header>
 
-      {/* 매수 가능한 지역 (섹션 자체 스크롤) */}
+      {/* 매수 가능한 지역 */}
       <section className="mb-14">
         <h2 className="text-xl font-semibold text-text-primary mb-4">매수 가능한 지역</h2>
         {renderCityTabs("sell", sellRegionData, selectedCitySell, setSelectedCitySell)}
-        <div className="max-h-[320px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent rounded-lg">
-          {renderGrid("sell", sellRegions)}
-        </div>
+        {renderGrid("sell", sellRegions)}
       </section>
 
-      {/* 전월세 가능한 지역 (섹션 자체 스크롤) */}
+      {/* 전월세 가능한 지역 */}
       <section>
         <h2 className="text-xl font-semibold text-text-primary mb-4">전·월세 가능한 지역</h2>
         {renderCityTabs("lease", leaseRegionData, selectedCityLease, setSelectedCityLease)}
-        <div className="max-h-[320px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent rounded-lg">
-          {renderGrid("lease", leaseRegions)}
-        </div>
+        {renderGrid("lease", leaseRegions)}
       </section>
     </section>
   );
