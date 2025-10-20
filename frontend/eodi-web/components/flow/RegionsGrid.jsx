@@ -60,34 +60,52 @@ export default function RegionsGrid({ cash, onBack, onNext }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-semibold text-text-primary">Select regions</h2>
-          <p className="text-text-secondary">
-            Budget: {cash ? `${Number(cash).toLocaleString()} 만원` : "-"}
+          {/* 🔹 메인 타이틀 */}
+          <h2 className="text-3xl font-semibold text-text-primary">
+            최근 실거래 데이터를 기반으로 살펴볼 만한 지역이에요.
+          </h2>
+
+          {/* 🔹 서브 설명 */}
+          <p className="text-text-secondary mt-2">
+            입력하신 예산을 참고해 산출한 결과이며,
+            <br />
+            실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.
+          </p>
+
+          {/* 🔹 예산 표시 */}
+          <p className="mt-3 text-text-secondary">
+            입력 예산:{" "}
+            <span className="font-semibold text-text-primary">
+              {cash ? `${Number(cash).toLocaleString()} 만 원` : "-"}
+            </span>
           </p>
         </div>
+
         <button
           onClick={onBack}
           className="px-4 py-2 rounded-lg border border-border text-sm text-text-secondary hover:bg-primary-bg transition-colors"
         >
-          Back
+          이전 단계
         </button>
       </div>
 
       {/* 매수 가능 */}
       <section>
-        <h3 className="text-xl font-semibold mb-4 text-text-primary">For Purchase</h3>
+        <h3 className="text-xl font-semibold mb-4 text-text-primary">매수 기준 지역</h3>
         {renderGrid(sellRegions)}
       </section>
 
       {/* 전월세 가능 */}
       <section>
-        <h3 className="text-xl font-semibold mb-4 text-text-primary">For Rent</h3>
+        <h3 className="text-xl font-semibold mb-4 text-text-primary">전월세 기준 지역</h3>
         {renderGrid(rentRegions)}
       </section>
 
       {/* 선택 결과 (퍼블용) */}
       {selectedCount > 0 && (
-        <div className="text-sm text-text-secondary">Selected: {[...selected].join(", ")}</div>
+        <div className="text-sm text-text-secondary">
+          선택된 지역: <span className="font-medium">{[...selected].join(", ")}</span>
+        </div>
       )}
 
       {/* ✅ 하단 고정 Next 버튼 */}
@@ -103,7 +121,9 @@ export default function RegionsGrid({ cash, onBack, onNext }) {
                 : "bg-border cursor-not-allowed text-text-secondary"
             }`}
         >
-          {selectedCount > 0 ? `Next (${selectedCount} selected)` : "Select at least one region"}
+          {selectedCount > 0
+            ? `다음 (${selectedCount}개 선택됨)`
+            : "지역을 한 곳 이상 선택해주세요"}
         </button>
       </div>
     </div>
