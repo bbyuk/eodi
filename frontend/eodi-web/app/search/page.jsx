@@ -1,9 +1,5 @@
-import Wizard from "@/app/search/Wizard";
+import { redirect } from "next/navigation";
 
 export default function MainSearchPage() {
-  return (
-    <div className="pt-24 w-full min-h-[100vh]">
-      <Wizard />
-    </div>
-  );
+  redirect("/search/step1");
 }

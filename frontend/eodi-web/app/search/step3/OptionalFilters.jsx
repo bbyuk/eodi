@@ -30,14 +30,7 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
   const hasLease = leaseRegions?.size > 0;
 
   return (
-    <motion.section
-      key="optional-filters"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.25 }}
-      className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]"
-    >
+    <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <PageHeader title={title} description={description} />
 
       <div className="space-y-14">
@@ -93,6 +86,6 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
           </FilterGroup>
         )}
       </div>
-    </motion.section>
+    </section>
   );
 }
