@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default function RegionsGrid({ cash, onSelect }) {
+  const title = "살펴볼 만한 지역을 찾았어요";
+  const description = [
+    "입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,",
+    "실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.",
+  ];
+
   const sellRegionData = DEFAULT_REGION_DATA.sell;
   const leaseRegionData = DEFAULT_REGION_DATA.lease;
 
@@ -100,23 +107,14 @@ export default function RegionsGrid({ cash, onSelect }) {
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
-      {/* Header */}
-      <header className="mb-14">
-        <h1 className="text-3xl md:text-4xl font-semibold text-text-primary mb-3 leading-tight">
-          살펴볼 만한 지역을 찾았어요
-        </h1>
-        <p className="text-base text-text-secondary leading-relaxed">
-          입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,
-          <br className="hidden sm:block" />
-          실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.
-        </p>
+      <PageHeader title={title} description={description}>
         <p className="text-base text-text-secondary mt-4">
           입력 예산:{" "}
           <span className="font-semibold text-text-primary">
             {cash ? `${Number(cash).toLocaleString()} 만 원` : "-"}
           </span>
         </p>
-      </header>
+      </PageHeader>
 
       {/* 매수 가능한 지역 */}
       <section className="mb-14">

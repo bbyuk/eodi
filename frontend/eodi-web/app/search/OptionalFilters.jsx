@@ -3,8 +3,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import PageHeader from "@/components/ui/PageHeader";
 
 export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
+  const title = "맞춤 조건을 설정해주세요";
+  const description = [
+    "매매와 전·월세 각각에 적용할 조건을 설정할 수 있어요.",
+    "면적, 월세 등 항목은 모두 선택사항이에요.",
+  ];
+
   const [sellFilters, setSellFilters] = useState({ minArea: "", maxArea: "" });
   const [leaseFilters, setLeaseFilters] = useState({
     minArea: "",
@@ -27,17 +34,7 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
       transition={{ duration: 0.25 }}
       className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]"
     >
-      {/* Header */}
-      <header className="mb-14">
-        <h1 className="text-3xl md:text-4xl font-semibold text-text-primary mb-3 leading-tight">
-          맞춤 조건 설정
-        </h1>
-        <p className="text-base text-text-secondary leading-relaxed">
-          매매와 전·월세 각각에 적용할 조건을 설정할 수 있어요.
-          <br className="hidden sm:block" />
-          면적, 월세 등 항목은 모두 선택사항이에요.
-        </p>
-      </header>
+      <PageHeader title={title} description={description} />
 
       <div className="space-y-14">
         {hasSell && (
