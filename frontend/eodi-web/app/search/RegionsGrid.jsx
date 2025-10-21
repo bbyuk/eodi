@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
-import ToggleButton from "@/components/ui/input/ToggleButton";
-import CategoryButton from "@/components/ui/input/CategoryButton";
+import CategoryTab from "@/components/ui/input/CategoryTab";
+import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
+import GridGroup from "@/app/search/_components/GridGroup";
 
 export default function RegionsGrid({ cash, onSelect }) {
   const title = "살펴볼 만한 지역을 찾았어요";
@@ -24,22 +25,6 @@ export default function RegionsGrid({ cash, onSelect }) {
   const sellRegions = useMemo(() => sellRegionData[selectedCitySell] ?? [], [selectedCitySell]);
   const leaseRegions = useMemo(() => leaseRegionData[selectedCityLease] ?? [], [selectedCityLease]);
 
-  const toggleRegion = (dealType, name) => {
-    if (dealType === "sell") {
-      setSelectedSell((prev) => {
-        const next = new Set(prev);
-        next.has(name) ? next.delete(name) : next.add(name);
-        return next;
-      });
-    } else {
-      setSelectedLease((prev) => {
-        const next = new Set(prev);
-        next.has(name) ? next.delete(name) : next.add(name);
-        return next;
-      });
-    }
-  };
-
   const handleSelectionChange = () => {
     onSelect?.(selectedSell, selectedLease);
   };
@@ -47,54 +32,6 @@ export default function RegionsGrid({ cash, onSelect }) {
   useEffect(() => {
     if (onSelect) handleSelectionChange();
   }, [selectedSell, selectedLease]);
-
-  /** 시/도 그룹 필터 (연한 컬러) */
-  const renderCityTabs = (dealType, dataMap, selectedCity, setSelectedCity) => (
-    <div className="flex flex-wrap gap-2 mb-5">
-      {Object.keys(dataMap).map((city) => {
-        const isActive = selectedCity === city;
-        return (
-          <CategoryButton
-            key={city}
-            onClick={() => setSelectedCity(city)}
-            isActive={isActive}
-            label={city}
-          />
-        );
-      })}
-    </div>
-  );
-
-  /** ✅ 시군구 grid (전체 페이지 스크롤에 맞게 확장) */
-  const renderGrid = (dealType, regions) => (
-    <div className="relative">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {regions.map((name) => {
-          const isActive =
-            (dealType === "sell" && selectedSell.has(name)) ||
-            (dealType === "lease" && selectedLease.has(name));
-          return (
-            <ToggleButton
-              key={name}
-              onClick={() => {
-                toggleRegion(dealType, name);
-                handleSelectionChange();
-              }}
-              size={"md"}
-              isActive={isActive}
-              label={name}
-            />
-          );
-        })}
-
-        {regions.length === 0 && (
-          <div className="col-span-full py-6 text-center text-sm text-text-secondary border border-dashed border-border rounded-lg">
-            선택한 시/도에 등록된 지역이 없습니다.
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
@@ -107,19 +44,45 @@ export default function RegionsGrid({ cash, onSelect }) {
         </p>
       </PageHeader>
 
-      {/* 매수 가능한 지역 */}
-      <section className="mb-14">
-        <h2 className="text-xl font-semibold text-text-primary mb-4">매수 가능한 지역</h2>
-        {renderCityTabs("sell", sellRegionData, selectedCitySell, setSelectedCitySell)}
-        {renderGrid("sell", sellRegions)}
-      </section>
+      <GridGroup title={"매수 가능한 지역"}>
+        <CategoryTab
+          list={sellRegionData}
+          value={selectedCitySell}
+          onSelect={(value) => setSelectedCitySell(value)}
+        />
+        <MultiButtonSelectGrid
+          list={sellRegions}
+          selected={selectedSell}
+          onSelect={(value) => {
+            setSelectedSell((prev) => {
+              const next = new Set(prev);
+              next.has(value) ? next.delete(value) : next.add(value);
+              return next;
+            });
+            handleSelectionChange();
+          }}
+        />
+      </GridGroup>
 
-      {/* 전월세 가능한 지역 */}
-      <section>
-        <h2 className="text-xl font-semibold text-text-primary mb-4">전·월세 가능한 지역</h2>
-        {renderCityTabs("lease", leaseRegionData, selectedCityLease, setSelectedCityLease)}
-        {renderGrid("lease", leaseRegions)}
-      </section>
+      <GridGroup title={"전·월세 가능한 지역"}>
+        <CategoryTab
+          list={leaseRegionData}
+          value={selectedCityLease}
+          onSelect={(value) => setSelectedCityLease(value)}
+        />
+        <MultiButtonSelectGrid
+          list={leaseRegions}
+          selected={selectedLease}
+          onSelect={(value) => {
+            setSelectedLease((prev) => {
+              const next = new Set(prev);
+              next.has(value) ? next.delete(value) : next.add(value);
+              return next;
+            });
+            handleSelectionChange();
+          }}
+        />
+      </GridGroup>
     </section>
   );
 }
