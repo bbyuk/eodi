@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import NumberInput from "@/components/ui/input/NumberInput";
+import ToggleButton from "@/components/ui/input/ToggleButton";
 
 export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
   const title = "맞춤 조건을 설정해주세요";
@@ -12,6 +13,7 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
     "매매와 전·월세 각각에 적용할 조건을 설정할 수 있어요.",
     "면적, 월세 등 항목은 모두 선택사항이에요.",
   ];
+  const areaOptions = ["33", "59", "74", "84", "99", "120"];
 
   const [sellFilters, setSellFilters] = useState({ minArea: "", maxArea: "" });
   const [leaseFilters, setLeaseFilters] = useState({
@@ -20,8 +22,6 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
     rentMin: "",
     rentMax: "",
   });
-
-  const handleChange = (setFn) => (key, value) => setFn((prev) => ({ ...prev, [key]: value }));
 
   const hasSell = sellRegions?.size > 0;
   const hasLease = leaseRegions?.size > 0;
@@ -44,18 +44,20 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
             subtitle="매매 가능한 지역"
             regions={sellRegions}
             filters={sellFilters}
-            onChange={handleChange(setSellFilters)}
-            optional={[
-              {
-                title: "면적 선택 (㎡)",
-                type: "area",
-                fields: [
-                  { key: "minArea", label: "최소" },
-                  { key: "maxArea", label: "최대" },
-                ],
-              },
-            ]}
-          />
+          >
+            <FilterBox title={"면적 선택 (㎡)"}>
+              <AreaSelector
+                label={"최소"}
+                options={areaOptions}
+                onChange={(value) => setSellFilters((prev) => ({ ...prev, minArea: value }))}
+              />
+              <AreaSelector
+                label={"최대"}
+                options={areaOptions}
+                onChange={(value) => setSellFilters((prev) => ({ ...prev, maxArea: value }))}
+              />
+            </FilterBox>
+          </FilterGroup>
         )}
 
         {hasLease && (
@@ -64,33 +66,39 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
             subtitle="전·월세 가능한 지역"
             regions={leaseRegions}
             filters={leaseFilters}
-            onChange={handleChange(setLeaseFilters)}
-            optional={[
-              {
-                title: "면적 선택 (㎡)",
-                type: "area",
-                fields: [
-                  { key: "minArea", label: "최소" },
-                  { key: "maxArea", label: "최대" },
-                ],
-              },
-              {
-                title: "월세 (만원)",
-                type: "number",
-                fields: [
-                  { key: "rentMin", label: "최소" },
-                  { key: "rentMax", label: "최대" },
-                ],
-              },
-            ]}
-          />
+          >
+            <FilterBox title={"면적 선택 (㎡)"}>
+              <AreaSelector
+                label={"최소"}
+                options={areaOptions}
+                onChange={(value) => setLeaseFilters((prev) => ({ ...prev, minArea: value }))}
+              />
+              <AreaSelector
+                label={"최대"}
+                options={areaOptions}
+                onChange={(value) => setLeaseFilters((prev) => ({ ...prev, maxArea: value }))}
+              />
+            </FilterBox>
+            <FilterBox>
+              <NumberInput
+                label={"최소"}
+                unit={"만 원"}
+                onChange={(value) => setLeaseFilters((prev) => ({ ...prev, rentMin: value }))}
+              />
+              <NumberInput
+                label={"최대"}
+                unit={"만 원"}
+                onChange={(value) => setLeaseFilters((prev) => ({ ...prev, rentMax: value }))}
+              />
+            </FilterBox>
+          </FilterGroup>
         )}
       </div>
     </motion.section>
   );
 }
 
-function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) {
+function FilterGroup({ title, subtitle, regions, children }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -122,9 +130,7 @@ function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) 
               transition={{ duration: 0.25 }}
               className="mt-6 space-y-8"
             >
-              {optional.map((group) => (
-                <FilterBox key={group.title} group={group} filters={filters} onChange={onChange} />
-              ))}
+              {children}
             </motion.div>
           )}
         </AnimatePresence>
@@ -133,36 +139,16 @@ function FilterGroup({ title, subtitle, regions, filters, onChange, optional }) 
   );
 }
 
-function FilterBox({ group, filters, onChange }) {
+function FilterBox({ title, children }) {
   return (
     <div className="p-5 rounded-xl border border-border bg-primary-bg/40">
-      <h4 className="text-sm font-medium text-text-primary mb-3">{group.title}</h4>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {group.fields.map((f) =>
-          group.type === "area" ? (
-            <AreaSelector
-              key={f.key}
-              label={f.label}
-              value={filters[f.key]}
-              onChange={(val) => onChange(f.key, val)}
-            />
-          ) : (
-            <NumberInput
-              key={f.key}
-              label={f.label}
-              value={filters[f.key]}
-              onChange={(e) => onChange(f.key, e.target.value)}
-              unit={"만 원"}
-            />
-          )
-        )}
-      </div>
+      <h4 className="text-sm font-medium text-text-primary mb-3">{title}</h4>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">{children}</div>
     </div>
   );
 }
 
-function AreaSelector({ label, value, onChange }) {
-  const options = ["33", "59", "74", "84", "99", "120"];
+function AreaSelector({ options, label, value, onChange }) {
   return (
     <div className="flex flex-col gap-1">
       <label className="text-xs text-text-secondary">{label}</label>
@@ -170,17 +156,11 @@ function AreaSelector({ label, value, onChange }) {
         {options.map((opt) => {
           const isActive = value === opt;
           return (
-            <button
+            <ToggleButton
               key={opt}
               onClick={() => onChange(isActive ? "" : opt)}
-              className={`rounded-lg border px-2 py-2 text-sm transition ${
-                isActive
-                  ? "border-primary bg-primary text-white"
-                  : "border-border hover:bg-primary-bg"
-              }`}
-            >
-              {opt}㎡
-            </button>
+              label={`${opt}㎡`}
+            />
           );
         })}
       </div>

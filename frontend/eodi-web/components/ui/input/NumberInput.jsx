@@ -6,7 +6,7 @@
  * @param onChange onChange event handler
  * @param unit 단위
  */
-export default function NumberInput({ label, unit, ...props }) {
+export default function NumberInput({ label, unit, onChange, ...props }) {
   return (
     <section>
       <label className="block text-sm font-medium text-text-secondary mb-2">{label}</label>
@@ -20,6 +20,7 @@ export default function NumberInput({ label, unit, ...props }) {
                     placeholder:text-text-secondary focus:ring-2 focus:ring-primary
                     focus:border-primary focus:outline-none transition
                     ${unit ? "pr-12" : "pr-4"}`}
+            onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ""))}
             {...props}
           />
 

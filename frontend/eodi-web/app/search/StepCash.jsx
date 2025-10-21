@@ -14,7 +14,7 @@ export default function StepCash({ cash, onChangeCash, onNext, unit }) {
       <NumberInput
         label={"보유 예산 (만 원 단위)"}
         placeholder={"예: 50000"}
-        onChange={(e) => onChangeCash(e.target.value.replace(/[^0-9]/g, ""))}
+        onChange={onChangeCash}
         value={cash}
         unit={"만 원"}
       />
