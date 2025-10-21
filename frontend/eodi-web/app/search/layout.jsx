@@ -41,7 +41,7 @@ export default function SearchLayout({ children }) {
   return (
     <section className="pt-24 w-full min-h-[100vh] bg-white">
       <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[16vh] min-h-[60vh] overflow-hidden">
-        <div className="fixed top-16 left-0 w-full bg-white/70 backdrop-blur-md border-b border-border z-40">
+        <div className="fixed top-16 left-0 w-full bg-white/90 backdrop-blur-md border-b border-border z-40">
           <div className="max-w-6xl mx-auto px-6 py-4 flex justify-center">
             <StepIndicator step={step} />
           </div>
