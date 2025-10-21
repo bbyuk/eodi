@@ -6,6 +6,9 @@ import { ChevronDown } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import NumberInput from "@/components/ui/input/NumberInput";
 import ToggleButton from "@/components/ui/input/ToggleButton";
+import FilterGroup from "@/app/search/_components/FilterGroup";
+import AreaSelector from "@/app/search/_components/AreaSelector";
+import FilterBox from "@/app/search/_components/FilterBox";
 
 export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
   const title = "맞춤 조건을 설정해주세요";
@@ -91,76 +94,5 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
         )}
       </div>
     </motion.section>
-  );
-}
-
-function FilterGroup({ title, subtitle, regions, children }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <section className="border-t border-border pt-8">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
-        <p className="text-sm text-text-secondary mt-1">{subtitle}</p>
-        <p className="text-sm text-text-secondary mt-1">
-          선택 지역:{" "}
-          <span className="font-medium text-text-primary">{[...regions].join(", ")}</span>
-        </p>
-      </div>
-
-      <div>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-hover transition"
-        >
-          <ChevronDown size={18} className={`transition-transform ${open ? "rotate-180" : ""}`} />
-          {open ? "추가 조건 닫기" : "추가 조건 펼치기"}
-        </button>
-
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25 }}
-              className="mt-6 space-y-8"
-            >
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </section>
-  );
-}
-
-function FilterBox({ title, children }) {
-  return (
-    <div className="p-5 rounded-xl border border-border bg-primary-bg/40">
-      <h4 className="text-sm font-medium text-text-primary mb-3">{title}</h4>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">{children}</div>
-    </div>
-  );
-}
-
-function AreaSelector({ options, label, value, onChange }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <label className="text-xs text-text-secondary">{label}</label>
-      <div className="grid grid-cols-3 gap-2">
-        {options.map((opt) => {
-          const isActive = value === opt;
-          return (
-            <ToggleButton
-              isActive={isActive}
-              key={opt}
-              onClick={() => onChange(isActive ? "" : opt)}
-              label={`${opt}㎡`}
-            />
-          );
-        })}
-      </div>
-    </div>
   );
 }
