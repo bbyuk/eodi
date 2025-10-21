@@ -1,6 +1,8 @@
 "use client";
 
-export default function StepCash({ cash, onChangeCash, onNext }) {
+import NumberInput from "@/components/ui/input/NumberInput";
+
+export default function StepCash({ cash, onChangeCash, onNext, unit }) {
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]">
       {/* Header */}
@@ -14,29 +16,13 @@ export default function StepCash({ cash, onChangeCash, onNext }) {
       </header>
 
       {/* Input Section */}
-      <section>
-        <label className="block text-sm font-medium text-text-secondary mb-2">
-          보유 예산 (만원 단위)
-        </label>
-
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              inputMode="numeric"
-              value={cash}
-              onChange={(e) => onChangeCash(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="예: 50000"
-              className="w-full px-4 py-3 border border-border rounded-lg text-right pr-12 text-text-primary
-                         placeholder:text-text-secondary focus:ring-2 focus:ring-primary
-                         focus:border-primary focus:outline-none transition"
-            />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary text-sm">
-              만원
-            </span>
-          </div>
-        </div>
-      </section>
+      <NumberInput
+        label={"보유 예산 (만 원 단위)"}
+        placeholder={"예: 50000"}
+        onChange={(e) => onChangeCash(e.target.value.replace(/[^0-9]/g, ""))}
+        value={cash}
+        unit={"만 원"}
+      />
     </section>
   );
 }
