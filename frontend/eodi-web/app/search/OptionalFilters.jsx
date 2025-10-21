@@ -39,44 +39,38 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
 
       <div className="space-y-14">
         {hasSell && (
-          <FilterGroup
-            title="매매 조건"
-            subtitle="매매 가능한 지역"
-            regions={sellRegions}
-            filters={sellFilters}
-          >
+          <FilterGroup title="매매 조건" regions={sellRegions} filters={sellFilters}>
             <FilterBox title={"면적 선택 (㎡)"}>
               <AreaSelector
                 label={"최소"}
                 options={areaOptions}
                 onChange={(value) => setSellFilters((prev) => ({ ...prev, minArea: value }))}
+                value={sellFilters.minArea}
               />
               <AreaSelector
                 label={"최대"}
                 options={areaOptions}
                 onChange={(value) => setSellFilters((prev) => ({ ...prev, maxArea: value }))}
+                value={sellFilters.maxArea}
               />
             </FilterBox>
           </FilterGroup>
         )}
 
         {hasLease && (
-          <FilterGroup
-            title="전·월세 조건"
-            subtitle="전·월세 가능한 지역"
-            regions={leaseRegions}
-            filters={leaseFilters}
-          >
+          <FilterGroup title="전·월세 조건" regions={leaseRegions} filters={leaseFilters}>
             <FilterBox title={"면적 선택 (㎡)"}>
               <AreaSelector
                 label={"최소"}
                 options={areaOptions}
                 onChange={(value) => setLeaseFilters((prev) => ({ ...prev, minArea: value }))}
+                value={leaseFilters.minArea}
               />
               <AreaSelector
                 label={"최대"}
                 options={areaOptions}
                 onChange={(value) => setLeaseFilters((prev) => ({ ...prev, maxArea: value }))}
+                value={leaseFilters.maxArea}
               />
             </FilterBox>
             <FilterBox>
@@ -84,11 +78,13 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
                 label={"최소"}
                 unit={"만 원"}
                 onChange={(value) => setLeaseFilters((prev) => ({ ...prev, rentMin: value }))}
+                value={leaseFilters.rentMin}
               />
               <NumberInput
                 label={"최대"}
                 unit={"만 원"}
                 onChange={(value) => setLeaseFilters((prev) => ({ ...prev, rentMax: value }))}
+                value={leaseFilters.rentMax}
               />
             </FilterBox>
           </FilterGroup>
@@ -157,6 +153,7 @@ function AreaSelector({ options, label, value, onChange }) {
           const isActive = value === opt;
           return (
             <ToggleButton
+              isActive={isActive}
               key={opt}
               onClick={() => onChange(isActive ? "" : opt)}
               label={`${opt}㎡`}
