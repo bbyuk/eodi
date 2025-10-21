@@ -41,15 +41,17 @@ export default function SearchLayout({ children }) {
   return (
     <section className="pt-24 w-full min-h-[100vh] bg-white">
       <section className="relative max-w-6xl mx-auto px-6 pt-[8vh] pb-[16vh] min-h-[60vh] overflow-hidden">
-        <div className="flex justify-center mb-10">
-          <StepIndicator step={step} />
+        <div className="fixed top-16 left-0 w-full bg-white/70 backdrop-blur-md border-b border-border z-40">
+          <div className="max-w-6xl mx-auto px-6 py-4 flex justify-center">
+            <StepIndicator step={step} />
+          </div>
         </div>
 
         {/* ▼ 페이지 콘텐츠 */}
         <div
           className={`transition-opacity duration-300 ease-in-out ${
             isFading ? "opacity-0" : "opacity-100"
-          } min-h-[40vh]`}
+          } min-h-[40vh] pt-[14vh] pb-[16vh]`}
         >
           {/* 현재 표시 중인 경로의 children */}
           {pathname === displayedPath && children}
