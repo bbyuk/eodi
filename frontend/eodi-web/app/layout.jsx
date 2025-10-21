@@ -1,5 +1,5 @@
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
+import Navbar from "@/components/layout/NavBar";
 
 export const metadata = {
   title: "Lorem Ipsum",

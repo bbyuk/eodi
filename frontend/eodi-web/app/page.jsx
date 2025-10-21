@@ -1,5 +1,4 @@
-"use client";
-import Hero from "@/components/sections/Hero";
+import Hero from "@/app/Hero";
 
 export default function LandingPage() {
   return (
