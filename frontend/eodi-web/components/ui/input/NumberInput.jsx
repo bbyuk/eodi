@@ -1,4 +1,12 @@
-export default function NumberInput({ label, value, placeholder, onChange, unit }) {
+/**
+ * 숫자 입력 UI 컴포넌트
+ * @param label 좌측 상단 label
+ * @param value 값
+ * @param placeholder placeholder
+ * @param onChange onChange event handler
+ * @param unit 단위
+ */
+export default function NumberInput({ label, unit, ...props }) {
   return (
     <section>
       <label className="block text-sm font-medium text-text-secondary mb-2">{label}</label>
@@ -8,13 +16,11 @@ export default function NumberInput({ label, value, placeholder, onChange, unit 
           <input
             type="text"
             inputMode="numeric"
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
             className={`w-full px-4 py-3 border border-border rounded-lg text-right text-text-primary
                     placeholder:text-text-secondary focus:ring-2 focus:ring-primary
                     focus:border-primary focus:outline-none transition
                     ${unit ? "pr-12" : "pr-4"}`}
+            {...props}
           />
 
           {unit && (

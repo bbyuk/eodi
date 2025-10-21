@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
+import NumberInput from "@/components/ui/input/NumberInput";
 
 export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
   const title = "맞춤 조건을 설정해주세요";
@@ -151,6 +152,7 @@ function FilterBox({ group, filters, onChange }) {
               label={f.label}
               value={filters[f.key]}
               onChange={(e) => onChange(f.key, e.target.value)}
+              unit={"만 원"}
             />
           )
         )}
@@ -182,21 +184,6 @@ function AreaSelector({ label, value, onChange }) {
           );
         })}
       </div>
-    </div>
-  );
-}
-
-function NumberInput({ label, value, onChange }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <label className="text-xs text-text-secondary">{label}</label>
-      <input
-        type="number"
-        value={value || ""}
-        onChange={onChange}
-        placeholder="입력"
-        className="rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-primary-light focus:outline-none"
-      />
     </div>
   );
 }

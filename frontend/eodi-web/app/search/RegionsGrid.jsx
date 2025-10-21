@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
+import ToggleButton from "@/components/ui/input/ToggleButton";
+import CategoryButton from "@/components/ui/input/CategoryButton";
 
 export default function RegionsGrid({ cash, onSelect }) {
   const title = "살펴볼 만한 지역을 찾았어요";
@@ -52,18 +54,12 @@ export default function RegionsGrid({ cash, onSelect }) {
       {Object.keys(dataMap).map((city) => {
         const isActive = selectedCity === city;
         return (
-          <button
+          <CategoryButton
             key={city}
-            type="button"
             onClick={() => setSelectedCity(city)}
-            className={`px-4 py-2 rounded-full border text-sm font-medium transition whitespace-nowrap ${
-              isActive
-                ? "bg-blue-50 text-blue-700 border-blue-300"
-                : "bg-white text-slate-700 border-slate-300 hover:border-blue-300 hover:text-blue-600"
-            }`}
-          >
-            {city}
-          </button>
+            isActive={isActive}
+            label={city}
+          />
         );
       })}
     </div>
@@ -78,21 +74,16 @@ export default function RegionsGrid({ cash, onSelect }) {
             (dealType === "sell" && selectedSell.has(name)) ||
             (dealType === "lease" && selectedLease.has(name));
           return (
-            <button
+            <ToggleButton
               key={name}
-              type="button"
               onClick={() => {
                 toggleRegion(dealType, name);
                 handleSelectionChange();
               }}
-              className={`w-full px-4 py-3 rounded-lg border text-left transition-all duration-200 ${
-                isActive
-                  ? "bg-primary text-white border-primary shadow-md scale-[1.02]"
-                  : "border-border hover:bg-primary-bg hover:border-primary-light hover:text-primary"
-              }`}
-            >
-              {name}
-            </button>
+              size={"md"}
+              isActive={isActive}
+              label={name}
+            />
           );
         })}
 
