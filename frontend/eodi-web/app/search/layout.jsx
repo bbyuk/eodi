@@ -47,9 +47,9 @@ export default function SearchLayout({ children }) {
 
         {/* ▼ 페이지 콘텐츠 */}
         <div
-          className={`min-h-screen transition-opacity duration-300 ease-in-out ${
+          className={`transition-opacity duration-300 ease-in-out ${
             isFading ? "opacity-0" : "opacity-100"
-          }`}
+          } min-h-[40vh]`}
         >
           {/* 현재 표시 중인 경로의 children */}
           {pathname === displayedPath && children}
