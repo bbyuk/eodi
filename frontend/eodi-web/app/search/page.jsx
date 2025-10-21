@@ -1,4 +1,4 @@
-import Wizard from "@/components/flow/Wizard";
+import Wizard from "@/app/search/Wizard";
 
 export default function MainSearchPage() {
   return (

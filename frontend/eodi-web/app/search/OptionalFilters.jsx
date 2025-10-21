@@ -1,6 +1,3 @@
-/**
- * Step 3 - 맞춤 조건 설정
- */
 "use client";
 
 import { useState } from "react";

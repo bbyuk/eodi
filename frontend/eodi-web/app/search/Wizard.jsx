@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import StepCash from "./StepCash";
 import RegionsGrid from "./RegionsGrid";
 import OptionalFilters from "./OptionalFilters";
-import StepIndicator from "@/components/flow/StepIndicator";
+import StepIndicator from "@/app/search/StepIndicator";
 
 export default function Wizard() {
   const [step, setStep] = useState(1);

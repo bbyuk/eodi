@@ -1,6 +1,3 @@
-/**
- * Step 1 - 보유현금 입력
- */
 "use client";
 
 export default function StepCash({ cash, onChangeCash, onNext }) {

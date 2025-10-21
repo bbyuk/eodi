@@ -1,6 +1,3 @@
-/**
- * Step 2 - 지역 선택
- */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
