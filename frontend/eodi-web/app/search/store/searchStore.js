@@ -6,6 +6,7 @@ export const useSearchStore = create((set) => ({
   cash: "",
   selectedSellRegions: new Set(),
   selectedLeaseRegions: new Set(),
+  direction: "up", // up / forward / backward
 
   setCurrentContext: (currentContext) => set({ currentContext }),
   setCash: (cash) => set({ cash }),

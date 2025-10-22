@@ -1,14 +1,34 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import StepIndicator from "@/app/search/StepIndicator";
 import { useSearchStore } from "@/app/search/store/searchStore";
 
 export default function SearchLayout({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { currentContext } = useSearchStore();
 
-  const goToStep = (n) => router.push(`/search/step${n}`, { scroll: false });
+  // scroll restoration 제어
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
+
+  // 페이지 이동 시 scrollTop
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+
+  const goToStep = (n) => {
+    // TODO direction 처리
+    if (n > currentContext.step) {
+    } else if (n < currentContext.step) {
+    }
+    router.push(`/search/step${n}`, { scroll: false });
+  };
   const goBack = () => router.back();
 
   return (
@@ -19,18 +39,18 @@ export default function SearchLayout({ children }) {
         </div>
       </div>
 
-      {/* ▼ 콘텐츠 (StepIndicator 높이만큼 정확히 띄움) */}
+      {/* 콘텐츠 */}
       <div
-        className={`transition-opacity duration-300 ease-in-out max-w-6xl mx-auto px-6`}
+        className={`max-w-6xl mx-auto px-6 transition-opacity duration-300 ease-in-out`}
         style={{
-          marginTop: "calc(4rem + 4rem)", // Navbar + StepIndicator 높이
-          marginBottom: "5rem", // BottomBar 공간 확보
+          marginTop: "calc(4rem + 4rem)",
+          marginBottom: "5rem",
         }}
       >
         {children}
       </div>
 
-      {/* ▼ 하단 버튼바 */}
+      {/* 하단 버튼바 */}
       <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-border py-4 px-6 z-50">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           {currentContext.prevButton ? (
@@ -43,7 +63,6 @@ export default function SearchLayout({ children }) {
           ) : (
             <div></div>
           )}
-
           {currentContext.nextButton ? (
             <button
               onClick={() =>
@@ -55,9 +74,7 @@ export default function SearchLayout({ children }) {
             >
               {currentContext.nextButton.label}
             </button>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
       </div>
     </section>
