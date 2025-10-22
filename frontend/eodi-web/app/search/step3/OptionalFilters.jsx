@@ -11,14 +11,14 @@ import { context } from "@/app/search/context";
 
 const id = "filter";
 
-export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onApply }) {
+export default function OptionalFilters({ onBack, onApply }) {
   const title = "맞춤 조건을 설정해주세요";
   const description = [
     "매매와 전·월세 각각에 적용할 조건을 설정할 수 있어요.",
     "면적, 월세 등 항목은 모두 선택사항이에요.",
   ];
 
-  const { setCurrentContext } = useSearchStore();
+  const { selectedSellRegions, selectedLeaseRegions, setCurrentContext } = useSearchStore();
 
   const areaOptions = ["33", "59", "74", "84", "99", "120"];
 
@@ -30,8 +30,8 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
     rentMax: "",
   });
 
-  const hasSell = sellRegions?.size > 0;
-  const hasLease = leaseRegions?.size > 0;
+  const hasSell = selectedSellRegions?.size > 0;
+  const hasLease = selectedLeaseRegions?.size > 0;
 
   useEffect(() => {
     setCurrentContext(context[id]);
@@ -43,7 +43,7 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
 
       <div className="space-y-14">
         {hasSell && (
-          <FilterGroup title="매매 조건" regions={sellRegions} filters={sellFilters}>
+          <FilterGroup title="매매 조건" regions={selectedSellRegions} filters={sellFilters}>
             <FilterBox title={"면적 선택 (㎡)"}>
               <AreaSelector
                 label={"최소"}
@@ -62,7 +62,7 @@ export default function OptionalFilters({ sellRegions, leaseRegions, onBack, onA
         )}
 
         {hasLease && (
-          <FilterGroup title="전·월세 조건" regions={leaseRegions} filters={leaseFilters}>
+          <FilterGroup title="전·월세 조건" regions={selectedLeaseRegions} filters={leaseFilters}>
             <FilterBox title={"면적 선택 (㎡)"}>
               <AreaSelector
                 label={"최소"}
