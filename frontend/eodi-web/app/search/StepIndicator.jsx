@@ -1,7 +1,7 @@
 "use client";
 import { Fragment } from "react";
 import { useSearchStore } from "@/app/search/store/searchStore";
-import { context } from "@/app/search/context";
+import { context } from "@/app/search/_const/context";
 
 export default function StepIndicator() {
   const { currentContext } = useSearchStore();

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { context } from "@/app/search/context";
+import { context } from "@/app/search/_const/context";
 
 export const useSearchStore = create((set) => ({
   currentContext: context.cash,

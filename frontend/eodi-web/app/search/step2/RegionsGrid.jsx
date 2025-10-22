@@ -6,7 +6,7 @@ import CategoryTab from "@/components/ui/input/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
 import { useSearchStore } from "@/app/search/store/searchStore";
-import { context } from "@/app/search/context";
+import { context } from "@/app/search/_const/context";
 
 const id = "region";
 export default function RegionsGrid({ onSelect }) {

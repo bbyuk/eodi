@@ -4,7 +4,7 @@ import NumberInput from "@/components/ui/input/NumberInput";
 import PageHeader from "@/components/ui/PageHeader";
 import { useEffect } from "react";
 import { useSearchStore } from "@/app/search/store/searchStore";
-import { context } from "@/app/search/context";
+import { context } from "@/app/search/_const/context";
 
 const id = "cash";
 export default function StepCash() {

@@ -7,7 +7,7 @@ import FilterGroup from "@/app/search/_components/FilterGroup";
 import AreaSelector from "@/app/search/_components/AreaSelector";
 import FilterBox from "@/app/search/_components/FilterBox";
 import { useSearchStore } from "@/app/search/store/searchStore";
-import { context } from "@/app/search/context";
+import { context } from "@/app/search/_const/context";
 
 const id = "filter";
 

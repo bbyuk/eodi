@@ -8,7 +8,20 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 export default function SearchLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { currentContext, setCurrentAnimation } = useSearchStore();
+  const { cash, currentContext, setCurrentAnimation } = useSearchStore();
+
+  /**
+   * TODO nextButtonActiveChecker 배열 추가
+   * @type {((function(): *)|(function())|*)[]}
+   */
+  const nextButtonActiveChecker = [
+    null,
+    () => {
+      return !cash || Number(cash) <= 0;
+    },
+    () => {},
+    null,
+  ];
 
   // scroll restoration 제어
   useEffect(() => {
@@ -30,7 +43,6 @@ export default function SearchLayout({ children }) {
     }
     router.push(`/search/step${n}`, { scroll: false });
   };
-  const goBack = () => router.back();
 
   return (
     <section className="relative w-full min-h-screen bg-white overflow-hidden">
