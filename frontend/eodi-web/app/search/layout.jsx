@@ -8,7 +8,7 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 export default function SearchLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { currentContext } = useSearchStore();
+  const { currentContext, setCurrentAnimation } = useSearchStore();
 
   // scroll restoration 제어
   useEffect(() => {
@@ -23,9 +23,10 @@ export default function SearchLayout({ children }) {
   }, [pathname]);
 
   const goToStep = (n) => {
-    // TODO direction 처리
     if (n > currentContext.step) {
+      setCurrentAnimation("slide-left");
     } else if (n < currentContext.step) {
+      setCurrentAnimation("slide-right");
     }
     router.push(`/search/step${n}`, { scroll: false });
   };
@@ -55,7 +56,7 @@ export default function SearchLayout({ children }) {
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           {currentContext.prevButton ? (
             <button
-              onClick={goBack}
+              onClick={() => goToStep(currentContext.step - 1)}
               className="px-6 py-3 rounded-xl border text-sm font-medium text-text-secondary hover:bg-primary-bg transition-all"
             >
               {currentContext.prevButton.label}

@@ -2,15 +2,13 @@
 
 import RegionsGrid from "@/app/search/step2/RegionsGrid";
 import { motion } from "framer-motion";
+import { useSearchStore } from "@/app/search/store/searchStore";
+import { animation } from "@/app/search/animation";
 
 export default function Step2Page() {
+  const { currentAnimation } = useSearchStore();
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 60 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="min-h-[60vh]"
-    >
+    <motion.div {...animation[currentAnimation]} className="min-h-[50vh]">
       <RegionsGrid />
     </motion.div>
   );

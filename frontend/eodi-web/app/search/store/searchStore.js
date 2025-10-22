@@ -6,10 +6,12 @@ export const useSearchStore = create((set) => ({
   cash: "",
   selectedSellRegions: new Set(),
   selectedLeaseRegions: new Set(),
-  direction: "up", // up / forward / backward
+  currentAnimation: "fade-up",
 
   setCurrentContext: (currentContext) => set({ currentContext }),
   setCash: (cash) => set({ cash }),
+  setCurrentAnimation: (currentAnimation) => set({ currentAnimation }),
+
   toggleSellRegion: (value) =>
     set((state) => {
       const next = new Set(state.selectedSellRegions);

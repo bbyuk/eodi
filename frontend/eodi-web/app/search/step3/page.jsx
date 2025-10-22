@@ -2,15 +2,14 @@
 
 import OptionalFilters from "@/app/search/step3/OptionalFilters";
 import { motion } from "framer-motion";
+import { useSearchStore } from "@/app/search/store/searchStore";
+import { animation } from "@/app/search/animation";
 
 export default function Step3Page() {
+  const { currentAnimation } = useSearchStore();
+
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 60 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="min-h-[60vh]"
-    >
+    <motion.div {...animation[currentAnimation]} className="min-h-[50vh]">
       <OptionalFilters />{" "}
     </motion.div>
   );
