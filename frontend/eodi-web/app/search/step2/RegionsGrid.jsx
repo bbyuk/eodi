@@ -5,13 +5,24 @@ import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
+import { useSearchStore } from "@/app/search/store/searchStore";
+import { context } from "@/app/search/context";
 
-export default function RegionsGrid({ cash, onSelect }) {
+const id = "region";
+export default function RegionsGrid({ onSelect }) {
   const title = "살펴볼 만한 지역을 찾았어요";
   const description = [
     "입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,",
     "실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.",
   ];
+  const {
+    cash,
+    setCurrentContext,
+    selectedSellRegions,
+    toggleSellRegion,
+    selectedLeaseRegions,
+    toggleLeaseRegion,
+  } = useSearchStore();
 
   const sellRegionData = DEFAULT_REGION_DATA.sell;
   const leaseRegionData = DEFAULT_REGION_DATA.lease;
@@ -19,19 +30,9 @@ export default function RegionsGrid({ cash, onSelect }) {
   const [selectedCitySell, setSelectedCitySell] = useState(Object.keys(sellRegionData)[0]);
   const [selectedCityLease, setSelectedCityLease] = useState(Object.keys(leaseRegionData)[0]);
 
-  const [selectedSell, setSelectedSell] = useState(new Set());
-  const [selectedLease, setSelectedLease] = useState(new Set());
-
-  const sellRegions = useMemo(() => sellRegionData[selectedCitySell] ?? [], [selectedCitySell]);
-  const leaseRegions = useMemo(() => leaseRegionData[selectedCityLease] ?? [], [selectedCityLease]);
-
-  const handleSelectionChange = () => {
-    onSelect?.(selectedSell, selectedLease);
-  };
-
   useEffect(() => {
-    if (onSelect) handleSelectionChange();
-  }, [selectedSell, selectedLease]);
+    setCurrentContext(context[id]);
+  }, []);
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
@@ -48,19 +49,12 @@ export default function RegionsGrid({ cash, onSelect }) {
         <CategoryTab
           list={sellRegionData}
           value={selectedCitySell}
-          onSelect={(value) => setSelectedCitySell(value)}
+          onSelect={setSelectedCitySell}
         />
         <MultiButtonSelectGrid
-          list={sellRegions}
-          selected={selectedSell}
-          onSelect={(value) => {
-            setSelectedSell((prev) => {
-              const next = new Set(prev);
-              next.has(value) ? next.delete(value) : next.add(value);
-              return next;
-            });
-            handleSelectionChange();
-          }}
+          list={sellRegionData[selectedCitySell]}
+          selected={selectedSellRegions}
+          onSelect={toggleSellRegion}
         />
       </GridGroup>
 
@@ -68,19 +62,12 @@ export default function RegionsGrid({ cash, onSelect }) {
         <CategoryTab
           list={leaseRegionData}
           value={selectedCityLease}
-          onSelect={(value) => setSelectedCityLease(value)}
+          onSelect={setSelectedCityLease}
         />
         <MultiButtonSelectGrid
-          list={leaseRegions}
-          selected={selectedLease}
-          onSelect={(value) => {
-            setSelectedLease((prev) => {
-              const next = new Set(prev);
-              next.has(value) ? next.delete(value) : next.add(value);
-              return next;
-            });
-            handleSelectionChange();
-          }}
+          list={leaseRegionData[selectedCityLease]}
+          selected={selectedLeaseRegions}
+          onSelect={toggleLeaseRegion}
         />
       </GridGroup>
     </section>
