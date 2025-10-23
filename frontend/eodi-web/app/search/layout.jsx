@@ -8,7 +8,15 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 export default function SearchLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { cash, currentContext, setCurrentAnimation } = useSearchStore();
+  const {
+    cash,
+    currentContext,
+    selectedSellRegions,
+    selectedLeaseRegions,
+    setDirectionToForward,
+    setDirectionToBackward,
+    resetSearchStore,
+  } = useSearchStore();
 
   /**
    * TODO isNextButtonActive 배열 추가
@@ -16,10 +24,10 @@ export default function SearchLayout({ children }) {
    */
   const isNextButtonActive = [
     null,
+    () => cash && Number(cash) > 0,
     () => {
-      return cash && Number(cash) > 0;
+      return selectedSellRegions.size > 0 || selectedLeaseRegions.size > 0;
     },
-    () => {},
     null,
   ];
 
@@ -37,12 +45,18 @@ export default function SearchLayout({ children }) {
 
   const goToStep = (n) => {
     if (n > currentContext.step) {
-      setCurrentAnimation("slide-left");
+      setDirectionToBackward();
     } else if (n < currentContext.step) {
-      setCurrentAnimation("slide-right");
+      setDirectionToForward();
     }
     router.push(`/search/step${n}`, { scroll: false });
   };
+
+  useEffect(() => {
+    return () => {
+      resetSearchStore();
+    };
+  }, []);
 
   return (
     <section className="relative w-full min-h-screen bg-white overflow-hidden">

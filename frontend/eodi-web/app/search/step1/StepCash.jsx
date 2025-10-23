@@ -10,11 +10,17 @@ const id = "cash";
 export default function StepCash() {
   const title = "예산을 입력해주세요";
   const description = ["입력한 금액으로 매수, 전·월세가 가능한 지역을 바로 찾아드릴게요."];
-  const { cash, setCash, setCurrentContext } = useSearchStore();
+  const { cash, setCash, resetCash, direction, setCurrentContext } = useSearchStore();
 
   useEffect(() => {
     setCurrentContext(context[id]);
   }, []);
+
+  useEffect(() => {
+    if (direction === "backward") {
+      resetCash();
+    }
+  }, [direction]);
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]">
