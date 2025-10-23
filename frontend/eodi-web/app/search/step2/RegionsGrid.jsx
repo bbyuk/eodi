@@ -7,6 +7,7 @@ import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGri
 import GridGroup from "@/app/search/_components/GridGroup";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
+import { formatWon } from "@/app/search/_util/util";
 
 const id = "region";
 export default function RegionsGrid({ onSelect }) {
@@ -40,7 +41,7 @@ export default function RegionsGrid({ onSelect }) {
         <p className="text-base text-text-secondary mt-4">
           입력 예산:{" "}
           <span className="font-semibold text-text-primary">
-            {cash ? `${Number(cash).toLocaleString()} 만 원` : "-"}
+            {cash ? `${formatWon(Number(cash)).toLocaleString()}` : "-"}
           </span>
         </p>
       </PageHeader>
