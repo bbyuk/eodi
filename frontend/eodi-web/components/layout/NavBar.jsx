@@ -14,7 +14,7 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full z-30 transition-all duration-300 border-b border-transparent ${
-        isScrolled ? "backdrop-blur-md bg-white/70 border-border" : "bg-transparent"
+        isScrolled ? "backdrop-blur-md bg-white/90 border-border" : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">

@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import StepCash from "./StepCash";
-import RegionsGrid from "./RegionsGrid";
-import OptionalFilters from "./OptionalFilters";
+import StepCash from "./step1/StepCash";
+import RegionsGrid from "./step2/RegionsGrid";
+import OptionalFilters from "./step3/OptionalFilters";
 import StepIndicator from "@/app/search/StepIndicator";
 
 export default function Wizard() {
