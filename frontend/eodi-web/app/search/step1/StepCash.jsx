@@ -5,6 +5,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import { useEffect, useState } from "react";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
+import { formatWon } from "@/app/search/_util/util";
 
 const id = "cash";
 export default function StepCash() {
@@ -25,10 +26,6 @@ export default function StepCash() {
       resetCash();
     }
   }, [direction]);
-
-  const formatWon = (value) => {
-    // TODO formatWon 개발
-  };
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]">
