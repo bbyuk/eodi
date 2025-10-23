@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import PageHeader from "@/components/ui/PageHeader";
-import NumberInput from "@/components/ui/input/NumberInput";
+import CashInput from "@/components/ui/input/CashInput";
 import FilterGroup from "@/app/search/_components/FilterGroup";
 import AreaSelector from "@/app/search/_components/AreaSelector";
 import FilterBox from "@/app/search/_components/FilterBox";
@@ -78,13 +78,13 @@ export default function OptionalFilters({ onBack, onApply }) {
               />
             </FilterBox>
             <FilterBox>
-              <NumberInput
+              <CashInput
                 label={"최소"}
                 unit={"만 원"}
                 onChange={(value) => setLeaseFilters((prev) => ({ ...prev, rentMin: value }))}
                 value={leaseFilters.rentMin}
               />
-              <NumberInput
+              <CashInput
                 label={"최대"}
                 unit={"만 원"}
                 onChange={(value) => setLeaseFilters((prev) => ({ ...prev, rentMax: value }))}
