@@ -11,13 +11,13 @@ export default function SearchLayout({ children }) {
   const { cash, currentContext, setCurrentAnimation } = useSearchStore();
 
   /**
-   * TODO nextButtonActiveChecker 배열 추가
+   * TODO isNextButtonActive 배열 추가
    * @type {((function(): *)|(function())|*)[]}
    */
-  const nextButtonActiveChecker = [
+  const isNextButtonActive = [
     null,
     () => {
-      return !cash || Number(cash) <= 0;
+      return cash && Number(cash) > 0;
     },
     () => {},
     null,
@@ -78,12 +78,19 @@ export default function SearchLayout({ children }) {
           )}
           {currentContext.nextButton ? (
             <button
-              onClick={() =>
-                currentContext.step < 3
-                  ? goToStep(currentContext.step + 1)
-                  : alert("필터 적용 완료!")
-              }
-              className="px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm bg-primary text-white hover:bg-primary-hover"
+              onClick={() => {
+                if (
+                  isNextButtonActive[currentContext.step] &&
+                  isNextButtonActive[currentContext.step]()
+                ) {
+                  currentContext.step < 3
+                    ? goToStep(currentContext.step + 1)
+                    : alert("필터 적용 완료!");
+                }
+              }}
+              className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm bg-primary text-white hover:bg-primary-hover 
+                ${isNextButtonActive[currentContext.step] && isNextButtonActive[currentContext.step]() ? "" : "disabled cursor-not-allowed hover:cursor-not-allowed bg-gray-200 text-gray-400 opacity-60"}
+              `}
             >
               {currentContext.nextButton.label}
             </button>
