@@ -28,7 +28,7 @@ export default function SearchLayout({ children }) {
     () => {
       return selectedSellRegions.size > 0 || selectedLeaseRegions.size > 0;
     },
-    null,
+    () => true,
   ];
 
   // scroll restoration 제어
