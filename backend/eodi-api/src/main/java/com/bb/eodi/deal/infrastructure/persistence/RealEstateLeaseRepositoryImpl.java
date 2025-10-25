@@ -1,7 +1,9 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
+import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -88,5 +90,10 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, totalCount != null ? totalCount : 0);
+    }
+
+    @Override
+    public List<Region> findRegionsBy(RegionQuery query) {
+        return List.of();
     }
 }

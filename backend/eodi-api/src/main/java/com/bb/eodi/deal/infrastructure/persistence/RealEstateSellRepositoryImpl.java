@@ -1,7 +1,9 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
+import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -71,5 +73,10 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total != null ? total : 0);
+    }
+
+    @Override
+    public List<Region> findRegionsBy(RegionQuery query) {
+        return List.of();
     }
 }
