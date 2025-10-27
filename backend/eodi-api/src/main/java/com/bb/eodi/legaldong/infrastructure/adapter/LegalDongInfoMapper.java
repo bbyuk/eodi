@@ -2,6 +2,7 @@ package com.bb.eodi.legaldong.infrastructure.adapter;
 
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -12,12 +13,15 @@ import java.util.stream.Collectors;
 public class LegalDongInfoMapper {
 
     public static LegalDongInfo toInfo(LegalDongInfoNode node) {
-        Map<Long, LegalDongInfo> mappedChildren = node.getChildren().entrySet()
-                .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> toInfo(entry.getValue())
-                ));
+        if (node.isLeaf()) {
+            return new LegalDongInfo(node.getId(),
+                    node.getCode(),
+                    node.getName(),
+                    node.getOrder(),
+                    node.getParentId(),
+                    new HashSet<>()
+            );
+        }
 
         return new LegalDongInfo(
                 node.getId(),
@@ -25,7 +29,9 @@ public class LegalDongInfoMapper {
                 node.getName(),
                 node.getOrder(),
                 node.getParentId(),
-                Map.copyOf(mappedChildren)
+                node.getChildren().stream()
+                        .map(LegalDongInfoMapper::toInfo)
+                        .collect(Collectors.toSet())
         );
     }
 }

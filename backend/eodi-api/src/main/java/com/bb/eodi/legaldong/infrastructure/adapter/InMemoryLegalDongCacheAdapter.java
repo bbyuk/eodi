@@ -44,13 +44,28 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
         for (LegalDongInfoNode node : tempTree.values()) {
             LegalDongInfoNode currentNode = node;
 
-            while(!currentNode.isRoot() && !currentNode.hasParent()) {
+            while(!currentNode.isRoot() && !currentNode.isConnectedToParent()) {
                 currentNode.connectToParent(tempTree.get(currentNode.getParentId()));
                 currentNode = currentNode.getParent();
             }
         }
+
+        // 4. LegalDongInfo model로 매핑
+        tempTree.values().stream()
+                .filter(LegalDongInfoNode::isRoot)
+                .map(LegalDongInfoMapper::toInfo)
+                .forEach(this::loadToCache);
     }
 
+    /**
+     * 캐시에 legalDongInfo를 로드한다.
+     * @param legalDongInfo
+     */
+    private void loadToCache(LegalDongInfo legalDongInfo) {
+        cache.putIfAbsent(legalDongInfo.id(), legalDongInfo);
+        legalDongInfo.children().stream()
+                .forEach(this::loadToCache);
+    }
 
     @Override
     public LegalDongInfo findById(Long id) {

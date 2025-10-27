@@ -3,8 +3,8 @@ package com.bb.eodi.legaldong.infrastructure.adapter;
 
 import lombok.Getter;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 크로스도메인 법정동 정보 트리 노드
@@ -18,7 +18,7 @@ class LegalDongInfoNode {
     private final int order;
     private final Long parentId;
     private LegalDongInfoNode parent;
-    private final Map<Long, LegalDongInfoNode> children = new ConcurrentHashMap<>();
+    private final Set<LegalDongInfoNode> children = new HashSet<>();
 
     LegalDongInfoNode(Long id, String code, String name, int order, Long parentId) {
         this.id = id;
@@ -34,14 +34,18 @@ class LegalDongInfoNode {
      */
     void connectToParent(LegalDongInfoNode parent) {
         this.parent = parent;
-        parent.children.putIfAbsent(id, this);
+        parent.children.add(this);
     }
 
-    boolean hasParent() {
+    boolean isConnectedToParent() {
         return parent != null;
     }
 
     boolean isRoot() {
         return parentId == null;
+    }
+
+    boolean isLeaf() {
+        return children.isEmpty();
     }
 }

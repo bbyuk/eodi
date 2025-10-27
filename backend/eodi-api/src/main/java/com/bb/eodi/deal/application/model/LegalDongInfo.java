@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.application.model;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 크로스도메인 법정동 정보
@@ -11,7 +12,7 @@ public record LegalDongInfo(
     String name,
     int order,
     Long parentId,
-    Map<Long, LegalDongInfo> children
+    Set<LegalDongInfo> children
 ) {
 
 }
