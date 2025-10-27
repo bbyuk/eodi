@@ -5,10 +5,12 @@ package com.bb.eodi.deal.application.dto;
  * @param code 법정동 코드
  * @param name 법정동 명
  * @param displayName 노출명
+ * @param count 수
  */
 public record RegionGroupDto(
         String code,
         String name,
-        String displayName
+        String displayName,
+        int count
 ) {
 }
