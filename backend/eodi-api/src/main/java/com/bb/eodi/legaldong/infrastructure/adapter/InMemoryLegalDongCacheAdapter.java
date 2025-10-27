@@ -4,6 +4,7 @@ import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,10 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
     private final Map<Long, LegalDongInfo> cache = new ConcurrentHashMap<>();
     private final LegalDongJpaRepository legalDongJpaRepository;
 
+    @PostConstruct
+    public void initCache() {
+        refreshCache();
+    }
 
     public void refreshCache() {
         // 1. clear
@@ -44,7 +49,7 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
         for (LegalDongInfoNode node : tempTree.values()) {
             LegalDongInfoNode currentNode = node;
 
-            while(!currentNode.isRoot() && !currentNode.isConnectedToParent()) {
+            while(!currentNode.isRoot()) {
                 currentNode.connectToParent(tempTree.get(currentNode.getParentId()));
                 currentNode = currentNode.getParent();
             }
