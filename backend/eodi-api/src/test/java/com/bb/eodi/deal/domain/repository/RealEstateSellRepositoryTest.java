@@ -2,9 +2,12 @@ package com.bb.eodi.deal.domain.repository;
 
 import com.bb.eodi.config.QuerydslConfig;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
+import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellRepositoryImpl;
+import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongMapperImpl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
@@ -13,16 +16,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @DisplayName("small - 부동산 매매 실거래가 데이터 repository small test")
 @Import({RealEstateSellRepositoryImpl.class,
                 QuerydslConfig.class,
-                RealEstateSellMapperImpl.class})
+                RealEstateSellMapperImpl.class,
+                InMemoryLegalDongCacheAdapter.class
+        })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class RealEstateSellRepositoryTest {
@@ -47,6 +54,24 @@ class RealEstateSellRepositoryTest {
 
         // then
         Assertions.assertThat(results.getContent()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("small - price / 기간 기반 지역 조회 test")
+    void testFindCellRegionsBy() throws Exception {
+        // given
+        RegionQuery query = RegionQuery.builder()
+                .minPrice(45000)
+                .maxPrice(55000)
+                .startDate(LocalDate.now().minusMonths(3))
+                .endDate(LocalDate.now())
+                .build();
+
+        // when
+        List<Region> targetRegions = realEstateSellRepository.findRegionsBy(query);
+
+        // then
+        System.out.println("targetRegions = " + targetRegions);
     }
 
 }

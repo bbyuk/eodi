@@ -19,6 +19,7 @@ public class LegalDongInfoMapper {
                     node.getName(),
                     node.getOrder(),
                     node.getRootId(),
+                    node.getSecondId(),
                     node.getParentId(),
                     new HashSet<>()
             );
@@ -30,6 +31,7 @@ public class LegalDongInfoMapper {
                 node.getName(),
                 node.getOrder(),
                 node.getRootId(),
+                node.getSecondId(),
                 node.getParentId(),
                 node.getChildren().stream()
                         .map(LegalDongInfoMapper::toInfo)

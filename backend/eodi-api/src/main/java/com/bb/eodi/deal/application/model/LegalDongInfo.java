@@ -14,8 +14,10 @@ public record LegalDongInfo(
         String name,
         // 법정동 서열
         int order,
-        // 최상위 법정동 ID
+        // 최상위 법정동(시/도) ID
         Long rootId,
+        // 차상위 법정동(시/군/구) ID
+        Long secondId,
         // 상위 법정동 ID
         Long parentId,
         // 하위 법정동 ID Set
