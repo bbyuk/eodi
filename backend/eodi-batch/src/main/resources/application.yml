@@ -45,7 +45,7 @@ eodi:
 # 외부 API
 api:
   gov-data:
-    base-url: https://apis.data.go.kr
+    base-url: http://apis.data.go.kr
     page-size: 500
     key-parameter-name: serviceKey
     key: ${GOV_DATA_API_KEY:default}

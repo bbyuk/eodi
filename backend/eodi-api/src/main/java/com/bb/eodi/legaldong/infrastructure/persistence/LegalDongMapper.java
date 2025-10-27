@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface LegalDongMapper {
 
-    @Mapping(target = "parentId", source = "parent.id")
     LegalDong toDomain(LegalDongJpaEntity entity);
     LegalDongJpaEntity toJpaEntity(LegalDong domain);
 }

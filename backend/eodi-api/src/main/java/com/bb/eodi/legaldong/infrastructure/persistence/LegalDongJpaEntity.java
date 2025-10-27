@@ -46,9 +46,8 @@ public class LegalDongJpaEntity {
     private int legalDongOrder;
 
     // 상위 법정동 ID
-    @JoinColumn(name = "parent_id")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private LegalDongJpaEntity parent;
+    @Column(name = "parent_id")
+    private Long parentId;
 
     // 활성여부
     @Column(name = "is_active")
