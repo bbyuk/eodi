@@ -1,18 +1,25 @@
 package com.bb.eodi.deal.application.model;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
  * 크로스도메인 법정동 정보
  */
 public record LegalDongInfo(
-    Long id,
-    String code,
-    String name,
-    int order,
-    Long parentId,
-    Set<LegalDongInfo> children
+        // 법정동 ID
+        Long id,
+        // 법정동 코드
+        String code,
+        // 법정동 명
+        String name,
+        // 법정동 서열
+        int order,
+        // 최상위 법정동 ID
+        Long rootId,
+        // 상위 법정동 ID
+        Long parentId,
+        // 하위 법정동 ID Set
+        Set<LegalDongInfo> children
 ) {
 
 }

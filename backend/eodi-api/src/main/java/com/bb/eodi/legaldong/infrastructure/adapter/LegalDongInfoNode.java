@@ -16,6 +16,7 @@ class LegalDongInfoNode {
     private final String code;
     private final String name;
     private final int order;
+    private Long rootId;
     private final Long parentId;
     private LegalDongInfoNode parent;
     private final Set<LegalDongInfoNode> children = new HashSet<>();
@@ -26,6 +27,10 @@ class LegalDongInfoNode {
         this.name = name;
         this.order = order;
         this.parentId = parentId;
+
+        if (parentId == null) {
+            this.rootId = id;
+        }
     }
 
     /**
@@ -35,6 +40,7 @@ class LegalDongInfoNode {
     void connectToParent(LegalDongInfoNode parent) {
         this.parent = parent;
         parent.children.add(this);
+        this.rootId = parent.rootId;
     }
 
     boolean isConnectedToParent() {
@@ -42,7 +48,7 @@ class LegalDongInfoNode {
     }
 
     boolean isRoot() {
-        return parentId == null;
+        return id.equals(rootId);
     }
 
     boolean isLeaf() {
