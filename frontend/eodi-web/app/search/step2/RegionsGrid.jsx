@@ -27,11 +27,14 @@ export default function RegionsGrid({ onSelect }) {
     toggleLeaseRegion,
   } = useSearchStore();
 
-  const sellRegionData = DEFAULT_REGION_DATA.sell;
-  const leaseRegionData = DEFAULT_REGION_DATA.lease;
+  const [sellRegionGroups, setSellRegionGroups] = useState({});
+  const [sellRegions, setSellRegions] = useState([]);
 
-  const [selectedCitySell, setSelectedCitySell] = useState(Object.keys(sellRegionData)[0]);
-  const [selectedCityLease, setSelectedCityLease] = useState(Object.keys(leaseRegionData)[0]);
+  const [leaseRegionGroups, setLeaseRegionGroups] = useState({});
+  const [leaseRegions, setLeaseRegions] = useState([]);
+
+  const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
+  const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
   useEffect(() => {
     if (!cash || cash === 0) {
@@ -43,7 +46,13 @@ export default function RegionsGrid({ onSelect }) {
       .get("/real-estate/recommendation/region", {
         cash: cash,
       })
-      .then((res) => console.log(res));
+      .then((res) => {
+        console.log(res);
+        setSellRegionGroups(res.sellRegionGroups);
+        setSellRegions(res.sellRegions);
+        setLeaseRegionGroups(res.leaseRegionGroups);
+        setLeaseRegions(res.leaseRegions);
+      });
   }, []);
 
   return (
@@ -57,76 +66,35 @@ export default function RegionsGrid({ onSelect }) {
         </p>
       </PageHeader>
 
-      <GridGroup title={"매수 가능한 지역"}>
+      <GridGroup title={"최근 매수 이력이 있는 지역"}>
         <CategoryTab
-          list={sellRegionData}
-          value={selectedCitySell}
-          onSelect={setSelectedCitySell}
+          list={Object.values(sellRegionGroups)}
+          value={selectedSellRegionGroup}
+          onSelect={setSelectedSellRegionGroup}
         />
-        <MultiButtonSelectGrid
-          list={sellRegionData[selectedCitySell]}
-          selected={selectedSellRegions}
-          onSelect={toggleSellRegion}
-        />
+        {sellRegions[selectedSellRegionGroup?.code] && (
+          <MultiButtonSelectGrid
+            list={sellRegions[selectedSellRegionGroup?.code]}
+            selected={selectedSellRegions}
+            onSelect={toggleSellRegion}
+          />
+        )}
       </GridGroup>
 
-      <GridGroup title={"전·월세 가능한 지역"}>
+      <GridGroup title={"최근 전·월세 이력이 있는 지역"}>
         <CategoryTab
-          list={leaseRegionData}
-          value={selectedCityLease}
-          onSelect={setSelectedCityLease}
+          list={Object.values(leaseRegionGroups)}
+          value={selectedLeaseRegionGroup}
+          onSelect={setSelectedLeaseRegionGroup}
         />
-        <MultiButtonSelectGrid
-          list={leaseRegionData[selectedCityLease]}
-          selected={selectedLeaseRegions}
-          onSelect={toggleLeaseRegion}
-        />
+        {leaseRegions[selectedSellRegionGroup?.code] && (
+          <MultiButtonSelectGrid
+            list={leaseRegions[selectedLeaseRegionGroup?.code]}
+            selected={selectedLeaseRegions}
+            onSelect={toggleLeaseRegion}
+          />
+        )}
       </GridGroup>
     </section>
   );
 }
-
-/** 테스트용 기본 데이터 */
-const DEFAULT_REGION_DATA = {
-  sell: {
-    서울특별시: [
-      "강남구",
-      "송파구",
-      "마포구",
-      "용산구",
-      "성동구",
-      "광진구",
-      "동대문구",
-      "노원구",
-      "도봉구",
-      "은평구",
-      "서초구",
-      "강서구",
-      "양천구",
-      "중랑구",
-      "구로구",
-      "관악구",
-      "금천구",
-      "영등포구",
-    ],
-    부산광역시: ["해운대구", "수영구", "남구", "북구", "사하구", "연제구", "금정구", "동래구"],
-    경기도: ["성남시", "용인시", "수원시", "화성시", "평택시", "안양시", "고양시", "남양주시"],
-  },
-  lease: {
-    서울특별시: [
-      "강남구",
-      "성동구",
-      "광진구",
-      "은평구",
-      "강서구",
-      "영등포구",
-      "서초구",
-      "마포구",
-      "송파구",
-      "관악구",
-      "중랑구",
-    ],
-    부산광역시: ["해운대구", "동래구", "북구", "남구", "사하구", "연제구", "금정구"],
-    대구광역시: ["수성구", "중구", "달서구", "북구", "서구", "동구", "남구"],
-  },
-};
