@@ -5,9 +5,11 @@ import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
+import { redirect } from "next/navigation";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
+import { api } from "@/lib/apiClient";
 
 const id = "region";
 export default function RegionsGrid({ onSelect }) {
@@ -32,7 +34,16 @@ export default function RegionsGrid({ onSelect }) {
   const [selectedCityLease, setSelectedCityLease] = useState(Object.keys(leaseRegionData)[0]);
 
   useEffect(() => {
+    if (!cash || cash === 0) {
+      redirect("/search");
+    }
+
     setCurrentContext(context[id]);
+    api
+      .get("/real-estate/recommendation/region", {
+        cash: cash,
+      })
+      .then((res) => console.log(res));
   }, []);
 
   return (
