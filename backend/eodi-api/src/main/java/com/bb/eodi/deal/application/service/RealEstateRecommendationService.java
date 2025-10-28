@@ -70,13 +70,13 @@ public class RealEstateRecommendationService {
                 .collect(Collectors.groupingBy(Region::getRootId));
 
         Map<Long, List<Region>> sellRegions = allSellRegions.stream()
-                .collect(Collectors.groupingBy(Region::getSecondId));
+                .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()));
 
         Map<Long, List<Region>> leaseRegionGroups = allLeaseRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId));
 
         Map<Long, List<Region>> leaseRegions = allLeaseRegions.stream()
-                .collect(Collectors.groupingBy(Region::getSecondId));
+                .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()));
 
         return new RecommendedRegionsDto(
                 sellRegionGroups.entrySet()

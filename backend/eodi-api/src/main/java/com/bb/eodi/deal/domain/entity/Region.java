@@ -22,4 +22,8 @@ public class Region {
     private Long rootId;
     // 차상위 법정동 id
     private Long secondId;
+
+    public boolean isRoot() {
+        return secondId == null && id == rootId;
+    }
 }
