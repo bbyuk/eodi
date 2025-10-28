@@ -1,12 +1,13 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
-import com.bb.eodi.deal.application.model.LegalDongInfo;
+import com.bb.eodi.deal.application.model.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
+import com.bb.eodi.deal.infrastructure.dto.QDealRegionSummaryDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     private final JPAQueryFactory queryFactory;
     private final RealEstateSellMapper mapper;
     private final LegalDongCachePort legalDongCachePort;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     @Override
     public Page<RealEstateSell> findBy(RealEstateSellQuery query, Pageable pageable) {
@@ -84,25 +86,23 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
 
         BooleanBuilder condition = new BooleanBuilder();
 
-        condition.and(realEstateSell.price.between(query.getMinPrice(), query.getMaxPrice()));
+        condition.and(realEstateSell.price.between(query.getMinCash(), query.getMaxCash()));
         condition.and(realEstateSell.contractDate.between(query.getStartDate(), query.getEndDate()));
 
-        return queryFactory.select(realEstateSell.regionId)
+        return queryFactory.selectDistinct(
+                        new QDealRegionSummaryDto(
+                                realEstateSell.regionId,
+                                realEstateSell.contractDate
+                        )
+                )
                 .from(realEstateSell)
                 .where(condition)
+                .orderBy(realEstateSell.contractDate.desc())
                 .fetch()
                 .stream()
-                .map(regionId -> {
-                    LegalDongInfo legalDongInfo = legalDongCachePort.findById(regionId);
-                    return Region.builder()
-                            .id(regionId)
-                            .code(legalDongInfo.code())
-                            .name(legalDongInfo.name())
-                            .legalDongOrder(legalDongInfo.order())
-                            .rootId(legalDongInfo.rootId())
-                            .secondId(legalDongInfo.secondId())
-                            .build();
-                })
+                .map(regionSummaryDto -> legalDongInfoMapper.toEntity(
+                        legalDongCachePort.findById(regionSummaryDto.getRegionId()))
+                )
                 .collect(Collectors.toList());
     }
 }

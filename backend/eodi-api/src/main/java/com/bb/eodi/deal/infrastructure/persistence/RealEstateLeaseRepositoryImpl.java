@@ -1,10 +1,13 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
+import com.bb.eodi.deal.application.model.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
+import com.bb.eodi.deal.infrastructure.dto.QDealRegionSummaryDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,8 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
 
     private final JPAQueryFactory queryFactory;
     private final RealEstateLeaseMapper realEstateLeaseMapper;
+    private final LegalDongCachePort legalDongCachePort;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     @Override
     public Page<RealEstateLease> findBy(RealEstateLeaseQuery query, Pageable pageable) {
@@ -94,6 +99,27 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
 
     @Override
     public List<Region> findRegionsBy(RegionQuery query) {
-        return List.of();
+        QRealEstateLeaseJpaEntity realEstateLease = QRealEstateLeaseJpaEntity.realEstateLeaseJpaEntity;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        condition.and(realEstateLease.deposit.between(query.getMinCash(), query.getMaxCash()));
+        condition.and(realEstateLease.contractDate.between(query.getStartDate(), query.getEndDate()));
+
+        return queryFactory.selectDistinct(
+                        new QDealRegionSummaryDto(
+                                realEstateLease.regionId,
+                                realEstateLease.contractDate
+                        )
+                )
+                .from(realEstateLease)
+                .where(condition)
+                .orderBy(realEstateLease.contractDate.desc())
+                .fetch()
+                .stream()
+                .map(regionSummaryDto -> legalDongInfoMapper.toEntity(
+                        legalDongCachePort.findById(regionSummaryDto.getRegionId()))
+                )
+                .collect(Collectors.toList());
     }
 }

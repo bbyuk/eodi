@@ -58,7 +58,7 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
         // 4. LegalDongInfo model로 매핑
         tempTree.values().stream()
                 .filter(LegalDongInfoNode::isRoot)
-                .map(LegalDongInfoMapper::toInfo)
+                .map(LegalDongInfoNodeMapper::toInfo)
                 .forEach(this::loadToCache);
     }
 

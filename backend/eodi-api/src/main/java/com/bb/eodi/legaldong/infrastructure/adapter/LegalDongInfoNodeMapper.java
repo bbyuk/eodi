@@ -3,14 +3,13 @@ package com.bb.eodi.legaldong.infrastructure.adapter;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * 법정동 정보 매퍼
  * 캐시 구성 트리 node -> info 도메인 모델 매핑처리
  */
-public class LegalDongInfoMapper {
+public class LegalDongInfoNodeMapper {
 
     public static LegalDongInfo toInfo(LegalDongInfoNode node) {
         if (node.isLeaf()) {
@@ -34,7 +33,7 @@ public class LegalDongInfoMapper {
                 node.getSecondId(),
                 node.getParentId(),
                 node.getChildren().stream()
-                        .map(LegalDongInfoMapper::toInfo)
+                        .map(LegalDongInfoNodeMapper::toInfo)
                         .collect(Collectors.toSet())
         );
     }

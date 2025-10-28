@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -52,8 +50,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minPrice(cash - sellPriceGap)
-                        .maxPrice(cash + sellPriceGap)
+                        .minCash(cash - sellPriceGap)
+                        .maxCash(cash + sellPriceGap)
                         .startDate(startDate)
                         .endDate(today)
                         .build()
@@ -61,8 +59,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minPrice(cash - leaseDepositGap)
-                        .maxPrice(cash + leaseDepositGap)
+                        .minCash(cash - leaseDepositGap)
+                        .maxCash(cash + leaseDepositGap)
                         .startDate(startDate)
                         .endDate(today)
                         .build()
@@ -74,41 +72,70 @@ public class RealEstateRecommendationService {
         Map<Long, List<Region>> sellRegions = allSellRegions.stream()
                 .collect(Collectors.groupingBy(Region::getSecondId));
 
+        Map<Long, List<Region>> leaseRegionGroups = allLeaseRegions.stream()
+                .collect(Collectors.groupingBy(Region::getRootId));
 
-//        RecommendedRegionsDto result = new RecommendedRegionsDto(
-//                sellRegionGroups.entrySet()
-//                        .stream()
-//                        .map(entry -> {
-//                            LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-//                            return new RegionGroupDto(
-//                                    rootLegalDongInfo.code(),
-//                                    rootLegalDongInfo.name(),
-//                                    // TODO name 정제 로직 필요
-//                                    rootLegalDongInfo.name(),
-//                                    entry.getValue().size()
-//                            );
-//                        })
-//                        .collect(Collectors.toList()),
-//                sellRegions.entrySet()
-//                        .stream()
-//                        .map(entry -> {
-//                            LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-//                            LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
-//                            return new RegionDto(
-//                                    rootLegalDongInfo.code(),
-//                                    secondLegalDongInfo.code(),
-//                                    secondLegalDongInfo.name(),
-//                                    // TODO name 정제 로직 필요
-//                                    secondLegalDongInfo.name(),
-//                                    entry.getValue().size()
-//                            );
-//                        })
-//                        .collect(Collectors.toList()),
-//
-//
-//                );
+        Map<Long, List<Region>> leaseRegions = allLeaseRegions.stream()
+                .collect(Collectors.groupingBy(Region::getSecondId));
 
+        return new RecommendedRegionsDto(
+                sellRegionGroups.entrySet()
+                        .stream()
+                        .map(entry -> {
+                            LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
+                            return new RegionGroupDto(
+                                    rootLegalDongInfo.code(),
+                                    rootLegalDongInfo.name(),
+                                    // TODO name 정제 로직 필요
+                                    rootLegalDongInfo.name(),
+                                    entry.getValue().size()
+                            );
+                        })
+                        .collect(Collectors.toList()),
+                sellRegions.entrySet()
+                        .stream()
+                        .map(entry -> {
+                            LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
+                            LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
+                            return new RegionDto(
+                                    rootLegalDongInfo.code(),
+                                    secondLegalDongInfo.code(),
+                                    secondLegalDongInfo.name(),
+                                    // TODO name 정제 로직 필요
+                                    secondLegalDongInfo.name(),
+                                    entry.getValue().size()
+                            );
+                        })
+                        .collect(Collectors.toList()),
+                leaseRegionGroups.entrySet()
+                        .stream()
+                        .map(entry -> {
+                            LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
+                            return new RegionGroupDto(
+                                    rootLegalDongInfo.code(),
+                                    rootLegalDongInfo.name(),
+                                    // TODO name 정제 로직 필요
+                                    rootLegalDongInfo.name(),
+                                    entry.getValue().size()
+                            );
+                        })
+                        .collect(Collectors.toList()),
+                leaseRegions.entrySet()
+                        .stream()
+                        .map(entry -> {
+                            LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
+                            LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
-        return null;
+                            return new RegionDto(
+                                    rootLegalDongInfo.code(),
+                                    secondLegalDongInfo.code(),
+                                    secondLegalDongInfo.name(),
+                                    // TODO name 정제 로직 필요
+                                    secondLegalDongInfo.name(),
+                                    entry.getValue().size()
+                            );
+                        })
+                        .collect(Collectors.toList())
+                );
     }
 }
