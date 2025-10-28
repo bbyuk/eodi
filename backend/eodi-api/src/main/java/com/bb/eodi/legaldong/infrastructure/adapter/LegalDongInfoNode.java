@@ -41,18 +41,14 @@ class LegalDongInfoNode {
     void connectToParent(LegalDongInfoNode parent) {
         this.parent = parent;
         parent.children.add(this);
-
-        this.rootId = parent.rootId;
-        if (parent.isRoot()) {
-            this.secondId = this.id;
-        }
-        else {
-            this.secondId = parent.secondId;
-        }
     }
 
-    boolean isConnectedToParent() {
-        return parent != null;
+    void updateSecondId(Long id) {
+        this.secondId = id;
+    }
+
+    void updateRootId(Long id) {
+        this.rootId = id;
     }
 
     boolean isRoot() {

@@ -27,6 +27,13 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
         refreshCache();
     }
 
+    public List<LegalDongInfo> findUnMappedDataLegalDongInfo() {
+        return cache.values().stream()
+                .filter(legalDongInfo ->
+                        legalDongInfo.rootId() == null || legalDongInfo.secondId() == null
+                ).collect(Collectors.toList());
+    }
+
     public void refreshCache() {
         // 1. clear
         cache.clear();
@@ -47,12 +54,7 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
 
         // 3. 임시 노드 트리 노드간 connect
         for (LegalDongInfoNode node : tempTree.values()) {
-            LegalDongInfoNode currentNode = node;
-
-            while(!currentNode.isRoot()) {
-                currentNode.connectToParent(tempTree.get(currentNode.getParentId()));
-                currentNode = currentNode.getParent();
-            }
+            traverse(tempTree, node);
         }
 
         // 4. LegalDongInfo model로 매핑
@@ -62,8 +64,27 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
                 .forEach(this::loadToCache);
     }
 
+    private void traverse(Map<Long, LegalDongInfoNode> tree, LegalDongInfoNode currentNode) {
+        if (currentNode.isRoot()) {
+            currentNode.updateRootId(currentNode.getId());
+            return;
+        }
+
+        if (currentNode.getId().equals(6760L)) {
+            System.out.println("tree = " + tree);
+        }
+
+        currentNode.connectToParent(tree.get(currentNode.getParentId()));
+        traverse(tree, currentNode.getParent());
+
+        // rootId, secondId postorder update
+        currentNode.updateRootId(currentNode.getParent().getRootId());
+        currentNode.updateSecondId(currentNode.getParent().isRoot() ? currentNode.getId() : currentNode.getParent().getSecondId());
+    }
+
     /**
      * 캐시에 legalDongInfo를 로드한다.
+     *
      * @param legalDongInfo
      */
     private void loadToCache(LegalDongInfo legalDongInfo) {
