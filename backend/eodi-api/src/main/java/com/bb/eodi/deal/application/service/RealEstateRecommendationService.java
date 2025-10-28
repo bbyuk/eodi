@@ -91,7 +91,7 @@ public class RealEstateRecommendationService {
                                     entry.getValue().size()
                             );
                         })
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.groupingBy(RegionGroupDto::code)),
                 sellRegions.entrySet()
                         .stream()
                         .map(entry -> {
@@ -106,7 +106,7 @@ public class RealEstateRecommendationService {
                                     entry.getValue().size()
                             );
                         })
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.groupingBy(RegionDto::groupCode)),
                 leaseRegionGroups.entrySet()
                         .stream()
                         .map(entry -> {
@@ -119,7 +119,7 @@ public class RealEstateRecommendationService {
                                     entry.getValue().size()
                             );
                         })
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.groupingBy(RegionGroupDto::code)),
                 leaseRegions.entrySet()
                         .stream()
                         .map(entry -> {
@@ -135,7 +135,7 @@ public class RealEstateRecommendationService {
                                     entry.getValue().size()
                             );
                         })
-                        .collect(Collectors.toList())
+                        .collect(Collectors.groupingBy(RegionDto::groupCode))
                 );
     }
 }
