@@ -86,23 +86,25 @@ public class RealEstateRecommendationService {
                             return new RegionGroupDto(
                                     rootLegalDongInfo.code(),
                                     rootLegalDongInfo.name(),
-                                    // TODO name 정제 로직 필요
                                     rootLegalDongInfo.name(),
                                     entry.getValue().size()
                             );
                         })
-                        .collect(Collectors.groupingBy(RegionGroupDto::code)),
+                        .collect(Collectors.toMap(
+                                RegionGroupDto::code,
+                                regionGroupDto -> regionGroupDto
+                        )),
                 sellRegions.entrySet()
                         .stream()
                         .map(entry -> {
                             LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
                             LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
+
                             return new RegionDto(
                                     rootLegalDongInfo.code(),
                                     secondLegalDongInfo.code(),
                                     secondLegalDongInfo.name(),
-                                    // TODO name 정제 로직 필요
-                                    secondLegalDongInfo.name(),
+                                    secondLegalDongInfo.name().replace(rootLegalDongInfo.name(), "").trim(),
                                     entry.getValue().size()
                             );
                         })
@@ -114,12 +116,14 @@ public class RealEstateRecommendationService {
                             return new RegionGroupDto(
                                     rootLegalDongInfo.code(),
                                     rootLegalDongInfo.name(),
-                                    // TODO name 정제 로직 필요
                                     rootLegalDongInfo.name(),
                                     entry.getValue().size()
                             );
                         })
-                        .collect(Collectors.groupingBy(RegionGroupDto::code)),
+                        .collect(Collectors.toMap(
+                                RegionGroupDto::code,
+                                regionGroupDto -> regionGroupDto
+                        )),
                 leaseRegions.entrySet()
                         .stream()
                         .map(entry -> {
@@ -130,12 +134,12 @@ public class RealEstateRecommendationService {
                                     rootLegalDongInfo.code(),
                                     secondLegalDongInfo.code(),
                                     secondLegalDongInfo.name(),
-                                    // TODO name 정제 로직 필요
-                                    secondLegalDongInfo.name(),
+                                    secondLegalDongInfo.name().replace(rootLegalDongInfo.name(), "").trim(),
                                     entry.getValue().size()
                             );
                         })
                         .collect(Collectors.groupingBy(RegionDto::groupCode))
                 );
     }
+
 }

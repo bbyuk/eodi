@@ -11,9 +11,9 @@ import java.util.Map;
  * @param leaseRegions 임대차 추천 지역 목록 (법정동
  */
 public record RecommendedRegionsDto(
-        Map<String, List<RegionGroupDto>> sellRegionGroups,
+        Map<String, RegionGroupDto> sellRegionGroups,
         Map<String, List<RegionDto>> sellRegions,
-        Map<String, List<RegionGroupDto>> leaseRegionGroups,
+        Map<String, RegionGroupDto> leaseRegionGroups,
         Map<String, List<RegionDto>> leaseRegions
 ) {
 }
