@@ -18,13 +18,12 @@ class InMemoryLegalDongCacheAdapterTest {
     @Test
     void refreshCacheTest() throws Exception {
         // given
-        Long id = 223L;
 
         // when
         legalDongCacheAdapter.refreshCache();
 
         // then
-        Assertions.assertThat(legalDongCacheAdapter.findById(id)).isNotNull();
+        Assertions.assertThat(legalDongCacheAdapter.findUnMappedDataLegalDongInfo()).hasSize(17);
     }
 
 }

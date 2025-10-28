@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.application.dto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 살펴볼 만한 지역 정보 DTO
@@ -10,9 +11,9 @@ import java.util.List;
  * @param leaseRegions 임대차 추천 지역 목록 (법정동
  */
 public record RecommendedRegionsDto(
-        List<RegionGroupDto> sellRegionGroups,
-        List<RegionDto> sellRegions,
-        List<RegionGroupDto> leaseRegionGroups,
-        List<RegionDto> leaseRegions
+        Map<String, RegionGroupDto> sellRegionGroups,
+        Map<String, List<RegionDto>> sellRegions,
+        Map<String, RegionGroupDto> leaseRegionGroups,
+        Map<String, List<RegionDto>> leaseRegions
 ) {
 }

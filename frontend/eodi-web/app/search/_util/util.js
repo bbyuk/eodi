@@ -9,6 +9,9 @@ export const formatWon = (value) => {
 
   result += jo > 0 ? `${jo}조 ` : "";
   result += eok > 0 ? `${eok}억 ` : "";
-  result += `${man}만 원`;
+  result += man > 0 ? `${man}만 ` : "";
+  result += jo === 0 && eok === 0 && man === 0 ? "0 " : "";
+
+  result += "원";
   return result;
 };

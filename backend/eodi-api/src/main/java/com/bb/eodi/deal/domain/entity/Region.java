@@ -18,6 +18,12 @@ public class Region {
     private String name;
     // 법정동 서열
     private int legalDongOrder;
-    // 부모 법정동 id
-    private Long parentId;
+    // 최상위 법정동 id
+    private Long rootId;
+    // 차상위 법정동 id
+    private Long secondId;
+
+    public boolean isRoot() {
+        return secondId == null && id == rootId;
+    }
 }

@@ -4,6 +4,7 @@ import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,17 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
     private final Map<Long, LegalDongInfo> cache = new ConcurrentHashMap<>();
     private final LegalDongJpaRepository legalDongJpaRepository;
 
+    @PostConstruct
+    public void initCache() {
+        refreshCache();
+    }
+
+    public List<LegalDongInfo> findUnMappedDataLegalDongInfo() {
+        return cache.values().stream()
+                .filter(legalDongInfo ->
+                        legalDongInfo.rootId() == null || legalDongInfo.secondId() == null
+                ).collect(Collectors.toList());
+    }
 
     public void refreshCache() {
         // 1. clear
@@ -42,23 +54,37 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
 
         // 3. 임시 노드 트리 노드간 connect
         for (LegalDongInfoNode node : tempTree.values()) {
-            LegalDongInfoNode currentNode = node;
-
-            while(!currentNode.isRoot() && !currentNode.isConnectedToParent()) {
-                currentNode.connectToParent(tempTree.get(currentNode.getParentId()));
-                currentNode = currentNode.getParent();
-            }
+            traverse(tempTree, node);
         }
 
         // 4. LegalDongInfo model로 매핑
         tempTree.values().stream()
                 .filter(LegalDongInfoNode::isRoot)
-                .map(LegalDongInfoMapper::toInfo)
+                .map(LegalDongInfoNodeMapper::toInfo)
                 .forEach(this::loadToCache);
+    }
+
+    private void traverse(Map<Long, LegalDongInfoNode> tree, LegalDongInfoNode currentNode) {
+        if (currentNode.isRoot()) {
+            currentNode.updateRootId(currentNode.getId());
+            return;
+        }
+
+        if (currentNode.getId().equals(6760L)) {
+            System.out.println("tree = " + tree);
+        }
+
+        currentNode.connectToParent(tree.get(currentNode.getParentId()));
+        traverse(tree, currentNode.getParent());
+
+        // rootId, secondId postorder update
+        currentNode.updateRootId(currentNode.getParent().getRootId());
+        currentNode.updateSecondId(currentNode.getParent().isRoot() ? currentNode.getId() : currentNode.getParent().getSecondId());
     }
 
     /**
      * 캐시에 legalDongInfo를 로드한다.
+     *
      * @param legalDongInfo
      */
     private void loadToCache(LegalDongInfo legalDongInfo) {

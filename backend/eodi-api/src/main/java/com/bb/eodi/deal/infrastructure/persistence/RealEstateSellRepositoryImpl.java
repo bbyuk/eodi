@@ -1,5 +1,7 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
+import com.bb.eodi.deal.application.model.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
@@ -25,6 +27,8 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
 
     private final JPAQueryFactory queryFactory;
     private final RealEstateSellMapper mapper;
+    private final LegalDongCachePort legalDongCachePort;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     @Override
     public Page<RealEstateSell> findBy(RealEstateSellQuery query, Pageable pageable) {
@@ -77,6 +81,23 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
 
     @Override
     public List<Region> findRegionsBy(RegionQuery query) {
-        return List.of();
+        QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
+
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        condition.and(realEstateSell.price.between(query.getMinCash(), query.getMaxCash()));
+        condition.and(realEstateSell.contractDate.between(query.getStartDate(), query.getEndDate()));
+
+        return queryFactory.select(realEstateSell.regionId)
+                .from(realEstateSell)
+                .where(condition)
+                .groupBy(realEstateSell.regionId)
+                .fetch()
+                .stream()
+                .map(regionId -> legalDongInfoMapper.toEntity(
+                        legalDongCachePort.findById(regionId))
+                )
+                .collect(Collectors.toList());
     }
 }

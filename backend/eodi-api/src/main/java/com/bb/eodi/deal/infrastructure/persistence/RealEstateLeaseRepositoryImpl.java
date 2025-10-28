@@ -1,5 +1,7 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
+import com.bb.eodi.deal.application.model.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
@@ -25,6 +27,8 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
 
     private final JPAQueryFactory queryFactory;
     private final RealEstateLeaseMapper realEstateLeaseMapper;
+    private final LegalDongCachePort legalDongCachePort;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     @Override
     public Page<RealEstateLease> findBy(RealEstateLeaseQuery query, Pageable pageable) {
@@ -94,6 +98,22 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
 
     @Override
     public List<Region> findRegionsBy(RegionQuery query) {
-        return List.of();
+        QRealEstateLeaseJpaEntity realEstateLease = QRealEstateLeaseJpaEntity.realEstateLeaseJpaEntity;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        condition.and(realEstateLease.deposit.between(query.getMinCash(), query.getMaxCash()));
+        condition.and(realEstateLease.contractDate.between(query.getStartDate(), query.getEndDate()));
+
+        return queryFactory.select(realEstateLease.regionId)
+                .from(realEstateLease)
+                .where(condition)
+                .groupBy(realEstateLease.regionId)
+                .fetch()
+                .stream()
+                .map(regionId -> legalDongInfoMapper.toEntity(
+                        legalDongCachePort.findById(regionId))
+                )
+                .collect(Collectors.toList());
     }
 }

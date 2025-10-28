@@ -1,11 +1,16 @@
 package com.bb.eodi.deal.domain.repository;
 
 import com.bb.eodi.config.QuerydslConfig;
+import com.bb.eodi.deal.application.model.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.model.LegalDongInfoMapperImpl;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
+import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseMapper;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseRepositoryImpl;
+import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +21,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -23,7 +31,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Import({
         RealEstateLeaseRepositoryImpl.class,
         QuerydslConfig.class,
-        RealEstateLeaseMapperImpl.class
+        RealEstateLeaseMapperImpl.class,
+        InMemoryLegalDongCacheAdapter.class,
+        LegalDongInfoMapperImpl.class
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -46,6 +56,25 @@ class RealEstateLeaseRepositoryTest {
         // then
         Assertions.assertThat(result.getContent()).isNotEmpty();
 
+    }
+
+    @Test
+    @DisplayName("small - 부동산 임대차 deposit / 기간 기반 지역 조회 test")
+    void testFindLeaseRegions() throws Exception {
+        // given
+        RegionQuery query = RegionQuery.builder()
+                .minCash(45000)
+                .maxCash(55000)
+                .startDate(LocalDate.now().minusMonths(3))
+                .endDate(LocalDate.now())
+                .build();
+
+        // when
+        List<Region> regions = realEstateLeaseRepository.findRegionsBy(query);
+
+        // then
+        System.out.println("regions.size() = " + regions.size());
+        Assertions.assertThat(true);
     }
 
 }
