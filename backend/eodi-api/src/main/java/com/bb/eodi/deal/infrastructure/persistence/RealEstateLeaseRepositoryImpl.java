@@ -7,7 +7,6 @@ import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
-import com.bb.eodi.deal.infrastructure.dto.QDealRegionSummaryDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -106,19 +105,14 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
         condition.and(realEstateLease.deposit.between(query.getMinCash(), query.getMaxCash()));
         condition.and(realEstateLease.contractDate.between(query.getStartDate(), query.getEndDate()));
 
-        return queryFactory.selectDistinct(
-                        new QDealRegionSummaryDto(
-                                realEstateLease.regionId,
-                                realEstateLease.contractDate
-                        )
-                )
+        return queryFactory.select(realEstateLease.regionId)
                 .from(realEstateLease)
                 .where(condition)
-                .orderBy(realEstateLease.contractDate.desc())
+                .groupBy(realEstateLease.regionId)
                 .fetch()
                 .stream()
-                .map(regionSummaryDto -> legalDongInfoMapper.toEntity(
-                        legalDongCachePort.findById(regionSummaryDto.getRegionId()))
+                .map(regionId -> legalDongInfoMapper.toEntity(
+                        legalDongCachePort.findById(regionId))
                 )
                 .collect(Collectors.toList());
     }

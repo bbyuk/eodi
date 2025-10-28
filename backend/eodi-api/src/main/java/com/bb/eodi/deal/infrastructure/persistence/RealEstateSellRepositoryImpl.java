@@ -7,7 +7,6 @@ import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
-import com.bb.eodi.deal.infrastructure.dto.QDealRegionSummaryDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -84,24 +83,20 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     public List<Region> findRegionsBy(RegionQuery query) {
         QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
 
+
         BooleanBuilder condition = new BooleanBuilder();
 
         condition.and(realEstateSell.price.between(query.getMinCash(), query.getMaxCash()));
         condition.and(realEstateSell.contractDate.between(query.getStartDate(), query.getEndDate()));
 
-        return queryFactory.selectDistinct(
-                        new QDealRegionSummaryDto(
-                                realEstateSell.regionId,
-                                realEstateSell.contractDate
-                        )
-                )
+        return queryFactory.select(realEstateSell.regionId)
                 .from(realEstateSell)
                 .where(condition)
-                .orderBy(realEstateSell.contractDate.desc())
+                .groupBy(realEstateSell.regionId)
                 .fetch()
                 .stream()
-                .map(regionSummaryDto -> legalDongInfoMapper.toEntity(
-                        legalDongCachePort.findById(regionSummaryDto.getRegionId()))
+                .map(regionId -> legalDongInfoMapper.toEntity(
+                        legalDongCachePort.findById(regionId))
                 )
                 .collect(Collectors.toList());
     }
