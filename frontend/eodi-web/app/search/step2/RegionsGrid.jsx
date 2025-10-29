@@ -36,6 +36,8 @@ export default function RegionsGrid({ onSelect }) {
   const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
   const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
+  const [selectedHousingType, setSelectedHousingType] = useState("아파트");
+
   useEffect(() => {
     if (!cash || cash === 0) {
       redirect("/search");
@@ -65,6 +67,21 @@ export default function RegionsGrid({ onSelect }) {
           </span>
         </p>
       </PageHeader>
+
+      {/* 주택 유형 선택 영역 */}
+      <GridGroup title={"주택 유형 선택"}>
+        <CategoryTab
+          list={[
+            { displayName: "아파트", icon: "🏢" },
+            { displayName: "오피스텔", icon: "🏬" },
+            { displayName: "단독주택", icon: "🏠" },
+            { displayName: "다가구", icon: "🏡" },
+            { displayName: "연립·빌라", icon: "🏘️" },
+          ]}
+          value={selectedHousingType}
+          onSelect={setSelectedHousingType}
+        />
+      </GridGroup>
 
       <GridGroup title={"최근 매수 이력이 있는 지역"}>
         <CategoryTab
