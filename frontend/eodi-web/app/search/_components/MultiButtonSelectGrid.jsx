@@ -18,7 +18,7 @@ export default function MultiButtonSelectGrid({ list, selected, onSelect, placeh
             );
           })}
 
-        {list?.length === 0 && (
+        {(!list || list.length === 0) && placeholder && (
           <div className="col-span-full py-6 text-center text-sm text-text-secondary border border-dashed border-border rounded-lg">
             {placeholder}
           </div>

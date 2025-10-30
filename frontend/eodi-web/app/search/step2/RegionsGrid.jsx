@@ -106,13 +106,12 @@ export default function RegionsGrid({ onSelect }) {
           value={selectedSellRegionGroup}
           onSelect={setSelectedSellRegionGroup}
         />
-        {sellRegions[selectedSellRegionGroup?.code] && (
-          <MultiButtonSelectGrid
-            list={sellRegions[selectedSellRegionGroup?.code]}
-            selected={selectedSellRegions}
-            onSelect={toggleSellRegion}
-          />
-        )}
+        <MultiButtonSelectGrid
+          list={sellRegions[selectedSellRegionGroup?.code]}
+          selected={selectedSellRegions}
+          onSelect={toggleSellRegion}
+          placeholder={"예산에 맞는 지역을 찾지 못했어요."}
+        />
       </GridGroup>
 
       <GridGroup title={"최근 전·월세 이력이 있는 지역"}>
@@ -121,13 +120,12 @@ export default function RegionsGrid({ onSelect }) {
           value={selectedLeaseRegionGroup}
           onSelect={setSelectedLeaseRegionGroup}
         />
-        {leaseRegions[selectedSellRegionGroup?.code] && (
-          <MultiButtonSelectGrid
-            list={leaseRegions[selectedLeaseRegionGroup?.code]}
-            selected={selectedLeaseRegions}
-            onSelect={toggleLeaseRegion}
-          />
-        )}
+        <MultiButtonSelectGrid
+          list={leaseRegions[selectedLeaseRegionGroup?.code]}
+          selected={selectedLeaseRegions}
+          onSelect={toggleLeaseRegion}
+          placeholder={"예산에 맞는 지역을 찾지 못했어요."}
+        />
       </GridGroup>
     </section>
   );
