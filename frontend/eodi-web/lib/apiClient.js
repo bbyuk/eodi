@@ -7,8 +7,20 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080"
  */
 function toQueryString(params) {
   if (!params || Object.keys(params).length === 0) return "";
-  const query = new URLSearchParams(params).toString();
-  return `?${query}`;
+
+  const parts = [];
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((v) => parts.push(`${key}=${encodeURIComponent(v)}`));
+    } else if (typeof value === "object") {
+      throw new Error("GET 파라미터로 객체를 전달할 수 없습니다.");
+    } else {
+      parts.push(`${key}=${encodeURIComponent(value)}`);
+    }
+  });
+
+  return `?${parts.join("&")}`;
 }
 
 /**
