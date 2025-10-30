@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
@@ -10,6 +10,12 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
 import { api } from "@/lib/apiClient";
+import {
+  BuildingOffice2Icon,
+  BuildingOfficeIcon,
+  HomeIcon,
+  HomeModernIcon,
+} from "@heroicons/react/24/outline";
 
 const id = "region";
 export default function RegionsGrid({ onSelect }) {
@@ -36,7 +42,7 @@ export default function RegionsGrid({ onSelect }) {
   const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
   const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
-  const [selectedHousingType, setSelectedHousingType] = useState("아파트");
+  const [selectedHousingType, setSelectedHousingType] = useState("AP");
 
   useEffect(() => {
     if (!cash || cash === 0) {
@@ -72,11 +78,22 @@ export default function RegionsGrid({ onSelect }) {
       <GridGroup title={"주택 유형 선택"}>
         <CategoryTab
           list={[
-            { displayName: "아파트", icon: "🏢" },
-            { displayName: "오피스텔", icon: "🏬" },
-            { displayName: "단독주택", icon: "🏠" },
-            { displayName: "다가구", icon: "🏡" },
-            { displayName: "연립·빌라", icon: "🏘️" },
+            {
+              code: "AP",
+              displayName: "아파트",
+              icon: <BuildingOffice2Icon className="w-5 h-5" />,
+            },
+            {
+              code: "OF",
+              displayName: "오피스텔",
+              icon: <BuildingOfficeIcon className="w-5 h-5" />,
+            },
+            { code: "DT", displayName: "단독 주택", icon: <HomeIcon className="w-5 h-5" /> },
+            {
+              code: "MH",
+              displayName: "연립/다세대 주택",
+              icon: <HomeModernIcon className="w-5 h-5" />,
+            },
           ]}
           value={selectedHousingType}
           onSelect={setSelectedHousingType}

@@ -8,6 +8,7 @@ export default function CategoryTab({ list, value, onSelect }) {
         return (
           <CategoryButton
             key={data.code}
+            icon={data.icon}
             onClick={() => onSelect(data)}
             isActive={isActive}
             label={data.displayName}
