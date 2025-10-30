@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
@@ -10,9 +10,15 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
 import { api } from "@/lib/apiClient";
+import {
+  BuildingOffice2Icon,
+  BuildingOfficeIcon,
+  HomeIcon,
+  HomeModernIcon,
+} from "@heroicons/react/24/outline";
 
 const id = "region";
-export default function RegionsGrid({ onSelect }) {
+export default function RegionsGrid() {
   const title = "살펴볼 만한 지역을 찾았어요";
   const description = [
     "입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,",
@@ -36,6 +42,8 @@ export default function RegionsGrid({ onSelect }) {
   const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
   const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
+  const [selectedHousingType, setSelectedHousingType] = useState(new Set(["AP", "OF"]));
+
   useEffect(() => {
     if (!cash || cash === 0) {
       redirect("/search");
@@ -45,6 +53,7 @@ export default function RegionsGrid({ onSelect }) {
     api
       .get("/real-estate/recommendation/region", {
         cash: cash,
+        housingTypes: Array.from(selectedHousingType),
       })
       .then((res) => {
         console.log(res);
@@ -66,19 +75,51 @@ export default function RegionsGrid({ onSelect }) {
         </p>
       </PageHeader>
 
+      {/* 주택 유형 선택 영역 */}
+      <GridGroup title={"주택 유형 선택"}>
+        <CategoryTab
+          list={[
+            {
+              code: "AP",
+              displayName: "아파트",
+              icon: <BuildingOffice2Icon className="w-5 h-5" />,
+            },
+            {
+              code: "OF",
+              displayName: "오피스텔",
+              icon: <BuildingOfficeIcon className="w-5 h-5" />,
+            },
+            { code: "DT", displayName: "단독 주택", icon: <HomeIcon className="w-5 h-5" /> },
+            {
+              code: "MH",
+              displayName: "연립/다세대 주택",
+              icon: <HomeModernIcon className="w-5 h-5" />,
+            },
+          ]}
+          value={selectedHousingType}
+          type={"select"}
+          onSelect={(value) =>
+            setSelectedHousingType((prev) => {
+              const next = new Set(prev);
+              next.has(value) ? next.delete(value) : next.add(value);
+              return next;
+            })
+          }
+        />
+      </GridGroup>
+
       <GridGroup title={"최근 매수 이력이 있는 지역"}>
         <CategoryTab
           list={Object.values(sellRegionGroups)}
           value={selectedSellRegionGroup}
           onSelect={setSelectedSellRegionGroup}
         />
-        {sellRegions[selectedSellRegionGroup?.code] && (
-          <MultiButtonSelectGrid
-            list={sellRegions[selectedSellRegionGroup?.code]}
-            selected={selectedSellRegions}
-            onSelect={toggleSellRegion}
-          />
-        )}
+        <MultiButtonSelectGrid
+          list={sellRegions[selectedSellRegionGroup?.code]}
+          selected={selectedSellRegions}
+          onSelect={toggleSellRegion}
+          placeholder={"예산에 맞는 지역을 찾지 못했어요."}
+        />
       </GridGroup>
 
       <GridGroup title={"최근 전·월세 이력이 있는 지역"}>
@@ -87,13 +128,12 @@ export default function RegionsGrid({ onSelect }) {
           value={selectedLeaseRegionGroup}
           onSelect={setSelectedLeaseRegionGroup}
         />
-        {leaseRegions[selectedSellRegionGroup?.code] && (
-          <MultiButtonSelectGrid
-            list={leaseRegions[selectedLeaseRegionGroup?.code]}
-            selected={selectedLeaseRegions}
-            onSelect={toggleLeaseRegion}
-          />
-        )}
+        <MultiButtonSelectGrid
+          list={leaseRegions[selectedLeaseRegionGroup?.code]}
+          selected={selectedLeaseRegions}
+          onSelect={toggleLeaseRegion}
+          placeholder={"예산에 맞는 지역을 찾지 못했어요."}
+        />
       </GridGroup>
     </section>
   );

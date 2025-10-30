@@ -1,4 +1,4 @@
-export default function CategoryButton({ isActive, label, ...props }) {
+export default function CategoryButton({ isActive, label, icon, ...props }) {
   return (
     <button
       type="button"
@@ -9,7 +9,12 @@ export default function CategoryButton({ isActive, label, ...props }) {
       }`}
       {...props}
     >
-      {label}
+      {icon && (
+        <span className="inline-flex items-center justify-center align-middle translate-y-[-5px] translate-x-[-7px]">
+          <span className="inline-block w-[15px] h-[15px] text-current">{icon}</span>
+        </span>
+      )}
+      <span className="leading-none">{label}</span>
     </button>
   );
 }
