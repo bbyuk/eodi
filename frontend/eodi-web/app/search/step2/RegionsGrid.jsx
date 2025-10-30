@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const id = "region";
-export default function RegionsGrid({ onSelect }) {
+export default function RegionsGrid() {
   const title = "살펴볼 만한 지역을 찾았어요";
   const description = [
     "입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,",
@@ -42,7 +42,7 @@ export default function RegionsGrid({ onSelect }) {
   const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
   const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
-  const [selectedHousingType, setSelectedHousingType] = useState("AP");
+  const [selectedHousingType, setSelectedHousingType] = useState(new Set(["AP", "OF"]));
 
   useEffect(() => {
     if (!cash || cash === 0) {
@@ -53,6 +53,7 @@ export default function RegionsGrid({ onSelect }) {
     api
       .get("/real-estate/recommendation/region", {
         cash: cash,
+        housingTypes: Array.from(selectedHousingType),
       })
       .then((res) => {
         console.log(res);
@@ -96,7 +97,14 @@ export default function RegionsGrid({ onSelect }) {
             },
           ]}
           value={selectedHousingType}
-          onSelect={setSelectedHousingType}
+          type={"select"}
+          onSelect={(value) =>
+            setSelectedHousingType((prev) => {
+              const next = new Set(prev);
+              next.has(value) ? next.delete(value) : next.add(value);
+              return next;
+            })
+          }
         />
       </GridGroup>
 
