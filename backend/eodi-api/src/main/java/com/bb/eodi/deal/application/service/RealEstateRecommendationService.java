@@ -9,13 +9,16 @@ import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
+import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +47,24 @@ public class RealEstateRecommendationService {
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsDto findRecommendedRegions(Integer cash) {
+    public RecommendedRegionsDto findRecommendedRegions(Integer cash, List<String> housingTypes) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
+
+        Set<String> housingTypeSet = new HashSet<>(housingTypes);
+        if (housingTypeSet.contains(HousingType.APT.code())) {
+            // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
+            housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
+            housingTypeSet.add(HousingType.OCCUPY_RIGHT.code());
+        }
+        else if (housingTypeSet.contains(HousingType.DETACHED_HOUSE.code())) {
+            housingTypeSet.add(HousingType.MULTI_UNIT_HOUSE.code());
+        }
+
+        List<HousingType> housingTypeParameters = housingTypeSet.stream()
+                .map(HousingType::fromCode)
+                .collect(Collectors.toList());
+
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(
                 RegionQuery.builder()
@@ -54,6 +72,8 @@ public class RealEstateRecommendationService {
                         .maxCash(cash + sellPriceGap)
                         .startDate(startDate)
                         .endDate(today)
+                        .housingTypes(
+                                housingTypeParameters)
                         .build()
         );
 
@@ -63,6 +83,9 @@ public class RealEstateRecommendationService {
                         .maxCash(cash + leaseDepositGap)
                         .startDate(startDate)
                         .endDate(today)
+                        .housingTypes(
+                                housingTypeParameters
+                        )
                         .build()
         );
 

@@ -2,6 +2,8 @@ package com.bb.eodi.deal.domain.type;
 
 import com.bb.eodi.common.type.TypeCode;
 
+import java.util.Arrays;
+
 /**
  * 건물용도
  */
@@ -44,5 +46,17 @@ public enum HousingType implements TypeCode {
     @Override
     public String description() {
         return description;
+    }
+
+    /**
+     * 코드 입력으로 HousingType 리턴
+     * @param code
+     * @return
+     */
+    public static HousingType fromCode(String code) {
+        return Arrays.stream(values())
+                .filter(type -> type.code().equals(code))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("잘못된 코드 입력입니다."));
     }
 }
