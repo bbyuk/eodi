@@ -1,4 +1,5 @@
 import CategoryButton from "@/components/ui/input/CategoryButton";
+import HorizontalSwipeContainer from "@/components/ui/animation/HorizontalSwipeContainer";
 
 /**
  * 카테고리 탭 UI 컴포넌트
@@ -9,7 +10,7 @@ import CategoryButton from "@/components/ui/input/CategoryButton";
  */
 export default function CategoryTab({ list, value, onSelect, type = "toggle" }) {
   return (
-    <div className="flex flex-wrap gap-2 mb-5">
+    <HorizontalSwipeContainer fadeColor="#ffffff">
       {list.map((data) => {
         const isActive =
           type === "toggle"
@@ -27,6 +28,6 @@ export default function CategoryTab({ list, value, onSelect, type = "toggle" }) 
           />
         );
       })}
-    </div>
+    </HorizontalSwipeContainer>
   );
 }
