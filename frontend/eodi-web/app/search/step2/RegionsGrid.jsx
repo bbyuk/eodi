@@ -16,6 +16,7 @@ import {
   HomeIcon,
   HomeModernIcon,
 } from "@heroicons/react/24/outline";
+import HorizontalSwipeContainer from "@/components/ui/animation/HorizontalSwipeContainer";
 
 const id = "region";
 export default function RegionsGrid() {
@@ -109,11 +110,13 @@ export default function RegionsGrid() {
       </GridGroup>
 
       <GridGroup title={"최근 매수 이력이 있는 지역"}>
-        <CategoryTab
-          list={Object.values(sellRegionGroups)}
-          value={selectedSellRegionGroup}
-          onSelect={setSelectedSellRegionGroup}
-        />
+        <HorizontalSwipeContainer fadeColor="#ffffff">
+          <CategoryTab
+            list={Object.values(sellRegionGroups)}
+            value={selectedSellRegionGroup}
+            onSelect={setSelectedSellRegionGroup}
+          />
+        </HorizontalSwipeContainer>
         <MultiButtonSelectGrid
           list={sellRegions[selectedSellRegionGroup]}
           selected={selectedSellRegions}
@@ -123,11 +126,13 @@ export default function RegionsGrid() {
       </GridGroup>
 
       <GridGroup title={"최근 전·월세 이력이 있는 지역"}>
-        <CategoryTab
-          list={Object.values(leaseRegionGroups)}
-          value={selectedLeaseRegionGroup}
-          onSelect={setSelectedLeaseRegionGroup}
-        />
+        <HorizontalSwipeContainer fadeColor="#ffffff">
+          <CategoryTab
+            list={Object.values(leaseRegionGroups)}
+            value={selectedLeaseRegionGroup}
+            onSelect={setSelectedLeaseRegionGroup}
+          />
+        </HorizontalSwipeContainer>
         <MultiButtonSelectGrid
           list={leaseRegions[selectedLeaseRegionGroup]}
           selected={selectedLeaseRegions}
