@@ -17,6 +17,7 @@ import {
   HomeModernIcon,
 } from "@heroicons/react/24/outline";
 import HorizontalSwipeContainer from "@/components/ui/animation/HorizontalSwipeContainer";
+import SelectedRegionsCard from "@/app/search/_components/SelectedRegionsCard";
 
 const id = "region";
 export default function RegionsGrid() {
@@ -67,6 +68,9 @@ export default function RegionsGrid() {
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
+      {/* 🔹 Drawer (퍼블 전용) */}
+      <SelectedRegionsCard isOpen={true} />
+
       <PageHeader title={title} description={description}>
         <p className="text-base text-text-secondary mt-4">
           입력 예산:{" "}
