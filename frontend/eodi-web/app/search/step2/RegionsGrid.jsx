@@ -115,7 +115,7 @@ export default function RegionsGrid() {
           onSelect={setSelectedSellRegionGroup}
         />
         <MultiButtonSelectGrid
-          list={sellRegions[selectedSellRegionGroup?.code]}
+          list={sellRegions[selectedSellRegionGroup]}
           selected={selectedSellRegions}
           onSelect={toggleSellRegion}
           placeholder={"예산에 맞는 지역을 찾지 못했어요."}
@@ -129,7 +129,7 @@ export default function RegionsGrid() {
           onSelect={setSelectedLeaseRegionGroup}
         />
         <MultiButtonSelectGrid
-          list={leaseRegions[selectedLeaseRegionGroup?.code]}
+          list={leaseRegions[selectedLeaseRegionGroup]}
           selected={selectedLeaseRegions}
           onSelect={toggleLeaseRegion}
           placeholder={"예산에 맞는 지역을 찾지 못했어요."}
