@@ -65,7 +65,9 @@ public class ApartmentPresaleRightSellDataItemProcessor
                 .seller(item.slerGbn())
                 .housingType("입".equals(item.ownershipGbn()) ? HousingType.OCCUPY_RIGHT : HousingType.PRESALE_RIGHT)
                 .targetName(item.aptNm())
-                .floor(Integer.parseInt(item.floor()))
+                .floor(
+                        StringUtils.hasText(item.floor()) ?
+                                Integer.parseInt(item.floor()) : null)
                 .isLandLease(false)
                 .build();
     }
