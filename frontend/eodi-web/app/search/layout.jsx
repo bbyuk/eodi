@@ -59,27 +59,17 @@ export default function SearchLayout({ children }) {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen bg-white overflow-hidden">
-      <div className="sticky top-16 w-full bg-white/80 backdrop-blur-md border-b border-border z-40">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-center">
-          <StepIndicator step={currentContext.step} />
+    <section className="relative flex flex-col min-h-screen bg-white overflow-hidden">
+      {/* 콘텐츠 */}
+      <div className="flex-1 flex items-center justify-center px-10">
+        <div className="w-full max-w-[70rem] transition-opacity duration-300 ease-in-out">
+          {children}
         </div>
       </div>
 
-      {/* 콘텐츠 */}
-      <div
-        className={`max-w-6xl mx-auto px-6 transition-opacity duration-300 ease-in-out`}
-        style={{
-          marginTop: "calc(4rem + 4rem)",
-          marginBottom: "5rem",
-        }}
-      >
-        {children}
-      </div>
-
       {/* 하단 버튼바 */}
-      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-border py-4 px-6 z-50">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
+      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-border py-4 px-10 z-50">
+        <div className="max-w-[90rem] mx-auto flex justify-between items-center">
           {currentContext.prevButton ? (
             <button
               onClick={() => goToStep(currentContext.step - 1)}
@@ -88,8 +78,9 @@ export default function SearchLayout({ children }) {
               {currentContext.prevButton.label}
             </button>
           ) : (
-            <div></div>
+            <div />
           )}
+
           {currentContext.nextButton ? (
             <button
               onClick={() => {
@@ -102,9 +93,12 @@ export default function SearchLayout({ children }) {
                     : alert("필터 적용 완료!");
                 }
               }}
-              className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm bg-primary text-white hover:bg-primary-hover 
-                ${isNextButtonActive[currentContext.step] && isNextButtonActive[currentContext.step]() ? "" : "disabled cursor-not-allowed hover:cursor-not-allowed bg-gray-200 text-gray-400 opacity-60"}
-              `}
+              className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm 
+            ${
+              isNextButtonActive[currentContext.step] && isNextButtonActive[currentContext.step]()
+                ? "bg-primary text-white hover:bg-primary-hover"
+                : "cursor-not-allowed bg-gray-200 text-gray-400 opacity-60"
+            }`}
             >
               {currentContext.nextButton.label}
             </button>

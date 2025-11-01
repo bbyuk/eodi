@@ -28,7 +28,7 @@ export default function StepCash() {
   }, [direction]);
 
   return (
-    <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh]">
+    <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <PageHeader title={title} description={description} />
 
       <CashInput

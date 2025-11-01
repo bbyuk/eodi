@@ -67,7 +67,7 @@ export default function RegionsGrid() {
   }, []);
 
   return (
-    <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
+    <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <SelectedRegionsCard isOpen={false} />
 
       <PageHeader title={title} description={description}>
