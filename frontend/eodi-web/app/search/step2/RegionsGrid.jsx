@@ -68,8 +68,7 @@ export default function RegionsGrid() {
 
   return (
     <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
-      {/* 🔹 Drawer (퍼블 전용) */}
-      <SelectedRegionsCard isOpen={true} />
+      <SelectedRegionsCard isOpen={false} />
 
       <PageHeader title={title} description={description}>
         <p className="text-base text-text-secondary mt-4">
