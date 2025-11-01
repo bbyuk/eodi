@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS real_estate_sell_new;
+DROP TABLE IF EXISTS real_estate_sell;
 
 -- -----------------------------------------------------------------------------------------
 -- create
-CREATE TABLE real_estate_sell_new
+CREATE TABLE real_estate_sell
 (
     id                      BIGINT  NOT NULL AUTO_INCREMENT COMMENT '매매 실거래가 ID',
     region_id               BIGINT  NOT NULL COMMENT '대상지역 법정동 ID',
@@ -60,10 +60,10 @@ PARTITION BY RANGE (YEAR(contract_date)*100 + MONTH(contract_date)) (
 -- -----------------------------------------------------------------------------------------
 -- index
 -- 계약일
-CREATE INDEX idx_contract_date ON real_estate_sell_new(contract_date);
+CREATE INDEX idx_contract_date ON real_estate_sell(contract_date);
 -- 지역 + 기간
-CREATE INDEX idx_region_contract_date ON real_estate_sell_new(region_id, contract_date);
+CREATE INDEX idx_region_contract_date ON real_estate_sell(region_id, contract_date);
 -- 가격 - 전용면적
-CREATE INDEX idx_price_area ON real_estate_sell_new(price, net_leasable_area, contract_date);
+CREATE INDEX idx_price_area ON real_estate_sell(price, net_leasable_area, contract_date);
 -- 가격 - 주택유형
-CREATE INDEX idx_price_housing ON real_estate_sell_new(price, housing_type, contract_date);
+CREATE INDEX idx_price_housing ON real_estate_sell(price, housing_type, contract_date);
