@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS real_estate_lease_new;
+DROP TABLE IF EXISTS real_estate_lease;
 
 -- -----------------------------------------------------------------------------------------
 -- create
-CREATE TABLE real_estate_lease_new
+CREATE TABLE real_estate_lease
 (
     id                      BIGINT  NOT NULL AUTO_INCREMENT COMMENT '임대차 실거래가 ID',
     region_id               BIGINT  NOT NULL COMMENT '대상지역 법정동 ID',
@@ -58,8 +58,8 @@ PARTITION BY RANGE (YEAR(contract_date)*100 + MONTH(contract_date)) (
 -- -----------------------------------------------------------------------------------------
 -- index
 -- 계약일
-CREATE INDEX idx_contract_date ON real_estate_lease_new(contract_date);
+CREATE INDEX idx_contract_date ON real_estate_lease(contract_date);
 -- 지역 + 기간
-CREATE INDEX idx_region_contract_date ON real_estate_lease_new(region_id, contract_date);
+CREATE INDEX idx_region_contract_date ON real_estate_lease(region_id, contract_date);
 -- 가격 조건
-CREATE INDEX idx_price_condition ON real_estate_lease_new(deposit, monthly_rent, contract_date);
+CREATE INDEX idx_price_condition ON real_estate_lease(deposit, monthly_rent, contract_date);
