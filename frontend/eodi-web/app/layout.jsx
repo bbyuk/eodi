@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex flex-1 items-center justify-center">{children}</main>
+        <main className="flex-1 w-full">{children}</main>
       </body>
     </html>
   );

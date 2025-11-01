@@ -9,7 +9,7 @@ import { direction } from "@/app/search/_const/direction";
 export default function Step1Page() {
   const { currentDirection } = useSearchStore();
   return (
-    <motion.div {...animation[direction[currentDirection].animation]} className="min-h-[50vh]">
+    <motion.div {...animation[direction[currentDirection].animation]}>
       <StepCash />
     </motion.div>
   );

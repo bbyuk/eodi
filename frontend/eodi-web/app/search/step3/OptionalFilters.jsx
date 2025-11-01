@@ -39,7 +39,7 @@ export default function OptionalFilters({ onBack, onApply }) {
   }, []);
 
   return (
-    <section className="max-w-5xl mx-auto px-6 pt-[1vh] pb-[5vh] overflow-x-hidden">
+    <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <PageHeader title={title} description={description} />
 
       <div className="space-y-14">
