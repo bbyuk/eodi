@@ -44,6 +44,26 @@ export default function RegionsGrid() {
   const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
   const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
+  const [housingTypes, setHousingTypes] = useState([
+    {
+      code: "AP",
+      displayName: "아파트",
+      icon: <BuildingOffice2Icon className="w-5 h-5" />,
+    },
+    {
+      code: "OF",
+      displayName: "오피스텔",
+      icon: <BuildingOfficeIcon className="w-5 h-5" />,
+    },
+    { code: "DT", displayName: "단독 주택", icon: <HomeIcon className="w-5 h-5" /> },
+    {
+      code: "MH",
+      displayName: "연립/다세대 주택",
+      icon: <HomeModernIcon className="w-5 h-5" />,
+    },
+  ]);
+  const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
+
   const [selectedHousingType, setSelectedHousingType] = useState(new Set(["AP", "OF"]));
 
   useEffect(() => {
@@ -82,34 +102,34 @@ export default function RegionsGrid() {
       {/* 주택 유형 선택 영역 */}
       <GridGroup title={"주택 유형 선택"}>
         <CategoryTab
-          list={[
-            {
-              code: "AP",
-              displayName: "아파트",
-              icon: <BuildingOffice2Icon className="w-5 h-5" />,
-            },
-            {
-              code: "OF",
-              displayName: "오피스텔",
-              icon: <BuildingOfficeIcon className="w-5 h-5" />,
-            },
-            { code: "DT", displayName: "단독 주택", icon: <HomeIcon className="w-5 h-5" /> },
-            {
-              code: "MH",
-              displayName: "연립/다세대 주택",
-              icon: <HomeModernIcon className="w-5 h-5" />,
-            },
-          ]}
+          list={housingTypes}
           value={selectedHousingType}
           type={"select"}
-          onSelect={(value) =>
+          onSelect={(value) => {
             setSelectedHousingType((prev) => {
               const next = new Set(prev);
               next.has(value) ? next.delete(value) : next.add(value);
               return next;
-            })
-          }
+            });
+            setIsHousingTypeChanged(true);
+          }}
         />
+
+        {/* 재조회 버튼 (선택 변경 시만 등장) */}
+        <div
+          className={`transition-all duration-300 ${
+            isHousingTypeChanged
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-2 pointer-events-none"
+          }`}
+        >
+          <button
+            className="mt-3 inline-flex items-center gap-1 text-primary font-medium hover:text-primary/80"
+            onClick={() => setIsHousingTypeChanged(false)}
+          >
+            이 유형으로 다시 조회하기
+          </button>
+        </div>
       </GridGroup>
 
       <GridGroup title={"최근 매수 이력이 있는 지역"}>
