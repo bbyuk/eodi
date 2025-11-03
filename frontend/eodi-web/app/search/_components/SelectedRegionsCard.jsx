@@ -1,20 +1,15 @@
 "use client";
-import { motion } from "framer-motion";
-import { CheckSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckSquare, CheckCircle2, X, ChevronUp } from "lucide-react";
 import { useSearchStore } from "@/app/search/store/searchStore";
-import { useEffect } from "react";
 
-export default function SelectedRegionsCard() {
+const OpenedCard = ({ close }) => {
   const {
-    selectedSellRegions = new Set(),
-    selectedLeaseRegions = new Set(),
     toggleSellRegion,
     toggleLeaseRegion,
+    selectedSellRegions = new Set(),
+    selectedLeaseRegions = new Set(),
   } = useSearchStore();
-
-  useEffect(() => {
-    console.log(selectedSellRegions);
-  }, [selectedSellRegions]);
 
   const hasSell = selectedSellRegions.size > 0;
   const hasLease = selectedLeaseRegions.size > 0;
@@ -38,7 +33,13 @@ export default function SelectedRegionsCard() {
           <CheckSquare size={16} className="text-primary" />
           <h3 className="text-sm font-semibold text-text-primary">선택 지역</h3>
         </div>
-        <button className="text-sm text-text-secondary hover:text-text-primary">×</button>
+        <button
+          onClick={close}
+          className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition"
+          aria-label="닫기"
+        >
+          <X size={16} strokeWidth={2} />
+        </button>
       </div>
 
       {/* ✅ Scrollable Body */}
@@ -100,5 +101,38 @@ export default function SelectedRegionsCard() {
         )}
       </div>
     </motion.aside>
+  );
+};
+
+const CardOpenButton = ({ open }) => {
+  const { selectedSellRegions = new Set(), selectedLeaseRegions = new Set() } = useSearchStore();
+  const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
+
+  return (
+    <motion.button
+      key="collapsed"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={open}
+      className="flex items-center gap-2 px-3 py-2 rounded-full
+                       bg-primary text-white shadow-lg hover:bg-primary/90
+                       transition text-sm font-medium"
+    >
+      <CheckCircle2 size={16} />
+      <span>선택 {selectedCount}개</span>
+      <ChevronUp size={14} className="opacity-80" />
+    </motion.button>
+  );
+};
+
+export default function SelectedRegionsCard({ isOpen, open, close }) {
+  return (
+    <div className="fixed right-6 top-1/3 z-30 md:right-6 sm:right-3">
+      <AnimatePresence mode="wait">
+        {isOpen ? <OpenedCard close={close} /> : <CardOpenButton open={open} />}
+      </AnimatePresence>
+    </div>
   );
 }

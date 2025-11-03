@@ -36,6 +36,7 @@ export default function RegionsGrid() {
     resetSelectedSellRegions,
     resetSelectedLeaseRegions,
   } = useSearchStore();
+  const [selectedRegionsCardOpen, setSelectedRegionsCardOpen] = useState(false);
 
   const [sellRegionGroups, setSellRegionGroups] = useState({});
   const [sellRegions, setSellRegions] = useState([]);
@@ -65,7 +66,6 @@ export default function RegionsGrid() {
     },
   ]);
   const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
-
   const [selectedHousingType, setSelectedHousingType] = useState(new Set(["AP", "OF"]));
 
   useEffect(() => {
@@ -95,7 +95,11 @@ export default function RegionsGrid() {
 
   return (
     <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
-      <SelectedRegionsCard isOpen={false} />
+      <SelectedRegionsCard
+        isOpen={selectedRegionsCardOpen}
+        close={() => setSelectedRegionsCardOpen(false)}
+        open={() => setSelectedRegionsCardOpen(true)}
+      />
 
       <PageHeader title={title} description={description}>
         <p className="text-base text-text-secondary mt-4">
