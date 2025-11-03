@@ -33,6 +33,8 @@ export default function RegionsGrid() {
     toggleSellRegion,
     selectedLeaseRegions,
     toggleLeaseRegion,
+    resetSelectedSellRegions,
+    resetSelectedLeaseRegions,
   } = useSearchStore();
 
   const [sellRegionGroups, setSellRegionGroups] = useState({});
@@ -84,6 +86,11 @@ export default function RegionsGrid() {
         setLeaseRegionGroups(res.leaseRegionGroups);
         setLeaseRegions(res.leaseRegions);
       });
+
+    return () => {
+      resetSelectedSellRegions();
+      resetSelectedLeaseRegions();
+    };
   }, []);
 
   return (
@@ -132,7 +139,7 @@ export default function RegionsGrid() {
         </div>
       </GridGroup>
 
-      <GridGroup title={"최근 매수 이력이 있는 지역"}>
+      <GridGroup title={"최근 매매 이력이 있는 지역"}>
         <HorizontalSwipeContainer fadeColor="#ffffff">
           <CategoryTab
             list={Object.values(sellRegionGroups)}
