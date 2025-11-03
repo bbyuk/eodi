@@ -61,7 +61,7 @@ export default function SearchLayout({ children }) {
   return (
     <section className="relative flex flex-col min-h-screen bg-white overflow-hidden">
       {/* 콘텐츠 */}
-      <div className="flex-1 flex items-center justify-center px-10">
+      <div className="flex-1 flex justify-center px-10">
         <div className="w-full max-w-[70rem] transition-opacity duration-300 ease-in-out">
           {children}
         </div>
