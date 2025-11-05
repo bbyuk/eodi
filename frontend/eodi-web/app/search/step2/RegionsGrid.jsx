@@ -16,7 +16,7 @@ import {
   HomeIcon,
   HomeModernIcon,
 } from "@heroicons/react/24/outline";
-import HorizontalSwipeContainer from "@/components/ui/animation/HorizontalSwipeContainer";
+import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeContainer";
 import SelectedRegionsCard from "@/app/search/_components/SelectedRegionsCard";
 
 const id = "region";
