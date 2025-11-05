@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
-import { formatWon } from "@/app/search/_util/util";
-import FloatingFilterCard from "@/app/search/step3/_components/FloatingFilterCard";
+import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
+import { SlidersHorizontal } from "lucide-react";
+import FloatingFilterCardContents from "@/app/search/step3/_components/FloatingFilterCardContents";
 
 const MOCK_DATA = [
   {
@@ -35,11 +36,22 @@ export default function DealListPage() {
   const description = ["최근 3개월간의 실거래 데이터를 기준으로 표시됩니다."];
 
   const [deals] = useState(MOCK_DATA);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
 
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
-      <FloatingFilterCard />
+      <FloatingContainer
+        isOpen={isFloatingCardOpen}
+        open={() => setIsFloatingCardOpen(true)}
+        close={() => setIsFloatingCardOpen(false)}
+        buttonLabel={"필터"}
+        buttonIcon={<SlidersHorizontal size={16} />}
+        cardLabel={"추가조건"}
+        cardIcon={<SlidersHorizontal size={16} className="text-primary" />}
+      >
+        <FloatingFilterCardContents close={() => setIsFloatingCardOpen(false)} />
+      </FloatingContainer>
+
       {/* Header */}
       <PageHeader title={title} description={description} />
 
@@ -76,59 +88,6 @@ export default function DealListPage() {
           </article>
         ))}
       </div>
-
-      {/* Drawer */}
-      {isDrawerOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-end z-50">
-          <div className="bg-white w-full max-w-sm h-full p-6 flex flex-col shadow-xl animate-slide-in-right">
-            <div className="flex items-center justify-between border-b pb-3 mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">추가 조건 설정</h3>
-              <button
-                onClick={() => setIsDrawerOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="flex-1 space-y-5 overflow-y-auto">
-              <div>
-                <label className="text-sm font-medium text-gray-600">최소 금액</label>
-                <input
-                  type="text"
-                  className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-200 outline-none"
-                  placeholder="예: 5억"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-600">최대 금액</label>
-                <input
-                  type="text"
-                  className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-200 outline-none"
-                  placeholder="예: 10억"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-600">면적 (㎡)</label>
-                <input
-                  type="text"
-                  className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-200 outline-none"
-                  placeholder="예: 84"
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsDrawerOpen(false)}
-              className="mt-6 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-            >
-              적용하기
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
