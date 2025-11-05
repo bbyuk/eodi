@@ -19,7 +19,7 @@ const OpenedCard = ({ close }) => {
       initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="fixed right-6 top-1/3
+      className="fixed right-6
                  w-[240px] max-h-[40vh]
                  flex flex-col
                  rounded-2xl border border-border/50
@@ -129,7 +129,7 @@ const CardOpenButton = ({ open }) => {
 
 export default function SelectedRegionsCard({ isOpen, open, close }) {
   return (
-    <div className="fixed right-6 top-1/3 z-30 md:right-6 sm:right-3">
+    <div className="fixed right-6 top-[calc(4rem + 12vh)] z-30 md:right-6 sm:right-3">
       <AnimatePresence mode="wait">
         {isOpen ? <OpenedCard close={close} /> : <CardOpenButton open={open} />}
       </AnimatePresence>
