@@ -17,7 +17,9 @@ import {
   HomeModernIcon,
 } from "@heroicons/react/24/outline";
 import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeContainer";
-import SelectedRegionsCard from "@/app/search/_components/SelectedRegionsCard";
+import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
+import { CheckCircle2, CheckSquare } from "lucide-react";
+import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 
 const id = "region";
 export default function RegionsGrid() {
@@ -36,7 +38,7 @@ export default function RegionsGrid() {
     resetSelectedSellRegions,
     resetSelectedLeaseRegions,
   } = useSearchStore();
-  const [selectedRegionsCardOpen, setSelectedRegionsCardOpen] = useState(false);
+  const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
 
   const [sellRegionGroups, setSellRegionGroups] = useState({});
   const [sellRegions, setSellRegions] = useState([]);
@@ -93,13 +95,21 @@ export default function RegionsGrid() {
     };
   }, []);
 
+  const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
+
   return (
     <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
-      <SelectedRegionsCard
-        isOpen={selectedRegionsCardOpen}
-        close={() => setSelectedRegionsCardOpen(false)}
-        open={() => setSelectedRegionsCardOpen(true)}
-      />
+      <FloatingContainer
+        isOpen={isFloatingCardOpen}
+        close={() => setIsFloatingCardOpen(false)}
+        open={() => setIsFloatingCardOpen(true)}
+        buttonLabel={`선택 ${selectedCount}개`}
+        buttonIcon={<CheckCircle2 size={16} />}
+        cardLabel={"선택지역"}
+        cardIcon={<CheckSquare size={16} className="text-primary" />}
+      >
+        <SelectedRegionsCardContents close={() => setIsFloatingCardOpen(false)} />
+      </FloatingContainer>
 
       <PageHeader title={title} description={description}>
         <p className="text-base text-text-secondary mt-4">
