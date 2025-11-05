@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
 export default function FloatingButton({ open, label, icon }) {
   return (
@@ -15,6 +16,7 @@ export default function FloatingButton({ open, label, icon }) {
     >
       {icon ? icon : null}
       <span>{label}</span>
+      <ChevronDown size={14} className="opacity-80" />
     </motion.button>
   );
 }
