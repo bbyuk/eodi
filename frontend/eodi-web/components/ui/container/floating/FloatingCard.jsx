@@ -16,7 +16,7 @@ export default function FloatingCard({ close, label, icon, children }) {
       <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white/70">
         <div className="flex items-center gap-1.5">
           {icon ? icon : null}
-          <h3 className="text-sm font-semibold text-gray-800">${label}</h3>
+          <h3 className="text-sm font-semibold text-gray-800">{label}</h3>
         </div>
         <button
           onClick={close}

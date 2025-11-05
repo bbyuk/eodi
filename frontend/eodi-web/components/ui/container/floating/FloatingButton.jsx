@@ -14,7 +14,7 @@ export default function FloatingButton({ open, label, icon }) {
                  transition text-sm font-medium"
     >
       {icon ? icon : null}
-      <span>${label}</span>
+      <span>{label}</span>
     </motion.button>
   );
 }
