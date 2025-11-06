@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
 import { SlidersHorizontal } from "lucide-react";
 import FloatingFilterCardContents from "@/app/search/step3/_components/FloatingFilterCardContents";
+import { context } from "@/app/search/_const/context";
+import { useSearchStore } from "@/app/search/store/searchStore";
 
 const MOCK_DATA = [
   {
@@ -31,12 +33,20 @@ const MOCK_DATA = [
   },
 ];
 
+const id = "result";
+
 export default function DealListPage() {
   const title = "선택한 지역의 실거래 내역을 찾았어요";
   const description = ["최근 3개월간의 실거래 데이터를 기준으로 표시됩니다."];
 
+  const { setCurrentContext } = useSearchStore();
+
   const [deals] = useState(MOCK_DATA);
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
+
+  useEffect(() => {
+    setCurrentContext(context[id]);
+  }, []);
 
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
