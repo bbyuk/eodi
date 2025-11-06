@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
+import { useSearchContext } from "@/app/search/layout";
 
 const id = "cash";
 export default function StepCash() {
@@ -14,6 +15,7 @@ export default function StepCash() {
   const unit = "만 원";
 
   const { cash, setCash, resetCash, direction, setCurrentContext } = useSearchStore();
+  const { goNext } = useSearchContext();
 
   const [displayCash, setDisplayCash] = useState();
 
@@ -35,6 +37,7 @@ export default function StepCash() {
         label={"보유 예산 (만 원 단위)"}
         placeholder={"예: 50000"}
         onChange={(value) => setCash(value)}
+        onEnter={goNext}
         value={cash}
         unit={unit}
         formatter={formatWon}
