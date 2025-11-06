@@ -7,13 +7,14 @@ export default function MultiButtonSelectGrid({ list, selected, onSelect, placeh
         {list &&
           list.map((elem) => {
             const isActive = selected.has(elem);
+
             return (
               <ToggleButton
                 key={elem.code}
                 onClick={() => onSelect(elem)}
                 size={"md"}
                 isActive={isActive}
-                label={elem.displayName}
+                label={!elem.displayName ? elem.name : elem.displayName}
               />
             );
           })}
