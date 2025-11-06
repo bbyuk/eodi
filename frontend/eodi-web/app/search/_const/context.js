@@ -17,14 +17,11 @@ export const context = {
       label: "다음으로",
     },
   },
-  filter: {
+  result: {
     step: 3,
-    name: "조건 설정",
+    name: "결과",
     prevButton: {
       label: "이전으로",
-    },
-    nextButton: {
-      label: "다음으로",
     },
   },
 };
