@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.presentation.request;
+package com.bb.eodi.deal.application.dto.request;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.NotNull;
