@@ -4,6 +4,7 @@ import { context } from "@/app/search/_const/context";
 export const useSearchStore = create((set, get) => ({
   currentContext: context.cash,
   cash: "",
+  selectedHousingTypes: new Set(["AP", "OF"]),
   selectedSellRegions: new Set(),
   selectedLeaseRegions: new Set(),
   currentDirection: "initial",
@@ -36,6 +37,13 @@ export const useSearchStore = create((set, get) => ({
   resetStep3: () => {
     console.log("step3 초기화 완료");
   },
+
+  toggleHousingType: (value) =>
+    set((state) => {
+      const next = new Set(state.selectedHousingTypes);
+      next.has(value) ? next.delete(value) : next.add(value);
+      return { selectedHousingTypes: next };
+    }),
 
   toggleSellRegion: (value) =>
     set((state) => {

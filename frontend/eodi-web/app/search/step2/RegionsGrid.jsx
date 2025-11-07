@@ -32,6 +32,8 @@ export default function RegionsGrid() {
     cash,
     setCurrentContext,
     resetStep2,
+    selectedHousingTypes,
+    toggleHousingType,
     selectedSellRegions,
     toggleSellRegion,
     selectedLeaseRegions,
@@ -69,7 +71,6 @@ export default function RegionsGrid() {
     },
   ]);
   const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
-  const [selectedHousingType, setSelectedHousingType] = useState(new Set(["AP", "OF"]));
 
   useEffect(() => {
     if (!cash || cash === 0) {
@@ -80,7 +81,7 @@ export default function RegionsGrid() {
     api
       .get("/real-estate/recommendation/region", {
         cash: cash,
-        housingTypes: Array.from(selectedHousingType),
+        housingTypes: Array.from(selectedHousingTypes),
       })
       .then((res) => {
         console.log(res);
@@ -125,14 +126,10 @@ export default function RegionsGrid() {
       <GridGroup title={"주택 유형 선택"}>
         <CategoryTab
           list={housingTypes}
-          value={selectedHousingType}
+          value={selectedHousingTypes}
           type={"select"}
           onSelect={(value) => {
-            setSelectedHousingType((prev) => {
-              const next = new Set(prev);
-              next.has(value) ? next.delete(value) : next.add(value);
-              return next;
-            });
+            toggleHousingType(value);
             setIsHousingTypeChanged(true);
           }}
         />
