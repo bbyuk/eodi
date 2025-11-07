@@ -7,6 +7,8 @@ import { SlidersHorizontal } from "lucide-react";
 import FloatingFilterCardContents from "@/app/search/step3/_components/FloatingFilterCardContents";
 import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
+import ResultGrid from "@/app/search/step3/_components/ResultGrid";
+import ResultCard from "@/app/search/step3/_components/ResultCard";
 
 const MOCK_DATA = [
   {
@@ -66,38 +68,11 @@ export default function DealListPage() {
       <PageHeader title={title} description={description} />
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <ResultGrid>
         {deals.map((deal) => (
-          <article
-            key={deal.id}
-            className="border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between"
-          >
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">{deal.building}</h3>
-              <p className="text-sm text-gray-500">{deal.region}</p>
-
-              <div className="mt-3 space-y-1 text-sm">
-                <p>
-                  <span className="font-medium text-gray-800">{deal.dealType}</span> ·{" "}
-                  <span className="text-gray-600">{deal.area}</span> ·{" "}
-                  <span className="text-gray-600">{deal.floor}</span>
-                </p>
-                <p className="text-blue-600 font-semibold">{deal.price}</p>
-                <p className="text-xs text-gray-400">{deal.date} 거래</p>
-              </div>
-            </div>
-
-            <a
-              href={deal.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 w-full text-center py-2 rounded-md bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition"
-            >
-              🔍 네이버 부동산에서 보기
-            </a>
-          </article>
+          <ResultCard key={deal.id} data={deal} />
         ))}
-      </div>
+      </ResultGrid>
     </main>
   );
 }
