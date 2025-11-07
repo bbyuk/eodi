@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,10 +46,12 @@ public class RealEstateRecommendationController {
             description = "보유 현금, 선택한 지역, 선택한 주택 유형을 기준으로 살펴볼 만한 매매 거래 목록 조회")
     public ResponseEntity<PageResponse<RealEstateSellSummaryDto>> getRecommendedRealEstateSells(
             @ParameterObject @Valid
-            RealEstateSellRecommendRequestParameter requestParameter
+            RealEstateSellRecommendRequestParameter requestParameter,
+            @ParameterObject
+            Pageable pageable
     ) {
         return ResponseEntity.ok(
-                PageResponse.from(realEstateRecommendationService.findRecommendedSells(requestParameter))
+                PageResponse.from(realEstateRecommendationService.findRecommendedSells(requestParameter, pageable))
         );
     }
 
@@ -57,10 +60,12 @@ public class RealEstateRecommendationController {
             description = "보유 현금, 선택한 지역, 선택한 주택 유형을 기준으로 살펴볼 만한 임대차 거래 목록 조회")
     public ResponseEntity<PageResponse<RealEstateLeaseSummaryDto>> getRecommendedRealEstateLeases(
             @ParameterObject @Valid
-            RealEstateLeaseRecommendRequestParameter requestParameter
+            RealEstateLeaseRecommendRequestParameter requestParameter,
+            @ParameterObject
+            Pageable pageable
     ) {
         return ResponseEntity.ok(
-                PageResponse.from(realEstateRecommendationService.findRecommendedLeases(requestParameter))
+                PageResponse.from(realEstateRecommendationService.findRecommendedLeases(requestParameter, pageable))
         );
     }
 }

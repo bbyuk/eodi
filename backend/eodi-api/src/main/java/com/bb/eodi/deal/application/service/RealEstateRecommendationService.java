@@ -5,6 +5,7 @@ import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestP
 import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestParameter;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
@@ -13,6 +14,7 @@ import com.bb.eodi.deal.domain.type.HousingType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,12 +179,16 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      * 
-     * TODO 맞춤 매매 데이터 페이징 조회 구현
      * @param requestParameter 요청 파라미터
+     * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateSellSummaryDto> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter) {
+    public Page<RealEstateSellSummaryDto> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
+
+
+
+
         return null;
     }
 
@@ -196,10 +202,11 @@ public class RealEstateRecommendationService {
      *
      * TODO 맞춤 임대차 데이터 페이징 조회 구현
      * @param requestParameter 요청 파라미터
+     * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryDto> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter) {
+    public Page<RealEstateLeaseSummaryDto> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
         return null;
     }
 }
