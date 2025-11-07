@@ -47,6 +47,8 @@ public class RealEstateSellController {
                                         .builder()
                                         .maxPrice(requestParameter.maxPrice())
                                         .minPrice(requestParameter.minPrice())
+                                        .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
+                                        .minNetLeasableArea(requestParameter.minNetLeasableArea())
                                         .startYearMonth(requestParameter.startYearMonth())
                                         .endYearMonth(requestParameter.endYearMonth())
                                         .targetHousingTypes(requestParameter.targetHousingTypes())

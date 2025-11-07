@@ -44,6 +44,14 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
             condition.and(realEstateSell.price.goe(query.getMinPrice()));
         }
 
+        if (query.getMaxNetLeasableArea() != null) {
+            condition.and(realEstateSell.netLeasableArea.loe(query.getMaxNetLeasableArea()));
+        }
+
+        if (query.getMinNetLeasableArea() != null) {
+            condition.and(realEstateSell.netLeasableArea.goe(query.getMinNetLeasableArea()));
+        }
+
         if (query.getEndYearMonth() != null) {
             condition.and(realEstateSell.contractDate.loe(query.getEndYearMonth().atEndOfMonth()));
         }
