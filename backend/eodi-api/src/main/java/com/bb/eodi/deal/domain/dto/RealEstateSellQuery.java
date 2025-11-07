@@ -17,6 +17,10 @@ public class RealEstateSellQuery {
     private Integer maxPrice;
     // 최소 가격
     private Integer minPrice;
+    // 최대 전용 면적
+    private Integer maxNetLeasableArea;
+    // 최소 전용 면적
+    private Integer minNetLeasableArea;
     // 조회기간 시작월
     private YearMonth startYearMonth;
     // 조회기간 종료월
