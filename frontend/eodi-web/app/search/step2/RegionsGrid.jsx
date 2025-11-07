@@ -31,6 +31,7 @@ export default function RegionsGrid() {
   const {
     cash,
     setCurrentContext,
+    resetStep2,
     selectedSellRegions,
     toggleSellRegion,
     selectedLeaseRegions,
@@ -74,7 +75,7 @@ export default function RegionsGrid() {
     if (!cash || cash === 0) {
       redirect("/search");
     }
-
+    resetStep2();
     setCurrentContext(context[id]);
     api
       .get("/real-estate/recommendation/region", {
