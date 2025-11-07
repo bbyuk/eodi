@@ -9,6 +9,7 @@ import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import ResultGrid from "@/app/search/step3/_components/ResultGrid";
 import ResultCard from "@/app/search/step3/_components/ResultCard";
+import { api } from "@/lib/apiClient";
 
 const MOCK_DATA = [
   {
@@ -41,13 +42,30 @@ export default function DealListPage() {
   const title = "선택한 지역의 실거래 내역을 찾았어요";
   const description = ["최근 3개월간의 실거래 데이터를 기준으로 표시됩니다."];
 
-  const { setCurrentContext } = useSearchStore();
+  const {
+    setCurrentContext,
+    cash,
+    selectedHousingTypes,
+    selectedSellRegions,
+    selectedLeaseRegions,
+  } = useSearchStore();
 
   const [deals] = useState(MOCK_DATA);
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
 
   useEffect(() => {
     setCurrentContext(context[id]);
+
+    console.log(Array.from(selectedSellRegions));
+    api
+      .get("/real-estate/recommendation/sells", {
+        cash: cash,
+        targetRegionIds: Array.from(selectedSellRegions).map((region) => region.id),
+        targetHousingTypes: Array.from(selectedHousingTypes),
+      })
+      .then((res) => {
+        console.log(res);
+      });
   }, []);
 
   return (
