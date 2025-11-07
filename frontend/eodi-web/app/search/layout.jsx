@@ -47,15 +47,6 @@ export default function SearchLayout({ children }) {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
-  const goToStep = (n) => {
-    if (n > currentContext.step) {
-      setDirectionToBackward();
-    } else if (n < currentContext.step) {
-      setDirectionToForward();
-    }
-    router.push(`/search/step${n}`, { scroll: false });
-  };
-
   const goNext = () => {
     setDirectionToForward();
     router.push(`/search/step${currentContext.step + 1}`, { scroll: false });
@@ -78,7 +69,7 @@ export default function SearchLayout({ children }) {
 
       <div className="flex-1 flex justify-center px-10">
         <div className="w-full max-w-[70rem] transition-opacity duration-300 ease-in-out">
-          <SearchContext.Provider value={(goNext, goPrev)}>{children}</SearchContext.Provider>
+          <SearchContext.Provider value={{ goNext, goPrev }}>{children}</SearchContext.Provider>
         </div>
       </div>
 
