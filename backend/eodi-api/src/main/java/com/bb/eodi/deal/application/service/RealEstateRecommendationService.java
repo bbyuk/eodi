@@ -1,8 +1,10 @@
 package com.bb.eodi.deal.application.service;
 
+import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
 import com.bb.eodi.deal.application.dto.RecommendedRegionsDto;
 import com.bb.eodi.deal.application.dto.RegionDto;
 import com.bb.eodi.deal.application.dto.RegionGroupDto;
+import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestParameter;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
@@ -11,6 +13,7 @@ import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +40,11 @@ public class RealEstateRecommendationService {
     private final int monthsToView = 3;
 
     /**
-     * 입력된 파라미터 기반으로 추천 지역 목록을 리턴한다.
+     * 입력된 파라미터 기반으로 맞춤 지역 목록을 리턴한다.
      * <p>
      * 1. 보유 현금
      * 매매는 매매가 기준 +- 5000만원 / 임대차는 보증금 기준 +- 1000
+     * <p>
      * 최근 3개월 거래내역 확인
      *
      * @param cash 입력된 보유 현금
@@ -165,4 +169,21 @@ public class RealEstateRecommendationService {
                 );
     }
 
+
+    /**
+     * 입력된 파라미터 기반으로 맞춤 매매 실거래 데이터 목록을 리턴한다.
+     * <p>
+     * 1. 보유 현금
+     * 매매는 매매가 기준 +- 5000만원 / 임대차는 보증금 기준 +- 1000
+     * <p>
+     * 최근 3개월 거래내역 확인
+     * 
+     * TODO 추천 매매 데이터 페이징 조회 구현
+     * @param requestParameter 요청 파라미터
+     * @return 추천 매매 데이터 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<RealEstateSellSummaryDto> findRecommendedSells(RealEstateLeaseRecommendRequestParameter requestParameter) {
+        return null;
+    }
 }
