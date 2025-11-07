@@ -22,6 +22,21 @@ export const useSearchStore = create((set, get) => ({
   resetSelectedLeaseRegions: () => set({ selectedLeaseRegions: new Set() }),
   resetDirection: () => set({ currentDirection: "initial" }),
 
+  resetStep1: () => {
+    const { resetCash, resetStep2 } = get();
+    resetCash();
+    resetStep2();
+  },
+  resetStep2: () => {
+    const { resetSelectedSellRegions, resetSelectedLeaseRegions, resetStep3 } = get();
+    resetSelectedSellRegions();
+    resetSelectedLeaseRegions();
+    resetStep3();
+  },
+  resetStep3: () => {
+    console.log("step3 초기화 완료");
+  },
+
   toggleSellRegion: (value) =>
     set((state) => {
       const next = new Set(state.selectedSellRegions);
