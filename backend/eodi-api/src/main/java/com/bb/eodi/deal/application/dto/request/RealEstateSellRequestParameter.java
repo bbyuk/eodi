@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.presentation.request;
+package com.bb.eodi.deal.application.dto.request;
 
 import com.bb.eodi.deal.domain.type.HousingType;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,18 +10,13 @@ import java.time.YearMonth;
 import java.util.List;
 
 /**
- * 부동산 임대차 실거래가 데이터 요청 파라미터
+ * 부동산 매매 실거래가 데이터 요청 파라미터
  */
-public record RealEstateLeaseRequestParameter(
-
-        @Parameter(description = "최대 보증금 (단위: 만원)", example = "70000")
-        Integer maxDeposit,
-        @Parameter(description = "최소 보증금 (단위: 만원)", example = "1000")
-        Integer minDeposit,
-        @Parameter(description = "최대 월세 (단위: 만원)", example = "130")
-        Integer maxMonthlyRentFee,
-        @Parameter(description = "최소 월세 (단위: 만원)", example = "50")
-        Integer minMonthlyRentFee,
+public record RealEstateSellRequestParameter(
+        @Parameter(description = "최대 거래가 (단위: 만원)", example = "100000")
+        Integer maxPrice,
+        @Parameter(description = "최소 거래가 (단위: 만원)", example = "40000")
+        Integer minPrice,
         @Parameter(description = "최대 전용면적", example = "84")
         Integer maxNetLeasableArea,
         @Parameter(description = "최소 전용면적", example = "39")
@@ -32,7 +27,7 @@ public record RealEstateLeaseRequestParameter(
         @Parameter(description = "조회 계약년월 종료월", example = "202409")
         @DateTimeFormat(pattern = "yyyyMM")
         YearMonth endYearMonth,
-        @Parameter(description = "")
+
         @Parameter(
                 description = "조회 대상 지역 ID 목록",
                 example = "[14285,1612]",
@@ -56,5 +51,6 @@ public record RealEstateLeaseRequestParameter(
                 )
         )
         List<HousingType> targetHousingTypes
+
 ) {
 }

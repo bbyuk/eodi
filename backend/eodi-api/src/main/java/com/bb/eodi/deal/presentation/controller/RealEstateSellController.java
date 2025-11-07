@@ -2,9 +2,8 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
+import com.bb.eodi.deal.application.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateSellService;
-import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
-import com.bb.eodi.deal.presentation.request.RealEstateSellRequestParameter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -43,17 +42,7 @@ public class RealEstateSellController {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateSellService.findRealEstateSells(
-                                RealEstateSellQuery
-                                        .builder()
-                                        .maxPrice(requestParameter.maxPrice())
-                                        .minPrice(requestParameter.minPrice())
-                                        .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
-                                        .minNetLeasableArea(requestParameter.minNetLeasableArea())
-                                        .startYearMonth(requestParameter.startYearMonth())
-                                        .endYearMonth(requestParameter.endYearMonth())
-                                        .targetHousingTypes(requestParameter.targetHousingTypes())
-                                        .targetRegionIds(requestParameter.targetRegionIds())
-                                        .build(),
+                                requestParameter,
                                 pageable
                         )
                 )
