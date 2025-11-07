@@ -13,6 +13,7 @@ export default function CashInput({
   label,
   unit,
   onChange,
+  onEnter,
   formatter,
   maxValue = 1000000000,
   ...props
@@ -66,6 +67,13 @@ export default function CashInput({
                   focus:border-primary focus:outline-none transition
                   ${unit ? "pr-12" : "pr-4"}`}
           onChange={handleChange}
+          onKeyUp={(e) => {
+            if (e.code !== "Enter") {
+              return;
+            }
+            console.log(onEnter);
+            onEnter();
+          }}
           {...props}
         />
 
