@@ -1,16 +1,20 @@
 package com.bb.eodi.deal.application.service;
 
-import com.bb.eodi.deal.application.dto.RecommendedRegionsDto;
-import com.bb.eodi.deal.application.dto.RegionDto;
-import com.bb.eodi.deal.application.dto.RegionGroupDto;
+import com.bb.eodi.deal.application.dto.*;
+import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestParameter;
+import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestParameter;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,15 +36,19 @@ public class RealEstateRecommendationService {
     private final RealEstateLeaseRepository realEstateLeaseRepository;
     private final LegalDongCachePort legalDongCachePort;
 
+    private final RealEstateSellSummaryDtoMapper realEstateSellSummaryDtoMapper;
+    private final RealEstateLeaseSummaryDtoMapper realEstateLeaseSummaryDtoMapper;
+
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
     private final int monthsToView = 3;
 
     /**
-     * 입력된 파라미터 기반으로 추천 지역 목록을 리턴한다.
+     * 입력된 파라미터 기반으로 맞춤 지역 목록을 리턴한다.
      * <p>
      * 1. 보유 현금
      * 매매는 매매가 기준 +- 5000만원 / 임대차는 보증금 기준 +- 1000
+     * <p>
      * 최근 3개월 거래내역 확인
      *
      * @param cash 입력된 보유 현금
@@ -165,4 +173,54 @@ public class RealEstateRecommendationService {
                 );
     }
 
+
+    /**
+     * 입력된 파라미터 기반으로 맞춤 매매 실거래 데이터 목록을 리턴한다.
+     * <p>
+     * 1. 보유 현금
+     * 매매는 매매가 기준 +- 5000만원
+     * <p>
+     * 최근 3개월 거래내역 확인
+     * 
+     * @param requestParameter 요청 파라미터
+     * @param pageable pageable 파라미터 객체
+     * @return 추천 매매 데이터 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<RealEstateSellSummaryDto> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
+        RealEstateSellQuery realEstateSellQuery = RealEstateSellQuery.builder()
+                .maxPrice(requestParameter.cash() + sellPriceGap)
+                .minPrice(requestParameter.cash() - sellPriceGap)
+                .targetRegionIds(requestParameter.targetRegionIds())
+                .targetHousingTypes(requestParameter.targetHousingTypes())
+                .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
+                .minNetLeasableArea(requestParameter.minNetLeasableArea())
+                .build();
+
+        // TODO 정책 / 대출 관련 로직 추가 필요
+
+        return realEstateSellRepository.findBy(realEstateSellQuery, pageable)
+                .map(realEstateSellSummaryDtoMapper::toDto);
+    }
+
+    /**
+     * 입력된 파라미터 기반으로 맞춤 임대차 실거래 데이터 목록을 리턴한다.
+     * <p>
+     * 1. 보유 현금
+     *
+     * 전세 -> 보증금 기준 +- +- 1000
+     * 월세 ->
+     *
+     * <p>
+     * 최근 3개월 거래내역 확인
+     *
+     * @param requestParameter 요청 파라미터
+     * @param pageable pageable 파라미터 객체
+     * @return 추천 매매 데이터 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<RealEstateLeaseSummaryDto> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
+        // TODO 정책/ 대출 관련 로직 추가 필요
+        return null;
+    }
 }
