@@ -2,9 +2,8 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.dto.RealEstateLeaseSummaryDto;
+import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
-import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
-import com.bb.eodi.deal.presentation.request.RealEstateLeaseRequestParameter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -43,19 +42,7 @@ public class RealEstateLeaseController {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateLeaseService.findRealEstateLeases(
-                                RealEstateLeaseQuery
-                                        .builder()
-                                        .maxDeposit(requestParameter.maxDeposit())
-                                        .minDeposit(requestParameter.minDeposit())
-                                        .maxMonthlyRentFee(requestParameter.maxMonthlyRentFee())
-                                        .minMonthlyRentFee(requestParameter.minMonthlyRentFee())
-                                        .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
-                                        .minNetLeasableArea(requestParameter.minNetLeasableArea())
-                                        .startYearMonth(requestParameter.startYearMonth())
-                                        .endYearMonth(requestParameter.endYearMonth())
-                                        .targetRegionIds(requestParameter.targetRegionIds())
-                                        .targetHousingTypes(requestParameter.targetHousingTypes())
-                                        .build(),
+                                requestParameter,
                                 pageable
                         )
                 )

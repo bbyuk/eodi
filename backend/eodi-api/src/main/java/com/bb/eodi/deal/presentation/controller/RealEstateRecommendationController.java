@@ -3,7 +3,7 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.deal.application.dto.RecommendedRegionsDto;
 import com.bb.eodi.deal.application.service.RealEstateRecommendationService;
-import com.bb.eodi.deal.presentation.request.RegionRecommendRequest;
+import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
