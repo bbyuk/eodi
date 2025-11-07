@@ -10,7 +10,7 @@ export default function ResultCard({ data }) {
         <div className="mt-3 space-y-1 text-sm">
           <p>
             <span className="font-medium text-gray-800">{data.dealType}</span> ·{" "}
-            <span className="text-gray-600">{data.area}</span> ·{" "}
+            <span className="text-gray-600">{data.area}㎡</span> ·{" "}
             <span className="text-gray-600">{data.floor}</span>
           </p>
           <p className="text-blue-600 font-semibold">{data.price}</p>
