@@ -82,11 +82,6 @@ export default function RegionsGrid() {
         setLeaseRegionGroups(res.leaseRegionGroups);
         setLeaseRegions(res.leaseRegions);
       });
-
-    return () => {
-      resetSelectedSellRegions();
-      resetSelectedLeaseRegions();
-    };
   }, []);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
