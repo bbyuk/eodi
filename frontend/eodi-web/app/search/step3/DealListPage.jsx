@@ -10,6 +10,7 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 import ResultGrid from "@/app/search/step3/_components/ResultGrid";
 import ResultCard from "@/app/search/step3/_components/ResultCard";
 import { api } from "@/lib/apiClient";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
 // url: "https://new.land.naver.com/complexes?ms=노원구 중계동 아파트",
 const id = "result";
@@ -23,6 +24,7 @@ export default function DealListPage() {
   const [sellTotalPages, setSellTotalPages] = useState(0);
   const [sellPage, setSellPage] = useState(0);
   const [sellList, setSellList] = useState([]);
+  const [isSellLoading, setIsSellLoading] = useState(false);
 
   const {
     setCurrentContext,
@@ -34,20 +36,39 @@ export default function DealListPage() {
 
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
 
-  useEffect(() => {
-    setCurrentContext(context[id]);
+  const findSell = () => {
+    if (isSellLoading) {
+      return;
+    }
+    setIsSellLoading(true);
+
     api
       .get("/real-estate/recommendation/sells", {
         cash: cash,
         targetRegionIds: Array.from(selectedSellRegions).map((region) => region.id),
         targetHousingTypes: Array.from(selectedHousingTypes),
+        size: pageSize,
+        page: sellPage,
       })
       .then((res) => {
-        setSellList(res.content);
-        setSellTotalCount(res.totalElements);
-        setSellPage(res.page);
-      });
+        if (sellPage === 0) {
+          setSellTotalCount(res.totalElements);
+          setSellTotalPages(res.totalPages);
+          setSellList(res.content);
+        } else {
+          setSellList((prev) => [...prev, ...res.content]);
+        }
+        setSellPage(res.page + 1);
+      })
+      .finally(() => setIsSellLoading(false));
+  };
+
+  useEffect(() => {
+    setCurrentContext(context[id]);
+    findSell();
   }, []);
+
+  const loadMoreRef = useInfiniteScroll(findSell, sellPage + 1 < sellTotalPages);
 
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
@@ -71,6 +92,7 @@ export default function DealListPage() {
         {sellList.map((sell) => (
           <ResultCard key={sell.id} data={sell} dealType={"매매"} />
         ))}
+        <div ref={loadMoreRef} className={"h-6"} />
       </ResultGrid>
     </main>
   );
