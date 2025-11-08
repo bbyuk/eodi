@@ -11,36 +11,18 @@ import ResultGrid from "@/app/search/step3/_components/ResultGrid";
 import ResultCard from "@/app/search/step3/_components/ResultCard";
 import { api } from "@/lib/apiClient";
 
-const MOCK_DATA = [
-  {
-    id: 1,
-    region: "강남구 삼성동",
-    price: "18억 2,000만원",
-    dealType: "매매",
-    building: "래미안 삼성1차",
-    area: "84",
-    floor: "15층",
-    date: "2025.10.15",
-    url: "https://new.land.naver.com/complexes?ms=강남구 삼성동 아파트",
-  },
-  {
-    id: 2,
-    region: "노원구 중계동",
-    price: "6억 5,000만원",
-    dealType: "매매",
-    building: "중계주공3단지",
-    area: "59.21",
-    floor: "8층",
-    date: "2025.09.10",
-    url: "https://new.land.naver.com/complexes?ms=노원구 중계동 아파트",
-  },
-];
-
+// url: "https://new.land.naver.com/complexes?ms=노원구 중계동 아파트",
 const id = "result";
 
 export default function DealListPage() {
   const title = "선택한 지역의 실거래 내역을 찾았어요";
   const description = ["최근 3개월간의 실거래 데이터를 기준으로 표시됩니다."];
+  const pageSize = 30;
+
+  const [sellTotalCount, setSellTotalCount] = useState(0);
+  const [sellTotalPages, setSellTotalPages] = useState(0);
+  const [sellPage, setSellPage] = useState(0);
+  const [sellList, setSellList] = useState([]);
 
   const {
     setCurrentContext,
@@ -50,7 +32,6 @@ export default function DealListPage() {
     selectedLeaseRegions,
   } = useSearchStore();
 
-  const [deals] = useState(MOCK_DATA);
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
 
   useEffect(() => {
@@ -65,6 +46,9 @@ export default function DealListPage() {
       })
       .then((res) => {
         console.log(res);
+        setSellList(res.content);
+        setSellTotalCount(res.totalElements);
+        setSellPage(res.page);
       });
   }, []);
 
@@ -87,8 +71,8 @@ export default function DealListPage() {
 
       {/* Grid */}
       <ResultGrid>
-        {deals.map((deal) => (
-          <ResultCard key={deal.id} data={deal} />
+        {sellList.map((sell) => (
+          <ResultCard key={sell.id} data={sell} />
         ))}
       </ResultGrid>
     </main>

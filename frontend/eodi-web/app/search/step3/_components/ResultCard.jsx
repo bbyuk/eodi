@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 
 export default function ResultCard({ data }) {
+  console.log(data);
   return (
     <article className="border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
       <div>
