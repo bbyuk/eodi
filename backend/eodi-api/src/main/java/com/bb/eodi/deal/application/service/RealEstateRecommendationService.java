@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -196,8 +197,8 @@ public class RealEstateRecommendationService {
                 .targetRegionIds(requestParameter.targetRegionIds())
                 .targetHousingTypes(
                         requestParameter.targetHousingTypes()
-                        .stream()
-                        .map(HousingType::fromCode)
+                                .stream()
+                                .map(HousingType::fromCode)
                                 .collect(Collectors.toList())
                 )
                 .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
@@ -207,7 +208,20 @@ public class RealEstateRecommendationService {
         // TODO 정책 / 대출 관련 로직 추가 필요
 
         return realEstateSellRepository.findBy(realEstateSellQuery, pageable)
-                .map(realEstateSellSummaryDtoMapper::toDto);
+                .map(realEstateSell -> {
+                    RealEstateSellSummaryDto resultDto = realEstateSellSummaryDtoMapper.toDto(realEstateSell);
+
+                    // 법정동 명 concat
+                    resultDto.setLegalDongFullName(
+                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
+                                    " " +
+                                    resultDto.getLegalDongName());
+
+                    // 전용면적 소숫점 밑 2자리로 반올림
+                    resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+                    return resultDto;
+                });
     }
 
     /**
