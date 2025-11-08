@@ -14,6 +14,10 @@ public class RealEstateSellSummaryDto {
     private Long id;
     // 지역 ID
     private Long regionId;
+
+    // 법정동 full name
+    private String legalDongFullName;
+
     // 법정동 동명
     private String legalDongName;
     // 거래일
