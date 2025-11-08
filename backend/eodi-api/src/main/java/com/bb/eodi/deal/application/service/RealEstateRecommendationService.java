@@ -3,6 +3,7 @@ package com.bb.eodi.deal.application.service;
 import com.bb.eodi.deal.application.dto.*;
 import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestParameter;
 import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestParameter;
+import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
@@ -51,15 +52,15 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param cash 입력된 보유 현금
+     * @param requestParameter 요청 파라미터
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsDto findRecommendedRegions(Integer cash, List<String> housingTypes) {
+    public RecommendedRegionsDto findRecommendedRegions(RegionRecommendRequest requestParameter) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
-        Set<String> housingTypeSet = new HashSet<>(housingTypes);
+        Set<String> housingTypeSet = new HashSet<>(requestParameter.housingTypes());
         if (housingTypeSet.contains(HousingType.APT.code())) {
             // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
             housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
@@ -76,8 +77,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minCash(cash - sellPriceGap)
-                        .maxCash(cash + sellPriceGap)
+                        .minCash(requestParameter.cash() - sellPriceGap)
+                        .maxCash(requestParameter.cash() + sellPriceGap)
                         .startDate(startDate)
                         .endDate(today)
                         .housingTypes(
@@ -87,8 +88,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minCash(cash - leaseDepositGap)
-                        .maxCash(cash + leaseDepositGap)
+                        .minCash(requestParameter.cash() - leaseDepositGap)
+                        .maxCash(requestParameter.cash() + leaseDepositGap)
                         .startDate(startDate)
                         .endDate(today)
                         .housingTypes(

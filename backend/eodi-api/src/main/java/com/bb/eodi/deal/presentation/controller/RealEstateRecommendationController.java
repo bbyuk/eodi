@@ -35,7 +35,7 @@ public class RealEstateRecommendationController {
     ) {
 
         return ResponseEntity.ok(
-                realEstateRecommendationService.findRecommendedRegions(requestParameter.cash(), requestParameter.housingTypes())
+                realEstateRecommendationService.findRecommendedRegions(requestParameter)
         );
     }
 
