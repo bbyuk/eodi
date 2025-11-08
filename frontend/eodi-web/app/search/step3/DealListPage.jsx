@@ -36,8 +36,6 @@ export default function DealListPage() {
 
   useEffect(() => {
     setCurrentContext(context[id]);
-
-    console.log(Array.from(selectedSellRegions));
     api
       .get("/real-estate/recommendation/sells", {
         cash: cash,
@@ -45,7 +43,6 @@ export default function DealListPage() {
         targetHousingTypes: Array.from(selectedHousingTypes),
       })
       .then((res) => {
-        console.log(res);
         setSellList(res.content);
         setSellTotalCount(res.totalElements);
         setSellPage(res.page);

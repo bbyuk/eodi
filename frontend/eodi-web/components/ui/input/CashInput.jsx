@@ -71,7 +71,6 @@ export default function CashInput({
             if (e.code !== "Enter") {
               return;
             }
-            console.log(onEnter);
             onEnter();
           }}
           {...props}

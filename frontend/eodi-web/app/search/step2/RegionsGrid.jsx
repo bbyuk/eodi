@@ -77,7 +77,6 @@ export default function RegionsGrid() {
         housingTypes: Array.from(selectedHousingTypes),
       })
       .then((res) => {
-        console.log(res);
         setSellRegionGroups(res.sellRegionGroups);
         setSellRegions(res.sellRegions);
         setLeaseRegionGroups(res.leaseRegionGroups);
