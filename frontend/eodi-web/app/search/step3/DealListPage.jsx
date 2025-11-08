@@ -72,7 +72,7 @@ export default function DealListPage() {
       {/* Grid */}
       <ResultGrid>
         {sellList.map((sell) => (
-          <ResultCard key={sell.id} data={sell} />
+          <ResultCard key={sell.id} data={sell} dealType={"매매"} />
         ))}
       </ResultGrid>
     </main>
