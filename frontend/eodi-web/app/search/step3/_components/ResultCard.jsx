@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { CheckCircle, Search } from "lucide-react";
 import { formatWon } from "@/app/search/_util/util";
 import { definedHousingType } from "@/const/code";
 
@@ -27,14 +27,21 @@ import { definedHousingType } from "@/const/code";
  *     url: "https://new.land.naver.com/complexes?ms=노원구 중계동 아파트",
  *   },
  * ];
- * @param data
+ * @param data 결과 데이터
+ * @param dealType 거래 유형
  * @returns {JSX.Element}
  * @constructor
  */
 
 export default function ResultCard({ data, dealType }) {
   return (
-    <article className="border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
+    <article className="relative border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
+      {data.dateOfRegistration && (
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-[11px] font-medium shadow-sm">
+          <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+          <span>등기 완료</span>
+        </div>
+      )}
       <div>
         <h3 className="text-lg font-semibold text-gray-900">
           {data.targetName ? `${data.targetName}` : ""}
