@@ -3,6 +3,7 @@ package com.bb.eodi.deal.application.service;
 import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
 import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDtoMapper;
 import com.bb.eodi.deal.application.dto.request.RealEstateSellRequestParameter;
+import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class RealEstateSellService {
 
     private final RealEstateSellRepository realEstateSellRepository;
     private final RealEstateSellSummaryDtoMapper summaryDtoMapper;
+    private final LegalDongCachePort legalDongCachePort;
+    private final RealEstateSellSummaryDtoMapper realEstateSellSummaryDtoMapper;
 
 
     /**
@@ -47,7 +50,13 @@ public class RealEstateSellService {
                         .targetHousingTypes(requestParameter.targetHousingTypes())
                         .targetRegionIds(requestParameter.targetRegionIds())
                         .build(), pageable)
-                .map(summaryDtoMapper::toDto);
+                .map(realEstateSell -> {
+                    RealEstateSellSummaryDto resultDto = realEstateSellSummaryDtoMapper.toDto(realEstateSell);
+
+                    // legalDongFullName set -> 지역명 + 동명
+                    resultDto.setLegalDongFullName(legalDongCachePort.findById(resultDto.getRegionId()) + " " + resultDto.getLegalDongName());
+                    return resultDto;
+                });
     }
 
 }
