@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import { context } from "@/app/search/_const/context";
 
