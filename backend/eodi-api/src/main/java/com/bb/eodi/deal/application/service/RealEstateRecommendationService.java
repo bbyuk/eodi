@@ -3,6 +3,7 @@ package com.bb.eodi.deal.application.service;
 import com.bb.eodi.deal.application.dto.*;
 import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestParameter;
 import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestParameter;
+import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
@@ -51,21 +52,20 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param cash 입력된 보유 현금
+     * @param requestParameter 요청 파라미터
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsDto findRecommendedRegions(Integer cash, List<String> housingTypes) {
+    public RecommendedRegionsDto findRecommendedRegions(RegionRecommendRequest requestParameter) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
-        Set<String> housingTypeSet = new HashSet<>(housingTypes);
+        Set<String> housingTypeSet = new HashSet<>(requestParameter.housingTypes());
         if (housingTypeSet.contains(HousingType.APT.code())) {
             // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
             housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
             housingTypeSet.add(HousingType.OCCUPY_RIGHT.code());
-        }
-        else if (housingTypeSet.contains(HousingType.DETACHED_HOUSE.code())) {
+        } else if (housingTypeSet.contains(HousingType.DETACHED_HOUSE.code())) {
             housingTypeSet.add(HousingType.MULTI_UNIT_HOUSE.code());
         }
 
@@ -76,8 +76,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minCash(cash - sellPriceGap)
-                        .maxCash(cash + sellPriceGap)
+                        .minCash(requestParameter.cash() - sellPriceGap)
+                        .maxCash(requestParameter.cash() + sellPriceGap)
                         .startDate(startDate)
                         .endDate(today)
                         .housingTypes(
@@ -87,8 +87,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minCash(cash - leaseDepositGap)
-                        .maxCash(cash + leaseDepositGap)
+                        .minCash(requestParameter.cash() - leaseDepositGap)
+                        .maxCash(requestParameter.cash() + leaseDepositGap)
                         .startDate(startDate)
                         .endDate(today)
                         .housingTypes(
@@ -132,6 +132,7 @@ public class RealEstateRecommendationService {
                             LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
                             return new RegionDto(
+                                    secondLegalDongInfo.id(),
                                     rootLegalDongInfo.code(),
                                     secondLegalDongInfo.code(),
                                     secondLegalDongInfo.name(),
@@ -162,6 +163,7 @@ public class RealEstateRecommendationService {
                             LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
                             return new RegionDto(
+                                    secondLegalDongInfo.id(),
                                     rootLegalDongInfo.code(),
                                     secondLegalDongInfo.code(),
                                     secondLegalDongInfo.name(),
@@ -170,7 +172,7 @@ public class RealEstateRecommendationService {
                             );
                         })
                         .collect(Collectors.groupingBy(RegionDto::groupCode))
-                );
+        );
     }
 
 
@@ -181,9 +183,9 @@ public class RealEstateRecommendationService {
      * 매매는 매매가 기준 +- 5000만원
      * <p>
      * 최근 3개월 거래내역 확인
-     * 
+     *
      * @param requestParameter 요청 파라미터
-     * @param pageable pageable 파라미터 객체
+     * @param pageable         pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
@@ -192,7 +194,12 @@ public class RealEstateRecommendationService {
                 .maxPrice(requestParameter.cash() + sellPriceGap)
                 .minPrice(requestParameter.cash() - sellPriceGap)
                 .targetRegionIds(requestParameter.targetRegionIds())
-                .targetHousingTypes(requestParameter.targetHousingTypes())
+                .targetHousingTypes(
+                        requestParameter.targetHousingTypes()
+                        .stream()
+                        .map(HousingType::fromCode)
+                                .collect(Collectors.toList())
+                )
                 .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
                 .minNetLeasableArea(requestParameter.minNetLeasableArea())
                 .build();
@@ -207,7 +214,7 @@ public class RealEstateRecommendationService {
      * 입력된 파라미터 기반으로 맞춤 임대차 실거래 데이터 목록을 리턴한다.
      * <p>
      * 1. 보유 현금
-     *
+     * <p>
      * 전세 -> 보증금 기준 +- +- 1000
      * 월세 ->
      *
@@ -215,7 +222,7 @@ public class RealEstateRecommendationService {
      * 최근 3개월 거래내역 확인
      *
      * @param requestParameter 요청 파라미터
-     * @param pageable pageable 파라미터 객체
+     * @param pageable         pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)

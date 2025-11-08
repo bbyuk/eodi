@@ -1,6 +1,5 @@
 package com.bb.eodi.deal.application.dto.request;
 
-import com.bb.eodi.deal.domain.type.HousingType;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +44,7 @@ public record RealEstateSellRecommendRequestParameter(
                         )
                 )
         )
-        List<HousingType> targetHousingTypes,
+        List<String> targetHousingTypes,
         @Parameter(description = "최대 전용면적", example = "84")
         Integer maxNetLeasableArea,
         @Parameter(description = "최소 전용면적", example = "39")

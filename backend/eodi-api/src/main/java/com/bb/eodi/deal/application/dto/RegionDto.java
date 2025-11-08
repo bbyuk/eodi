@@ -9,6 +9,7 @@ package com.bb.eodi.deal.application.dto;
  * @param count 수
  */
 public record RegionDto(
+        Long id,
         String groupCode,
         String code,
         String name,
