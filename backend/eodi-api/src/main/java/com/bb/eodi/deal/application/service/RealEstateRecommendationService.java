@@ -6,6 +6,7 @@ import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestPa
 import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
@@ -132,7 +133,7 @@ public class RealEstateRecommendationService {
                             LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
                             return new RegionDto(
-                                    rootLegalDongInfo.id(),
+                                    secondLegalDongInfo.id(),
                                     rootLegalDongInfo.code(),
                                     secondLegalDongInfo.code(),
                                     secondLegalDongInfo.name(),
@@ -163,7 +164,7 @@ public class RealEstateRecommendationService {
                             LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
                             return new RegionDto(
-                                    rootLegalDongInfo.id(),
+                                    secondLegalDongInfo.id(),
                                     rootLegalDongInfo.code(),
                                     secondLegalDongInfo.code(),
                                     secondLegalDongInfo.name(),
