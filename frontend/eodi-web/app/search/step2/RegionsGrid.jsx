@@ -20,6 +20,7 @@ import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeC
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
+import { definedHousingType } from "@/const/code";
 
 const id = "region";
 export default function RegionsGrid() {
@@ -31,6 +32,9 @@ export default function RegionsGrid() {
   const {
     cash,
     setCurrentContext,
+    resetStep2,
+    selectedHousingTypes,
+    toggleHousingType,
     selectedSellRegions,
     toggleSellRegion,
     selectedLeaseRegions,
@@ -49,50 +53,35 @@ export default function RegionsGrid() {
   const [selectedSellRegionGroup, setSelectedSellRegionGroup] = useState();
   const [selectedLeaseRegionGroup, setSelectedLeaseRegionGroup] = useState();
 
-  const [housingTypes, setHousingTypes] = useState([
-    {
-      code: "AP",
-      displayName: "아파트",
-      icon: <BuildingOffice2Icon className="w-5 h-5" />,
-    },
-    {
-      code: "OF",
-      displayName: "오피스텔",
-      icon: <BuildingOfficeIcon className="w-5 h-5" />,
-    },
-    { code: "DT", displayName: "단독 주택", icon: <HomeIcon className="w-5 h-5" /> },
-    {
-      code: "MH",
-      displayName: "연립/다세대 주택",
-      icon: <HomeModernIcon className="w-5 h-5" />,
-    },
-  ]);
+  const housingTypes = Object.entries(definedHousingType)
+    .filter(([code, value]) => value.param)
+    .map(([code, info]) => {
+      return {
+        code: code,
+        displayName: info.name,
+        icon: info.icon,
+      };
+    });
+
   const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
-  const [selectedHousingType, setSelectedHousingType] = useState(new Set(["AP", "OF"]));
 
   useEffect(() => {
     if (!cash || cash === 0) {
       redirect("/search");
     }
-
+    resetStep2();
     setCurrentContext(context[id]);
     api
       .get("/real-estate/recommendation/region", {
         cash: cash,
-        housingTypes: Array.from(selectedHousingType),
+        housingTypes: Array.from(selectedHousingTypes),
       })
       .then((res) => {
-        console.log(res);
         setSellRegionGroups(res.sellRegionGroups);
         setSellRegions(res.sellRegions);
         setLeaseRegionGroups(res.leaseRegionGroups);
         setLeaseRegions(res.leaseRegions);
       });
-
-    return () => {
-      resetSelectedSellRegions();
-      resetSelectedLeaseRegions();
-    };
   }, []);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
@@ -123,15 +112,12 @@ export default function RegionsGrid() {
       {/* 주택 유형 선택 영역 */}
       <GridGroup title={"주택 유형 선택"}>
         <CategoryTab
+          iconClassName={"w-5 h-5"}
           list={housingTypes}
-          value={selectedHousingType}
+          value={selectedHousingTypes}
           type={"select"}
           onSelect={(value) => {
-            setSelectedHousingType((prev) => {
-              const next = new Set(prev);
-              next.has(value) ? next.delete(value) : next.add(value);
-              return next;
-            });
+            toggleHousingType(value);
             setIsHousingTypeChanged(true);
           }}
         />

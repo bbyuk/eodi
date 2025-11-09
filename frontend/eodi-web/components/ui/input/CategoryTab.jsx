@@ -5,9 +5,16 @@ import CategoryButton from "@/components/ui/input/CategoryButton";
  * @param list 카테고리 목록 list
  * @param value 선택된 값
  * @param onSelect 선택 이벤트 핸들러
+ * @param iconClassName 카테고리 버튼의 icon class 명
  * @param type 카테고리 탭 타입
  */
-export default function CategoryTab({ list, value, onSelect, type = "toggle" }) {
+export default function CategoryTab({
+  list,
+  value,
+  onSelect,
+  iconClassName = "",
+  type = "toggle",
+}) {
   return (
     <div className={"flex gap-2"}>
       {list.map((data) => {
@@ -20,6 +27,7 @@ export default function CategoryTab({ list, value, onSelect, type = "toggle" }) 
         return (
           <CategoryButton
             key={data.code}
+            iconClassName={iconClassName}
             icon={data.icon}
             onClick={() => onSelect(data.code)}
             isActive={isActive}

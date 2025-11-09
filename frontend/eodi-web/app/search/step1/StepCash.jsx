@@ -14,20 +14,13 @@ export default function StepCash() {
   const description = ["입력한 금액으로 매수, 전·월세가 가능한 지역을 바로 찾아드릴게요."];
   const unit = "만 원";
 
-  const { cash, setCash, resetCash, direction, setCurrentContext } = useSearchStore();
+  const { cash, setCash, resetStep1, setCurrentContext } = useSearchStore();
   const { goNext } = useSearchContext();
-
-  const [displayCash, setDisplayCash] = useState();
 
   useEffect(() => {
     setCurrentContext(context[id]);
+    resetStep1();
   }, []);
-
-  useEffect(() => {
-    if (direction === "backward") {
-      resetCash();
-    }
-  }, [direction]);
 
   return (
     <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
