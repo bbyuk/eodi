@@ -171,7 +171,7 @@ export default function RegionsGrid() {
         </div>
       </GridGroup>
 
-      <GridGroup title={"최근 매매 이력이 있는 지역"}>
+      <GridGroup title={"최근 매매 거래 이력이 있는 지역"}>
         <HorizontalSwipeContainer fadeColor="#ffffff">
           <CategoryTab
             list={Object.values(sellRegionGroups)}
@@ -187,7 +187,7 @@ export default function RegionsGrid() {
         />
       </GridGroup>
 
-      <GridGroup title={"최근 전·월세 이력이 있는 지역"}>
+      <GridGroup title={"최근 임대차 거래 이력이 있는 지역"}>
         <HorizontalSwipeContainer fadeColor="#ffffff">
           <CategoryTab
             list={Object.values(leaseRegionGroups)}
