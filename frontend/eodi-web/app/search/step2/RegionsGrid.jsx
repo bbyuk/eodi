@@ -81,6 +81,22 @@ export default function RegionsGrid() {
   };
 
   useEffect(() => {
+    if (sellRegionGroups.length === 0) {
+      return;
+    }
+
+    setSelectedSellRegionGroup(Object.keys(sellRegionGroups)[0]);
+  }, [sellRegionGroups]);
+
+  useEffect(() => {
+    if (leaseRegionGroups.length === 0) {
+      return;
+    }
+
+    setSelectedLeaseRegionGroup(Object.keys(leaseRegionGroups)[0]);
+  }, [leaseRegionGroups]);
+
+  useEffect(() => {
     if (!cash || cash === 0) {
       redirect("/search");
     }
