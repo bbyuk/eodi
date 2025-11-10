@@ -22,6 +22,7 @@ export default function SearchLayout({ children }) {
     setDirectionToForward,
     setDirectionToBackward,
     resetSearchStore,
+    resetDirection,
   } = useSearchStore();
 
   /**
@@ -57,6 +58,11 @@ export default function SearchLayout({ children }) {
     router.push(`/search/step${currentContext.step - 1}`, { scroll: false });
   };
 
+  const goFirst = () => {
+    resetDirection();
+    router.push("/search/step1", { scroll: false });
+  };
+
   useEffect(() => {
     return () => {
       resetSearchStore();
@@ -69,7 +75,9 @@ export default function SearchLayout({ children }) {
 
       <div className="flex-1 flex justify-center px-10">
         <div className="w-full max-w-[70rem] transition-opacity duration-300 ease-in-out">
-          <SearchContext.Provider value={{ goNext, goPrev }}>{children}</SearchContext.Provider>
+          <SearchContext.Provider value={{ goNext, goPrev, goFirst }}>
+            {children}
+          </SearchContext.Provider>
         </div>
       </div>
 
