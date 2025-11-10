@@ -155,8 +155,8 @@ export default function DealListPage() {
     }
   }, [cash, selectedSellRegions, selectedLeaseRegions]);
 
-  const sellLoadMoreRef = useInfiniteScroll(findSell, sellInfo.page + 1 < sellInfo.totalPages);
-  const leaseLoadMoreRef = useInfiniteScroll(findLease, leaseInfo.page + 1 < leaseInfo.totalPages);
+  const sellLoadMoreRef = useInfiniteScroll(findSell, sellInfo.page < sellInfo.totalPages);
+  const leaseLoadMoreRef = useInfiniteScroll(findLease, leaseInfo.page < leaseInfo.totalPages);
 
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
