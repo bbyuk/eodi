@@ -10,12 +10,6 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
 import { api } from "@/lib/apiClient";
-import {
-  BuildingOffice2Icon,
-  BuildingOfficeIcon,
-  HomeIcon,
-  HomeModernIcon,
-} from "@heroicons/react/24/outline";
 import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeContainer";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
 import { CheckCircle2, CheckSquare } from "lucide-react";
@@ -42,8 +36,9 @@ export default function RegionsGrid() {
     resetSelectedSellRegions,
     resetSelectedLeaseRegions,
   } = useSearchStore();
-  const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
 
+  const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
+  const [isHousingTypeSelected, setIsHousingTypeSelected] = useState(false);
   const [sellRegionGroups, setSellRegionGroups] = useState({});
   const [sellRegions, setSellRegions] = useState([]);
 
@@ -79,6 +74,7 @@ export default function RegionsGrid() {
         setLeaseRegions(res.leaseRegions);
 
         setFoundHousingTypes(Array.from(selectedHousingTypes));
+        setIsHousingTypeChanged(false);
       });
   };
 
@@ -93,12 +89,17 @@ export default function RegionsGrid() {
   }, []);
 
   useEffect(() => {
+    if (!isHousingTypeSelected) {
+      return;
+    }
+
     setIsHousingTypeChanged(
       foundHousingTypes.length !== selectedHousingTypes.size ||
         foundHousingTypes.filter((type) => selectedHousingTypes.has(type)).length !==
           foundHousingTypes.length
     );
-  }, [selectedHousingTypes]);
+    setIsHousingTypeSelected(false);
+  }, [isHousingTypeSelected]);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
 
@@ -138,6 +139,7 @@ export default function RegionsGrid() {
             }
 
             toggleHousingType(value);
+            setIsHousingTypeSelected(true);
           }}
         />
 
@@ -151,7 +153,7 @@ export default function RegionsGrid() {
         >
           <button
             className="mt-3 inline-flex items-center gap-1 text-primary font-medium hover:text-primary/80"
-            onClick={() => setIsHousingTypeChanged(false)}
+            onClick={findRecommendedRegions}
           >
             이 유형으로 다시 조회하기
           </button>
