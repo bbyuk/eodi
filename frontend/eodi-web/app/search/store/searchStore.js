@@ -9,7 +9,7 @@ export const useSearchStore = create((set, get) => ({
   // 입력된 현금
   cash: "",
   // 조회된 주택 유형 목록
-  inquiredHousingTypes: new Set(),
+  inquiredHousingTypes: ["AP", "OF"],
   // 선택된 매매 지역
   selectedSellRegions: new Set(),
   // 선택된 임대차 지역
@@ -73,7 +73,7 @@ export const useSearchStore = create((set, get) => ({
   /**
    * 조회된 주택 유형 목록을 리셋한다.
    */
-  resetInquiredHousingTypes: () => set({ inquiredHousingTypes: new Set() }),
+  resetInquiredHousingTypes: () => set({ inquiredHousingTypes: ["AP", "OF"] }),
 
   /**
    * step1 페이지에서 사용되는 store 상태를 초기로 리셋한다.
