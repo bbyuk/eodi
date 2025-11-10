@@ -64,13 +64,9 @@ export default function RegionsGrid() {
     });
 
   const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
+  const [foundHousingTypes, setFoundHousingTypes] = useState([]);
 
-  useEffect(() => {
-    if (!cash || cash === 0) {
-      redirect("/search");
-    }
-    resetStep2();
-    setCurrentContext(context[id]);
+  const findRecommendedRegions = () => {
     api
       .get("/real-estate/recommendation/region", {
         cash: cash,
@@ -81,8 +77,28 @@ export default function RegionsGrid() {
         setSellRegions(res.sellRegions);
         setLeaseRegionGroups(res.leaseRegionGroups);
         setLeaseRegions(res.leaseRegions);
+
+        setFoundHousingTypes(Array.from(selectedHousingTypes));
       });
+  };
+
+  useEffect(() => {
+    if (!cash || cash === 0) {
+      redirect("/search");
+    }
+    resetStep2();
+    setCurrentContext(context[id]);
+
+    findRecommendedRegions();
   }, []);
+
+  useEffect(() => {
+    setIsHousingTypeChanged(
+      foundHousingTypes.length !== selectedHousingTypes.size ||
+        foundHousingTypes.filter((type) => selectedHousingTypes.has(type)).length !==
+          foundHousingTypes.length
+    );
+  }, [selectedHousingTypes]);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
 
@@ -117,8 +133,11 @@ export default function RegionsGrid() {
           value={selectedHousingTypes}
           type={"select"}
           onSelect={(value) => {
+            if (selectedHousingTypes.size === 1 && selectedHousingTypes.has(value)) {
+              return;
+            }
+
             toggleHousingType(value);
-            setIsHousingTypeChanged(true);
           }}
         />
 
