@@ -45,7 +45,7 @@ export default function DealListPage() {
   const {
     setCurrentContext,
     cash,
-    selectedHousingTypes,
+    inquiredHousingTypes,
     selectedSellRegions,
     selectedLeaseRegions,
   } = useSearchStore();
@@ -63,7 +63,7 @@ export default function DealListPage() {
       .get("/real-estate/recommendation/sells", {
         cash: cash,
         targetRegionIds: Array.from(selectedSellRegions).map((region) => region.id),
-        targetHousingTypes: Array.from(selectedHousingTypes),
+        targetHousingTypes: Array.from(inquiredHousingTypes),
         size: pageSize,
         page: sellInfo.page,
       })
