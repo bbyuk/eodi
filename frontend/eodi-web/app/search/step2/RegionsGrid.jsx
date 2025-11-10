@@ -27,18 +27,23 @@ export default function RegionsGrid() {
     cash,
     setCurrentContext,
     resetStep2,
-    selectedHousingTypes,
-    toggleHousingType,
+    inquiredHousingTypes,
+    setInquiredHousingTypes,
     selectedSellRegions,
     toggleSellRegion,
     selectedLeaseRegions,
     toggleLeaseRegion,
-    resetSelectedSellRegions,
-    resetSelectedLeaseRegions,
   } = useSearchStore();
 
+  const [selectedHousingTypes, setSelectedHousingTypes] = useState(new Set(["AP", "OF"]));
+  const toggleHousingType = (value) => {
+    const next = new Set(selectedHousingTypes);
+    next.has(value) ? next.delete(value) : next.add(value);
+    setSelectedHousingTypes(next);
+  };
+  const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
+
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
-  const [isHousingTypeSelected, setIsHousingTypeSelected] = useState(false);
   const [sellRegionGroups, setSellRegionGroups] = useState({});
   const [sellRegions, setSellRegions] = useState([]);
 
@@ -58,9 +63,6 @@ export default function RegionsGrid() {
       };
     });
 
-  const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
-  const [foundHousingTypes, setFoundHousingTypes] = useState([]);
-
   const findRecommendedRegions = () => {
     api
       .get("/real-estate/recommendation/region", {
@@ -73,7 +75,7 @@ export default function RegionsGrid() {
         setLeaseRegionGroups(res.leaseRegionGroups);
         setLeaseRegions(res.leaseRegions);
 
-        setFoundHousingTypes(Array.from(selectedHousingTypes));
+        setInquiredHousingTypes(Array.from(selectedHousingTypes));
         setIsHousingTypeChanged(false);
       });
   };
@@ -89,17 +91,12 @@ export default function RegionsGrid() {
   }, []);
 
   useEffect(() => {
-    if (!isHousingTypeSelected) {
-      return;
-    }
-
     setIsHousingTypeChanged(
-      foundHousingTypes.length !== selectedHousingTypes.size ||
-        foundHousingTypes.filter((type) => selectedHousingTypes.has(type)).length !==
-          foundHousingTypes.length
+      selectedHousingTypes.size !== inquiredHousingTypes.length ||
+        inquiredHousingTypes.filter((type) => selectedHousingTypes.has(type)).length !==
+          inquiredHousingTypes.length
     );
-    setIsHousingTypeSelected(false);
-  }, [isHousingTypeSelected]);
+  }, [selectedHousingTypes]);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
 
@@ -137,9 +134,7 @@ export default function RegionsGrid() {
             if (selectedHousingTypes.size === 1 && selectedHousingTypes.has(value)) {
               return;
             }
-
             toggleHousingType(value);
-            setIsHousingTypeSelected(true);
           }}
         />
 
