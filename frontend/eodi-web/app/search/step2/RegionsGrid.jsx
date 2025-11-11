@@ -181,6 +181,11 @@ export default function RegionsGrid() {
             list={Object.values(sellRegionGroups)}
             value={selectedSellRegionGroup}
             onSelect={setSelectedSellRegionGroup}
+            useBadge={true}
+            countCalculator={(value) =>
+              Array.from(selectedSellRegions).filter((region) => region.groupCode === value.code)
+                .length
+            }
           />
         </HorizontalSwipeContainer>
         <MultiButtonSelectGrid
@@ -197,6 +202,10 @@ export default function RegionsGrid() {
             list={Object.values(leaseRegionGroups)}
             value={selectedLeaseRegionGroup}
             onSelect={setSelectedLeaseRegionGroup}
+            useBadge={true}
+            countCalculator={(value) =>
+              Array.from(selectedLeaseRegions).filter((region) => region.groupCode === value.code)
+            }
           />
         </HorizontalSwipeContainer>
         <MultiButtonSelectGrid

@@ -1,3 +1,5 @@
+"use client";
+
 import CategoryButton from "@/components/ui/input/CategoryButton";
 
 /**
@@ -12,6 +14,8 @@ export default function CategoryTab({
   list,
   value,
   onSelect,
+  countCalculator = (value) => 0,
+  useBadge = false,
   iconClassName = "",
   type = "toggle",
 }) {
@@ -28,6 +32,8 @@ export default function CategoryTab({
           <CategoryButton
             key={data.code}
             iconClassName={iconClassName}
+            useBadge={useBadge}
+            count={countCalculator(data)}
             icon={data.icon}
             onClick={() => onSelect(data.code)}
             isActive={isActive}
