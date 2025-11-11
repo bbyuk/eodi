@@ -20,8 +20,10 @@ const id = "region";
 export default function RegionsGrid() {
   const title = "살펴볼 만한 지역을 찾았어요";
   const description = [
-    "입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,",
-    "실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.",
+    "실거래 데이터를 확인할 지역을 선택해주세요.",
+    <>
+      매매와 임대차 각각 최대 <span className="font-semibold">5개</span> 지역까지 선택할 수 있어요.
+    </>,
   ];
   const {
     cash,
