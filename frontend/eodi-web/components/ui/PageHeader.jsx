@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import InfoTooltip from "@/components/ui/InfoTooltip";
+import InfoTooltip from "@/components/etc/InfoTooltip";
 
 export default function PageHeader({ title, description, info, children }) {
   return (

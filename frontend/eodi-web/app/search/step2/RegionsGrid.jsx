@@ -15,7 +15,6 @@ import FloatingContainer from "@/components/ui/container/floating/FloatingContai
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
-import InfoTooltip from "@/components/ui/InfoTooltip";
 
 const id = "region";
 export default function RegionsGrid() {
