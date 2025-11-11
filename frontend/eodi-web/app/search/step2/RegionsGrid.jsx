@@ -15,6 +15,7 @@ import FloatingContainer from "@/components/ui/container/floating/FloatingContai
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
+import InfoTooltip from "@/components/ui/InfoTooltip";
 
 const id = "region";
 export default function RegionsGrid() {
@@ -25,6 +26,8 @@ export default function RegionsGrid() {
       매매와 임대차 각각 최대 <span className="font-semibold">5개</span> 지역을 선택할 수 있어요.
     </>,
   ];
+  const infoDescription = `입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며, 실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.`;
+
   const {
     cash,
     setCurrentContext,
@@ -132,7 +135,7 @@ export default function RegionsGrid() {
         <SelectedRegionsCardContents close={() => setIsFloatingCardOpen(false)} />
       </FloatingContainer>
 
-      <PageHeader title={title} description={description}>
+      <PageHeader title={title} description={description} info={infoDescription}>
         <p className="text-base text-text-secondary mt-4">
           입력 예산:{" "}
           <span className="font-semibold text-text-primary">
