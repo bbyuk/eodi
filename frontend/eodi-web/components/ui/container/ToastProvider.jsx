@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useRef } from "react";
+import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, CheckCircle2, XCircle, Info } from "lucide-react";
 
@@ -53,6 +53,32 @@ export default function ToastProvider({ children }) {
       timeoutRef.current = null;
     }, 1500);
   };
+
+  // 유저 이벤트 발생 시 토스트 닫기
+  useEffect(() => {
+    if (!toast.visible) return;
+
+    const hideOnUserEvent = () => {
+      setToast((t) => ({ ...t, visible: false }));
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+
+    const events = ["scroll", "click", "keydown", "touchstart", "wheel"];
+
+    // 등록을 한 프레임 지연시켜 현재 클릭은 무시
+    const timer = setTimeout(() => {
+      events.forEach((evt) => window.addEventListener(evt, hideOnUserEvent, { once: true }));
+    }, 0);
+
+    // cleanup
+    return () => {
+      clearTimeout(timer);
+      events.forEach((evt) => window.removeEventListener(evt, hideOnUserEvent));
+    };
+  }, [toast.visible]);
 
   const variantStyles = {
     info: {
