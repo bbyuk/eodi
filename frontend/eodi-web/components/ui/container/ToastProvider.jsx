@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ToastContext = createContext({
-  showToast: () => {},
+  showToast: (text, event) => {},
 });
 
 export function useToast() {
