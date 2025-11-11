@@ -20,7 +20,7 @@ export default function CategoryTab({
   type = "toggle",
 }) {
   return (
-    <div className={"flex gap-2"}>
+    <div className={"flex gap-2 items-start py-2 min-h-[48px]"}>
       {list.map((data) => {
         const isActive =
           type === "toggle"
