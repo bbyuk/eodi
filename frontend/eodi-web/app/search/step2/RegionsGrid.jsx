@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
-import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
+import MultiButtonSelectGrid from "@/app/search/step2/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
 import { redirect } from "next/navigation";
 import { useSearchStore } from "@/app/search/store/searchStore";
@@ -15,14 +15,21 @@ import FloatingContainer from "@/components/ui/container/floating/FloatingContai
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
+import { useToast } from "@/components/ui/container/ToastProvider";
 
 const id = "region";
 export default function RegionsGrid() {
   const title = "살펴볼 만한 지역을 찾았어요";
   const description = [
-    "입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며,",
-    "실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.",
+    "실거래 데이터를 보고 싶은 지역을 선택해주세요.",
+    <>
+      매매와 임대차 각각 최대 <span className="font-semibold">5개</span> 지역을 선택할 수 있어요.
+    </>,
   ];
+  const infoDescription = `입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며, 실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.`;
+  const selectLimit = 5;
+  const limitWarnMessage = `이미 ${selectLimit}개의 지역을 모두 선택했어요.`;
+
   const {
     cash,
     setCurrentContext,
@@ -44,6 +51,9 @@ export default function RegionsGrid() {
   const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
 
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
+
+  const { showToast } = useToast();
+
   const [sellRegionGroups, setSellRegionGroups] = useState({});
   const [sellRegions, setSellRegions] = useState([]);
 
@@ -115,7 +125,6 @@ export default function RegionsGrid() {
   }, [selectedHousingTypes]);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
-
   return (
     <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <FloatingContainer
@@ -130,7 +139,7 @@ export default function RegionsGrid() {
         <SelectedRegionsCardContents close={() => setIsFloatingCardOpen(false)} />
       </FloatingContainer>
 
-      <PageHeader title={title} description={description}>
+      <PageHeader title={title} description={description} info={infoDescription}>
         <p className="text-base text-text-secondary mt-4">
           입력 예산:{" "}
           <span className="font-semibold text-text-primary">
@@ -177,12 +186,23 @@ export default function RegionsGrid() {
             list={Object.values(sellRegionGroups)}
             value={selectedSellRegionGroup}
             onSelect={setSelectedSellRegionGroup}
+            useBadge={true}
+            countCalculator={(value) =>
+              Array.from(selectedSellRegions).filter((region) => region.groupCode === value.code)
+                .length
+            }
           />
         </HorizontalSwipeContainer>
         <MultiButtonSelectGrid
           list={sellRegions[selectedSellRegionGroup]}
           selected={selectedSellRegions}
-          onSelect={toggleSellRegion}
+          onSelect={(value, e) => {
+            if (selectedSellRegions.size >= selectLimit && !selectedSellRegions.has(value)) {
+              showToast(e, limitWarnMessage, "warning");
+              return;
+            }
+            toggleSellRegion(value);
+          }}
           placeholder={"예산에 맞는 지역을 찾지 못했어요."}
         />
       </GridGroup>
@@ -193,12 +213,23 @@ export default function RegionsGrid() {
             list={Object.values(leaseRegionGroups)}
             value={selectedLeaseRegionGroup}
             onSelect={setSelectedLeaseRegionGroup}
+            useBadge={true}
+            countCalculator={(value) =>
+              Array.from(selectedLeaseRegions).filter((region) => region.groupCode === value.code)
+                .length
+            }
           />
         </HorizontalSwipeContainer>
         <MultiButtonSelectGrid
           list={leaseRegions[selectedLeaseRegionGroup]}
           selected={selectedLeaseRegions}
-          onSelect={toggleLeaseRegion}
+          onSelect={(value, e) => {
+            if (selectedLeaseRegions.size >= selectLimit && !selectedLeaseRegions.has(value)) {
+              showToast(e, limitWarnMessage, "warning");
+              return;
+            }
+            toggleLeaseRegion(value);
+          }}
           placeholder={"예산에 맞는 지역을 찾지 못했어요."}
         />
       </GridGroup>

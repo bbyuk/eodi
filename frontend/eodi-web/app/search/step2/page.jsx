@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import { animation } from "@/app/search/_const/animation";
 import { direction } from "@/app/search/_const/direction";
+import ToastProvider from "@/components/ui/container/ToastProvider";
 
 export default function Step2Page() {
   const { currentDirection } = useSearchStore();
@@ -13,7 +14,9 @@ export default function Step2Page() {
       {...animation[direction[currentDirection].animation]}
       className="w-full px-8 pt-[12vh] md:pt-[18vh] pb-[8vh] overflow-x-hidden"
     >
-      <RegionsGrid />
+      <ToastProvider>
+        <RegionsGrid />
+      </ToastProvider>
     </motion.div>
   );
 }

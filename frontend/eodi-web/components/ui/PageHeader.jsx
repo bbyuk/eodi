@@ -1,11 +1,15 @@
 import { Fragment } from "react";
+import InfoTooltip from "@/components/etc/InfoTooltip";
 
-export default function PageHeader({ title, description, children }) {
+export default function PageHeader({ title, description, info, children }) {
   return (
     <header className="mb-14">
-      <h1 className="text-3xl md:text-4xl font-semibold text-text-primary mb-3 leading-tight">
-        {title}
-      </h1>
+      <div className="flex items-center gap-2 mb-3">
+        <h1 className="text-3xl md:text-4xl font-semibold text-text-primary leading-tight">
+          {title}
+        </h1>
+        {info && <InfoTooltip position="bottom" content={info} />}
+      </div>
       <p className="text-base text-text-secondary leading-relaxed">
         {description.map((line, idx) => (
           <Fragment key={idx}>
