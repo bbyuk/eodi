@@ -4,6 +4,8 @@ export default function ToggleButton({
   isActive = false,
   size = "sm",
   className = "",
+  useBadge,
+  badgeCount = 0,
   ...props
 }) {
   const sizeClasses = {
@@ -16,7 +18,7 @@ export default function ToggleButton({
     <button
       type="button"
       className={`
-        border transition text-center
+        relative border transition text-center flex items-center justify-center
         ${sizeClasses[size] ?? sizeClasses.sm}
         ${
           isActive
@@ -27,7 +29,14 @@ export default function ToggleButton({
       `}
       {...props}
     >
-      {label}
+      <span>{label}</span>
+      {useBadge && badgeCount >= 20 && (
+        <span
+          className={`absolute top-1.5 right-2 text-[11px] ${isActive ? "text-white/80" : "text-primary"}`}
+        >
+          {badgeCount}건
+        </span>
+      )}
     </button>
   );
 }

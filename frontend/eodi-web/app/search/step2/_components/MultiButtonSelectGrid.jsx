@@ -19,6 +19,8 @@ export default function MultiButtonSelectGrid({ list, selected, onSelect, placeh
                 onClick={(e) => {
                   onSelect(elem, e);
                 }}
+                useBadge={true}
+                badgeCount={elem.count}
                 label={elem.displayName || elem.name}
               />
             );
