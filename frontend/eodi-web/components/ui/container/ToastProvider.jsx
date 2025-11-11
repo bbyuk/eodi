@@ -2,8 +2,9 @@
 
 import { createContext, useContext, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, CheckCircle2, XCircle, Info } from "lucide-react";
 
-const ToastContext = createContext({ showToast: (text, event) => {} });
+const ToastContext = createContext({ showToast: (event, text, type) => {} });
 
 export function useToast() {
   return useContext(ToastContext);
@@ -19,7 +20,7 @@ export default function ToastProvider({ children }) {
   });
   const timeoutRef = useRef(null);
 
-  const showToast = (text, event) => {
+  const showToast = (event, text, type) => {
     // 기존 타이머 제거
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -40,6 +41,7 @@ export default function ToastProvider({ children }) {
     setToast((prev) => ({
       id: prev.id + 1, // key로 쓸 값
       text,
+      type,
       x,
       y,
       visible: true,
@@ -51,6 +53,35 @@ export default function ToastProvider({ children }) {
       timeoutRef.current = null;
     }, 1500);
   };
+
+  const variantStyles = {
+    info: {
+      bg: "bg-blue-50/80 dark:bg-blue-900/60",
+      text: "text-blue-700 dark:text-blue-100",
+      border: "border-blue-300/50",
+      icon: <Info size={14} className="text-blue-500" />,
+    },
+    success: {
+      bg: "bg-green-50/80 dark:bg-green-900/60",
+      text: "text-green-700 dark:text-green-100",
+      border: "border-green-300/50",
+      icon: <CheckCircle2 size={14} className="text-green-500" />,
+    },
+    warning: {
+      bg: "bg-amber-50/80 dark:bg-amber-900/60",
+      text: "text-amber-800 dark:text-amber-100",
+      border: "border-amber-300/50",
+      icon: <AlertTriangle size={14} className="text-amber-500" />,
+    },
+    error: {
+      bg: "bg-red-100/80 dark:bg-red-900/60",
+      text: "text-red-700 dark:text-red-100",
+      border: "border-red-300/50",
+      icon: <XCircle size={14} className="text-red-500" />,
+    },
+  };
+
+  const current = variantStyles[toast.type] || variantStyles.info;
 
   return (
     <ToastContext.Provider value={{ showToast }}>
@@ -71,9 +102,16 @@ export default function ToastProvider({ children }) {
               transform: "translate(-50%, -100%)",
               zIndex: 99999,
             }}
-            className="px-2 py-1 text-xs bg-gray-800 text-white rounded shadow-lg whitespace-nowrap pointer-events-none"
+            className={`
+              px-3 py-1.5 rounded-md text-sm font-medium
+              backdrop-blur-md shadow-lg border
+              ${current.bg} ${current.text} ${current.border}
+            `}
           >
-            {toast.text}
+            <div className="flex items-center gap-1">
+              {current.icon}
+              <span>{toast.text}</span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

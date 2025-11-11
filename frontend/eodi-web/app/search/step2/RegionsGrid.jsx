@@ -28,6 +28,7 @@ export default function RegionsGrid() {
   ];
   const infoDescription = `입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며, 실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.`;
   const selectLimit = 5;
+  const limitWarnMessage = `이미 ${selectLimit}개의 지역을 모두 선택했어요.`;
 
   const {
     cash,
@@ -197,7 +198,7 @@ export default function RegionsGrid() {
           selected={selectedSellRegions}
           onSelect={(value, e) => {
             if (selectedSellRegions.size >= selectLimit && !selectedSellRegions.has(value)) {
-              showToast("5개 이상 선택 X", e);
+              showToast(e, limitWarnMessage, "warning");
               return;
             }
             toggleSellRegion(value);
@@ -224,7 +225,7 @@ export default function RegionsGrid() {
           selected={selectedLeaseRegions}
           onSelect={(value, e) => {
             if (selectedLeaseRegions.size >= selectLimit && !selectedLeaseRegions.has(value)) {
-              showToast("5개 이상 선택 X", e);
+              showToast(e, limitWarnMessage, "warning");
               return;
             }
             toggleLeaseRegion(value);
