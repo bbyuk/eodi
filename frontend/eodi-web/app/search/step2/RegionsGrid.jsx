@@ -20,9 +20,9 @@ const id = "region";
 export default function RegionsGrid() {
   const title = "살펴볼 만한 지역을 찾았어요";
   const description = [
-    "실거래 데이터를 확인할 지역을 선택해주세요.",
+    "실거래 데이터를 보고 싶은 지역을 선택해주세요.",
     <>
-      매매와 임대차 각각 최대 <span className="font-semibold">5개</span> 지역까지 선택할 수 있어요.
+      매매와 임대차 각각 최대 <span className="font-semibold">5개</span> 지역을 선택할 수 있어요.
     </>,
   ];
   const {
