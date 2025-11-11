@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
-import MultiButtonSelectGrid from "@/app/search/_components/MultiButtonSelectGrid";
+import MultiButtonSelectGrid from "@/app/search/step2/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
 import { redirect } from "next/navigation";
 import { useSearchStore } from "@/app/search/store/searchStore";
@@ -15,6 +15,7 @@ import FloatingContainer from "@/components/ui/container/floating/FloatingContai
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
+import { useToast } from "@/components/ui/container/ToastProvider";
 
 const id = "region";
 export default function RegionsGrid() {
@@ -49,6 +50,9 @@ export default function RegionsGrid() {
   const [isHousingTypeChanged, setIsHousingTypeChanged] = useState(false);
 
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
+
+  const { showToast } = useToast();
+
   const [sellRegionGroups, setSellRegionGroups] = useState({});
   const [sellRegions, setSellRegions] = useState([]);
 
@@ -120,7 +124,6 @@ export default function RegionsGrid() {
   }, [selectedHousingTypes]);
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
-
   return (
     <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <FloatingContainer
@@ -192,9 +195,9 @@ export default function RegionsGrid() {
         <MultiButtonSelectGrid
           list={sellRegions[selectedSellRegionGroup]}
           selected={selectedSellRegions}
-          onSelect={(value) => {
+          onSelect={(value, e) => {
             if (selectedSellRegions.size >= selectLimit && !selectedSellRegions.has(value)) {
-              alert("5개 이상은 안됨");
+              showToast("5개 이상 선택 X", e);
               return;
             }
             toggleSellRegion(value);
@@ -212,15 +215,16 @@ export default function RegionsGrid() {
             useBadge={true}
             countCalculator={(value) =>
               Array.from(selectedLeaseRegions).filter((region) => region.groupCode === value.code)
+                .length
             }
           />
         </HorizontalSwipeContainer>
         <MultiButtonSelectGrid
           list={leaseRegions[selectedLeaseRegionGroup]}
           selected={selectedLeaseRegions}
-          onSelect={(value) => {
+          onSelect={(value, e) => {
             if (selectedLeaseRegions.size >= selectLimit && !selectedLeaseRegions.has(value)) {
-              alert("5개 이상은 안됨");
+              showToast("5개 이상 선택 X", e);
               return;
             }
             toggleLeaseRegion(value);

@@ -1,3 +1,5 @@
+"use client";
+
 import ToggleButton from "@/components/ui/input/ToggleButton";
 
 export default function MultiButtonSelectGrid({ list, selected, onSelect, placeholder }) {
@@ -11,10 +13,13 @@ export default function MultiButtonSelectGrid({ list, selected, onSelect, placeh
             return (
               <ToggleButton
                 key={elem.code}
-                onClick={() => onSelect(elem)}
                 size={"md"}
+                value={elem.code}
                 isActive={isActive}
-                label={!elem.displayName ? elem.name : elem.displayName}
+                onClick={(e) => {
+                  onSelect(elem, e);
+                }}
+                label={elem.displayName || elem.name}
               />
             );
           })}
