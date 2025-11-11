@@ -26,6 +26,7 @@ export default function RegionsGrid() {
     </>,
   ];
   const infoDescription = `입력하신 예산을 참고해 최근 실거래 데이터를 기반으로 산출한 결과이며, 실제 매물 상황이나 시세는 시점에 따라 달라질 수 있습니다.`;
+  const selectLimit = 5;
 
   const {
     cash,
@@ -191,7 +192,13 @@ export default function RegionsGrid() {
         <MultiButtonSelectGrid
           list={sellRegions[selectedSellRegionGroup]}
           selected={selectedSellRegions}
-          onSelect={toggleSellRegion}
+          onSelect={(value) => {
+            if (selectedSellRegions.size >= selectLimit && !selectedSellRegions.has(value)) {
+              alert("5개 이상은 안됨");
+              return;
+            }
+            toggleSellRegion(value);
+          }}
           placeholder={"예산에 맞는 지역을 찾지 못했어요."}
         />
       </GridGroup>
@@ -211,7 +218,13 @@ export default function RegionsGrid() {
         <MultiButtonSelectGrid
           list={leaseRegions[selectedLeaseRegionGroup]}
           selected={selectedLeaseRegions}
-          onSelect={toggleLeaseRegion}
+          onSelect={(value) => {
+            if (selectedLeaseRegions.size >= selectLimit && !selectedLeaseRegions.has(value)) {
+              alert("5개 이상은 안됨");
+              return;
+            }
+            toggleLeaseRegion(value);
+          }}
           placeholder={"예산에 맞는 지역을 찾지 못했어요."}
         />
       </GridGroup>
