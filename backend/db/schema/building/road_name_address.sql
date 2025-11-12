@@ -29,4 +29,4 @@ CREATE TABLE road_name_address
 -- -----------------------------------------------------------------------------------------
 -- constraint
 ALTER TABLE road_name_address
-    ADD CONSTRAINT uq_road_name_addr_rnc_us UNIQUE(road_name_code, umd_seq);
+    ADD CONSTRAINT uq_road_name_addr_domain_key UNIQUE(road_name_code, umd_seq);

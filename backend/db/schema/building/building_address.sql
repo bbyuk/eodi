@@ -35,4 +35,4 @@ CREATE TABLE building_address
 -- -----------------------------------------------------------------------------------------
 -- constraint
 ALTER TABLE building_address
-    ADD CONSTRAINT uq_building_addr_bmn UNIQUE(building_manage_no);
+    ADD CONSTRAINT uq_building_addr_domain_key UNIQUE(building_manage_no);
