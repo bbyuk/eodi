@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS road_name_addr;
+DROP TABLE IF EXISTS road_name_address;
 -- -----------------------------------------------------------------------------------------
 -- create
-CREATE TABLE road_name_addr
+CREATE TABLE road_name_address
 (
     id                      BIGINT      AUTO_INCREMENT PRIMARY KEY COMMENT '도로명주소 ID',
     road_name_code          VARCHAR(12) NOT NULL     COMMENT '도로명코드',
@@ -28,5 +28,5 @@ CREATE TABLE road_name_addr
 ) COMMENT = '도로명주소';
 -- -----------------------------------------------------------------------------------------
 -- constraint
-ALTER TABLE road_name_addr
+ALTER TABLE road_name_address
     ADD CONSTRAINT uq_road_name_addr_rnc_us UNIQUE(road_name_code, umd_seq);
