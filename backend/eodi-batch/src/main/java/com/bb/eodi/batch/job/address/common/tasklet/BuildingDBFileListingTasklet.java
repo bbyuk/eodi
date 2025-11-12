@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * 파일 목록 Read Tasklet
@@ -27,7 +28,7 @@ public class BuildingDBFileListingTasklet implements Tasklet {
 
         chunkContext.getStepContext().getStepExecution()
                 .getJobExecution().getExecutionContext()
-                .put("files", Arrays.stream(directory.listFiles())
+                .put("files", Arrays.stream(Objects.requireNonNull(directory.listFiles()))
                         .filter(File::isFile)
                         .map(File::getAbsolutePath)
                         .toList());
