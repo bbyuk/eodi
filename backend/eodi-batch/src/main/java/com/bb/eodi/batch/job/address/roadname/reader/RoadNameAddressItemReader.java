@@ -73,14 +73,13 @@ public class RoadNameAddressItemReader implements ResourceAwareItemReaderItemStr
 
         readCounter++;
 
-        String[] split = line.split("|");
+        String[] split = line.split("\\|", -1);
 
         try {
             return RoadNameAddressItem
                     .builder()
                     .sigunguCode(split[0])
                     .roadNameNo(split[1])
-                    .roadNameCode(split[0] + split[1])
                     .roadName(split[2])
                     .engRoadName(split[3])
                     .umdSeq(split[4])
