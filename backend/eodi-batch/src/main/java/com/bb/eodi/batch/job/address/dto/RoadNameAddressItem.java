@@ -1,7 +1,9 @@
-package com.bb.eodi.batch.job.address.roadname.dto;
+package com.bb.eodi.batch.job.address.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * 도로명 주소 원천 데이터 Item
@@ -9,11 +11,11 @@ import lombok.Builder;
  * 출처 : 주소기반산업지원서비스 - 건물DB
  * https://business.juso.go.kr/addrlink/main.do
  */
+@Getter
 @Builder
+@ToString
 @AllArgsConstructor
 public class RoadNameAddressItem {
-    // 도로명코드
-    private String roadNameCode;
     // 시군구코드
     private String sigunguCode;
     // 도로명번호

@@ -1,9 +1,11 @@
-package com.bb.eodi.batch.job.address.roadname.config;
+package com.bb.eodi.batch.job.address.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
-import com.bb.eodi.batch.job.address.roadname.dto.RoadNameAddressItem;
-import com.bb.eodi.batch.job.address.roadname.entity.RoadNameAddress;
+import com.bb.eodi.batch.job.address.dto.RoadNameAddressItem;
+import com.bb.eodi.batch.job.address.entity.RoadNameAddress;
+import com.bb.eodi.batch.job.address.repository.RoadNameAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -29,6 +31,7 @@ import java.util.Objects;
 /**
  * 도로명 주소 적재 배치 jobConfig
  */
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class RoadNameAddressLoadJobConfig {
@@ -37,6 +40,7 @@ public class RoadNameAddressLoadJobConfig {
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
 
+    private final RoadNameAddressJpaRepository roadNameAddressJpaRepository;
     /**
      * 도로명주소 적재 job
      *
@@ -102,7 +106,29 @@ public class RoadNameAddressLoadJobConfig {
     @Bean
     @StepScope
     public ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressItemProcessor() {
-        return item -> null;
+        return item -> RoadNameAddress.builder()
+                .roadNameCode(item.getSigunguCode() + item.getRoadNameNo())
+                .sigunguCode(item.getSigunguCode())
+                .roadNameNo(item.getRoadNameNo())
+                .roadName(item.getRoadName())
+                .engRoadName(item.getEngRoadName())
+                .umdSeq(item.getUmdSeq())
+                .sidoName(item.getSidoName())
+                .sigunguName(item.getSigunguName())
+                .umdGb(item.getUmdGb())
+                .umdCode(item.getUmdCode())
+                .umdName(item.getUmdName())
+                .parentRoadNameNo(item.getParentRoadNameNo())
+                .parentRoadName(item.getParentRoadName())
+                .useYn(item.getUseYn())
+                .changeHistoryReason(item.getChangeHistoryReason())
+                .changeHistoryInfo(item.getChangeHistoryInfo())
+                .engSidoName(item.getEngSidoName())
+                .engSigunguName(item.getEngSigunguName())
+                .engUmdName(item.getEngUmdName())
+                .announcementDate(item.getAnnouncementDate())
+                .expirationDate(item.getExpirationDate())
+                .build();
     }
 
     /**
@@ -113,7 +139,9 @@ public class RoadNameAddressLoadJobConfig {
     @Bean
     @StepScope
     public ItemWriter<RoadNameAddress> roadNameAddressItemWriter() {
-        return item -> {};
+        return item -> {
+            roadNameAddressJpaRepository.saveAll(item.getItems());
+        };
     }
 
 }
