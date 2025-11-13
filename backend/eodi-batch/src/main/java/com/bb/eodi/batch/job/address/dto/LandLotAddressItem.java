@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.address.landlot.dto;
+package com.bb.eodi.batch.job.address.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

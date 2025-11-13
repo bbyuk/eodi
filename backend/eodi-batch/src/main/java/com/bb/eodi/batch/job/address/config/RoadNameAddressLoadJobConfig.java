@@ -1,9 +1,9 @@
-package com.bb.eodi.batch.job.address.roadname.config;
+package com.bb.eodi.batch.job.address.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
-import com.bb.eodi.batch.job.address.roadname.dto.RoadNameAddressItem;
-import com.bb.eodi.batch.job.address.roadname.entity.RoadNameAddress;
-import com.bb.eodi.batch.job.address.roadname.repository.RoadNameAddressJpaRepository;
+import com.bb.eodi.batch.job.address.dto.RoadNameAddressItem;
+import com.bb.eodi.batch.job.address.entity.RoadNameAddress;
+import com.bb.eodi.batch.job.address.repository.RoadNameAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

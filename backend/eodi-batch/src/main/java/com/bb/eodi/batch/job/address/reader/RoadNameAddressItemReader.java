@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.address.roadname.reader;
+package com.bb.eodi.batch.job.address.reader;
 
-import com.bb.eodi.batch.job.address.roadname.dto.RoadNameAddressItem;
+import com.bb.eodi.batch.job.address.dto.RoadNameAddressItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.*;

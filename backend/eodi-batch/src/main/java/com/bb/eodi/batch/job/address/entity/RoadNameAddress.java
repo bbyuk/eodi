@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.address.roadname.entity;
+package com.bb.eodi.batch.job.address.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

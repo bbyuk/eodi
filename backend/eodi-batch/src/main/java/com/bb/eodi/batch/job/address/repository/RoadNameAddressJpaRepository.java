@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.address.roadname.repository;
+package com.bb.eodi.batch.job.address.repository;
 
-import com.bb.eodi.batch.job.address.roadname.entity.RoadNameAddress;
+import com.bb.eodi.batch.job.address.entity.RoadNameAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
