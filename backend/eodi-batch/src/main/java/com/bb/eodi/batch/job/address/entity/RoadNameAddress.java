@@ -1,10 +1,7 @@
 package com.bb.eodi.batch.job.address.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 도로명 주소 address 도메인 entity
@@ -12,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "road_name_address")
 public class RoadNameAddress {
