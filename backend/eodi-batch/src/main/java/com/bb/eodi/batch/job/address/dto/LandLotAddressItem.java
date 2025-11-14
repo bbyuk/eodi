@@ -16,7 +16,7 @@ public class LandLotAddressItem {
     // 법정동코드
     private String legalDongCode;
     // 시도명
-    private String sidoNaem;
+    private String sidoName;
     // 시군구명
     private String sigunguName;
     // 법정읍면동명
