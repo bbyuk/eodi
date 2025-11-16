@@ -2,14 +2,11 @@ package com.bb.eodi.batch.job.address.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.job.address.dto.LandLotAddressItem;
-import com.bb.eodi.batch.job.address.dto.RoadNameAddressItem;
 import com.bb.eodi.batch.job.address.entity.LandLotAddress;
-import com.bb.eodi.batch.job.address.entity.RoadNameAddress;
 import com.bb.eodi.batch.job.address.reader.LandLotAddressItemReader;
 import com.bb.eodi.batch.job.address.repository.LandLotAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -21,7 +18,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Configurati
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
