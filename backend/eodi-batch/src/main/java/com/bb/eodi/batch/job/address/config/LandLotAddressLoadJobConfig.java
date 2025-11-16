@@ -9,6 +9,7 @@ import com.bb.eodi.batch.job.address.reader.LandLotAddressItemReader;
 import com.bb.eodi.batch.job.address.repository.LandLotAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -51,9 +52,10 @@ public class LandLotAddressLoadJobConfig {
 
     /**
      * 지번주소 적재 step
+     *
      * @param multiResourceLandLotAddressItemReader 지번주소 MultiResourceAwareItemReader
-     * @param landLotAddressItemProcessor 지번주소 ItemProcessor
-     * @param landLotAddressItemWriter 지번주소 ItemWriter
+     * @param landLotAddressItemProcessor           지번주소 ItemProcessor
+     * @param landLotAddressItemWriter              지번주소 ItemWriter
      * @return
      */
     @Bean
@@ -62,7 +64,7 @@ public class LandLotAddressLoadJobConfig {
             ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor,
             ItemWriter<LandLotAddress> landLotAddressItemWriter
     ) {
-        return new StepBuilder("roadNameAddressLoadStep", jobRepository)
+        return new StepBuilder("landLotAddressLoadStep", jobRepository)
                 .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(multiResourceLandLotAddressItemReader)
                 .processor(landLotAddressItemProcessor)
@@ -72,8 +74,9 @@ public class LandLotAddressLoadJobConfig {
 
     /**
      * 지번주소 MultiResourceAwareItemReader
+     *
      * @param targetDirectoryPath 대상 디렉터리 path - job parameter
-     * @param itemReader 아이템 reader 구현체
+     * @param itemReader          아이템 reader 구현체
      * @return 지번주소 MultiResourceAwareItemReader
      */
     @Bean
@@ -97,21 +100,37 @@ public class LandLotAddressLoadJobConfig {
 
     /**
      * 지번주소 ItemProcessor
-     * TODO 개발
+     *
      * @return 지번주소 ItemProcessor
      */
     @Bean
     public ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor() {
-        return null;
+        return landLotAddressItem -> LandLotAddress.builder()
+                .legalDongCode(landLotAddressItem.getLegalDongCode())
+                .sidoName(landLotAddressItem.getSidoName())
+                .sigunguName(landLotAddressItem.getSigunguName())
+                .legalUmdName(landLotAddressItem.getLegalUmdName())
+                .legalRiName(landLotAddressItem.getLegalRiName())
+                .isMountain(landLotAddressItem.getIsMountain())
+                .landLotMainNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getLandLotMainNo())))
+                .landLotSubNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getLandLotSubNo())))
+                .landLotSeq(Long.parseLong(Objects.requireNonNull(landLotAddressItem.getLandLotSeq())))
+                .roadNameCode(landLotAddressItem.getRoadNameCode())
+                .isUnderground(landLotAddressItem.getIsUnderground())
+                .buildingMainNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getLandLotMainNo())))
+                .buildingSubNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getBuildingSubNo())))
+                .changeReasonCode(landLotAddressItem.getChangeReasonCode())
+                .build();
     }
 
     /**
      * 지번주소 ItemWriter
-     * TODO 개발
+     *
      * @return 지번주소 ItemWriter
      */
     @Bean
     public ItemWriter<LandLotAddress> landLotAddressItemWriter() {
-        return null;
+        return landLotAddressChunk ->
+                landLotAddressJpaRepository.saveAll(landLotAddressChunk.getItems());
     }
 }
