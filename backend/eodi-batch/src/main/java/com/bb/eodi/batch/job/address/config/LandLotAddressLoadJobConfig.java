@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -18,7 +19,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configurati
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -77,6 +78,7 @@ public class LandLotAddressLoadJobConfig {
      * @return 지번주소 MultiResourceAwareItemReader
      */
     @Bean
+    @StepScope
     public MultiResourceItemReader<LandLotAddressItem> multiResourceLandLotAddressItemReader(
             @Value("#{jobParameters['target-directory']}") String targetDirectoryPath,
             LandLotAddressItemReader itemReader
@@ -101,6 +103,7 @@ public class LandLotAddressLoadJobConfig {
      * @return 지번주소 ItemProcessor
      */
     @Bean
+    @StepScope
     public ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor() {
         return landLotAddressItem -> LandLotAddress.builder()
                 .legalDongCode(landLotAddressItem.getLegalDongCode())
@@ -126,6 +129,7 @@ public class LandLotAddressLoadJobConfig {
      * @return 지번주소 ItemWriter
      */
     @Bean
+    @StepScope
     public ItemWriter<LandLotAddress> landLotAddressItemWriter() {
         return landLotAddressChunk ->
                 landLotAddressJpaRepository.saveAll(landLotAddressChunk.getItems());
