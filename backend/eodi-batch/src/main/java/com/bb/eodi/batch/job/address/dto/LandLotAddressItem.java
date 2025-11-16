@@ -2,6 +2,7 @@ package com.bb.eodi.batch.job.address.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 /**
  * 지번 주소 원천 데이터 Item
@@ -10,6 +11,7 @@ import lombok.Builder;
  * https://business.juso.go.kr/addrlink/main.do
  */
 @Builder
+@Getter
 @AllArgsConstructor
 public class LandLotAddressItem {
 
