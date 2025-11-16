@@ -11,7 +11,7 @@ import lombok.*;
 @Table(name = "land_lot_address")
 public class LandLotAddress {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
