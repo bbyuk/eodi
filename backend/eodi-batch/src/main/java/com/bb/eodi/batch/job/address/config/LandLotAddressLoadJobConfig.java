@@ -64,7 +64,7 @@ public class LandLotAddressLoadJobConfig {
             ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor,
             ItemWriter<LandLotAddress> landLotAddressItemWriter
     ) {
-        return new StepBuilder("roadNameAddressLoadStep", jobRepository)
+        return new StepBuilder("landLotAddressLoadStep", jobRepository)
                 .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(multiResourceLandLotAddressItemReader)
                 .processor(landLotAddressItemProcessor)
