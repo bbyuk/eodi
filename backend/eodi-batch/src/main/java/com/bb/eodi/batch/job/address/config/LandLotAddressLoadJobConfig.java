@@ -2,16 +2,14 @@ package com.bb.eodi.batch.job.address.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.job.address.dto.LandLotAddressItem;
-import com.bb.eodi.batch.job.address.dto.RoadNameAddressItem;
 import com.bb.eodi.batch.job.address.entity.LandLotAddress;
-import com.bb.eodi.batch.job.address.entity.RoadNameAddress;
 import com.bb.eodi.batch.job.address.reader.LandLotAddressItemReader;
 import com.bb.eodi.batch.job.address.repository.LandLotAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -80,6 +78,7 @@ public class LandLotAddressLoadJobConfig {
      * @return 지번주소 MultiResourceAwareItemReader
      */
     @Bean
+    @StepScope
     public MultiResourceItemReader<LandLotAddressItem> multiResourceLandLotAddressItemReader(
             @Value("#{jobParameters['target-directory']}") String targetDirectoryPath,
             LandLotAddressItemReader itemReader
@@ -104,6 +103,7 @@ public class LandLotAddressLoadJobConfig {
      * @return 지번주소 ItemProcessor
      */
     @Bean
+    @StepScope
     public ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor() {
         return landLotAddressItem -> LandLotAddress.builder()
                 .legalDongCode(landLotAddressItem.getLegalDongCode())
@@ -129,6 +129,7 @@ public class LandLotAddressLoadJobConfig {
      * @return 지번주소 ItemWriter
      */
     @Bean
+    @StepScope
     public ItemWriter<LandLotAddress> landLotAddressItemWriter() {
         return landLotAddressChunk ->
                 landLotAddressJpaRepository.saveAll(landLotAddressChunk.getItems());
