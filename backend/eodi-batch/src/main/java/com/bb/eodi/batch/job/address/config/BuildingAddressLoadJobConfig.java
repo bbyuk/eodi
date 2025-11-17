@@ -1,28 +1,33 @@
 package com.bb.eodi.batch.job.address.config;
 
+import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.job.address.dto.BuildingAddressItem;
 import com.bb.eodi.batch.job.address.entity.BuildingAddress;
 import com.bb.eodi.batch.job.address.reader.BuildingAddressItemReader;
+import com.bb.eodi.batch.job.address.repository.BuildingAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * 건물주소 테이블 초기 적재 job config
@@ -32,6 +37,9 @@ import java.util.function.Predicate;
 public class BuildingAddressLoadJobConfig {
 
     private final JobRepository jobRepository;
+    private final EodiBatchProperties eodiBatchProperties;
+    private final PlatformTransactionManager transactionManager;
+    private final BuildingAddressJpaRepository buildingAddressJpaRepository;
 
     /**
      * 건물DB - 건물주소 데이터 초기 적재 job
@@ -41,8 +49,29 @@ public class BuildingAddressLoadJobConfig {
      */
     @Bean
     public Job buildingAddressLoadJob(Step buildingAddressLoadStep) {
-        return new JobBuilder("buildingAddressLoadJob", jobRepository)
+        return new JobBuilder("buildingAddressLoad", jobRepository)
                 .start(buildingAddressLoadStep)
+                .build();
+    }
+
+    /**
+     * 건물주소 초기 적재 step
+     * @param buildingAddressItemMultiResourceItemReader 건물주소 item MultiResourceItemReader
+     * @param buildingAddressItemProcessor 건물주소 ItemProcessor
+     * @param buildingAddressItemWriter 건물주소 ItemWriter
+     * @return 건물주소 초기 적재 step
+     */
+    @Bean
+    public Step buildingAddressLoadStep(
+            ItemReader<BuildingAddressItem> buildingAddressItemMultiResourceItemReader,
+            ItemProcessor<BuildingAddressItem, BuildingAddress> buildingAddressItemProcessor,
+            ItemWriter<BuildingAddress> buildingAddressItemWriter
+    ) {
+        return new StepBuilder("buildingAddressLoadStep", jobRepository)
+                .<BuildingAddressItem, BuildingAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(buildingAddressItemMultiResourceItemReader)
+                .processor(buildingAddressItemProcessor)
+                .writer(buildingAddressItemWriter)
                 .build();
     }
 
@@ -56,7 +85,7 @@ public class BuildingAddressLoadJobConfig {
     @Bean
     @StepScope
     public MultiResourceItemReader<BuildingAddressItem> buildingAddressItemMultiResourceItemReader(
-            @Value("#{jobParameters['targer-directory']}") String targetDirectory
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         MultiResourceItemReader<BuildingAddressItem> reader = new MultiResourceItemReader<>();
 
@@ -114,6 +143,16 @@ public class BuildingAddressLoadJobConfig {
                 .remark1(item.getRemark1())
                 .remark2(item.getRemark2())
                 .build();
+    }
+
+    /**
+     * 건물주소 초기 적재 배치 itemWriter
+     * @return 건물주소 초기 적재 배치 itemWriter
+     */
+    @Bean
+    @StepScope
+    public ItemWriter<BuildingAddress> buildingAddressItemWriter() {
+        return chunk -> buildingAddressJpaRepository.saveAll(chunk.getItems());
     }
 
 
