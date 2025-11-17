@@ -3,6 +3,7 @@ package com.bb.eodi.batch.job.address.config;
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.job.address.dto.RoadNameAddressItem;
 import com.bb.eodi.batch.job.address.entity.RoadNameAddress;
+import com.bb.eodi.batch.job.address.reader.RoadNameAddressItemReader;
 import com.bb.eodi.batch.job.address.repository.RoadNameAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,14 +75,12 @@ public class RoadNameAddressLoadJobConfig {
     /**
      * 도로명주소 멀티 리소스 reader
      * @param targetDirectoryPath 대상 directory 경로
-     * @param roadNameAddressItemReader 단일 resource ItemReader
      * @return 도로명주소 멀티 리소스 reader
      */
     @Bean
     @StepScope
     public MultiResourceItemReader<RoadNameAddressItem> multiResourceRoadNameAddressItemReader(
-            @Value("#{jobParameters['target-directory']}") String targetDirectoryPath,
-            ResourceAwareItemReaderItemStream<RoadNameAddressItem> roadNameAddressItemReader
+            @Value("#{jobParameters['target-directory']}") String targetDirectoryPath
     ) {
         MultiResourceItemReader<RoadNameAddressItem> reader = new MultiResourceItemReader<>();
 
@@ -92,7 +91,7 @@ public class RoadNameAddressLoadJobConfig {
                 .toArray(Resource[]::new);
 
         reader.setResources(roadNameAddressFileResources);
-        reader.setDelegate(roadNameAddressItemReader);
+        reader.setDelegate(new RoadNameAddressItemReader());
 
         return reader;
     }
