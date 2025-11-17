@@ -2,18 +2,14 @@ package com.bb.eodi.batch.job.address.reader;
 
 import com.bb.eodi.batch.job.address.dto.BuildingAddressItem;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.stereotype.Component;
 
 /**
  * 건물DB - 건물주소 전체 및 변동 레이아웃 ItemReader
  */
 @Slf4j
-@StepScope
-@Component
 public class BuildingAddressItemReader extends AbstractResourceAwareLineItemReader {
 
     @Override
