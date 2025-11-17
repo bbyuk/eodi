@@ -1,17 +1,13 @@
 package com.bb.eodi.batch.job.address.reader;
 
 import com.bb.eodi.batch.job.address.dto.LandLotAddressItem;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.stereotype.Component;
 
 /**
  * 지번 주소 ItemReader
  */
-@StepScope
-@Component
 public class LandLotAddressItemReader extends AbstractResourceAwareLineItemReader<LandLotAddressItem> {
 
     @Override

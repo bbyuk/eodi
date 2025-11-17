@@ -54,7 +54,7 @@ public class LandLotAddressLoadJobConfig {
      * @param multiResourceLandLotAddressItemReader 지번주소 MultiResourceAwareItemReader
      * @param landLotAddressItemProcessor           지번주소 ItemProcessor
      * @param landLotAddressItemWriter              지번주소 ItemWriter
-     * @return
+     * @return 지번주소 적재 step
      */
     @Bean
     public Step landLotAddressLoadStep(
@@ -74,14 +74,12 @@ public class LandLotAddressLoadJobConfig {
      * 지번주소 MultiResourceAwareItemReader
      *
      * @param targetDirectoryPath 대상 디렉터리 path - job parameter
-     * @param itemReader          아이템 reader 구현체
      * @return 지번주소 MultiResourceAwareItemReader
      */
     @Bean
     @StepScope
     public MultiResourceItemReader<LandLotAddressItem> multiResourceLandLotAddressItemReader(
-            @Value("#{jobParameters['target-directory']}") String targetDirectoryPath,
-            LandLotAddressItemReader itemReader
+            @Value("#{jobParameters['target-directory']}") String targetDirectoryPath
     ) {
         MultiResourceItemReader<LandLotAddressItem> reader = new MultiResourceItemReader<>();
 
@@ -92,7 +90,7 @@ public class LandLotAddressLoadJobConfig {
                 .toArray(Resource[]::new);
 
         reader.setResources(landLotAddressFileResources);
-        reader.setDelegate(itemReader);
+        reader.setDelegate(new LandLotAddressItemReader());
 
         return reader;
     }
