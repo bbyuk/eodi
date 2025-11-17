@@ -36,7 +36,7 @@ public class BuildingAddress {
     @Column(name = "land_lot_main_no")
     private Integer landLotMainNo;
 
-    @Column(name = "lang_lot_sub_no")
+    @Column(name = "land_lot_sub_no")
     private Integer landLotSubNo;
 
     @Column(name = "road_name_code", length = 12)
