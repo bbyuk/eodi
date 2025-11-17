@@ -19,8 +19,7 @@ public class BuildingAddressJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void saveAll(List<BuildingAddress> entites) {
-
+    public void saveAll(List<? extends BuildingAddress> entities) {
         String sql = """
                 INSERT INTO building_address
                 (
@@ -32,7 +31,7 @@ public class BuildingAddressJdbcRepository {
                     is_mountain,
                     land_lot_main_no,
                     land_lot_sub_no,
-                    road_name,code,
+                    road_name_code,
                     road_name,
                     is_underground,
                     building_main_no,
@@ -56,15 +55,12 @@ public class BuildingAddressJdbcRepository {
                 )
                 VALUES
                 (
-                    ?,
-                    ?,
-                    ?,
-                    
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
                 """;
         jdbcTemplate.batchUpdate(
                 sql,
-                entites,
+                entities,
                 500,
                 (ps, entity) -> {
                     ps.setObject(1, entity.getLegalDongCode(), VARCHAR);

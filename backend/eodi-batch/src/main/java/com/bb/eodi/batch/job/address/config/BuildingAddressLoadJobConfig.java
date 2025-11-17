@@ -4,7 +4,7 @@ import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.job.address.dto.BuildingAddressItem;
 import com.bb.eodi.batch.job.address.entity.BuildingAddress;
 import com.bb.eodi.batch.job.address.reader.BuildingAddressItemReader;
-import com.bb.eodi.batch.job.address.repository.BuildingAddressJpaRepository;
+import com.bb.eodi.batch.job.address.repository.BuildingAddressJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -39,7 +39,7 @@ public class BuildingAddressLoadJobConfig {
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
-    private final BuildingAddressJpaRepository buildingAddressJpaRepository;
+    private final BuildingAddressJdbcRepository buildingAddressRepository;
 
     /**
      * 건물DB - 건물주소 데이터 초기 적재 job
@@ -49,7 +49,7 @@ public class BuildingAddressLoadJobConfig {
      */
     @Bean
     public Job buildingAddressLoadJob(Step buildingAddressLoadStep) {
-        return new JobBuilder("buildingAddressLoad", jobRepository)
+        return new JobBuilder("buildingAddressLoadJob", jobRepository)
                 .start(buildingAddressLoadStep)
                 .build();
     }
@@ -152,7 +152,7 @@ public class BuildingAddressLoadJobConfig {
     @Bean
     @StepScope
     public ItemWriter<BuildingAddress> buildingAddressItemWriter() {
-        return chunk -> buildingAddressJpaRepository.saveAll(chunk.getItems());
+        return chunk -> buildingAddressRepository.saveAll(chunk.getItems());
     }
 
 

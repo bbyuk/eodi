@@ -60,3 +60,5 @@ api:
 logging:
   level:
     com.bb: debug
+    org.springframework.jdbc.core: debug
+    org.springframework.jdbc.core.StatementCreatorUtils: trace
