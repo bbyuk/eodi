@@ -4,7 +4,7 @@ import com.bb.eodi.batch.core.config.EodiBatchProperties;
 import com.bb.eodi.batch.job.address.dto.LandLotAddressItem;
 import com.bb.eodi.batch.job.address.entity.LandLotAddress;
 import com.bb.eodi.batch.job.address.reader.LandLotAddressItemReader;
-import com.bb.eodi.batch.job.address.repository.LandLotAddressJpaRepository;
+import com.bb.eodi.batch.job.address.repository.LandLotAddressJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -39,7 +39,7 @@ public class LandLotAddressLoadJobConfig {
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
-    private final LandLotAddressJpaRepository landLotAddressJpaRepository;
+    private final LandLotAddressJdbcRepository landLotAddressJdbcRepository;
 
     @Bean
     public Job landLotAddressLoadJob(Step landLotAddressLoadStep) {
@@ -130,6 +130,6 @@ public class LandLotAddressLoadJobConfig {
     @StepScope
     public ItemWriter<LandLotAddress> landLotAddressItemWriter() {
         return landLotAddressChunk ->
-                landLotAddressJpaRepository.saveAll(landLotAddressChunk.getItems());
+                landLotAddressJdbcRepository.saveAll(landLotAddressChunk.getItems());
     }
 }
