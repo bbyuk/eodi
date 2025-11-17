@@ -67,6 +67,7 @@ public class LandLotAddressJdbcRepository {
                     ps.setObject(11, entity.getIsUnderground(), VARCHAR);
                     ps.setObject(12, entity.getBuildingMainNo(), INTEGER);
                     ps.setObject(13, entity.getBuildingSubNo(), INTEGER);
+                    ps.setObject(14, entity.getChangeReasonCode(), VARCHAR);
                 }
         );
     }
