@@ -22,7 +22,7 @@ CREATE TABLE building_address
     building_manage_no    VARCHAR(25)             COMMENT '건물관리번호',
     umd_seq               VARCHAR(2)              COMMENT '읍면동일련번호',
     adm_dong_code         VARCHAR(10)             COMMENT '행정동코드',
-    amd_dong_name         VARCHAR(20)             COMMENT '행정동명',
+    adm_dong_name         VARCHAR(20)             COMMENT '행정동명',
     zip_no                VARCHAR(5)              COMMENT '우편번호',
     zip_no_seq            VARCHAR(3)              COMMENT '우편번호일련번호',
     change_reason_code    VARCHAR(2)              COMMENT '이동사유코드',
