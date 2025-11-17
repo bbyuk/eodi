@@ -29,8 +29,8 @@ public class LandLotAddressJdbcRepository {
                 INSERT INTO land_lot_address
                 (
                     legal_dong_code,
-                    sido_name, 
-                    sigungu_nnme,
+                    sido_name,
+                    sigungu_name,
                     legal_umd_name,
                     legal_ri_name,
                     is_mountain,
