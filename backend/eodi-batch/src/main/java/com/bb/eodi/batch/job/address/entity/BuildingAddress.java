@@ -28,7 +28,7 @@ public class BuildingAddress {
     private String legalUmdName;
 
     @Column(name = "legal_ri_name", length = 40)
-    private String legalRiname;
+    private String legalRiName;
 
     @Column(name = "is_mountain", length = 1)
     private String isMountain;
