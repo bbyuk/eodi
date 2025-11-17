@@ -14,6 +14,8 @@ public class LandLotAddressItemReader extends AbstractResourceAwareLineItemReade
     public LandLotAddressItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         String[] line = readLine("\\|");
 
+        if (line == null) return null;
+
         return LandLotAddressItem.builder()
                 .legalDongCode(line[0])
                 .sidoName(line[1])
