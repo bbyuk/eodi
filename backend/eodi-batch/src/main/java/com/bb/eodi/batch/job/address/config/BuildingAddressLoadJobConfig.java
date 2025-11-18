@@ -10,23 +10,22 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.MultiResourceItemReader;
+import org.springframework.batch.item.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -41,64 +40,103 @@ public class BuildingAddressLoadJobConfig {
     private final PlatformTransactionManager transactionManager;
     private final BuildingAddressJdbcRepository buildingAddressRepository;
 
+    private static final int CONCURRENCY_LIMIT = 12;
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        executor.setConcurrencyLimit(CONCURRENCY_LIMIT);
+        return executor;
+    }
+
     /**
      * 건물DB - 건물주소 데이터 초기 적재 job
      *
-     * @param buildingAddressLoadStep 건물주소 데이터 적재 step
+     * @param buildingAddressLoadMasterStep 건물주소 데이터 병렬 적재 master step
      * @return 건물주소 데이터 초기 적재 job
      */
     @Bean
-    public Job buildingAddressLoadJob(Step buildingAddressLoadStep) {
+    public Job buildingAddressLoadJob(Step buildingAddressLoadMasterStep) {
         return new JobBuilder("buildingAddressLoadJob", jobRepository)
-                .start(buildingAddressLoadStep)
+                .start(buildingAddressLoadMasterStep)
+                .build();
+    }
+
+    @Bean
+    public Step buildingAddressLoadMasterStep(
+            Partitioner buildingAddressPartitioner,
+            Step buildingAddressLoadWorkerStep
+    ) {
+        return new StepBuilder("buildingAddressLoadMasterStep", jobRepository)
+                .partitioner("buildingAddressLoadWorkerStep", buildingAddressPartitioner)
+                .step(buildingAddressLoadWorkerStep)
+                .taskExecutor(taskExecutor())
+                .gridSize(CONCURRENCY_LIMIT)
                 .build();
     }
 
     /**
-     * 건물주소 초기 적재 step
-     * @param buildingAddressItemMultiResourceItemReader 건물주소 item MultiResourceItemReader
+     * 건물주소 초기 적재 worker step
+     * @param buildingAddressItemReader 건물주소 ItemReader
      * @param buildingAddressItemProcessor 건물주소 ItemProcessor
      * @param buildingAddressItemWriter 건물주소 ItemWriter
-     * @return 건물주소 초기 적재 step
+     * @return 건물주소 초기 적재 worker step
      */
     @Bean
-    public Step buildingAddressLoadStep(
-            ItemReader<BuildingAddressItem> buildingAddressItemMultiResourceItemReader,
+    public Step buildingAddressLoadWorkerStep(
+            ItemStreamReader<BuildingAddressItem> buildingAddressItemReader,
             ItemProcessor<BuildingAddressItem, BuildingAddress> buildingAddressItemProcessor,
             ItemWriter<BuildingAddress> buildingAddressItemWriter
     ) {
-        return new StepBuilder("buildingAddressLoadStep", jobRepository)
+        return new StepBuilder("buildingAddressLoadWorkerStep", jobRepository)
                 .<BuildingAddressItem, BuildingAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
-                .reader(buildingAddressItemMultiResourceItemReader)
+                .reader(buildingAddressItemReader)
                 .processor(buildingAddressItemProcessor)
                 .writer(buildingAddressItemWriter)
+                .stream(buildingAddressItemReader)
                 .build();
     }
 
 
     /**
-     * 건물주소 테이블 전체분 MultiResourceItemReader bean
-     *
-     * @param targetDirectory job parameter 대상 디렉터리
-     * @return 건물주소 테이블 전체분 MultiResourceItemReader
+     * 건물주소 파일단위 partitioner
+     * @param targetDirectory
+     * @return
      */
     @Bean
     @StepScope
-    public MultiResourceItemReader<BuildingAddressItem> buildingAddressItemMultiResourceItemReader(
+    public Partitioner buildingAddressPartitioner(
             @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
-        MultiResourceItemReader<BuildingAddressItem> reader = new MultiResourceItemReader<>();
+        return gridSize -> {
+            Map<String, ExecutionContext> partitions = new HashMap<>();
+            File dir = new File(targetDirectory);
 
-        File directory = new File(targetDirectory);
-        Resource[] resources = Arrays.stream(Objects.requireNonNull(directory.listFiles()))
-                .filter(file -> file.getName().startsWith("build"))
-                .map(FileSystemResource::new)
-                .toArray(Resource[]::new);
+            File[] files = dir.listFiles(file -> file.getName().startsWith("build"));
 
-        reader.setResources(resources);
-        reader.setDelegate(new BuildingAddressItemReader());
+            int idx = 0;
 
-        return reader;
+            for (File file : files) {
+                ExecutionContext context = new ExecutionContext();
+                context.putString("filePath", file.getAbsolutePath());
+                partitions.put("partition-" + idx++, context);
+            }
+
+            return partitions;
+        };
+    }
+
+    /**
+     * 건물 주소 ItemReader Resource단위 reader
+     * @param filePath stepExecutionContext value로 read할 대상 파일
+     * @return 건물 주소 ItemReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<BuildingAddressItem> buildingAddressItemReader(
+            @Value("#{stepExecutionContext['filePath']}") String filePath
+    ) {
+        return new BuildingAddressItemReader(filePath);
     }
 
 

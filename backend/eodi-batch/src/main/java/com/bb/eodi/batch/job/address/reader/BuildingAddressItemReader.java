@@ -2,19 +2,78 @@ package com.bb.eodi.batch.job.address.reader;
 
 import com.bb.eodi.batch.job.address.dto.BuildingAddressItem;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.batch.item.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.MalformedInputException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
 
 /**
  * 건물DB - 건물주소 전체 및 변동 레이아웃 ItemReader
  */
 @Slf4j
-public class BuildingAddressItemReader extends AbstractResourceAwareLineItemReader {
+public class BuildingAddressItemReader implements ItemStreamReader<BuildingAddressItem> {
+
+    private final Path filePath;
+    private BufferedReader br;
+    private int readCounter = 0;
+
+    public BuildingAddressItemReader(String filePath) {
+        this.filePath = Path.of(filePath);
+    }
 
     @Override
-    public Object read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        String[] line = readLine("\\|");
+    public void open(ExecutionContext executionContext) throws ItemStreamException {
+        try {
+            br = Files.newBufferedReader(filePath, Charset.forName("MS949"));
+
+            if (executionContext.containsKey(CURRENT_INDEX.name())) {
+                int lastIndex = executionContext.getInt(CURRENT_INDEX.name());
+                log.info("running from index {}", lastIndex);
+
+                for (int i = 0; i < lastIndex; i++) {
+                    br.readLine();
+                }
+
+                this.readCounter = lastIndex;
+            }
+            else {
+                this.readCounter = 0;
+            }
+
+            log.info("ItemStream -> file opened. file={}", filePath);
+        } catch (IOException e) {
+            log.error("대상 파일을 open 하는 도중 문제가 발생했습니다.", e);
+            throw new ItemStreamException(e);
+        }
+    }
+
+    private String[] nextLine(String delimiter) throws IOException {
+        String line;
+
+        while (true) {
+            line = br.readLine();
+            if (line == null) {
+                return null;
+            }
+
+            if (!line.isBlank()) {
+                break;
+            }
+        }
+
+        return line.split(delimiter, -1);
+    }
+
+    @Override
+    public BuildingAddressItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+        String[] line = nextLine("\\|");
+        readCounter++;
 
         if (line == null) return null;
 
@@ -49,5 +108,20 @@ public class BuildingAddressItemReader extends AbstractResourceAwareLineItemRead
                 .remark1(line[29])
                 .remark2(line[30])
                 .build();
+    }
+
+    @Override
+    public void update(ExecutionContext executionContext) throws ItemStreamException {
+        executionContext.putInt(CURRENT_INDEX.name(), readCounter);
+    }
+
+    @Override
+    public void close() throws ItemStreamException {
+        try {
+            br.close();
+        } catch (IOException e) {
+            log.error("대상 파일 close 중 에러가 발생했습니다.");
+            throw new ItemStreamException(e);
+        }
     }
 }
