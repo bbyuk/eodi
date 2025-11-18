@@ -7,6 +7,7 @@ import org.springframework.batch.item.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -29,7 +30,7 @@ public class BuildingAddressItemReader implements ItemStreamReader<BuildingAddre
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
         try {
-            br = Files.newBufferedReader(filePath, Charset.forName("EUC-KR"));
+            br = Files.newBufferedReader(filePath, Charset.forName("MS949"));
 
             if (executionContext.containsKey(CURRENT_INDEX.name())) {
                 int lastIndex = executionContext.getInt(CURRENT_INDEX.name());
@@ -54,6 +55,7 @@ public class BuildingAddressItemReader implements ItemStreamReader<BuildingAddre
 
     private String[] nextLine(String delimiter) throws IOException {
         String line;
+
         while (true) {
             line = br.readLine();
             if (line == null) {
@@ -64,6 +66,7 @@ public class BuildingAddressItemReader implements ItemStreamReader<BuildingAddre
                 break;
             }
         }
+
         return line.split(delimiter, -1);
     }
 
