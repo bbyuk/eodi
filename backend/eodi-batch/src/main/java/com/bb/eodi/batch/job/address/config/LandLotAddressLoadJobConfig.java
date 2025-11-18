@@ -11,21 +11,22 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,59 +41,102 @@ public class LandLotAddressLoadJobConfig {
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
     private final LandLotAddressJdbcRepository landLotAddressJdbcRepository;
-
-    @Bean
-    public Job landLotAddressLoadJob(Step landLotAddressLoadStep) {
-        return new JobBuilder("landLotAddressLoadJob", jobRepository)
-                .start(landLotAddressLoadStep)
-                .build();
-    }
+    private static final int CONCURRENCY_LIMIT = 12;
 
     /**
-     * 지번주소 적재 step
-     *
-     * @param multiResourceLandLotAddressItemReader 지번주소 MultiResourceAwareItemReader
-     * @param landLotAddressItemProcessor           지번주소 ItemProcessor
-     * @param landLotAddressItemWriter              지번주소 ItemWriter
-     * @return 지번주소 적재 step
+     * 지번주소 초기 적재 배치 job
+     * @param landLotAddressLoadMasterStep 지번 주소 적재 병렬실행 Master Step
+     * @return 지번주소 초기 적재 배치 job
      */
     @Bean
-    public Step landLotAddressLoadStep(
-            ItemReader<LandLotAddressItem> multiResourceLandLotAddressItemReader,
-            ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor,
-            ItemWriter<LandLotAddress> landLotAddressItemWriter
-    ) {
-        return new StepBuilder("landLotAddressLoadStep", jobRepository)
-                .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
-                .reader(multiResourceLandLotAddressItemReader)
-                .processor(landLotAddressItemProcessor)
-                .writer(landLotAddressItemWriter)
+    public Job landLotAddressLoadJob(Step landLotAddressLoadMasterStep) {
+        return new JobBuilder("landLotAddressLoadJob", jobRepository)
+                .start(landLotAddressLoadMasterStep)
                 .build();
     }
 
     /**
-     * 지번주소 MultiResourceAwareItemReader
-     *
-     * @param targetDirectoryPath 대상 디렉터리 path - job parameter
-     * @return 지번주소 MultiResourceAwareItemReader
+     * 지번주소 초기 적재 배치 Partitioner
+     * @param targetDirectory 대상 directory job parameter
+     * @return 지번주소 초기 적재 배치 Partitioner
      */
     @Bean
     @StepScope
-    public MultiResourceItemReader<LandLotAddressItem> multiResourceLandLotAddressItemReader(
-            @Value("#{jobParameters['target-directory']}") String targetDirectoryPath
+    public Partitioner landLotAddressPartitioner(
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
-        MultiResourceItemReader<LandLotAddressItem> reader = new MultiResourceItemReader<>();
+        return gridSize -> {
+            Map<String, ExecutionContext> partition = new HashMap<>();
 
-        File directory = new File(targetDirectoryPath);
-        Resource[] landLotAddressFileResources = Arrays.stream(Objects.requireNonNull(directory.listFiles()))
-                .filter(file -> file.getName().startsWith("jibun"))
-                .map(FileSystemResource::new)
-                .toArray(Resource[]::new);
+            File dir = new File(targetDirectory);
 
-        reader.setResources(landLotAddressFileResources);
-        reader.setDelegate(new LandLotAddressItemReader());
+            File[] files = dir.listFiles(file -> file.getName().startsWith("jibun"));
 
-        return reader;
+            for (int i = 0; i < files.length; i++) {
+                ExecutionContext context = new ExecutionContext();
+                context.put("filePath", files[i].getAbsolutePath());
+                partition.put("partition-" + i, context);
+            }
+
+            return partition;
+        };
+    }
+
+    /**
+     * 지번주소 적재 병렬처리 master Step
+     * @param landLotAddressPartitioner 지번주소 step partitioner
+     * @param landLotAddressLoadWorkerStep 지번주소 적재 worker step
+     * @return 지번주소 적재 병렬처리 master Step
+     */
+    @Bean
+    public Step landLotAddressLoadMasterStep(
+            Partitioner landLotAddressPartitioner,
+            Step landLotAddressLoadWorkerStep
+    ) {
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        executor.setConcurrencyLimit(CONCURRENCY_LIMIT);
+
+        return new StepBuilder("landLotAddressLoadMasterStep", jobRepository)
+                .partitioner("landLotAddressLoadWorkerStep", landLotAddressPartitioner)
+                .step(landLotAddressLoadWorkerStep)
+                .gridSize(CONCURRENCY_LIMIT)
+                .taskExecutor(executor)
+                .build();
+    }
+
+    /**
+     * 지번주소 적재 worker step
+     *
+     * @param landLotAddressItemReader              지번주소 ItemReader
+     * @param landLotAddressItemProcessor           지번주소 ItemProcessor
+     * @param landLotAddressItemWriter              지번주소 ItemWriter
+     * @return 지번주소 적재 worker step
+     */
+    @Bean
+    public Step landLotAddressLoadWorkerStep(
+            ItemStreamReader<LandLotAddressItem> landLotAddressItemReader,
+            ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor,
+            ItemWriter<LandLotAddress> landLotAddressItemWriter
+    ) {
+        return new StepBuilder("landLotAddressLoadWorkerStep", jobRepository)
+                .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(landLotAddressItemReader)
+                .processor(landLotAddressItemProcessor)
+                .writer(landLotAddressItemWriter)
+                .stream(landLotAddressItemReader)
+                .build();
+    }
+
+    /**
+     * 지번주소 ItemStreamReader
+     * @param filePath ItemStreamReader 대상 파일 경로
+     * @return 지번주소 ItemStreamReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<LandLotAddressItem> landLotAddressItemReader(
+            @Value("#{stepExecutionContext['filePath']}") String filePath) {
+        return new LandLotAddressItemReader(filePath);
     }
 
     /**
