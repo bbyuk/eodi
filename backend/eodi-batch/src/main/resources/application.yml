@@ -42,8 +42,6 @@ eodi:
       legal-dong-load:
         temp-file-name: LEGAL_DONG_TEMP_FILE
         temp-file-suffix: .json
-      monthly-deal-data-load:
-        apt-sale-temp-file-name: APT_SALE_TEMP_FILE
 
 # 외부 API
 api:
