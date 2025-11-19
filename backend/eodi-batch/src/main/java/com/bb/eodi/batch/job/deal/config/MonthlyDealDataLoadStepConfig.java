@@ -1,7 +1,7 @@
-package com.bb.eodi.batch.job.deal.load.config;
+package com.bb.eodi.batch.job.deal.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
-import com.bb.eodi.batch.job.deal.load.listener.TempFileCleanupStepListener;
+import com.bb.eodi.batch.job.deal.listener.TempFileCleanupStepListener;
 import com.bb.eodi.domain.deal.entity.RealEstateLease;
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.port.out.deal.dto.*;

@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load.writer;
+package com.bb.eodi.batch.job.deal.writer;
 
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.domain.deal.repository.RealEstateSellRepository;

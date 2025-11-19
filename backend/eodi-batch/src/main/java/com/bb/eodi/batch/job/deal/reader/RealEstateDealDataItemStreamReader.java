@@ -1,6 +1,5 @@
-package com.bb.eodi.batch.job.deal.load.reader;
+package com.bb.eodi.batch.job.deal.reader;
 
-import com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.*;
@@ -11,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.*;
+import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.*;
 
 @Slf4j
 public class RealEstateDealDataItemStreamReader<T> implements ItemStreamReader<T> {

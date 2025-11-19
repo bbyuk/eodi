@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.deal.load.config;
+package com.bb.eodi.batch.job.deal.config;
 
-import com.bb.eodi.batch.job.deal.load.tasklet.RealEstateDealApiFetchStepTasklet;
+import com.bb.eodi.batch.job.deal.tasklet.RealEstateDealApiFetchStepTasklet;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import com.bb.eodi.infrastructure.api.GovernmentDataApiProperties;
 import com.bb.eodi.infrastructure.api.deal.DealDataApiClient;

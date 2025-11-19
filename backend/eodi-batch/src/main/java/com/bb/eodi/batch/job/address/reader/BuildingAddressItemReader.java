@@ -7,11 +7,10 @@ import org.springframework.batch.item.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
+import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
 
 /**
  * 건물DB - 건물주소 전체 및 변동 레이아웃 ItemReader

@@ -1,11 +1,11 @@
-package com.bb.eodi.batch.job.deal.load.processor;
+package com.bb.eodi.batch.job.deal.processor;
 
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.deal.type.TradeMethodType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedSellDataItem;
+import com.bb.eodi.port.out.deal.dto.ApartmentSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -17,26 +17,23 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-/**
- * 단독/다가구주택 매매 데이터 적재 Chunk Step ItemProcessor
- */
 @Slf4j
-@Component
 @StepScope
+@Component
 @RequiredArgsConstructor
-public class MultiUnitDetachedSellDataItemProcessor
-        implements ItemProcessor<MultiUnitDetachedSellDataItem, RealEstateSell> {
+public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSellDataItem, RealEstateSell> {
 
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
     private static final String cancelDateFormat = "yy.MM.dd";
-
+    private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
-    public RealEstateSell process(MultiUnitDetachedSellDataItem item) throws Exception {
-        log.info("multi unit-detached sell item process: {}", item);
+    public RealEstateSell process(ApartmentSellDataItem item) throws Exception {
+        log.info("ApartmentSellDataItemProcessor.process called");
+        log.debug("item : {}", item);
 
         // 법정동코드 조회
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
@@ -63,18 +60,22 @@ public class MultiUnitDetachedSellDataItemProcessor
                                 : null
                 )
                 .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
-                .landArea(new BigDecimal(item.plottageAr()))
-                .totalFloorArea(new BigDecimal(item.totalFloorAr()))
+                .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType(
-                        "단독".equals(item.houseType())
-                                ? HousingType.DETACHED_HOUSE
-                                : "다가구".equals(item.houseType())
-                                ? HousingType.MULTI_UNIT_HOUSE
-                                : HousingType.OTHER)
-                .isLandLease(false)
+                .housingType(HousingType.APT)
+                .dateOfRegistration(
+                        StringUtils.hasText(item.rgstDate())
+                                ? LocalDate.parse(
+                                item.rgstDate(),
+                                DateTimeFormatter.ofPattern(dateOfRegistrationFormat)
+                        )
+                                : null
+                )
+                .targetName(item.aptNm())
+                .buildingDong(item.aptDong())
+                .floor(Integer.parseInt(item.floor()))
+                .isLandLease(item.landLeaseholdGbn().equals("Y"))
                 .build();
     }
 }
-

@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load.listener;
+package com.bb.eodi.batch.job.deal.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.TEMP_FILE;
+import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.TEMP_FILE;
 
 /**
  * Chunk step 완료 후 temp file 삭제 처리를 위한 StepExecutionListener

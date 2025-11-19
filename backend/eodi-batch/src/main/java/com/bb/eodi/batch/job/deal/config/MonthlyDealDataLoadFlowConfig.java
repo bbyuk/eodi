@@ -1,12 +1,11 @@
-package com.bb.eodi.batch.job.deal.load.config;
+package com.bb.eodi.batch.job.deal.config;
 
 import com.bb.eodi.batch.core.repository.BatchMetaRepository;
-import com.bb.eodi.batch.job.deal.load.decider.FlowSkipDecider;
+import com.bb.eodi.batch.job.deal.decider.FlowSkipDecider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
-import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

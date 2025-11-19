@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load.decider;
+package com.bb.eodi.batch.job.deal.decider;
 
 import com.bb.eodi.batch.core.enums.BatchExecutionStatus;
 import com.bb.eodi.batch.core.repository.BatchMetaRepository;

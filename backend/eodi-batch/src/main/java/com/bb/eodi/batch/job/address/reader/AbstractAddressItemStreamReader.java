@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
+import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
 
 /**
  * 주소 데이터 ItemStreamReader 공통 로직 구현 추상클래스

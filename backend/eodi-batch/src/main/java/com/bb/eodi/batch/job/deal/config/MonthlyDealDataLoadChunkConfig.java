@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.deal.load.config;
+package com.bb.eodi.batch.job.deal.config;
 
-import com.bb.eodi.batch.job.deal.load.reader.RealEstateDealDataItemStreamReader;
+import com.bb.eodi.batch.job.deal.reader.RealEstateDealDataItemStreamReader;
 import com.bb.eodi.port.out.deal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load.config;
+package com.bb.eodi.batch.job.deal.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;

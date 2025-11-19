@@ -1,11 +1,11 @@
-package com.bb.eodi.batch.job.deal.load.processor;
+package com.bb.eodi.batch.job.deal.processor;
 
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.deal.type.TradeMethodType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.port.out.deal.dto.OfficetelSellDataItem;
+import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -21,17 +21,19 @@ import java.time.format.DateTimeFormatter;
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSellDataItem, RealEstateSell> {
+public class ApartmentPresaleRightSellDataItemProcessor
+        implements ItemProcessor<ApartmentPresaleRightSellDataItem, RealEstateSell> {
 
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
 
     // 해제사유발생일 date 입력 formatter
     private static final String cancelDateFormat = "yy.MM.dd";
+    private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
-    public RealEstateSell process(OfficetelSellDataItem item) throws Exception {
-        log.info("ApartmentSellDataItemProcessor.process called");
+    public RealEstateSell process(ApartmentPresaleRightSellDataItem item) throws Exception {
+        log.info("ApartmentPresaleRightSellDataItemProcessor.process called");
         log.debug("item : {}", item);
 
         // 법정동코드 조회
@@ -58,13 +60,14 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
                         )
                                 : null
                 )
-                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType(HousingType.OFFICETEL)
-                .targetName(item.offiNm())
-                .floor(Integer.parseInt(item.floor()))
+                .housingType("입".equals(item.ownershipGbn()) ? HousingType.OCCUPY_RIGHT : HousingType.PRESALE_RIGHT)
+                .targetName(item.aptNm())
+                .floor(
+                        StringUtils.hasText(item.floor()) ?
+                                Integer.parseInt(item.floor()) : null)
                 .isLandLease(false)
                 .build();
     }

@@ -1,11 +1,11 @@
-package com.bb.eodi.batch.job.deal.load.processor;
+package com.bb.eodi.batch.job.deal.processor;
 
 import com.bb.eodi.domain.deal.entity.RealEstateSell;
 import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.deal.type.TradeMethodType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.port.out.deal.dto.ApartmentPresaleRightSellDataItem;
+import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -17,12 +17,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 연립/다세대주택 매매 데이터 적재 step chunk ItemProcessor
+ */
 @Slf4j
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class ApartmentPresaleRightSellDataItemProcessor
-        implements ItemProcessor<ApartmentPresaleRightSellDataItem, RealEstateSell> {
+public class MultiHouseholdHouseSellDataItemProcessor
+        implements ItemProcessor<MultiHouseholdHouseSellDataItem, RealEstateSell> {
 
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
@@ -32,8 +35,8 @@ public class ApartmentPresaleRightSellDataItemProcessor
     private static final String dateOfRegistrationFormat = "yy.MM.dd";
 
     @Override
-    public RealEstateSell process(ApartmentPresaleRightSellDataItem item) throws Exception {
-        log.info("ApartmentPresaleRightSellDataItemProcessor.process called");
+    public RealEstateSell process(MultiHouseholdHouseSellDataItem item) throws Exception {
+        log.info("MultiHouseholdHouseSellDataItemProcessor.process called");
         log.debug("item : {}", item);
 
         // 법정동코드 조회
@@ -60,14 +63,22 @@ public class ApartmentPresaleRightSellDataItemProcessor
                         )
                                 : null
                 )
+                .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
                 .netLeasableArea(new BigDecimal(item.excluUseAr()))
+                .landArea(new BigDecimal(item.landAr()))
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
-                .housingType("입".equals(item.ownershipGbn()) ? HousingType.OCCUPY_RIGHT : HousingType.PRESALE_RIGHT)
-                .targetName(item.aptNm())
-                .floor(
-                        StringUtils.hasText(item.floor()) ?
-                                Integer.parseInt(item.floor()) : null)
+                .housingType(HousingType.MULTI_HOUSEHOLD_HOUSE)
+                .dateOfRegistration(
+                        StringUtils.hasText(item.rgstDate())
+                                ? LocalDate.parse(
+                                item.rgstDate(),
+                                DateTimeFormatter.ofPattern(dateOfRegistrationFormat)
+                        )
+                                : null
+                )
+                .targetName(item.mhouseNm())
+                .floor(Integer.parseInt(item.floor()))
                 .isLandLease(false)
                 .build();
     }

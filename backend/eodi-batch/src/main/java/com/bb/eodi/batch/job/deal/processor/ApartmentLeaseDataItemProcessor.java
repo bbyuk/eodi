@@ -1,10 +1,10 @@
-package com.bb.eodi.batch.job.deal.load.processor;
+package com.bb.eodi.batch.job.deal.processor;
 
 import com.bb.eodi.domain.deal.entity.RealEstateLease;
 import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.port.out.deal.dto.OfficetelLeaseDataItem;
+import com.bb.eodi.port.out.deal.dto.ApartmentLeaseDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -14,16 +14,16 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
- * 오피스텔 임대차 실거래가 데이터 적재 chunk step ItemProcessor
+ * 아파트 임대차 실거래가 데이터 적재 배치 chunk step ItemProcessor
  */
 @Slf4j
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelLeaseDataItem, RealEstateLease> {
-
+public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentLeaseDataItem, RealEstateLease> {
 
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
@@ -34,13 +34,15 @@ public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelL
     private static final String numberDelimiter = ",";
     private static final int yearFixValue = 200000;
 
-
     @Override
-    public RealEstateLease process(OfficetelLeaseDataItem item) throws Exception {
+    public RealEstateLease process(ApartmentLeaseDataItem item) throws Exception {
+
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
+
+
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(item.umdNm())
@@ -75,12 +77,12 @@ public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelL
                 .netLeasableArea(StringUtils.hasText(item.excluUseAr())
                         ? new BigDecimal(item.excluUseAr())
                         : null)
-                .housingType(HousingType.OFFICETEL)
+                .housingType(HousingType.APT)
                 .floor(StringUtils.hasText(item.floor())
                         ? Integer.parseInt(item.floor())
                         :null)
                 .useRRRight("사용".equals(item.useRRRight()))
-                .targetName(item.offiNm())
+                .targetName(item.aptNm())
                 .build();
     }
 }

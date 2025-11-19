@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.deal.load;
+package com.bb.eodi.batch.job.deal;
 
 /**
  * 월별 부동산 거래 데이터 적재 배치 컨텍스트 key

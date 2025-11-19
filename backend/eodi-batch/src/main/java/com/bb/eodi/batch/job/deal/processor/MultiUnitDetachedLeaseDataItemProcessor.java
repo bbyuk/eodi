@@ -1,10 +1,10 @@
-package com.bb.eodi.batch.job.deal.load.processor;
+package com.bb.eodi.batch.job.deal.processor;
 
 import com.bb.eodi.domain.deal.entity.RealEstateLease;
 import com.bb.eodi.domain.deal.type.HousingType;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.port.out.deal.dto.MultiHouseholdHouseLeaseDataItem;
+import com.bb.eodi.port.out.deal.dto.MultiUnitDetachedLeaseDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -16,13 +16,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * 연립/다세대주택 전월세 실거래가 데이터 적재 배치 chunk step ItemProcessor
+ * 단독/다가구주택 전월세 실거래가 데이터 적재 배치 chunk step ItemProcessor
  */
 @Slf4j
 @StepScope
 @Component
 @RequiredArgsConstructor
-public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<MultiHouseholdHouseLeaseDataItem, RealEstateLease> {
+public class MultiUnitDetachedLeaseDataItemProcessor implements ItemProcessor<MultiUnitDetachedLeaseDataItem, RealEstateLease> {
+
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
     private static final String contractTermDelimiter = "~";
@@ -30,14 +31,14 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
     private static final String numberDelimiter = ",";
     private static final int yearFixValue = 200000;
 
-
     @Override
-    public RealEstateLease process(MultiHouseholdHouseLeaseDataItem item) throws Exception {
-
+    public RealEstateLease process(MultiUnitDetachedLeaseDataItem item) throws Exception {
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
+
+
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(item.umdNm())
@@ -66,18 +67,16 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
                 .previousMonthlyRent(StringUtils.hasText(item.preMonthlyRent().trim())
                         ? Integer.parseInt(item.preMonthlyRent().replace(numberDelimiter, ""))
                         : null)
+                .totalFloorArea(new BigDecimal(item.totalFloorAr()))
                 .buildYear(StringUtils.hasText(item.buildYear().trim())
                         ? Integer.parseInt(item.buildYear())
                         : null)
-                .netLeasableArea(StringUtils.hasText(item.excluUseAr())
-                        ? new BigDecimal(item.excluUseAr())
-                        : null)
-                .housingType(HousingType.MULTI_HOUSEHOLD_HOUSE)
-                .floor(StringUtils.hasText(item.floor())
-                        ? Integer.parseInt(item.floor())
-                        :null)
+                .housingType("단독".equals(item.houseType())
+                        ? HousingType.DETACHED_HOUSE
+                        : "다가구".equals(item.houseType())
+                        ? HousingType.MULTI_UNIT_HOUSE
+                        : HousingType.OTHER)
                 .useRRRight("사용".equals(item.useRRRight()))
-                .targetName(item.mhouseNm())
                 .build();
     }
 }

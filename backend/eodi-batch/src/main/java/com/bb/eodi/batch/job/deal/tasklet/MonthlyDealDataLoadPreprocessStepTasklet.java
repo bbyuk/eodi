@@ -1,7 +1,7 @@
-package com.bb.eodi.batch.job.deal.load.tasklet;
+package com.bb.eodi.batch.job.deal.tasklet;
 
-import com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobKey;
-import com.bb.eodi.batch.job.deal.load.MonthlyDealDataLoadJobProperties;
+import com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey;
+import com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobProperties;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
