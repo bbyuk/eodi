@@ -19,7 +19,6 @@ CREATE TABLE address_position
     zip_no              VARCHAR(5)      COMMENT '우편번호',
     building_type       VARCHAR(100)    COMMENT '건물용도분류',
     is_building_group   VARCHAR(1)      COMMENT '건물군여부',
-    adm_dong            VARCHAR(8)      COMMENT '관할행정동',
     x_pos               DECIMAL(15, 6)  COMMENT 'X좌표',
     y_pos               DECIMAL(15, 6)  COMMENT 'Y좌표'
 ) COMMENT = '주소위치정보';
