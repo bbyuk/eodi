@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong.adjacency.tasklet;
+package com.bb.eodi.batch.job.legaldong.tasklet;
 
 import com.bb.eodi.domain.legaldong.entity.LegalDongAdjacency;
 import com.bb.eodi.domain.legaldong.repository.LegalDongAdjacencyRepository;

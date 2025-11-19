@@ -1,7 +1,7 @@
-package com.bb.eodi.batch.job.legaldong.load;
+package com.bb.eodi.batch.job.legaldong.config;
 
 import com.bb.eodi.batch.core.config.EodiBatchProperties;
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongApiResponseRow;
+import com.bb.eodi.batch.job.legaldong.model.LegalDongApiResponseRow;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;

@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.legaldong.load.processor;
+package com.bb.eodi.batch.job.legaldong.processor;
 
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongApiResponseRow;
+import com.bb.eodi.batch.job.legaldong.model.LegalDongApiResponseRow;
 import com.bb.eodi.domain.legaldong.entity.LegalDong;
 import com.bb.eodi.domain.legaldong.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;

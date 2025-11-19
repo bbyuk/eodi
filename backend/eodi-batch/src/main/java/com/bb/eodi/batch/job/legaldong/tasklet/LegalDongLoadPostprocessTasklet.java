@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.legaldong.load.tasklet;
+package com.bb.eodi.batch.job.legaldong.tasklet;
 
-import com.bb.eodi.batch.job.legaldong.LegalDongLoadKey;
+import com.bb.eodi.batch.job.legaldong.enums.LegalDongLoadKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;

@@ -1,6 +1,6 @@
-package com.bb.eodi.batch.job.legaldong.load.api;
+package com.bb.eodi.batch.job.legaldong.api;
 
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongApiResponseRow;
+import com.bb.eodi.batch.job.legaldong.model.LegalDongApiResponseRow;
 
 import java.util.List;
 

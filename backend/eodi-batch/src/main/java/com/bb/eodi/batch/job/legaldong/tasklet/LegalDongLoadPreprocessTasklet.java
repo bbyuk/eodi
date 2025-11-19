@@ -1,7 +1,7 @@
-package com.bb.eodi.batch.job.legaldong.load.tasklet;
+package com.bb.eodi.batch.job.legaldong.tasklet;
 
 import com.bb.eodi.batch.job.legaldong.LegalDongLoadBatchJobProperties;
-import com.bb.eodi.batch.job.legaldong.load.api.LegalDongApiClient;
+import com.bb.eodi.batch.job.legaldong.api.LegalDongApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.legaldong.LegalDongLoadKey.*;
+import static com.bb.eodi.batch.job.legaldong.enums.LegalDongLoadKey.*;
 
 /**
  * 법정동코드 API fetch 작업

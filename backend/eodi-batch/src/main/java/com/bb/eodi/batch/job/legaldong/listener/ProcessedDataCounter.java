@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong.load.listener;
+package com.bb.eodi.batch.job.legaldong.listener;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.ExitStatus;
@@ -7,7 +7,7 @@ import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
 
-import static com.bb.eodi.batch.job.legaldong.LegalDongLoadKey.*;
+import static com.bb.eodi.batch.job.legaldong.enums.LegalDongLoadKey.*;
 
 /**
  * Chunk 처리 step 이후 처리 데이터 카운터

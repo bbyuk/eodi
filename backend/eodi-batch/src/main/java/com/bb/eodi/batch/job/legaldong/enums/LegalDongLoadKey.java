@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong;
+package com.bb.eodi.batch.job.legaldong.enums;
 
 /**
  * 법정동 적재 배치 key

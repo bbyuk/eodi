@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong.load.model;
+package com.bb.eodi.batch.job.legaldong.model;
 
 import java.io.Serial;
 import java.io.Serializable;

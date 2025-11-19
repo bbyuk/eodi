@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong.load.decider;
+package com.bb.eodi.batch.job.legaldong.decider;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import static com.bb.eodi.batch.core.enums.BatchExecutionStatus.COMPLETED;
 import static com.bb.eodi.batch.core.enums.BatchExecutionStatus.CONTINUE;
-import static com.bb.eodi.batch.job.legaldong.LegalDongLoadKey.*;
+import static com.bb.eodi.batch.job.legaldong.enums.LegalDongLoadKey.*;
 
 /**
  * 추가로 작업할 데이터가 있는지 체크

@@ -1,7 +1,7 @@
-package com.bb.eodi.batch.job.legaldong.load.tasklet;
+package com.bb.eodi.batch.job.legaldong.tasklet;
 
-import com.bb.eodi.batch.job.legaldong.load.api.LegalDongApiClient;
-import com.bb.eodi.batch.job.legaldong.load.model.LegalDongApiResponseRow;
+import com.bb.eodi.batch.job.legaldong.api.LegalDongApiClient;
+import com.bb.eodi.batch.job.legaldong.model.LegalDongApiResponseRow;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -20,8 +20,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-import static com.bb.eodi.batch.job.legaldong.LegalDongLoadKey.DATA_FILE;
-import static com.bb.eodi.batch.job.legaldong.LegalDongLoadKey.TOTAL_COUNT;
+import static com.bb.eodi.batch.job.legaldong.enums.LegalDongLoadKey.DATA_FILE;
+import static com.bb.eodi.batch.job.legaldong.enums.LegalDongLoadKey.TOTAL_COUNT;
 
 /**
  * 법정동 코드 API 요청 Tasklet

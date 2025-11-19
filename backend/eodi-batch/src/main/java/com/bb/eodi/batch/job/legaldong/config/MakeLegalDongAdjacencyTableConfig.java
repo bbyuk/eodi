@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.job.legaldong.adjacency;
+package com.bb.eodi.batch.job.legaldong.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
