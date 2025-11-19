@@ -1,10 +1,7 @@
 package com.bb.eodi.batch.job.address.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -16,6 +13,7 @@ import java.math.BigDecimal;
 @Table(name = "address_position")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class AddressPosition {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
