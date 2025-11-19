@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Types;
 import java.util.List;
 
 import static java.sql.Types.*;
@@ -44,13 +43,12 @@ public class AddressPositionJdbcRepository implements AddressPositionRepository 
                     zip_no,
                     building_type,
                     is_building_group,
-                    adm_dong,
                     x_pos,
                     y_pos
                 )
                 VALUES
                 (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? 
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? 
                 )
                 """;
 
@@ -74,9 +72,8 @@ public class AddressPositionJdbcRepository implements AddressPositionRepository 
                     ps.setObject(13, entity.getZipNo(), VARCHAR);
                     ps.setObject(14, entity.getBuildingType(), VARCHAR);
                     ps.setObject(15, entity.getIsBuildingGroup(), VARCHAR);
-                    ps.setObject(16, entity.getAdmDong(), VARCHAR);
-                    ps.setObject(17, entity.getXPos(), DECIMAL);
-                    ps.setObject(18, entity.getYPos(), DECIMAL);
+                    ps.setObject(16, entity.getXPos(), DECIMAL);
+                    ps.setObject(17, entity.getYPos(), DECIMAL);
                 }
         );
     }

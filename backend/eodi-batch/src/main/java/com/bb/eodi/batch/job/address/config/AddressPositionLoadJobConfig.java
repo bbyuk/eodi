@@ -167,7 +167,6 @@ public class AddressPositionLoadJobConfig {
                 .zipNo(item.getZipNo())
                 .buildingType(item.getBuildingType())
                 .isBuildingGroup(item.getIsBuildingGroup())
-                .admDong(item.getAdmDong())
                 .xPos(parseBigDecimalWithNull.apply(item.getXPos()))
                 .yPos(parseBigDecimalWithNull.apply(item.getYPos()))
                 .build();
