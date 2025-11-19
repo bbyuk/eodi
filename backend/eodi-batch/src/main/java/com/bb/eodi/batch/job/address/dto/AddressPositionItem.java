@@ -64,4 +64,7 @@ public class AddressPositionItem {
     // y좌표
     private String yPos;
 
+    // 이동사유코드
+    private String changeReasonCode;
+
 }
