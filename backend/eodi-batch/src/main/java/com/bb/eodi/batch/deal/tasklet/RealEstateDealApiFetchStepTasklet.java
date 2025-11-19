@@ -1,9 +1,10 @@
 package com.bb.eodi.batch.deal.tasklet;
 
-import com.bb.eodi.batch.deal.dto.MonthlyLoadTargetLegalDongDto;
+import com.bb.eodi.batch.deal.dto.*;
 import com.bb.eodi.batch.legaldong.repository.LegalDongRepository;
-import com.bb.eodi.batch.deal.api.DealDataApiClient;
-import com.bb.eodi.port.out.deal.dto.*;
+import com.bb.eodi.common.api.client.DealDataApiClient;
+import com.bb.eodi.common.api.dto.DealDataQuery;
+import com.bb.eodi.common.api.dto.DealDataResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

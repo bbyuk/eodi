@@ -1,7 +1,7 @@
 package com.bb.eodi.batch.legaldong.tasklet;
 
 import com.bb.eodi.batch.legaldong.LegalDongLoadBatchJobProperties;
-import com.bb.eodi.port.out.legaldong.LegalDongDataPort;
+import com.bb.eodi.batch.legaldong.port.LegalDongDataPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;

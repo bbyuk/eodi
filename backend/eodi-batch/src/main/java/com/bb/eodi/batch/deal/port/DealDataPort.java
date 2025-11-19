@@ -1,6 +1,8 @@
-package com.bb.eodi.port.out.deal;
+package com.bb.eodi.batch.deal.port;
 
-import com.bb.eodi.port.out.deal.dto.*;
+import com.bb.eodi.batch.deal.dto.*;
+import com.bb.eodi.common.api.dto.DealDataQuery;
+import com.bb.eodi.common.api.dto.DealDataResponse;
 
 /**
  * 부동산 실거래가 데이터 API 인터페이스

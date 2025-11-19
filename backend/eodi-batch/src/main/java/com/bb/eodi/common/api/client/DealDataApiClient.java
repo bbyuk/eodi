@@ -1,7 +1,10 @@
-package com.bb.eodi.batch.deal.api;
+package com.bb.eodi.common.api.client;
 
-import com.bb.eodi.port.out.deal.DealDataPort;
-import com.bb.eodi.port.out.deal.dto.*;
+import com.bb.eodi.batch.deal.dto.*;
+import com.bb.eodi.batch.deal.port.DealDataPort;
+import com.bb.eodi.common.api.dto.DealDataQuery;
+import com.bb.eodi.common.api.dto.DealDataResponse;
+import com.bb.eodi.common.api.spec.DealDataApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

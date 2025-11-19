@@ -1,19 +1,19 @@
-package com.bb.eodi.port.out.deal.dto;
+package com.bb.eodi.batch.deal.dto;
 
 /**
- * 오피스텔 전/월세 데이터
+ * 연립/다세대 전월세 실거래가 데이터
  */
-public record OfficetelLeaseDataItem(
+public record MultiHouseholdHouseLeaseDataItem(
         // 지역코드
         String sggCd,
-        // 시군구 명
-        String sggNm,
         // 법정동 명
         String umdNm,
+        // 연립다세대명
+        String mhouseNm,
         // 지번
         String jibun,
-        // 단지명
-        String offiNm,
+        // 건축년도
+        String buildYear,
         // 전용면적
         String excluUseAr,
         // 계약년도
@@ -28,8 +28,6 @@ public record OfficetelLeaseDataItem(
         String monthlyRent,
         // 층
         String floor,
-        // 건축년도
-        String buildYear,
         // 계약기간
         String contractTerm,
         // 계약구분

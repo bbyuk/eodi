@@ -1,4 +1,4 @@
-package com.bb.eodi.port.out.deal.dto;
+package com.bb.eodi.batch.deal.dto;
 
 /**
  * 오피스텔 매매 데이터

@@ -1,4 +1,4 @@
-package com.bb.eodi.port.out.deal.dto;
+package com.bb.eodi.common.api.dto;
 
 import lombok.Data;
 

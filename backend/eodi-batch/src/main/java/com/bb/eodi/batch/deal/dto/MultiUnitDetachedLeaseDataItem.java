@@ -1,19 +1,15 @@
-package com.bb.eodi.port.out.deal.dto;
+package com.bb.eodi.batch.deal.dto;
 
 /**
- * 아파트 전/월세 데이터
+ * 단독/다가구주택 전/월세 데이터
  */
-public record ApartmentLeaseDataItem(
-        // 법정동코드 상위 5자리
+public record MultiUnitDetachedLeaseDataItem(
+        // 지역코드
         String sggCd,
         // 법정동 명
         String umdNm,
-        // 단지명
-        String aptNm,
-        // 지번
-        String jibun,
-        // 전용면적
-        String excluUseAr,
+        // 연면적
+        String totalFloorAr,
         // 계약년도
         String dealYear,
         // 계약월
@@ -22,10 +18,10 @@ public record ApartmentLeaseDataItem(
         String dealDay,
         // 보증금액(만원)
         String deposit,
+        // 주택 타입
+        String houseType,
         // 월세금액(만원)
         String monthlyRent,
-        // 층
-        String floor,
         // 건축년도
         String buildYear,
         // 계약기간

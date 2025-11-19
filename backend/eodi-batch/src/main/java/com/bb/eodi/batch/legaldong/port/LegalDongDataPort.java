@@ -1,4 +1,4 @@
-package com.bb.eodi.port.out.legaldong;
+package com.bb.eodi.batch.legaldong.port;
 
 import com.bb.eodi.batch.legaldong.model.LegalDongApiResponseRow;
 

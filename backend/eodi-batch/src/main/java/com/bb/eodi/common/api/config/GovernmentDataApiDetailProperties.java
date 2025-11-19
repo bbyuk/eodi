@@ -1,4 +1,4 @@
-package com.bb.eodi.batch.deal.api;
+package com.bb.eodi.common.api.config;
 
 import java.time.LocalDate;
 

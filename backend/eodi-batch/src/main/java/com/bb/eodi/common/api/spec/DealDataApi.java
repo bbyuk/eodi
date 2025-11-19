@@ -1,6 +1,7 @@
-package com.bb.eodi.batch.deal.api;
+package com.bb.eodi.common.api.spec;
 
-import com.bb.eodi.port.out.deal.dto.*;
+import com.bb.eodi.batch.deal.dto.*;
+import com.bb.eodi.common.api.dto.DealDataResponse;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;

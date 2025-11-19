@@ -1,21 +1,23 @@
-package com.bb.eodi.port.out.deal.dto;
+package com.bb.eodi.batch.deal.dto;
 
 /**
- * 아파트 분양권 전매 데이터
+ * 연립/다세대주택 매매 데이터
  */
-public record ApartmentPresaleRightSellDataItem(
+public record MultiHouseholdHouseSellDataItem(
         // 지역코드
         String sggCd,
-        // 시군구 명
-        String sggNm,
         // 법정동 명
         String umdNm,
-        // 단지 명
-        String aptNm,
+        // 연립다세대명
+        String mhouseNm,
         // 지번
         String jibun,
+        // 건축년도
+        String buildYear,
         // 전용면적
         String excluUseAr,
+        // 대지권면적
+        String landAr,
         // 계약년도
         String dealYear,
         // 계약월
@@ -24,8 +26,6 @@ public record ApartmentPresaleRightSellDataItem(
         String dealDay,
         // 거래금액(만원)
         String dealAmount,
-        // 구분
-        String ownershipGbn,
         // 층
         String floor,
         // 해제여부
@@ -36,11 +36,11 @@ public record ApartmentPresaleRightSellDataItem(
         String dealingGbn,
         // 중개사소재지(시군구 단위)
         String estateAgentSggNm,
+        // 등기일자
+        String rgstDate,
         // 거래주체정보_매도자(개인/법인/공공기관/기타)
         String slerGbn,
         // 거래주체정보_매수자(개인/법인/공공기관/기타)
         String buyerGbn
-
-
 ) {
 }

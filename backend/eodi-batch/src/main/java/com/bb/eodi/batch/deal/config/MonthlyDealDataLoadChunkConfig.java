@@ -1,7 +1,7 @@
 package com.bb.eodi.batch.deal.config;
 
+import com.bb.eodi.batch.deal.dto.*;
 import com.bb.eodi.batch.deal.reader.RealEstateDealDataItemStreamReader;
-import com.bb.eodi.port.out.deal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;

@@ -1,5 +1,6 @@
-package com.bb.eodi.batch.deal.api;
+package com.bb.eodi.common.api.config;
 
+import com.bb.eodi.common.api.spec.DealDataApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
