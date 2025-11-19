@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
+import static com.bb.eodi.batch.job.deal.eunms.MonthlyDealDataLoadJobKey.CURRENT_INDEX;
 
 /**
  * 지번 주소 ItemReader

@@ -21,8 +21,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.DEAL_MONTH;
-import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.TEMP_FILE;
+import static com.bb.eodi.batch.job.deal.eunms.MonthlyDealDataLoadJobKey.DEAL_MONTH;
+import static com.bb.eodi.batch.job.deal.eunms.MonthlyDealDataLoadJobKey.TEMP_FILE;
 
 /**
  * 부동산 거래 데이터 API 요청 Tasklet

@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.TEMP_FILE;
+import static com.bb.eodi.batch.job.deal.eunms.MonthlyDealDataLoadJobKey.TEMP_FILE;
 
 /**
  * Chunk step 완료 후 temp file 삭제 처리를 위한 StepExecutionListener

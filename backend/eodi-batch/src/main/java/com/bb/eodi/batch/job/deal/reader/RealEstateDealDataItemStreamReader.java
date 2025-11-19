@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.bb.eodi.batch.job.deal.MonthlyDealDataLoadJobKey.*;
+import static com.bb.eodi.batch.job.deal.eunms.MonthlyDealDataLoadJobKey.*;
 
 @Slf4j
 public class RealEstateDealDataItemStreamReader<T> implements ItemStreamReader<T> {
