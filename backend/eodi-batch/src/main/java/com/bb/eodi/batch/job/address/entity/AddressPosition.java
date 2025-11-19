@@ -65,9 +65,6 @@ public class AddressPosition {
     @Column(name = "is_building_group", length = 1)
     private String isBuildingGroup;
 
-    @Column(name = "adm_dong", length = 8)
-    private String admDong;
-
     @Column(name = "x_pos", precision = 15, scale = 6)
     private BigDecimal xPos;
 
