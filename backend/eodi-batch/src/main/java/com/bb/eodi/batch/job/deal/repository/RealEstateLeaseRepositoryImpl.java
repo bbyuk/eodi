@@ -1,7 +1,7 @@
 package com.bb.eodi.infrastructure.deal.repository;
 
-import com.bb.eodi.domain.deal.entity.RealEstateLease;
-import com.bb.eodi.domain.deal.repository.RealEstateLeaseRepository;
+import com.bb.eodi.batch.job.deal.entity.RealEstateLease;
+import com.bb.eodi.batch.job.deal.repository.RealEstateLeaseRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
