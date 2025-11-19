@@ -150,6 +150,7 @@ public class AddressPositionLoadJobConfig {
     @StepScope
     public ItemProcessor<AddressPositionItem, AddressPosition> addressPositionItemProcessor() {
         Function<String, Integer> parseIntWithNull = (str) -> str == null || !StringUtils.hasText(str) ? null : Integer.parseInt(str);
+        Function<String, BigDecimal> parseBigDecimalWithNull = (str) -> str == null || !StringUtils.hasText(str) ? null : new BigDecimal(str);
 
         return item -> AddressPosition.builder()
                 .sigunguCode(item.getSigunguCode())
@@ -167,8 +168,8 @@ public class AddressPositionLoadJobConfig {
                 .buildingType(item.getBuildingType())
                 .isBuildingGroup(item.getIsBuildingGroup())
                 .admDong(item.getAdmDong())
-                .xPos(new BigDecimal(item.getXPos()))
-                .yPos(new BigDecimal(item.getYPos()))
+                .xPos(parseBigDecimalWithNull.apply(item.getXPos()))
+                .yPos(parseBigDecimalWithNull.apply(item.getYPos()))
                 .build();
     }
 
