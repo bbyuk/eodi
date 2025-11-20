@@ -1,8 +1,8 @@
 package com.bb.eodi.common.api.client;
 
-import com.bb.eodi.batch.legaldong.model.LegalDongApiResponse;
-import com.bb.eodi.batch.legaldong.model.LegalDongApiResponseRow;
-import com.bb.eodi.batch.legaldong.port.LegalDongDataPort;
+import com.bb.eodi.legaldong.domain.model.LegalDongApiResponse;
+import com.bb.eodi.legaldong.domain.model.LegalDongApiResponseRow;
+import com.bb.eodi.legaldong.domain.port.LegalDongDataPort;
 import com.bb.eodi.common.api.config.GovernmentDataApiProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
