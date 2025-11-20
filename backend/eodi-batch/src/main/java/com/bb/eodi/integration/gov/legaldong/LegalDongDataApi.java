@@ -9,9 +9,7 @@ import org.springframework.web.service.annotation.HttpExchange;
  * 법정동 데이터 외부 API 스펙
  */
 @HttpExchange(
-        url = "1741000",
-        accept = "application/json",
-        contentType = "application/json"
+        url = "/1741000"
 )
 public interface LegalDongDataApi {
 
@@ -24,7 +22,7 @@ public interface LegalDongDataApi {
      * @return 법정동 조회 API 응답
      */
     @GetExchange("/StanReginCd/getStanReginCdList")
-    LegalDongApiResponse getLegalDong(
+    String getLegalDong(
             @RequestParam("pageNo") int pageNum,
             @RequestParam("numOfRows") int pageSize,
             @RequestParam("locatadd_nm") String targetRegion,
