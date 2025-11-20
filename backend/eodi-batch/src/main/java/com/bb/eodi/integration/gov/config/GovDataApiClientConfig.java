@@ -1,11 +1,11 @@
 package com.bb.eodi.integration.gov.config;
 
 import com.bb.eodi.integration.gov.deal.DealDataApi;
+import com.bb.eodi.integration.gov.legaldong.LegalDongDataApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -19,40 +19,68 @@ import java.net.URI;
 public class GovDataApiClientConfig {
 
     private final GovernmentDataApiProperties governmentDataApiProperties;
+
+
+    /**
+     * 공공데이터 포털 API RestClient
+     * @param builder 기본 RestClient.Builder bean
+     * @return 공공데이터 포털 API RestClient
+     */
     @Bean
-    public DealDataApi dealDataApi(RestClient.Builder builder) {
+    public RestClient govDataRestClient(RestClient.Builder builder) {
         // HttpExchange의 url과 합쳐짐
-        RestClient restClient = builder
+        return builder
                 .baseUrl(governmentDataApiProperties.baseUrl())
                 .defaultHeader(HttpHeaders.USER_AGENT, "eodi-batch")
                 .requestInterceptor((request, body, execution) -> {
-                    // 원래 URI
-                    URI originalUri = request.getURI();
+                    // 기존 URI
+                    URI originUri = request.getURI();
 
                     // 기존 쿼리 파라미터 + serviceKey 붙이기
-                    UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(originalUri)
+                    UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(originUri)
                             .queryParam(
-                                    governmentDataApiProperties.keyParameterName(),
+                                    "serviceKey",
                                     governmentDataApiProperties.key()
                             );
-
                     URI newUri = uriBuilder.build(true).toUri();
 
-                    // 새 RequestWrapper로 URI 교체
-                    HttpRequest wrapper = new HttpRequestWrapper(request) {
+                    ;
+
+                    return execution.execute(new HttpRequestWrapper(request) {
                         @Override
                         public URI getURI() {
                             return newUri;
                         }
-                    };
-
-                    return execution.execute(wrapper, body);
+                    }, body);
                 })
                 .build();
+    }
 
+
+    /**
+     * 실거래가 데이터 API HttpServiceProxy bean
+     * @param govDataRestClient 공공데이터 포털 API RestClient
+     * @return 실거래가 데이터 API HttpServiceProxy bean
+     */
+    @Bean
+    public DealDataApi dealDataApi(RestClient govDataRestClient) {
         return HttpServiceProxyFactory
-                .builderFor(RestClientAdapter.create(restClient))
+                .builderFor(RestClientAdapter.create(govDataRestClient))
                 .build()
                 .createClient(DealDataApi.class);
     }
+
+    /**
+     * 법정동 데이터 API HttpServiceProxy bean
+     * @param govDataRestClient 공공데이터 포털 API RestClient
+     * @return 법정동 데이터 API HttpServiceProxy bean
+     */
+    @Bean
+    public LegalDongDataApi legalDongDataApi(RestClient govDataRestClient) {
+        return HttpServiceProxyFactory
+                .builderFor(RestClientAdapter.create(govDataRestClient))
+                .build()
+                .createClient(LegalDongDataApi.class);
+    }
+
 }

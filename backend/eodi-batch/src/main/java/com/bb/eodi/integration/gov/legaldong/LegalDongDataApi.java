@@ -17,7 +17,6 @@ public interface LegalDongDataApi {
 
     /**
      * 지역별 법정동 조회 - 지역명 조회
-     * @param apiKey 공공데이터 포털 발급 API key
      * @param pageNum 현재 페이지
      * @param pageSize 페이지 크기
      * @param targetRegion 대상 지역명
@@ -26,7 +25,6 @@ public interface LegalDongDataApi {
      */
     @GetExchange("/StanReginCd/getStanReginCdList")
     LegalDongApiResponse getLegalDong(
-            @RequestParam("serviceKey") String apiKey,
             @RequestParam("pageNo") int pageNum,
             @RequestParam("numOfRows") int pageSize,
             @RequestParam("locatadd_nm") String targetRegion,
