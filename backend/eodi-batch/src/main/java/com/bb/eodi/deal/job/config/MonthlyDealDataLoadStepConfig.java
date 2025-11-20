@@ -1,6 +1,6 @@
 package com.bb.eodi.deal.job.config;
 
-import com.bb.eodi.core.config.EodiBatchProperties;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.job.dto.*;

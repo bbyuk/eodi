@@ -1,6 +1,6 @@
-package com.bb.eodi.common.api.config;
+package com.bb.eodi.integration.gov.config;
 
-import com.bb.eodi.common.api.spec.DealDataApi;
+import com.bb.eodi.integration.gov.deal.DealDataApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import java.net.URI;
 
 @Configuration
 @RequiredArgsConstructor
-public class DealDataApiClientConfig {
+public class GovDataApiClientConfig {
 
     private final GovernmentDataApiProperties governmentDataApiProperties;
     @Bean

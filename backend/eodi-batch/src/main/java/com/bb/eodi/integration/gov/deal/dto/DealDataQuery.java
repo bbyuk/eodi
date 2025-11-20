@@ -1,4 +1,4 @@
-package com.bb.eodi.common.api.dto;
+package com.bb.eodi.integration.gov.deal.dto;
 
 /**
  * 부동산 실거래 데이터 요청 쿼리 파라미터

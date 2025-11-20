@@ -1,7 +1,7 @@
 package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
-import com.bb.eodi.core.config.EodiBatchProperties;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.address.domain.dto.LandLotAddressItem;
 import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.repository.LandLotAddressJdbcRepository;

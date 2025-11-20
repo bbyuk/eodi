@@ -1,4 +1,4 @@
-package com.bb.eodi.core.config;
+package com.bb.eodi.core;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

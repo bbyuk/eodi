@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.domain.port;
 
-import com.bb.eodi.common.api.dto.DealDataQuery;
-import com.bb.eodi.common.api.dto.DealDataResponse;
+import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
+import com.bb.eodi.integration.gov.deal.dto.DealDataResponse;
 import com.bb.eodi.deal.job.dto.*;
 
 /**

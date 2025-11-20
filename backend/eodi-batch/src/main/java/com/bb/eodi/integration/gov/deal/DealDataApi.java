@@ -1,6 +1,6 @@
-package com.bb.eodi.common.api.spec;
+package com.bb.eodi.integration.gov.deal;
 
-import com.bb.eodi.common.api.dto.DealDataResponse;
+import com.bb.eodi.integration.gov.deal.dto.DealDataResponse;
 import com.bb.eodi.deal.job.dto.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;

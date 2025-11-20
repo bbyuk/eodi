@@ -1,7 +1,7 @@
 package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.job.reader.BuildingAddressItemReader;
-import com.bb.eodi.core.config.EodiBatchProperties;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.address.domain.dto.BuildingAddressItem;
 import com.bb.eodi.address.domain.entity.BuildingAddress;
 import com.bb.eodi.address.domain.repository.BuildingAddressJdbcRepository;
