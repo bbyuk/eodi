@@ -33,6 +33,8 @@ spring:
 # 애플리케이션 커스텀 설정
 eodi:
   batch:
+    runner:
+      enabled: true
     job-name-prefix: job.name
     job-parameter-prefix: job.parameter.
     force-new-instance-parameter: new
