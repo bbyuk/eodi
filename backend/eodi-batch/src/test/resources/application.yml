@@ -34,7 +34,7 @@ spring:
 eodi:
   batch:
     runner:
-      enabled: true
+      enabled: false
     job-name-prefix: job.name
     job-parameter-prefix: job.parameter.
     force-new-instance-parameter: new

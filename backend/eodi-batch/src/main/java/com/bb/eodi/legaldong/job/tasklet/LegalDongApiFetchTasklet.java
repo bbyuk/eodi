@@ -1,7 +1,7 @@
 package com.bb.eodi.legaldong.job.tasklet;
 
 import com.bb.eodi.legaldong.domain.port.LegalDongDataPort;
-import com.bb.eodi.legaldong.domain.model.LegalDongApiResponseRow;
+import com.bb.eodi.integration.gov.legaldong.dto.LegalDongApiResponseRow;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;

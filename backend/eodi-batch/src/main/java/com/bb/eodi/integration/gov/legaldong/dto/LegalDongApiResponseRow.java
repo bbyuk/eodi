@@ -1,4 +1,4 @@
-package com.bb.eodi.legaldong.domain.model;
+package com.bb.eodi.integration.gov.legaldong.dto;
 
 import java.io.Serial;
 import java.io.Serializable;

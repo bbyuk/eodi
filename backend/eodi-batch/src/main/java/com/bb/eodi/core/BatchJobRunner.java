@@ -8,11 +8,18 @@ import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        prefix = "eodi.batch.runner",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class BatchJobRunner implements ApplicationRunner {
 
     private final JobLauncher jobLauncher;
