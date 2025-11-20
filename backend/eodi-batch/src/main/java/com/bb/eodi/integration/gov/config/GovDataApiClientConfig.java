@@ -3,6 +3,7 @@ package com.bb.eodi.integration.gov.config;
 import com.bb.eodi.integration.gov.deal.DealDataApi;
 import com.bb.eodi.integration.gov.legaldong.LegalDongDataApi;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +14,9 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class GovDataApiClientConfig {
@@ -28,7 +31,6 @@ public class GovDataApiClientConfig {
      */
     @Bean
     public RestClient govDataRestClient(RestClient.Builder builder) {
-        // HttpExchange의 url과 합쳐짐
         return builder
                 .baseUrl(governmentDataApiProperties.baseUrl())
                 .defaultHeader(HttpHeaders.USER_AGENT, "eodi-batch")
@@ -37,21 +39,43 @@ public class GovDataApiClientConfig {
                     URI originUri = request.getURI();
 
                     // 기존 쿼리 파라미터 + serviceKey 붙이기
-                    UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(originUri)
-                            .queryParam(
-                                    "serviceKey",
-                                    governmentDataApiProperties.key()
-                            );
-                    URI newUri = uriBuilder.build(true).toUri();
+                    URI newUri = UriComponentsBuilder.fromUri(originUri)
+                            .queryParam("serviceKey", governmentDataApiProperties.key())
+                            .build(true)
+                            .toUri();
 
-                    ;
+                    // 요청 로그
+                    if (log.isDebugEnabled()) {
+                        log.debug("=== [HTTP REQUEST] ===");
+                        log.debug("{} {}", request.getMethod(), newUri);
+                        request.getHeaders().forEach((k, v) ->
+                                log.debug("{}: {}", k, String.join(", ", v))
+                        );
+                        if (body.length > 0) {
+                            log.debug("-- Body --\n{}", new String(body, StandardCharsets.UTF_8));
+                        }
+                        log.debug("=======================");
+                    }
 
-                    return execution.execute(new HttpRequestWrapper(request) {
+                    // 실제 요청 실행
+                    var response = execution.execute(new HttpRequestWrapper(request) {
                         @Override
                         public URI getURI() {
                             return newUri;
                         }
                     }, body);
+
+                    // 응답 로그
+                    if (log.isDebugEnabled()) {
+                        log.debug("=== [HTTP RESPONSE] ===");
+                        log.debug("Status: {}", response.getStatusCode());
+                        response.getHeaders().forEach((k, v) ->
+                                log.debug("{}: {}", k, String.join(", ", v))
+                        );
+                        log.debug("=======================");
+                    }
+
+                    return response;
                 })
                 .build();
     }
