@@ -1,7 +1,7 @@
 package com.bb.eodi.common.api.spec;
 
 import com.bb.eodi.common.api.dto.DealDataResponse;
-import com.bb.eodi.deal.domain.dto.*;
+import com.bb.eodi.deal.job.dto.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;

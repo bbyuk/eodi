@@ -2,7 +2,7 @@ package com.bb.eodi.deal.domain.port;
 
 import com.bb.eodi.common.api.dto.DealDataQuery;
 import com.bb.eodi.common.api.dto.DealDataResponse;
-import com.bb.eodi.deal.domain.dto.*;
+import com.bb.eodi.deal.job.dto.*;
 
 /**
  * 부동산 실거래가 데이터 API 인터페이스

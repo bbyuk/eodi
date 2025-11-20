@@ -3,8 +3,8 @@ package com.bb.eodi.common.api.client;
 import com.bb.eodi.common.api.dto.DealDataQuery;
 import com.bb.eodi.common.api.dto.DealDataResponse;
 import com.bb.eodi.common.api.spec.DealDataApi;
-import com.bb.eodi.deal.domain.dto.*;
 import com.bb.eodi.deal.domain.port.DealDataPort;
+import com.bb.eodi.deal.job.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

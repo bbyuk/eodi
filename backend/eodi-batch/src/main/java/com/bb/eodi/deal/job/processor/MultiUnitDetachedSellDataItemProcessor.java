@@ -5,7 +5,7 @@ import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.domain.type.TradeMethodType;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
-import com.bb.eodi.deal.domain.dto.MultiUnitDetachedSellDataItem;
+import com.bb.eodi.deal.job.dto.MultiUnitDetachedSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;

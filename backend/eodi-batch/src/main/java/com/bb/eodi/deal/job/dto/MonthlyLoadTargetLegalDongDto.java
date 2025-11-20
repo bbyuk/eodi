@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.domain.dto;
+package com.bb.eodi.deal.job.dto;
 
 /**
  * 월별 적재 대상 법정동 Dto

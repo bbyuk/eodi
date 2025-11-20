@@ -4,7 +4,7 @@ import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
-import com.bb.eodi.deal.domain.dto.ApartmentLeaseDataItem;
+import com.bb.eodi.deal.job.dto.ApartmentLeaseDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;

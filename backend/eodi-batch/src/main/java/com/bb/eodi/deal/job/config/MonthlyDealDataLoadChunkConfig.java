@@ -1,6 +1,6 @@
 package com.bb.eodi.deal.job.config;
 
-import com.bb.eodi.deal.domain.dto.*;
+import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.deal.job.reader.RealEstateDealDataItemStreamReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
