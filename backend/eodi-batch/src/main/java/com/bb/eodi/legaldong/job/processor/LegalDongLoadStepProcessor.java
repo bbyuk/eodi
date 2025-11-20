@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.job.processor;
 
-import com.bb.eodi.legaldong.domain.model.LegalDongApiResponseRow;
+import com.bb.eodi.integration.gov.legaldong.dto.LegalDongApiResponseRow;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
