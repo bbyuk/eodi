@@ -1,6 +1,6 @@
 package com.bb.eodi.domain.legaldong.service;
 
-import com.bb.eodi.batch.legaldong.service.ShapeFileReader;
+import com.bb.eodi.legaldong.domain.service.ShapeFileReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
