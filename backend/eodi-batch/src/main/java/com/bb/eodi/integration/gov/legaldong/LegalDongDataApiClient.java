@@ -1,9 +1,9 @@
-package com.bb.eodi.common.api.client;
+package com.bb.eodi.integration.gov.legaldong;
 
 import com.bb.eodi.legaldong.domain.model.LegalDongApiResponse;
 import com.bb.eodi.legaldong.domain.model.LegalDongApiResponseRow;
 import com.bb.eodi.legaldong.domain.port.LegalDongDataPort;
-import com.bb.eodi.common.api.config.GovernmentDataApiProperties;
+import com.bb.eodi.integration.gov.config.GovernmentDataApiProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,14 +20,14 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class LegalDongApiClient implements LegalDongDataPort {
+public class LegalDongDataApiClient implements LegalDongDataPort {
 
     private final ObjectMapper objectMapper;
     private final GovernmentDataApiProperties governmentDataApiProperties;
     private final WebClient webClient;
 
 
-    public LegalDongApiClient(GovernmentDataApiProperties governmentDataApiProperties, ObjectMapper objectMapper) {
+    public LegalDongDataApiClient(GovernmentDataApiProperties governmentDataApiProperties, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.governmentDataApiProperties = governmentDataApiProperties;
         this.webClient = WebClient.builder()

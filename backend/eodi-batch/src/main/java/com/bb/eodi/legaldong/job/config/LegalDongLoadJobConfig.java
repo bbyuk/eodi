@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.job.config;
 
-import com.bb.eodi.core.config.EodiBatchProperties;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.legaldong.domain.model.LegalDongApiResponseRow;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import lombok.RequiredArgsConstructor;

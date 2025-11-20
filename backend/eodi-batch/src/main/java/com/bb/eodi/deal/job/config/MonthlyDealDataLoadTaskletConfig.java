@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.job.config;
 
-import com.bb.eodi.common.api.client.DealDataApiClient;
-import com.bb.eodi.common.api.config.GovernmentDataApiProperties;
+import com.bb.eodi.integration.gov.deal.DealDataApiClient;
+import com.bb.eodi.integration.gov.config.GovernmentDataApiProperties;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.deal.job.tasklet.RealEstateDealApiFetchStepTasklet;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;

@@ -1,4 +1,4 @@
-package com.bb.eodi.common.api.dto;
+package com.bb.eodi.integration.gov.deal.dto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.bb.eodi.common.api.config;
+package com.bb.eodi.integration.gov.config;
 
 import java.time.LocalDate;
 

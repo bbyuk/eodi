@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.job.reader;
 
-import com.bb.eodi.core.config.EodiBatchProperties;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.legaldong.domain.model.LegalDongApiResponseRow;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

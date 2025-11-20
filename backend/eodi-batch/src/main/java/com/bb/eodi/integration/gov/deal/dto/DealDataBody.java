@@ -1,4 +1,4 @@
-package com.bb.eodi.common.api.dto;
+package com.bb.eodi.integration.gov.deal.dto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;

@@ -1,8 +1,7 @@
-package com.bb.eodi.common.api.client;
+package com.bb.eodi.integration.gov.deal;
 
-import com.bb.eodi.common.api.dto.DealDataQuery;
-import com.bb.eodi.common.api.dto.DealDataResponse;
-import com.bb.eodi.common.api.spec.DealDataApi;
+import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
+import com.bb.eodi.integration.gov.deal.dto.DealDataResponse;
 import com.bb.eodi.deal.domain.port.DealDataPort;
 import com.bb.eodi.deal.job.dto.*;
 import lombok.RequiredArgsConstructor;

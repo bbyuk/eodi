@@ -1,8 +1,8 @@
 package com.bb.eodi.deal.job.tasklet;
 
-import com.bb.eodi.common.api.client.DealDataApiClient;
-import com.bb.eodi.common.api.dto.DealDataQuery;
-import com.bb.eodi.common.api.dto.DealDataResponse;
+import com.bb.eodi.integration.gov.deal.DealDataApiClient;
+import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
+import com.bb.eodi.integration.gov.deal.dto.DealDataResponse;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

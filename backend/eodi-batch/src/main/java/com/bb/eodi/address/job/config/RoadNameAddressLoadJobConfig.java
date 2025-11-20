@@ -3,7 +3,7 @@ package com.bb.eodi.address.job.config;
 import com.bb.eodi.address.domain.dto.RoadNameAddressItem;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
-import com.bb.eodi.core.config.EodiBatchProperties;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.address.domain.repository.RoadNameAddressJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

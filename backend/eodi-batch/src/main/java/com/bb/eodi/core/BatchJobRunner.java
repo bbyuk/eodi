@@ -1,4 +1,4 @@
-package com.bb.eodi.core.config;
+package com.bb.eodi.core;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
