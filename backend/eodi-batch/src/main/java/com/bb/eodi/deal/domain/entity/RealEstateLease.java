@@ -18,8 +18,10 @@ import java.time.LocalDateTime;
 public class RealEstateLease {
 
     @Builder
-    public RealEstateLease(Long regionId, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
+    public RealEstateLease(Long regionId, Integer landLotMainNo, Integer landLotSubNo, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
         this.regionId = regionId;
+        this.landLotMainNo = landLotMainNo;
+        this.landLotSubNo = landLotSubNo;
         this.legalDongName = legalDongName;
         this.contractDate = contractDate;
         this.contractStartMonth = contractStartMonth;
@@ -44,10 +46,17 @@ public class RealEstateLease {
     @Column(name = "id")
     private Long id;
 
-
     // 대상지역 법정동 ID
     @Column(name = "region_id")
     private Long regionId;
+
+    // 지번본번
+    @Column(name = "land_lot_main_no")
+    private Integer landLotMainNo;
+
+    // 지번부번
+    @Column(name = "land_lot_sub_no")
+    private Integer landLotSubNo;
 
     // 법정동 명
     @Column(name = "legal_dong_name")
