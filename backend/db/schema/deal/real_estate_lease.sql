@@ -8,6 +8,7 @@ CREATE TABLE real_estate_lease
     region_id               BIGINT  NOT NULL COMMENT '대상지역 법정동 ID',
     land_lot_main_no        INT     COMMENT '지번본번',
     land_lot_sub_no         INT     COMMENT '지번부번',
+    is_mountain             VARCHAR COMMENT '산 여부',
     legal_dong_name         VARCHAR(50) COMMENT '법정동 명',
     contract_date           DATE    COMMENT '계약일',
     contract_start_month    INT     COMMENT '계약시작 월',
