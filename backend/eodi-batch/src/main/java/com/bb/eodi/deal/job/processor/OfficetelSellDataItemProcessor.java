@@ -45,6 +45,7 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
                 .legalDongName(item.umdNm())
                 .landLotMainNo(jibun[0])
                 .landLotSubNo(jibun[1])
+                .isMountain(jibun[2] == 1)
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

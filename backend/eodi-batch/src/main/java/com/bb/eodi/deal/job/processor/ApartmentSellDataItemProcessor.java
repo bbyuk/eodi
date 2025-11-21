@@ -46,6 +46,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
                 .legalDongName(item.umdNm())
                 .landLotMainNo(jibun[0])
                 .landLotSubNo(jibun[1])
+                .isMountain(jibun[2] == 1)
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
