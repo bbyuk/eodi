@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class RealEstateSell {
 
     @Builder
-    public RealEstateSell(Long regionId, Integer landLotMainNo, Integer landLotSubNo, boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
+    public RealEstateSell(Long regionId, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
         this.regionId = regionId;
         this.landLotMainNo = landLotMainNo;
         this.landLotSubNo = landLotSubNo;
@@ -67,7 +67,7 @@ public class RealEstateSell {
 
     // 산 여부
     @Column(name = "is_mountain")
-    private boolean isMountain;
+    private Boolean isMountain;
 
     // 법정동명
     @Column(name = "legal_dong_name")

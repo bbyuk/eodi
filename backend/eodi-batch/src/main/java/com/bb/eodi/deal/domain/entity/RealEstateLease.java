@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class RealEstateLease {
 
     @Builder
-    public RealEstateLease(Long regionId, Integer landLotMainNo, Integer landLotSubNo, boolean isMountain, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
+    public RealEstateLease(Long regionId, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
         this.regionId = regionId;
         this.landLotMainNo = landLotMainNo;
         this.landLotSubNo = landLotSubNo;
@@ -57,7 +57,7 @@ public class RealEstateLease {
 
     // 산 여부
     @Column(name = "is_mountain")
-    private boolean isMountain;
+    private Boolean isMountain;
 
     // 지번부번
     @Column(name = "land_lot_sub_no")
