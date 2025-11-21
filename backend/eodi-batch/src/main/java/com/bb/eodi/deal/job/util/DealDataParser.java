@@ -32,6 +32,7 @@ public class DealDataParser {
         // 2. 산 예외
         // 산89
         // 산122-21
+        answer[2] = 0;
         if (str.startsWith("산")) {
             answer[2] = 1;
             split[0] = split[0].substring(1);
@@ -41,7 +42,8 @@ public class DealDataParser {
             answer[0] = Integer.parseInt(split[0]);
         }
         else {
-            answer = Arrays.stream(split).map(Integer::parseInt).toArray(Integer[]::new);
+            answer[0] = Integer.parseInt(split[0]);
+            answer[1] = Integer.parseInt(split[1])
         }
         return answer;
     }
