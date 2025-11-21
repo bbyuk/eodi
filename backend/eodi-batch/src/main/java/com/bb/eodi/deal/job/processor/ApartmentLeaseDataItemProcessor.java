@@ -2,6 +2,7 @@ package com.bb.eodi.deal.job.processor;
 
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.job.util.DealDataParser;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.bb.eodi.deal.job.dto.ApartmentLeaseDataItem;
@@ -40,11 +41,14 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
 
         String contractTerm = item.contractTerm().trim();
-
+        Integer[] jibun = DealDataParser.parseJibun(item.jibun());
 
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(item.umdNm())
+                .landLotMainNo(jibun[0])
+                .landLotSubNo(jibun[1])
+                .isMountain(jibun[2] == 1)
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),

@@ -22,8 +22,11 @@ import java.time.LocalDateTime;
 public class RealEstateSell {
 
     @Builder
-    public RealEstateSell(Long regionId, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
+    public RealEstateSell(Long regionId, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
         this.regionId = regionId;
+        this.landLotMainNo = landLotMainNo;
+        this.landLotSubNo = landLotSubNo;
+        this.isMountain = isMountain;
         this.legalDongName = legalDongName;
         this.contractDate = contractDate;
         this.price = price;
@@ -53,6 +56,18 @@ public class RealEstateSell {
     // 대상 지역 법정동 ID (법정동코드 앞 5자리에 해당하는 법정동 ID)
     @Column(name = "region_id")
     private Long regionId;
+
+    // 지번본번
+    @Column(name = "land_lot_main_no")
+    private Integer landLotMainNo;
+
+    // 지번부번
+    @Column(name = "land_lot_sub_no")
+    private Integer landLotSubNo;
+
+    // 산 여부
+    @Column(name = "is_mountain")
+    private Boolean isMountain;
 
     // 법정동명
     @Column(name = "legal_dong_name")
