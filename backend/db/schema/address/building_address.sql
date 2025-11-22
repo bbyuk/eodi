@@ -18,7 +18,7 @@ CREATE TABLE building_address
     building_main_no            INT                     COMMENT '건물본번',
     building_sub_no             INT                     COMMENT '건물부번',
     building_name               VARCHAR(40)             COMMENT '건축물대장건물명',
-    building_normalized_name    VARCHAR(40)             COMMENT '정규화건물명',
+    building_name_normalized    VARCHAR(40)             COMMENT '정규화건물명',
     building_name_detail        VARCHAR(100)            COMMENT '상세건물명',
     building_manage_no          VARCHAR(25)             COMMENT '건물관리번호',
     umd_seq                     VARCHAR(2)              COMMENT '읍면동일련번호',
