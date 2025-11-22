@@ -57,6 +57,9 @@ public class BuildingAddress {
     @Column(name = "building_name", length = 40)
     private String buildingName;
 
+    @Column(name = "building_name_normalized", length = 40)
+    private String buildingNameNormalized;
+
     @Column(name = "building_name_detail", length = 100)
     private String buildingNameDetail;
 
