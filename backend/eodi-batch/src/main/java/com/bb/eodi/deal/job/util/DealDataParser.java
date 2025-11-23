@@ -43,7 +43,7 @@ public class DealDataParser {
         }
         else {
             answer[0] = Integer.parseInt(split[0]);
-            answer[1] = Integer.parseInt(split[1])
+            answer[1] = Integer.parseInt(split[1]);
         }
         return answer;
     }
