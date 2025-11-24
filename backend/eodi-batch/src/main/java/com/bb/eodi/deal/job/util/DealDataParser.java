@@ -1,12 +1,13 @@
 package com.bb.eodi.deal.job.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
 
 /**
  * 실거래 데이터 파서
  */
+@Slf4j
 public class DealDataParser {
 
     /**
@@ -22,29 +23,37 @@ public class DealDataParser {
      * @return [{지번본번}, {지번부번}, {산여부(1(산)|0}] Integer 배열
      */
     public static Integer[] parseJibun(String str) {
-        String[] split = str.split("-");
         Integer[] answer = new Integer[3];
 
-        // 1. 빈 값 예외
-        // ""
-        if (!StringUtils.hasText(str)) return answer;
+        try {
+            String[] split = str.split("-");
 
-        // 2. 산 예외
-        // 산89
-        // 산122-21
-        answer[2] = 0;
-        if (str.startsWith("산")) {
-            answer[2] = 1;
-            split[0] = split[0].substring(1);
+            // 1. 빈 값 예외
+            // ""
+            if (!StringUtils.hasText(str)) return answer;
+
+            // 2. 산 예외
+            // 산89
+            // 산122-21
+            answer[2] = 0;
+            if (str.startsWith("산")) {
+                answer[2] = 1;
+                split[0] = split[0].substring(1);
+            }
+
+            if (split.length == 1) {
+                answer[0] = Integer.parseInt(split[0]);
+            } else {
+                answer[0] = Integer.parseInt(split[0]);
+                answer[1] = Integer.parseInt(split[1]);
+            }
+        }
+        catch(Exception e) {
+            log.error(e.getMessage(), e);
+            log.error("지번을 파싱하는 도중 에러가 발생했습니다.");
+            answer = new Integer[3];
         }
 
-        if (split.length == 1) {
-            answer[0] = Integer.parseInt(split[0]);
-        }
-        else {
-            answer[0] = Integer.parseInt(split[0]);
-            answer[1] = Integer.parseInt(split[1]);
-        }
         return answer;
     }
 }
