@@ -48,7 +48,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                 .legalDongName(item.umdNm())
                 .landLotMainNo(jibun[0])
                 .landLotSubNo(jibun[1])
-                .isMountain(jibun[2] == 1)
+                .isMountain(jibun[2] != null && jibun[2] == 1)
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
