@@ -76,7 +76,7 @@ public class RealEstateSellJdbcRepository implements RealEstateSellRepository {
                     ps.setObject(14, entity.getTotalFloorArea(), DECIMAL);
                     ps.setObject(15, entity.getBuyer(), VARCHAR);
                     ps.setObject(16, entity.getSeller(), VARCHAR);
-                    ps.setObject(17, entity.getHousingType(), VARCHAR);
+                    ps.setObject(17, entity.getHousingType().code(), VARCHAR);
                     ps.setObject(18, entity.getDateOfRegistration(), DATE);
                     ps.setObject(19, entity.getTargetName(), VARCHAR);
                     ps.setObject(20, entity.getBuildingDong(), VARCHAR);

@@ -74,7 +74,7 @@ public class RealEstateLeaseJdbcRepository implements RealEstateLeaseRepository 
                     ps.setObject(14, entity.getTotalFloorArea(), DECIMAL);
                     ps.setObject(15, entity.getBuildYear(), INTEGER);
                     ps.setObject(16, entity.getNetLeasableArea(), DECIMAL);
-                    ps.setObject(17, entity.getHousingType(), VARCHAR);
+                    ps.setObject(17, entity.getHousingType().code(), VARCHAR);
                     ps.setObject(18, entity.getTargetName(), VARCHAR);
                     ps.setObject(19, entity.getFloor(), INTEGER);
                     ps.setObject(20, entity.isUseRRRight(), TINYINT);
