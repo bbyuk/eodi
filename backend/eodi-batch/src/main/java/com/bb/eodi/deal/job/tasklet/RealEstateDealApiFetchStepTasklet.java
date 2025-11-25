@@ -1,9 +1,9 @@
 package com.bb.eodi.deal.job.tasklet;
 
+import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.integration.gov.deal.DealDataApiClient;
 import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
 import com.bb.eodi.integration.gov.deal.dto.DealDataResponse;
-import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.BufferedWriter;
 import java.nio.file.Files;
@@ -22,7 +23,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey.DEAL_MONTH;
 import static com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey.TEMP_FILE;
 
 /**
@@ -37,6 +37,9 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     private final DealDataApiClient dealDataApiClient;
     private final ObjectMapper objectMapper;
     private final int pageSize;
+
+    @Value("#{jobParameters['year-month']}")
+    private String dealMonth;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -54,7 +57,6 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         }
 
 
-        String dealMonth = jobCtx.getString(DEAL_MONTH.name());
 
         // API 요청 대상 법정동 목록 조회
         List<MonthlyLoadTargetLegalDongDto> monthlyLoadTargetLegalDongList = legalDongRepository.findAllSummary()
@@ -117,7 +119,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         /**
          * 임시 파일명 jobContext에 저장
          */
-        jobCtx.putString(TEMP_FILE.name(), tempFilePath.toString());
+        jobCtx.putString(targetClass.getSimpleName() + "_" + TEMP_FILE.name(), tempFilePath.toString());
 
 
         return RepeatStatus.FINISHED;
