@@ -68,7 +68,7 @@ public class RealEstateSellJdbcRepository implements RealEstateSellRepository {
                     ps.setObject(6, entity.getLegalDongName(), VARCHAR);
                     ps.setObject(7, entity.getContractDate(), DATE);
                     ps.setObject(8, entity.getPrice(), BIGINT);
-                    ps.setObject(9, entity.getTradeMethodType(), VARCHAR);
+                    ps.setObject(9, entity.getTradeMethodType().code(), VARCHAR);
                     ps.setObject(10, entity.getCancelDate(), DATE);
                     ps.setObject(11, entity.getBuildYear(), INTEGER);
                     ps.setObject(12, entity.getNetLeasableArea(), DECIMAL);
