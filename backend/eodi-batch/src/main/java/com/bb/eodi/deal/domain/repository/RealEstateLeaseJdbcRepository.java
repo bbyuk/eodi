@@ -58,28 +58,28 @@ public class RealEstateLeaseJdbcRepository implements RealEstateLeaseRepository 
                 items,
                 500,
                 (ps, entity) -> {
-                    ps.setObject(1, BIGINT);
-                    ps.setObject(2, VARCHAR);
-                    ps.setObject(3, INTEGER);
-                    ps.setObject(4, INTEGER);
-                    ps.setObject(5, TINYINT);
-                    ps.setObject(6, VARCHAR);
-                    ps.setObject(7, DATE);
-                    ps.setObject(8, INTEGER);
-                    ps.setObject(9, INTEGER);
-                    ps.setObject(10, INTEGER);
-                    ps.setObject(11, INTEGER);
-                    ps.setObject(12, INTEGER);
-                    ps.setObject(13, INTEGER);
-                    ps.setObject(14, DECIMAL);
-                    ps.setObject(15, INTEGER);
-                    ps.setObject(16, DECIMAL);
-                    ps.setObject(17, VARCHAR);
-                    ps.setObject(18, VARCHAR);
-                    ps.setObject(19, INTEGER);
-                    ps.setObject(20, TINYINT);
-                    ps.setObject(21, TIMESTAMP);
-                    ps.setObject(22, TIMESTAMP);
+                    ps.setObject(1, entity.getRegionId(), BIGINT);
+                    ps.setObject(2, entity.getLandLotValue(), VARCHAR);
+                    ps.setObject(3, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(4, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(5, entity.getIsMountain(), TINYINT);
+                    ps.setObject(6, entity.getLegalDongName(), VARCHAR);
+                    ps.setObject(7, entity.getContractDate(), DATE);
+                    ps.setObject(8, entity.getContractStartMonth(), INTEGER);
+                    ps.setObject(9, entity.getContractEndMonth(), INTEGER);
+                    ps.setObject(10, entity.getDeposit(), INTEGER);
+                    ps.setObject(11, entity.getMonthlyRent(), INTEGER);
+                    ps.setObject(12, entity.getPreviousDeposit(), INTEGER);
+                    ps.setObject(13, entity.getPreviousMonthlyRent(), INTEGER);
+                    ps.setObject(14, entity.getTotalFloorArea(), DECIMAL);
+                    ps.setObject(15, entity.getBuildYear(), INTEGER);
+                    ps.setObject(16, entity.getNetLeasableArea(), DECIMAL);
+                    ps.setObject(17, entity.getHousingType(), VARCHAR);
+                    ps.setObject(18, entity.getTargetName(), VARCHAR);
+                    ps.setObject(19, entity.getFloor(), INTEGER);
+                    ps.setObject(20, entity.isUseRRRight(), TINYINT);
+                    ps.setObject(21, entity.getCreatedAt(), TIMESTAMP);
+                    ps.setObject(22, entity.getUpdatedAt(), TIMESTAMP);
                 }
         );
     }
