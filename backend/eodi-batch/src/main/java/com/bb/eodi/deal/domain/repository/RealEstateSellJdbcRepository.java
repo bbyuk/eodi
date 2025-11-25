@@ -60,30 +60,30 @@ public class RealEstateSellJdbcRepository implements RealEstateSellRepository {
                 items,
                 500,
                 (ps, entity) -> {
-                    ps.setObject(1, BIGINT);
-                    ps.setObject(2, VARCHAR);
-                    ps.setObject(3, INTEGER);
-                    ps.setObject(4, INTEGER);
-                    ps.setObject(5, TINYINT);
-                    ps.setObject(6, VARCHAR);
-                    ps.setObject(7, DATE);
-                    ps.setObject(8, BIGINT);
-                    ps.setObject(9, VARCHAR);
-                    ps.setObject(10, DATE);
-                    ps.setObject(11, INTEGER);
-                    ps.setObject(12, DECIMAL);
-                    ps.setObject(13, DECIMAL);
-                    ps.setObject(14, DECIMAL);
-                    ps.setObject(15, VARCHAR);
-                    ps.setObject(16, VARCHAR);
-                    ps.setObject(17, VARCHAR);
-                    ps.setObject(18, DATE);
-                    ps.setObject(19, VARCHAR);
-                    ps.setObject(20, VARCHAR);
-                    ps.setObject(21, INTEGER);
-                    ps.setObject(22, TINYINT);
-                    ps.setObject(23, TIMESTAMP);
-                    ps.setObject(24, TIMESTAMP);
+                    ps.setObject(1, entity.getRegionId(), BIGINT);
+                    ps.setObject(2, entity.getLandLotValue(), VARCHAR);
+                    ps.setObject(3, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(4, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(5, entity.getIsMountain(), TINYINT);
+                    ps.setObject(6, entity.getLegalDongName(), VARCHAR);
+                    ps.setObject(7, entity.getContractDate(), DATE);
+                    ps.setObject(8, entity.getPrice(), BIGINT);
+                    ps.setObject(9, entity.getTradeMethodType(), VARCHAR);
+                    ps.setObject(10, entity.getCancelDate(), DATE);
+                    ps.setObject(11, entity.getBuildYear(), INTEGER);
+                    ps.setObject(12, entity.getNetLeasableArea(), DECIMAL);
+                    ps.setObject(13, entity.getLandArea(), DECIMAL);
+                    ps.setObject(14, entity.getTotalFloorArea(), DECIMAL);
+                    ps.setObject(15, entity.getBuyer(), VARCHAR);
+                    ps.setObject(16, entity.getSeller(), VARCHAR);
+                    ps.setObject(17, entity.getHousingType(), VARCHAR);
+                    ps.setObject(18, entity.getDateOfRegistration(), DATE);
+                    ps.setObject(19, entity.getTargetName(), VARCHAR);
+                    ps.setObject(20, entity.getBuildingDong(), VARCHAR);
+                    ps.setObject(21, entity.getFloor(), INTEGER);
+                    ps.setObject(22, entity.getIsLandLease(), TINYINT);
+                    ps.setObject(23, entity.getCreatedAt(), TIMESTAMP);
+                    ps.setObject(24, entity.getUpdatedAt(), TIMESTAMP);
                 }
         );
     }
