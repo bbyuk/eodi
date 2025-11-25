@@ -36,6 +36,7 @@ public class BuildingAddressJdbcRepository {
                     building_main_no,
                     building_sub_no,
                     building_name,
+                    building_name_normalized,
                     building_name_detail,
                     building_manage_no,
                     umd_seq,
@@ -54,7 +55,7 @@ public class BuildingAddressJdbcRepository {
                 )
                 VALUES
                 (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
                 """;
         jdbcTemplate.batchUpdate(
@@ -76,21 +77,22 @@ public class BuildingAddressJdbcRepository {
                     ps.setObject(12, entity.getBuildingMainNo(), INTEGER);
                     ps.setObject(13, entity.getBuildingSubNo(), INTEGER);
                     ps.setObject(14, entity.getBuildingName(), VARCHAR);
-                    ps.setObject(15, entity.getBuildingNameDetail(), VARCHAR);
-                    ps.setObject(16, entity.getBuildingManageNo(), VARCHAR);
-                    ps.setObject(17, entity.getUmdSeq(), VARCHAR);
-                    ps.setObject(18, entity.getAdmDongCode(), VARCHAR);
-                    ps.setObject(19, entity.getAdmDongName(), VARCHAR);
-                    ps.setObject(20, entity.getZipNo(), VARCHAR);
-                    ps.setObject(21, entity.getZipNoSeq(), VARCHAR);
-                    ps.setObject(22, entity.getChangeReasonCode(), VARCHAR);
-                    ps.setObject(23, entity.getAnnouncementDate(), VARCHAR);
-                    ps.setObject(24, entity.getSigunguBuildingName(), VARCHAR);
-                    ps.setObject(25, entity.getIsComplex(), VARCHAR);
-                    ps.setObject(26, entity.getBasicDistrictNo(), VARCHAR);
-                    ps.setObject(27, entity.getHasDetailAddress(), VARCHAR);
-                    ps.setObject(28, entity.getRemark1(), VARCHAR);
-                    ps.setObject(29, entity.getRemark2(), VARCHAR);
+                    ps.setObject(15, entity.getBuildingNameNormalized(), VARCHAR);
+                    ps.setObject(16, entity.getBuildingNameDetail(), VARCHAR);
+                    ps.setObject(17, entity.getBuildingManageNo(), VARCHAR);
+                    ps.setObject(18, entity.getUmdSeq(), VARCHAR);
+                    ps.setObject(19, entity.getAdmDongCode(), VARCHAR);
+                    ps.setObject(20, entity.getAdmDongName(), VARCHAR);
+                    ps.setObject(21, entity.getZipNo(), VARCHAR);
+                    ps.setObject(22, entity.getZipNoSeq(), VARCHAR);
+                    ps.setObject(23, entity.getChangeReasonCode(), VARCHAR);
+                    ps.setObject(24, entity.getAnnouncementDate(), VARCHAR);
+                    ps.setObject(25, entity.getSigunguBuildingName(), VARCHAR);
+                    ps.setObject(26, entity.getIsComplex(), VARCHAR);
+                    ps.setObject(27, entity.getBasicDistrictNo(), VARCHAR);
+                    ps.setObject(28, entity.getHasDetailAddress(), VARCHAR);
+                    ps.setObject(29, entity.getRemark1(), VARCHAR);
+                    ps.setObject(30, entity.getRemark2(), VARCHAR);
                 }
         );
     }

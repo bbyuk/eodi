@@ -6,6 +6,7 @@ CREATE TABLE real_estate_sell
 (
     id                      BIGINT  NOT NULL AUTO_INCREMENT COMMENT '매매 실거래가 ID',
     region_id               BIGINT  NOT NULL    COMMENT '대상지역 법정동 ID',
+    land_lot_value          VARCHAR(30)         COMMENT '지번 값',
     land_lot_main_no        INT                 COMMENT '지번본번',
     land_lot_sub_no         INT                 COMMENT '지번부번',
     is_mountain             TINYINT(1)          COMMENT '산 여부',

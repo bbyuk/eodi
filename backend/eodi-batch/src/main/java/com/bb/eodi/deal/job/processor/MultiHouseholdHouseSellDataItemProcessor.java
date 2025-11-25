@@ -1,12 +1,12 @@
 package com.bb.eodi.deal.job.processor;
 
+import com.bb.eodi.deal.domain.dto.LandLot;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.domain.type.TradeMethodType;
-import com.bb.eodi.deal.job.util.DealDataParser;
+import com.bb.eodi.deal.job.dto.MultiHouseholdHouseSellDataItem;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
-import com.bb.eodi.deal.job.dto.MultiHouseholdHouseSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -43,14 +43,15 @@ public class MultiHouseholdHouseSellDataItemProcessor
         // 법정동코드 조회
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
-        Integer[] jibun = DealDataParser.parseJibun(item.jibun());
+        LandLot landLot = new LandLot(item.jibun());
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(item.umdNm())
-                .landLotMainNo(jibun[0])
-                .landLotSubNo(jibun[1])
-                .isMountain(jibun[2] != null && jibun[2] == 1)
+                .landLotValue(landLot.getValue())
+                .landLotMainNo(landLot.getLandLotMainNo())
+                .landLotSubNo(landLot.getLandLotSubNo())
+                .isMountain(landLot.getIsMountain())
                 .contractDate(
                         LocalDate.of(
                                 Integer.parseInt(item.dealYear()),
