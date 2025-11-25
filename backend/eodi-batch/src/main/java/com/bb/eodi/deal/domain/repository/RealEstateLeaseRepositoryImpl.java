@@ -3,14 +3,12 @@ package com.bb.eodi.deal.domain.repository;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * 부동산 임대차 실거래가 데이터 Repository 구현체
  */
-@Repository
 @RequiredArgsConstructor
 public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository {
 
