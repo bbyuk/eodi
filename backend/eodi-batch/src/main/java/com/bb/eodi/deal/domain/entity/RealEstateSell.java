@@ -22,8 +22,9 @@ import java.time.LocalDateTime;
 public class RealEstateSell {
 
     @Builder
-    public RealEstateSell(Long regionId, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
+    public RealEstateSell(Long regionId, String landLotValue, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
         this.regionId = regionId;
+        this.landLotValue = landLotValue;
         this.landLotMainNo = landLotMainNo;
         this.landLotSubNo = landLotSubNo;
         this.isMountain = isMountain;
@@ -56,6 +57,10 @@ public class RealEstateSell {
     // 대상 지역 법정동 ID (법정동코드 앞 5자리에 해당하는 법정동 ID)
     @Column(name = "region_id")
     private Long regionId;
+
+    // 지번 값
+    @Column(name = "land_lot_value")
+    private String landLotValue;
 
     // 지번본번
     @Column(name = "land_lot_main_no")
