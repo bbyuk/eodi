@@ -164,6 +164,7 @@ public class BuildingAddressLoadJobConfig {
                 .buildingMainNo(parseIntWithNull.apply(item.getBuildingMainNo()))
                 .buildingSubNo(parseIntWithNull.apply(item.getBuildingSubNo()))
                 .buildingName(item.getBuildingName())
+                .buildingNameNormalized(item.getBuildingName().replace(" ", ""))
                 .buildingNameDetail(item.getBuildingNameDetail())
                 .buildingManageNo(item.getBuildingManageNo())
                 .umdSeq(item.getUmdSeq())
