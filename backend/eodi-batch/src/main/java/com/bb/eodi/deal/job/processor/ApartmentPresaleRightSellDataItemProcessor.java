@@ -4,10 +4,9 @@ import com.bb.eodi.deal.domain.dto.LandLot;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.domain.type.TradeMethodType;
-import com.bb.eodi.deal.job.util.DealDataParser;
+import com.bb.eodi.deal.job.dto.ApartmentPresaleRightSellDataItem;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
-import com.bb.eodi.deal.job.dto.ApartmentPresaleRightSellDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -41,12 +40,13 @@ public class ApartmentPresaleRightSellDataItemProcessor
         // 법정동코드 조회
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
-        LandLot landLot = DealDataParser.parseLandLot(item.jibun());
+        LandLot landLot = new LandLot(item.jibun());
 
 
         return RealEstateSell.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(item.umdNm())
+                .landLotValue(landLot.getValue())
                 .landLotMainNo(landLot.getLandLotMainNo())
                 .landLotSubNo(landLot.getLandLotSubNo())
                 .isMountain(landLot.getIsMountain())

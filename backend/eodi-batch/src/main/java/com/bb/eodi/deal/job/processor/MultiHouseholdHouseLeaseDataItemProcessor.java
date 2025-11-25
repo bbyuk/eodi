@@ -3,10 +3,9 @@ package com.bb.eodi.deal.job.processor;
 import com.bb.eodi.deal.domain.dto.LandLot;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.type.HousingType;
-import com.bb.eodi.deal.job.util.DealDataParser;
+import com.bb.eodi.deal.job.dto.MultiHouseholdHouseLeaseDataItem;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
-import com.bb.eodi.deal.job.dto.MultiHouseholdHouseLeaseDataItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -38,12 +37,13 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
 
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));
-        LandLot landLot = DealDataParser.parseLandLot(item.jibun());
+        LandLot landLot = new LandLot(item.jibun());
 
         String contractTerm = item.contractTerm().trim();
         return RealEstateLease.builder()
                 .regionId(legalDong.getId())
                 .legalDongName(item.umdNm())
+                .landLotValue(landLot.getValue())
                 .landLotMainNo(landLot.getLandLotMainNo())
                 .landLotSubNo(landLot.getLandLotSubNo())
                 .isMountain(landLot.getIsMountain())
