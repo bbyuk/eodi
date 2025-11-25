@@ -1,5 +1,6 @@
 package com.bb.eodi.deal.job.util;
 
+import com.bb.eodi.deal.domain.dto.LandLot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -22,8 +23,8 @@ public class DealDataParser {
      *
      * @return [{지번본번}, {지번부번}, {산여부(1(산)|0}] Integer 배열
      */
-    public static Integer[] parseJibun(String str) {
-        Integer[] answer = new Integer[3];
+    public static LandLot parseLandLot(String str) {
+        LandLot answer = new LandLot();
 
         try {
             String[] split = str.split("-");
@@ -35,23 +36,23 @@ public class DealDataParser {
             // 2. 산 예외
             // 산89
             // 산122-21
-            answer[2] = 0;
+            answer.setIsMountain(false);
             if (str.startsWith("산")) {
-                answer[2] = 1;
+                answer.setIsMountain(true);
                 split[0] = split[0].substring(1);
             }
 
             if (split.length == 1) {
-                answer[0] = Integer.parseInt(split[0]);
+                answer.setLandLotMainNo(Integer.parseInt(split[0]));
             } else {
-                answer[0] = Integer.parseInt(split[0]);
-                answer[1] = Integer.parseInt(split[1]);
+                answer.setLandLotMainNo(Integer.parseInt(split[0]));
+                answer.setLandLotSubNo(Integer.parseInt(split[1]));
             }
         }
         catch(Exception e) {
             log.error(e.getMessage(), e);
             log.error("지번을 파싱하는 도중 에러가 발생했습니다.");
-            answer = new Integer[3];
+            answer = new LandLot();
         }
 
         return answer;
