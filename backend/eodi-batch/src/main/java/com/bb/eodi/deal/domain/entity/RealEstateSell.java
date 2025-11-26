@@ -3,10 +3,7 @@ package com.bb.eodi.deal.domain.entity;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.domain.type.TradeMethodType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,64 +14,11 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Entity
+@Builder
 @Table(name = "real_estate_sell")
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RealEstateSell {
-
-    @Builder
-    public RealEstateSell(
-            Long regionId,
-            String landLotValue,
-            Integer landLotMainNo,
-            Integer landLotSubNo,
-            Boolean isMountain,
-            String legalDongName,
-            LocalDate contractDate,
-            Long price,
-            TradeMethodType tradeMethodType,
-            LocalDate cancelDate,
-            Integer buildYear,
-            BigDecimal netLeasableArea,
-            BigDecimal landArea,
-            BigDecimal totalFloorArea,
-            String buyer,
-            String seller,
-            HousingType housingType,
-            LocalDate dateOfRegistration,
-            String targetName,
-            String buildingDong,
-            Integer floor,
-            Boolean isLandLease,
-            BigDecimal xPos,
-            BigDecimal yPos
-    ) {
-        this.regionId = regionId;
-        this.landLotValue = landLotValue;
-        this.landLotMainNo = landLotMainNo;
-        this.landLotSubNo = landLotSubNo;
-        this.isMountain = isMountain;
-        this.legalDongName = legalDongName;
-        this.contractDate = contractDate;
-        this.price = price;
-        this.tradeMethodType = tradeMethodType;
-        this.cancelDate = cancelDate;
-        this.buildYear = buildYear;
-        this.netLeasableArea = netLeasableArea;
-        this.landArea = landArea;
-        this.totalFloorArea = totalFloorArea;
-        this.buyer = buyer;
-        this.seller = seller;
-        this.housingType = housingType;
-        this.dateOfRegistration = dateOfRegistration;
-        this.targetName = targetName;
-        this.buildingDong = buildingDong;
-        this.floor = floor;
-        this.isLandLease = isLandLease;
-        this.xPos = xPos;
-        this.yPos = yPos;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
