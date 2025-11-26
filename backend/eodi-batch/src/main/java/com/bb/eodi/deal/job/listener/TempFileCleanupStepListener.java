@@ -22,14 +22,14 @@ public class TempFileCleanupStepListener<T> implements StepExecutionListener {
 
     private final Class<T> targetClass;
 
-    // TODO class명별로 TEMP_FILE명 분기 처리 추가
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        ExecutionContext stepCtx = stepExecution.getExecutionContext();
+        ExecutionContext jobCtx = stepExecution.getJobExecution().getExecutionContext();
 
         if (stepExecution.getStatus() == BatchStatus.COMPLETED) {
-            if (stepCtx.containsKey(MonthlyDealDataLoadJobKey.tempFile(targetClass))) {
-                Path tempFilePath = Paths.get(stepCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass)));
+            if (jobCtx.containsKey(MonthlyDealDataLoadJobKey.tempFile(targetClass))) {
+
+                Path tempFilePath = Paths.get(jobCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass)));
 
                 try {
                     Files.deleteIfExists(tempFilePath);
