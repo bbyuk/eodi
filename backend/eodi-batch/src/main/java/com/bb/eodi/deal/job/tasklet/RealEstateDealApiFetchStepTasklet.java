@@ -1,9 +1,10 @@
 package com.bb.eodi.deal.job.tasklet;
 
+import com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey;
+import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.integration.gov.deal.DealDataApiClient;
 import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
 import com.bb.eodi.integration.gov.deal.dto.DealDataResponse;
-import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.BufferedWriter;
 import java.nio.file.Files;
@@ -21,9 +23,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey.DEAL_MONTH;
-import static com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey.TEMP_FILE;
 
 /**
  * 부동산 거래 데이터 API 요청 Tasklet
@@ -38,14 +37,17 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     private final ObjectMapper objectMapper;
     private final int pageSize;
 
+    @Value("#{jobParameters['year-month']}")
+    private String dealMonth;
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
         // 이전에 생성되어 있는 파일이 있는지 확인 후 API 요청 스킵여부 결정
-        if (jobCtx.containsKey(TEMP_FILE.name())) {
-            if (Files.exists(Paths.get(jobCtx.getString(TEMP_FILE.name())))) {
-                log.info("이전 실행에서 생성된 임시파일 발견. API 요청 skip. file={}", jobCtx.getString(TEMP_FILE.name()));
+        if (jobCtx.containsKey(MonthlyDealDataLoadJobKey.tempFile(targetClass))) {
+            if (Files.exists(Paths.get(jobCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass))))) {
+                log.info("이전 실행에서 생성된 임시파일 발견. API 요청 skip. file={}", jobCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass)));
                 return RepeatStatus.FINISHED;
             }
             else {
@@ -54,7 +56,6 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         }
 
 
-        String dealMonth = jobCtx.getString(DEAL_MONTH.name());
 
         // API 요청 대상 법정동 목록 조회
         List<MonthlyLoadTargetLegalDongDto> monthlyLoadTargetLegalDongList = legalDongRepository.findAllSummary()
@@ -64,7 +65,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
                 .collect(Collectors.toList());
 
         // temp file 생성
-        Path tempFilePath = Files.createTempFile(TEMP_FILE.name(), null);
+        Path tempFilePath = Files.createTempFile(MonthlyDealDataLoadJobKey.tempFile(targetClass), null);
 
         /**
          * 전국 대상 API 요청 후 파일에 작성
@@ -117,7 +118,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         /**
          * 임시 파일명 jobContext에 저장
          */
-        jobCtx.putString(TEMP_FILE.name(), tempFilePath.toString());
+        jobCtx.putString(MonthlyDealDataLoadJobKey.tempFile(targetClass), tempFilePath.toString());
 
 
         return RepeatStatus.FINISHED;

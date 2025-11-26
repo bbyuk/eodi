@@ -29,6 +29,6 @@ public class MonthlyDealDataLoadPreprocessStepTasklet implements Tasklet {
 
         jobCtx.putString(MonthlyDealDataLoadJobKey.DEAL_MONTH.name(), dealMonth);
 
-        return null;
+        return RepeatStatus.FINISHED;
     }
 }
