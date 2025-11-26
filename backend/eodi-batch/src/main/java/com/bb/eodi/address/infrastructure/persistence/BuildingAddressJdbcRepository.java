@@ -1,4 +1,4 @@
-package com.bb.eodi.address.domain.repository;
+package com.bb.eodi.address.infrastructure.persistence;
 
 import com.bb.eodi.address.domain.entity.BuildingAddress;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class BuildingAddressJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void saveAll(List<? extends BuildingAddress> entities) {
+    public void batchInsert(List<? extends BuildingAddress> entities) {
         String sql = """
                 INSERT INTO building_address
                 (

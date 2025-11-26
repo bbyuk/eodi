@@ -1,10 +1,10 @@
 package com.bb.eodi.address.job.config;
 
-import com.bb.eodi.address.job.reader.BuildingAddressItemReader;
-import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.address.domain.dto.BuildingAddressItem;
 import com.bb.eodi.address.domain.entity.BuildingAddress;
-import com.bb.eodi.address.domain.repository.BuildingAddressJdbcRepository;
+import com.bb.eodi.address.domain.repository.BuildingAddressRepository;
+import com.bb.eodi.address.job.reader.BuildingAddressItemReader;
+import com.bb.eodi.core.EodiBatchProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -13,7 +13,10 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.*;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemStreamReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +40,7 @@ public class BuildingAddressLoadJobConfig {
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
-    private final BuildingAddressJdbcRepository buildingAddressRepository;
+    private final BuildingAddressRepository buildingAddressRepository;
 
     private static final int CONCURRENCY_LIMIT = 12;
 
@@ -190,7 +193,7 @@ public class BuildingAddressLoadJobConfig {
     @Bean
     @StepScope
     public ItemWriter<BuildingAddress> buildingAddressItemWriter() {
-        return chunk -> buildingAddressRepository.saveAll(chunk.getItems());
+        return chunk -> buildingAddressRepository.batchInsert(chunk.getItems());
     }
 
 
