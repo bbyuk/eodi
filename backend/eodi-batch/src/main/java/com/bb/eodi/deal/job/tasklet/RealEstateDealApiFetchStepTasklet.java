@@ -1,5 +1,6 @@
 package com.bb.eodi.deal.job.tasklet;
 
+import com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.integration.gov.deal.DealDataApiClient;
 import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
@@ -23,8 +24,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey.TEMP_FILE;
-
 /**
  * 부동산 거래 데이터 API 요청 Tasklet
  */
@@ -46,9 +45,9 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
         // 이전에 생성되어 있는 파일이 있는지 확인 후 API 요청 스킵여부 결정
-        if (jobCtx.containsKey(TEMP_FILE.name())) {
-            if (Files.exists(Paths.get(jobCtx.getString(TEMP_FILE.name())))) {
-                log.info("이전 실행에서 생성된 임시파일 발견. API 요청 skip. file={}", jobCtx.getString(TEMP_FILE.name()));
+        if (jobCtx.containsKey(MonthlyDealDataLoadJobKey.tempFile(targetClass))) {
+            if (Files.exists(Paths.get(jobCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass))))) {
+                log.info("이전 실행에서 생성된 임시파일 발견. API 요청 skip. file={}", jobCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass)));
                 return RepeatStatus.FINISHED;
             }
             else {
@@ -66,7 +65,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
                 .collect(Collectors.toList());
 
         // temp file 생성
-        Path tempFilePath = Files.createTempFile(TEMP_FILE.name(), null);
+        Path tempFilePath = Files.createTempFile(MonthlyDealDataLoadJobKey.tempFile(targetClass), null);
 
         /**
          * 전국 대상 API 요청 후 파일에 작성
@@ -119,7 +118,7 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
         /**
          * 임시 파일명 jobContext에 저장
          */
-        jobCtx.putString(targetClass.getSimpleName() + "_" + TEMP_FILE.name(), tempFilePath.toString());
+        jobCtx.putString(MonthlyDealDataLoadJobKey.tempFile(targetClass), tempFilePath.toString());
 
 
         return RepeatStatus.FINISHED;

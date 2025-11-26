@@ -1,5 +1,7 @@
 package com.bb.eodi.deal.job.listener;
 
+import com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
@@ -11,13 +13,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey.TEMP_FILE;
-
 /**
  * Chunk step 완료 후 temp file 삭제 처리를 위한 StepExecutionListener
  */
 @Slf4j
+@RequiredArgsConstructor
 public class TempFileCleanupStepListener<T> implements StepExecutionListener {
+
+    private final Class<T> targetClass;
 
     // TODO class명별로 TEMP_FILE명 분기 처리 추가
     @Override
@@ -25,8 +28,8 @@ public class TempFileCleanupStepListener<T> implements StepExecutionListener {
         ExecutionContext stepCtx = stepExecution.getExecutionContext();
 
         if (stepExecution.getStatus() == BatchStatus.COMPLETED) {
-            if (stepCtx.containsKey(TEMP_FILE.name())) {
-                Path tempFilePath = Paths.get(stepCtx.getString(TEMP_FILE.name()));
+            if (stepCtx.containsKey(MonthlyDealDataLoadJobKey.tempFile(targetClass))) {
+                Path tempFilePath = Paths.get(stepCtx.getString(MonthlyDealDataLoadJobKey.tempFile(targetClass)));
 
                 try {
                     Files.deleteIfExists(tempFilePath);
@@ -37,7 +40,7 @@ public class TempFileCleanupStepListener<T> implements StepExecutionListener {
                 }
             }
             else {
-                log.warn("StepExecutionContext에 temp file path({}}가 없음.", TEMP_FILE.name());
+                log.warn("StepExecutionContext에 temp file path({}}가 없음.", MonthlyDealDataLoadJobKey.tempFile(targetClass));
             }
         }
         else {
