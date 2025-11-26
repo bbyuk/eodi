@@ -61,7 +61,7 @@ public class MonthlyDealDataLoadJobConfig {
             Flow officetelLeaseApiFetchFlow
     ) {
         SimpleAsyncTaskExecutor apiFetchExecutor = new SimpleAsyncTaskExecutor();
-        apiFetchExecutor.setConcurrencyLimit(2);
+        apiFetchExecutor.setConcurrencyLimit(3);
 
         return new FlowBuilder<Flow>("apiFetchParallelFlow")
                 .start(apartmentSellApiFetchFlow)
