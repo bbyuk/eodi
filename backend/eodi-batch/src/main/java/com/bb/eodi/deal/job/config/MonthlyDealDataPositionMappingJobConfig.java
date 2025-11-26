@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.job.config;
 
 import com.bb.eodi.core.EodiBatchProperties;
+import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -48,16 +49,16 @@ public class MonthlyDealDataPositionMappingJobConfig {
      */
     @Bean
     public Job monthlyDealDataPositionMappingJob(
-            Flow monthlyRealEstateSellDataPositionMappingFlow
-//            Flow monthlyRealEstateLeaseDataPositionMappingFlow
+            Flow monthlyRealEstateSellDataPositionMappingFlow,
+            Flow monthlyRealEstateLeaseDataPositionMappingFlow
     ) {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setConcurrencyLimit(2);
 
         return new JobBuilder("monthlyDealDataPositionMappingJob", jobRepository)
                 .start(monthlyRealEstateSellDataPositionMappingFlow)
-//                .split(executor)
-//                .add(monthlyRealEstateLeaseDataPositionMappingFlow)
+                .split(executor)
+                .add(monthlyRealEstateLeaseDataPositionMappingFlow)
                 .end()
                 .build();
     }
@@ -88,30 +89,30 @@ public class MonthlyDealDataPositionMappingJobConfig {
                 .build();
     }
 
-//    /**
-//     * 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
-//     *
-//     * @param monthlyRealEstateLeaseDataPositionMappingItemReader    월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemReader
-//     * @param monthlyRealEstateLeaseDataPositionMappingItemProcessor 월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemProcessor
-//     * @param monthlyRealEstateLeaseDataPositionMappingItemWriter    월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemWriter
-//     * @return 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
-//     */
-//    @Bean
-//    public Flow monthlyRealEstateLeaseDataPositionMappingFlow(
-//            ItemReader<RealEstateLease> monthlyRealEstateLeaseDataPositionMappingItemReader,
-//            ItemProcessor<RealEstateLease, RealEstateLease> monthlyRealEstateLeaseDataPositionMappingItemProcessor,
-//            ItemWriter<RealEstateLease> monthlyRealEstateLeaseDataPositionMappingItemWriter
-//    ) {
-//        return new FlowBuilder<Flow>("monthlyRealEstateLeaseDataPositionMappingFlow")
-//                .start(new StepBuilder("monthlyRealEstateLeaseDataPositionMappingStep", jobRepository)
-//                        .<RealEstateLease, RealEstateLease>chunk(eodiBatchProperties.batchSize(), transactionManager)
-//                        .reader(monthlyRealEstateLeaseDataPositionMappingItemReader)
-//                        .processor(monthlyRealEstateLeaseDataPositionMappingItemProcessor)
-//                        .writer(monthlyRealEstateLeaseDataPositionMappingItemWriter)
-//                        .build()
-//                )
-//                .build();
-//    }
+    /**
+     * 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
+     *
+     * @param monthlyRealEstateLeaseDataPositionMappingItemReader    월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemReader
+     * @param realEstateLeaseDataPositionMappingItemProcessor 월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemProcessor
+     * @param realEstateLeaseItemUpdateWriter    월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemWriter
+     * @return 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
+     */
+    @Bean
+    public Flow monthlyRealEstateLeaseDataPositionMappingFlow(
+            ItemReader<RealEstateLease> monthlyRealEstateLeaseDataPositionMappingItemReader,
+            ItemProcessor<RealEstateLease, RealEstateLease> realEstateLeaseDataPositionMappingItemProcessor,
+            ItemWriter<RealEstateLease> realEstateLeaseItemUpdateWriter
+    ) {
+        return new FlowBuilder<Flow>("monthlyRealEstateLeaseDataPositionMappingFlow")
+                .start(new StepBuilder("monthlyRealEstateLeaseDataPositionMappingStep", jobRepository)
+                        .<RealEstateLease, RealEstateLease>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                        .reader(monthlyRealEstateLeaseDataPositionMappingItemReader)
+                        .processor(realEstateLeaseDataPositionMappingItemProcessor)
+                        .writer(realEstateLeaseItemUpdateWriter)
+                        .build()
+                )
+                .build();
+    }
 
 
 }
