@@ -128,4 +128,13 @@ public class RealEstateSell {
     // 수정일시
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+
+    /**
+     * 올바른 지번 정보가 있는지 여부를 리턴한다.
+     * @return 올바른 지번 여부
+     */
+    public boolean hasCorrectLandLot() {
+        return landLotMainNo != null || landLotSubNo != null || isMountain != null;
+    }
 }
