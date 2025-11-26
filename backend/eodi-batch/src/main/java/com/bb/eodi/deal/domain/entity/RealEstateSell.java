@@ -22,7 +22,32 @@ import java.time.LocalDateTime;
 public class RealEstateSell {
 
     @Builder
-    public RealEstateSell(Long regionId, String landLotValue, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
+    public RealEstateSell(
+            Long regionId,
+            String landLotValue,
+            Integer landLotMainNo,
+            Integer landLotSubNo,
+            Boolean isMountain,
+            String legalDongName,
+            LocalDate contractDate,
+            Long price,
+            TradeMethodType tradeMethodType,
+            LocalDate cancelDate,
+            Integer buildYear,
+            BigDecimal netLeasableArea,
+            BigDecimal landArea,
+            BigDecimal totalFloorArea,
+            String buyer,
+            String seller,
+            HousingType housingType,
+            LocalDate dateOfRegistration,
+            String targetName,
+            String buildingDong,
+            Integer floor,
+            Boolean isLandLease,
+            BigDecimal xPos,
+            BigDecimal yPos
+    ) {
         this.regionId = regionId;
         this.landLotValue = landLotValue;
         this.landLotMainNo = landLotMainNo;
@@ -45,6 +70,8 @@ public class RealEstateSell {
         this.buildingDong = buildingDong;
         this.floor = floor;
         this.isLandLease = isLandLease;
+        this.xPos = xPos;
+        this.yPos = yPos;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -117,7 +144,7 @@ public class RealEstateSell {
     // 매도자
     @Column(name = "seller")
     private String seller;
-    
+
     // 주택 유형
     @Column(name = "housing_type")
     private HousingType housingType;
@@ -137,10 +164,18 @@ public class RealEstateSell {
     // 층
     @Column(name = "floor")
     private Integer floor;
-    
+
     // 토지임대부 여부
     @Column(name = "is_land_lease")
     private Boolean isLandLease;
+
+    // x 좌표
+    @Column(name = "x_pos")
+    private BigDecimal xPos;
+
+    // y 좌표
+    @Column(name = "y_pos")
+    private BigDecimal yPos;
 
     // 생성일시
     @Column(name = "created_at")

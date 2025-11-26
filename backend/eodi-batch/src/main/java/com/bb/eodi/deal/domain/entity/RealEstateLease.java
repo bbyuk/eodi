@@ -18,7 +18,30 @@ import java.time.LocalDateTime;
 public class RealEstateLease {
 
     @Builder
-    public RealEstateLease(Long regionId, String landLotValue, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
+    public RealEstateLease(
+            Long regionId,
+            String landLotValue,
+            Integer landLotMainNo,
+            Integer landLotSubNo,
+            Boolean isMountain,
+            String legalDongName,
+            LocalDate contractDate,
+            Integer contractStartMonth,
+            Integer contractEndMonth,
+            Integer deposit,
+            Integer monthlyRent,
+            Integer previousDeposit,
+            Integer previousMonthlyRent,
+            BigDecimal totalFloorArea,
+            Integer buildYear,
+            BigDecimal netLeasableArea,
+            HousingType housingType,
+            String targetName,
+            Integer floor,
+            boolean useRRRight,
+            BigDecimal xPos,
+            BigDecimal yPos
+    ) {
         this.regionId = regionId;
         this.landLotValue = landLotValue;
         this.landLotMainNo = landLotMainNo;
@@ -39,6 +62,8 @@ public class RealEstateLease {
         this.targetName = targetName;
         this.floor = floor;
         this.useRRRight = useRRRight;
+        this.xPos = xPos;
+        this.yPos = yPos;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -127,6 +152,14 @@ public class RealEstateLease {
     // 갱신계약청구권 사용
     @Column(name = "use_rr_right")
     private boolean useRRRight;
+    
+    // x좌표
+    @Column(name = "x_pos")
+    private BigDecimal xPos;
+    
+    // y좌표
+    @Column(name = "y_pos")
+    private BigDecimal yPos;
 
     // 생성일시
     @Column(name = "created_at")
