@@ -25,6 +25,8 @@ CREATE TABLE real_estate_lease
     target_name             VARCHAR(100) COMMENT '대상명',
     floor                   INTEGER COMMENT '층',
     use_rr_right            TINYINT(1) NOT NULL DEFAULT 0 COMMENT '갱신계약 청구권 사용여부',
+    x_pos                   DECIMAL(15, 6)  COMMENT 'X좌표',
+    y_pos                   DECIMAL(15, 6)  COMMENT 'Y좌표',
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
     PRIMARY KEY (id, contract_date)
