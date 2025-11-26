@@ -63,8 +63,8 @@ public class MultiUnitDetachedSellDataItemProcessor
                                 : null
                 )
                 .buildYear(StringUtils.hasText(item.buildYear()) ? Integer.parseInt(item.buildYear()) : null)
-                .landArea(new BigDecimal(item.plottageAr()))
-                .totalFloorArea(new BigDecimal(item.totalFloorAr()))
+                .landArea(StringUtils.hasText(item.plottageAr()) ? new BigDecimal(item.plottageAr()) : null)
+                .totalFloorArea(StringUtils.hasText(item.totalFloorAr()) ? new BigDecimal(item.totalFloorAr()) : null)
                 .buyer(item.buyerGbn())
                 .seller(item.slerGbn())
                 .housingType(
