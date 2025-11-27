@@ -1,4 +1,4 @@
-package com.bb.eodi.address.domain.repository;
+package com.bb.eodi.address.infrastructure.persistence.jdbc;
 
 import com.bb.eodi.address.domain.entity.LandLotAddress;
 import lombok.RequiredArgsConstructor;
