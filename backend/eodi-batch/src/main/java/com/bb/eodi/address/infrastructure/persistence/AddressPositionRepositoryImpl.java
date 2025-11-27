@@ -2,6 +2,8 @@ package com.bb.eodi.address.infrastructure.persistence;
 
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
+import com.bb.eodi.address.infrastructure.persistence.jdbc.AddressPositionJdbcRepository;
+import com.bb.eodi.address.infrastructure.persistence.jpa.AddressPositionJpaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

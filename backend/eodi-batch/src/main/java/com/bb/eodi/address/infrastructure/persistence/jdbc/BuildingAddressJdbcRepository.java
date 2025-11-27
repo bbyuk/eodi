@@ -1,4 +1,4 @@
-package com.bb.eodi.address.infrastructure.persistence;
+package com.bb.eodi.address.infrastructure.persistence.jdbc;
 
 import com.bb.eodi.address.domain.entity.BuildingAddress;
 import lombok.RequiredArgsConstructor;
