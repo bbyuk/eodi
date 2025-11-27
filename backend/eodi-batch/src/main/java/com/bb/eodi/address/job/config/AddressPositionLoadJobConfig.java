@@ -179,6 +179,6 @@ public class AddressPositionLoadJobConfig {
     @Bean
     @StepScope
     public ItemWriter<AddressPosition> addressPositionItemWriter() {
-        return chunk -> addressPositionRepository.saveAll(chunk.getItems());
+        return chunk -> addressPositionRepository.insertBatch(chunk.getItems());
     }
 }
