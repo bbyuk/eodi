@@ -3,10 +3,7 @@ package com.bb.eodi.deal.domain.entity;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.domain.type.TradeMethodType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,37 +14,11 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Entity
+@Builder
 @Table(name = "real_estate_sell")
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RealEstateSell {
-
-    @Builder
-    public RealEstateSell(Long regionId, String landLotValue, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Long price, TradeMethodType tradeMethodType, LocalDate cancelDate, Integer buildYear, BigDecimal netLeasableArea, BigDecimal landArea, BigDecimal totalFloorArea, String buyer, String seller, HousingType housingType, LocalDate dateOfRegistration, String targetName, String buildingDong, Integer floor, Boolean isLandLease) {
-        this.regionId = regionId;
-        this.landLotValue = landLotValue;
-        this.landLotMainNo = landLotMainNo;
-        this.landLotSubNo = landLotSubNo;
-        this.isMountain = isMountain;
-        this.legalDongName = legalDongName;
-        this.contractDate = contractDate;
-        this.price = price;
-        this.tradeMethodType = tradeMethodType;
-        this.cancelDate = cancelDate;
-        this.buildYear = buildYear;
-        this.netLeasableArea = netLeasableArea;
-        this.landArea = landArea;
-        this.totalFloorArea = totalFloorArea;
-        this.buyer = buyer;
-        this.seller = seller;
-        this.housingType = housingType;
-        this.dateOfRegistration = dateOfRegistration;
-        this.targetName = targetName;
-        this.buildingDong = buildingDong;
-        this.floor = floor;
-        this.isLandLease = isLandLease;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -117,7 +88,7 @@ public class RealEstateSell {
     // 매도자
     @Column(name = "seller")
     private String seller;
-    
+
     // 주택 유형
     @Column(name = "housing_type")
     private HousingType housingType;
@@ -137,10 +108,18 @@ public class RealEstateSell {
     // 층
     @Column(name = "floor")
     private Integer floor;
-    
+
     // 토지임대부 여부
     @Column(name = "is_land_lease")
     private Boolean isLandLease;
+
+    // x 좌표
+    @Column(name = "x_pos")
+    private BigDecimal xPos;
+
+    // y 좌표
+    @Column(name = "y_pos")
+    private BigDecimal yPos;
 
     // 생성일시
     @Column(name = "created_at")
@@ -149,4 +128,13 @@ public class RealEstateSell {
     // 수정일시
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+
+    /**
+     * 올바른 지번 정보가 있는지 여부를 리턴한다.
+     * @return 올바른 지번 여부
+     */
+    public boolean hasCorrectLandLot() {
+        return landLotMainNo != null || landLotSubNo != null || isMountain != null;
+    }
 }

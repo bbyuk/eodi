@@ -2,10 +2,7 @@ package com.bb.eodi.deal.domain.entity;
 
 import com.bb.eodi.deal.domain.type.HousingType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,35 +10,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
 @Table(name = "real_estate_lease")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class RealEstateLease {
-
-    @Builder
-    public RealEstateLease(Long regionId, String landLotValue, Integer landLotMainNo, Integer landLotSubNo, Boolean isMountain, String legalDongName, LocalDate contractDate, Integer contractStartMonth, Integer contractEndMonth, Integer deposit, Integer monthlyRent, Integer previousDeposit, Integer previousMonthlyRent, BigDecimal totalFloorArea, Integer buildYear, BigDecimal netLeasableArea, HousingType housingType, String targetName, Integer floor, boolean useRRRight) {
-        this.regionId = regionId;
-        this.landLotValue = landLotValue;
-        this.landLotMainNo = landLotMainNo;
-        this.landLotSubNo = landLotSubNo;
-        this.isMountain = isMountain;
-        this.legalDongName = legalDongName;
-        this.contractDate = contractDate;
-        this.contractStartMonth = contractStartMonth;
-        this.contractEndMonth = contractEndMonth;
-        this.deposit = deposit;
-        this.monthlyRent = monthlyRent;
-        this.previousDeposit = previousDeposit;
-        this.previousMonthlyRent = previousMonthlyRent;
-        this.totalFloorArea = totalFloorArea;
-        this.buildYear = buildYear;
-        this.netLeasableArea = netLeasableArea;
-        this.housingType = housingType;
-        this.targetName = targetName;
-        this.floor = floor;
-        this.useRRRight = useRRRight;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -127,6 +100,14 @@ public class RealEstateLease {
     // 갱신계약청구권 사용
     @Column(name = "use_rr_right")
     private boolean useRRRight;
+    
+    // x좌표
+    @Column(name = "x_pos")
+    private BigDecimal xPos;
+    
+    // y좌표
+    @Column(name = "y_pos")
+    private BigDecimal yPos;
 
     // 생성일시
     @Column(name = "created_at")

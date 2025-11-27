@@ -27,6 +27,8 @@ CREATE TABLE real_estate_sell
     building_dong           VARCHAR(50)         COMMENT '건물 동',
     floor                   INTEGER             COMMENT '층',
     is_land_lease           TINYINT(1) NOT NULL DEFAULT 0 COMMENT '토지임대부 여부',
+    x_pos                   DECIMAL(15, 6)  COMMENT 'X좌표',
+    y_pos                   DECIMAL(15, 6)  COMMENT 'Y좌표',
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
     PRIMARY KEY (id, contract_date)
