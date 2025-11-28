@@ -39,3 +39,8 @@ CREATE TABLE building_address
 -- constraint
 ALTER TABLE building_address
     ADD CONSTRAINT uq_building_addr_domain_key UNIQUE(building_manage_no);
+
+-- -----------------------------------------------------------------------------------------
+-- index
+-- 법정동코드 + 건물본번 + 건물부번 + 산여부
+CREATE INDEX idx_building_address ON building_address(legal_dong_code, land_lot_main_no, land_lot_sub_no, is_mountain);
