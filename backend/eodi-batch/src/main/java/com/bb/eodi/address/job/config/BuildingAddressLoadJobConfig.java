@@ -1,6 +1,6 @@
 package com.bb.eodi.address.job.config;
 
-import com.bb.eodi.address.domain.dto.BuildingAddressItem;
+import com.bb.eodi.address.job.dto.BuildingAddressItem;
 import com.bb.eodi.address.domain.entity.BuildingAddress;
 import com.bb.eodi.address.domain.repository.BuildingAddressRepository;
 import com.bb.eodi.address.job.reader.BuildingAddressItemReader;

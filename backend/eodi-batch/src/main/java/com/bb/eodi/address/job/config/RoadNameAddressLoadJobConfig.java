@@ -1,6 +1,6 @@
 package com.bb.eodi.address.job.config;
 
-import com.bb.eodi.address.domain.dto.RoadNameAddressItem;
+import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.core.EodiBatchProperties;

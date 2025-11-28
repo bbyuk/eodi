@@ -3,7 +3,7 @@ package com.bb.eodi.address.job.config;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import com.bb.eodi.address.job.reader.AddressPositionAllItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.address.domain.dto.AddressPositionItem;
+import com.bb.eodi.address.job.dto.AddressPositionItem;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
