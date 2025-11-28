@@ -44,4 +44,11 @@ public interface LegalDongRepository {
      */
     List<LegalDongSummaryDto> findAllSummary();
 
+    /**
+     * 법정동의 시도코드, 시군구코드, 동명으로 법정동을 조회한다.
+     * @param sidoCode 시도코드
+     * @param sigunguCode 시군구코드
+     * @param legalDongName 동명
+     */
+    Optional<LegalDong> findBySidoCodeAndSigunguCodeAndLegalDongName(String sidoCode, String sigunguCode, String legalDongName);
 }

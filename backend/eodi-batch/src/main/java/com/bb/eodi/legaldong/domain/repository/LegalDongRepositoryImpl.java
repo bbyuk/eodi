@@ -2,6 +2,10 @@ package com.bb.eodi.legaldong.domain.repository;
 
 import com.bb.eodi.legaldong.domain.dto.LegalDongSummaryDto;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
+import com.bb.eodi.legaldong.domain.entity.QLegalDong;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryFactory;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -22,6 +26,7 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final LegalDongJpaRepository legalDongJpaRepository;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Optional<LegalDong> findById(Long id) {
@@ -99,5 +104,30 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     @Override
     public List<LegalDongSummaryDto> findAllSummary() {
         return legalDongJpaRepository.findAllSummary();
+    }
+
+    @Override
+    public Optional<LegalDong> findBySidoCodeAndSigunguCodeAndLegalDongName(String sidoCode, String sigunguCode, String legalDongName) {
+
+        QLegalDong legalDong = QLegalDong.legalDong;
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (sidoCode != null) {
+            condition.and(legalDong.sidoCode.eq(sidoCode));
+        }
+
+        if (sigunguCode != null) {
+            condition.and(legalDong.sigunguCode.eq(sigunguCode));
+        }
+
+        if (legalDongName != null) {
+            condition.and(legalDong.name.eq(legalDongName));
+        }
+
+        return Optional.ofNullable(
+                queryFactory.selectFrom(legalDong)
+                .where(condition)
+                .fetchOne()
+        );
     }
 }
