@@ -40,7 +40,7 @@ class BuildingAddressRepositoryTest {
 
         // then
         Assertions.assertThat(buildingAddress).isNotEmpty();
-        Assertions.assertThat(buildingAddress.get(0).getId()).isEqualTo(1L);
+        Assertions.assertThat(buildingAddress).hasSize(1);
     }
 
 }
