@@ -17,5 +17,10 @@ public interface BuildingAddressRepository {
      */
     void batchInsert(List<? extends BuildingAddress> entities);
 
+    /**
+     * 조회 쿼리 파라미터에 해당하는 건물주소를 찾아 리턴한다.
+     * @param query 조회 쿼리 파라미터
+     * @return 건물주소 목록
+     */
     List<BuildingAddress> findBuildingAddress(BuildingAddressFindQuery query);
 }
