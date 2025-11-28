@@ -32,3 +32,6 @@ ALTER TABLE address_position
                                                       building_sub_no,
                                                       legal_dong_code
                                                      )
+-- -----------------------------------------------------------------------------------------
+-- index
+CREATE INDEX idx_address_position_key ON address_position(road_name_code, is_underground, land_lot_main_no, land_lot_sub_no, legal_dong_code);
