@@ -1,4 +1,4 @@
-package com.bb.eodi.address.domain.dto;
+package com.bb.eodi.address.job.dto;
 
 import lombok.Builder;
 import lombok.Data;

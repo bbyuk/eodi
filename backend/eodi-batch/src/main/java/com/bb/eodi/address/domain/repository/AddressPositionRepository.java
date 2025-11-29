@@ -10,8 +10,8 @@ import java.util.List;
 public interface AddressPositionRepository {
 
     /**
-     * 파라미터 entity를 모두 저장한다.
-     * @param entities 저장할 entity 목록
+     * 파라미터 entity를 배치 insert 처리한다.
+     * @param entities insert할 entity 목록
      */
-    void saveAll(List<? extends AddressPosition> entities);
+    void insertBatch(List<? extends AddressPosition> entities);
 }

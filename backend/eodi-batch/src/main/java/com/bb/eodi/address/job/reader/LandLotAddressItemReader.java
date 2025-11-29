@@ -1,6 +1,6 @@
 package com.bb.eodi.address.job.reader;
 
-import com.bb.eodi.address.domain.dto.LandLotAddressItem;
+import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.*;
 

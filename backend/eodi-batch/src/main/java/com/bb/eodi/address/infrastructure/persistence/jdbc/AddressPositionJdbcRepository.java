@@ -1,9 +1,8 @@
-package com.bb.eodi.address.domain.repository;
+package com.bb.eodi.address.infrastructure.persistence.jdbc;
 
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -12,9 +11,8 @@ import static java.sql.Types.*;
 /**
  * 주소위치정보 JdbcRepository 구현체
  */
-@Repository
 @RequiredArgsConstructor
-public class AddressPositionJdbcRepository implements AddressPositionRepository {
+public class AddressPositionJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -22,8 +20,7 @@ public class AddressPositionJdbcRepository implements AddressPositionRepository 
      * jdbc 배치 update로 파라미터 entity를 전체 저장한다.
      * @param entities 저장할 entity 목록
      */
-    @Override
-    public void saveAll(List<? extends AddressPosition> entities) {
+    public void insertBatch(List<? extends AddressPosition> entities) {
 
         String sql = """
                 INSERT INTO address_position

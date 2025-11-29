@@ -2,9 +2,9 @@ package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.address.domain.dto.LandLotAddressItem;
+import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.domain.entity.LandLotAddress;
-import com.bb.eodi.address.domain.repository.LandLotAddressJdbcRepository;
+import com.bb.eodi.address.infrastructure.persistence.jdbc.LandLotAddressJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

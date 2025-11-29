@@ -28,5 +28,6 @@ ALTER TABLE legal_dong
         UNIQUE (code);
 -- -----------------------------------------------------------------------------------------
 -- index
-CREATE INDEX idx_ld__parent_id         ON legal_dong(parent_id);
-CREATE INDEX idx_ld__code              ON legal_dong(code);
+CREATE INDEX idx_ld__parent_id          ON legal_dong(parent_id);
+CREATE INDEX idx_ld__code               ON legal_dong(code);
+CREATE INDEX idx_legal_dong_mapping     ON legal_dong(sido_code, sigungu_code, name);

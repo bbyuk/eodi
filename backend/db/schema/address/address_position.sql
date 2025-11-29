@@ -25,10 +25,7 @@ CREATE TABLE address_position
 -- -----------------------------------------------------------------------------------------
 -- constraint
 ALTER TABLE address_position
-    ADD CONSTRAINT uq_building_addr_domain_key UNIQUE(
-                                                      road_name_code,
-                                                      is_underground,
-                                                      building_main_no,
-                                                      building_sub_no,
-                                                      legal_dong_code
-                                                     )
+    ADD CONSTRAINT uq_building_addr_domain_key UNIQUE(road_name_code, is_underground, building_main_no, building_sub_no, legal_dong_code);
+-- -----------------------------------------------------------------------------------------
+-- index
+CREATE INDEX idx_address_position_key ON address_position(road_name_code, is_underground, building_main_no, building_sub_no, legal_dong_code);

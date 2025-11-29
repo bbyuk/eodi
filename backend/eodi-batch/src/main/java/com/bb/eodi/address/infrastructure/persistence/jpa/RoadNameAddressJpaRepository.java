@@ -1,4 +1,4 @@
-package com.bb.eodi.address.domain.repository;
+package com.bb.eodi.address.infrastructure.persistence.jpa;
 
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
