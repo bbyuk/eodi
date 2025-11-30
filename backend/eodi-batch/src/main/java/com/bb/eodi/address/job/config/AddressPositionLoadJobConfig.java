@@ -159,6 +159,7 @@ public class AddressPositionLoadJobConfig {
                 .sidoName(item.getSidoName())
                 .sigunguName(item.getSigunguName())
                 .umdName(item.getUmdName())
+                .roadNameCode(item.getRoadNameCode())
                 .roadName(item.getRoadName())
                 .isUnderground(item.getIsUnderground())
                 .buildingMainNo(parseIntWithNull.apply(item.getBuildingMainNo()))
