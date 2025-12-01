@@ -137,4 +137,14 @@ public class RealEstateSell {
     public boolean hasCorrectLandLot() {
         return landLotMainNo != null || landLotSubNo != null || isMountain != null;
     }
+
+    /**
+     * 좌표 정보를 매핑한다.
+     * @param xPos x좌표
+     * @param yPos y좌표
+     */
+    public void mappingPos(BigDecimal xPos, BigDecimal yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+    }
 }
