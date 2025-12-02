@@ -8,6 +8,7 @@ import com.bb.eodi.address.domain.entity.BuildingAddress;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
 import com.bb.eodi.address.domain.repository.BuildingAddressRepository;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
+import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,11 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
         // 정상 지번이 없을 경우 수기 후보정 처리
         if (!item.hasCorrectLandLot()) return null;
 
+        // 아파트, 오피스텔 건만 우선적용
+        if (!item.getHousingType().equals(HousingType.APT) && !item.getHousingType().equals(HousingType.OFFICETEL)) {
+            return null;
+        }
+
         /**
          * 매매데이터.지번 + 매매데이터.법정동코드 -> 건물주소.지번 -> 매매데이터.건물관리번호
          * 매매데이터.건물관리번호 + 주소좌표정보.좌표 -> 매매데이터.좌표
@@ -65,7 +71,7 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
                 .map(buildingAddress -> AddressPositionIdentifier
                         .builder()
                         .roadNameCode(buildingAddress.getRoadNameCode())
-                        .legalDongCode(buildingAddress.getLegalDongCode())
+                        .legalDongCode(buildingAddress.getLegalDongCode().replaceFirst("..$", "00"))
                         .isUnderground(buildingAddress.getIsUnderground())
                         .buildingMainNo(buildingAddress.getBuildingMainNo())
                         .buildingSubNo(buildingAddress.getBuildingSubNo())
@@ -73,7 +79,7 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
                 .collect(Collectors.toSet());
 
         // 대상 건물주소의 주소위치 identifier 매핑이 여러건인 경우 수기매핑
-        if (addressPositionIdentifierSet.size() > 1) {
+        if (addressPositionIdentifierSet.size() > 1 || addressPositionIdentifierSet.isEmpty()) {
             return null;
         }
 
@@ -86,7 +92,10 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
                         .buildingMainNo(addressPositionIdentifier.getBuildingMainNo())
                         .buildingSubNo(addressPositionIdentifier.getBuildingSubNo())
                         .build()
-        ).orElseThrow(() -> new RuntimeException("주소 위치정보를 찾지못했습니다."));
+        ).orElseThrow(() -> {
+            log.error(";;");
+            return new RuntimeException("주소 위치정보를 찾지못했습니다.");
+        });
 
         item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
         return item;
