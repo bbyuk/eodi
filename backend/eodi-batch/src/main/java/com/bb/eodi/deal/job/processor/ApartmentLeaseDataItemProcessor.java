@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 아파트 임대차 실거래가 데이터 적재 배치 chunk step ItemProcessor
@@ -87,6 +88,8 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                         :null)
                 .useRRRight("사용".equals(item.useRRRight()))
                 .targetName(item.aptNm())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

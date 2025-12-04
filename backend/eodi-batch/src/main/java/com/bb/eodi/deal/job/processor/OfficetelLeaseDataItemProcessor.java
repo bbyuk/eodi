@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 오피스텔 임대차 실거래가 데이터 적재 chunk step ItemProcessor
@@ -88,6 +89,8 @@ public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelL
                         :null)
                 .useRRRight("사용".equals(item.useRRRight()))
                 .targetName(item.offiNm())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

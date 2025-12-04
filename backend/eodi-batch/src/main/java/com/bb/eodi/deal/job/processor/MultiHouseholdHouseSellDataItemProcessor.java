@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -86,6 +87,8 @@ public class MultiHouseholdHouseSellDataItemProcessor
                 .targetName(item.mhouseNm())
                 .floor(Integer.parseInt(item.floor()))
                 .isLandLease(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

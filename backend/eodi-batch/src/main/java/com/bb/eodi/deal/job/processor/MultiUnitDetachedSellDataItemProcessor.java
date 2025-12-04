@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -74,6 +75,8 @@ public class MultiUnitDetachedSellDataItemProcessor
                                 ? HousingType.MULTI_UNIT_HOUSE
                                 : HousingType.OTHER)
                 .isLandLease(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }
