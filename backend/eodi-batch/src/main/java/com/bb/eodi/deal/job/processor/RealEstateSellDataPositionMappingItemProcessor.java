@@ -79,7 +79,7 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
                 .collect(Collectors.toSet());
 
         // 대상 건물주소의 주소위치 identifier 매핑이 여러건인 경우 수기매핑
-        if (addressPositionIdentifierSet.size() > 1 || addressPositionIdentifierSet.isEmpty()) {
+        if (addressPositionIdentifierSet.size() != 1) {
             return null;
         }
 

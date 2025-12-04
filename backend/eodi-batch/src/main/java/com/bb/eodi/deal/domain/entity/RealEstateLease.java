@@ -117,4 +117,21 @@ public class RealEstateLease {
    @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
+    /**
+     * 올바른 지번 정보가 있는지 여부를 리턴한다.
+     * @return 올바른 지번 여부
+     */
+    public boolean hasCorrectLandLot() {
+        return landLotMainNo != null || landLotSubNo != null || isMountain != null;
+    }
+
+    /**
+     * 좌표 정보를 매핑한다.
+     * @param xPos x좌표
+     * @param yPos y좌표
+     */
+    public void mappingPos(BigDecimal xPos, BigDecimal yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+    }
 }
