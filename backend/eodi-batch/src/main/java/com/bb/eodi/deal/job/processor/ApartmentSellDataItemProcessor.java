@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
@@ -82,6 +83,8 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
                 .buildingDong(item.aptDong())
                 .floor(Integer.parseInt(item.floor()))
                 .isLandLease(item.landLeaseholdGbn().equals("Y"))
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

@@ -1,6 +1,8 @@
 CREATE VIEW address_pos_target
 AS
-SELECT DISTINCT road_name_code,
+SELECT DISTINCT
+                building_manage_no,
+                road_name_code,
                 legal_dong_code,
                 is_underground,
                 building_main_no,
@@ -8,6 +10,7 @@ SELECT DISTINCT road_name_code,
 FROM building_address
 UNION
 SELECT DISTINCT
+    lla.building_manage_no,
     lla.road_name_code,
     lla.legal_dong_code,
     ba.is_underground,

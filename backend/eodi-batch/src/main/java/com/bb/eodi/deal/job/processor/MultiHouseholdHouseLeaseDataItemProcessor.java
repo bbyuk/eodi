@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 연립/다세대주택 전월세 실거래가 데이터 적재 배치 chunk step ItemProcessor
@@ -84,6 +85,8 @@ public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<
                         :null)
                 .useRRRight("사용".equals(item.useRRRight()))
                 .targetName(item.mhouseNm())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }
