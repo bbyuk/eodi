@@ -59,10 +59,6 @@ public class LandLotAddressRepositoryImpl implements LandLotAddressRepository {
             condition.and(landLotAddress.landLotSubNo.eq(query.getLandLotSubNo()));
         }
 
-        if (query.getIsUnderground() != null) {
-            condition.and(landLotAddress.isUnderground.eq(query.getIsUnderground()));
-        }
-
         return queryFactory.selectFrom(landLotAddress)
                 .where(condition)
                 .fetch();

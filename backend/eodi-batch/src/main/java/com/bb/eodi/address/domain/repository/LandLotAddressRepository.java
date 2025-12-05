@@ -21,6 +21,6 @@ public interface LandLotAddressRepository {
      * @param query 조회 쿼리 파라미터
      * @return 지번주소 목록
      */
-    @Cacheable(cacheNames="landLotAddressCache", key = "#query.legalDongCode + ':' + #query.landLotMainNo + ':' + #query.landLotSubNo + ':' + #query.isMountain")
+    @Cacheable(cacheNames="landLotAddressCache", key = "#query.legalDongCode + ':' + #query.landLotMainNo + ':' + #query.landLotSubNo")
     List<LandLotAddress> findLandLotAddress(LandLotAddressFindQuery query);
 }
