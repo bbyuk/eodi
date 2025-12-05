@@ -1,6 +1,7 @@
 package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.domain.entity.AddressPosition;
+import com.bb.eodi.address.domain.util.GeoToolsBigDecimalConverter;
 import com.bb.eodi.address.job.reader.AddressPositionAllItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.address.job.dto.AddressPositionItem;
@@ -152,25 +153,36 @@ public class AddressPositionLoadJobConfig {
         Function<String, Integer> parseIntWithNull = (str) -> str == null || !StringUtils.hasText(str) ? null : Integer.parseInt(str);
         Function<String, BigDecimal> parseBigDecimalWithNull = (str) -> str == null || !StringUtils.hasText(str) ? null : new BigDecimal(str);
 
-        return item -> AddressPosition.builder()
-                .sigunguCode(item.getSigunguCode())
-                .entranceSeq(item.getEntranceSeq())
-                .legalDongCode(item.getLegalDongCode())
-                .sidoName(item.getSidoName())
-                .sigunguName(item.getSigunguName())
-                .umdName(item.getUmdName())
-                .roadNameCode(item.getRoadNameCode())
-                .roadName(item.getRoadName())
-                .isUnderground(item.getIsUnderground())
-                .buildingMainNo(parseIntWithNull.apply(item.getBuildingMainNo()))
-                .buildingSubNo(parseIntWithNull.apply(item.getBuildingSubNo()))
-                .buildingName(item.getBuildingName())
-                .zipNo(item.getZipNo())
-                .buildingType(item.getBuildingType())
-                .isBuildingGroup(item.getIsBuildingGroup())
-                .xPos(parseBigDecimalWithNull.apply(item.getXPos()))
-                .yPos(parseBigDecimalWithNull.apply(item.getYPos()))
-                .build();
+        return item -> {
+
+            BigDecimal[] wgs84 = null;
+            if (StringUtils.hasText(item.getXPos()) && StringUtils.hasText(item.getYPos())) {
+                wgs84 = GeoToolsBigDecimalConverter.toWgs84(
+                        parseBigDecimalWithNull.apply(item.getXPos()),
+                        parseBigDecimalWithNull.apply(item.getYPos())
+                );
+            }
+
+            return AddressPosition.builder()
+                    .sigunguCode(item.getSigunguCode())
+                    .entranceSeq(item.getEntranceSeq())
+                    .legalDongCode(item.getLegalDongCode())
+                    .sidoName(item.getSidoName())
+                    .sigunguName(item.getSigunguName())
+                    .umdName(item.getUmdName())
+                    .roadNameCode(item.getRoadNameCode())
+                    .roadName(item.getRoadName())
+                    .isUnderground(item.getIsUnderground())
+                    .buildingMainNo(parseIntWithNull.apply(item.getBuildingMainNo()))
+                    .buildingSubNo(parseIntWithNull.apply(item.getBuildingSubNo()))
+                    .buildingName(item.getBuildingName())
+                    .zipNo(item.getZipNo())
+                    .buildingType(item.getBuildingType())
+                    .isBuildingGroup(item.getIsBuildingGroup())
+                    .xPos(wgs84 != null ? wgs84[0] : null)
+                    .yPos(wgs84 != null ? wgs84[1] : null)
+                    .build();
+        };
     }
 
     /**
