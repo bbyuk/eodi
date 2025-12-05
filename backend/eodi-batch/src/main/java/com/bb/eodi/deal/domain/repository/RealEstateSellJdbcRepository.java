@@ -93,7 +93,7 @@ public class RealEstateSellJdbcRepository implements RealEstateSellRepository {
         String sql = """
                 UPDATE  real_estate_sell
                 SET     x_pos = ?,
-                        y_pos = ?,
+                        y_pos = ?
                 WHERE   id = ?
                 """;
         jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {

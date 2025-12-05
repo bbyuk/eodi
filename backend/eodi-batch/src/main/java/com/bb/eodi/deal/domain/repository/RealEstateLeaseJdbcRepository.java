@@ -89,7 +89,7 @@ public class RealEstateLeaseJdbcRepository implements RealEstateLeaseRepository 
         String sql = """
                 UPDATE  real_estate_lease
                 SET     x_pos = ?,
-                        y_pos = ?,
+                        y_pos = ?
                 WHERE   id = ?
                 """;
         jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
