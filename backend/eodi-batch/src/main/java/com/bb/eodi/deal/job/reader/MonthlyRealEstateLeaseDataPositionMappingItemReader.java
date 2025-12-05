@@ -95,14 +95,12 @@ public class MonthlyRealEstateLeaseDataPositionMappingItemReader extends JdbcCur
     }
 
     public MonthlyRealEstateLeaseDataPositionMappingItemReader(
-            @Value("#{jobParameters['year-month']}") String yearMonth,
+            @Value("#{stepExecutionContext['start-date']}") String startDate,
+            @Value("#{stepExecutionContext['end-date']}") String endDate,
             DataSource dataSource
     ) {
-        int year = Integer.parseInt(yearMonth.substring(0, 4));
-        int month = Integer.parseInt(yearMonth.substring(4, 6));
-
-        LocalDate firstDay = LocalDate.of(year, month, 1);
-        LocalDate lastDay = firstDay.with(TemporalAdjusters.lastDayOfMonth());
+        LocalDate firstDay = LocalDate.parse(startDate);
+        LocalDate lastDay = LocalDate.parse(endDate);
 
         setDataSource(dataSource);
         setSql(sql);
