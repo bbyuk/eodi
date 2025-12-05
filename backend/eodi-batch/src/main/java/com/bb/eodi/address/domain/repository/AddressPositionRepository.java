@@ -2,6 +2,7 @@ package com.bb.eodi.address.domain.repository;
 
 import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
 import com.bb.eodi.address.domain.entity.AddressPosition;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,5 +23,6 @@ public interface AddressPositionRepository {
      * @param query 쿼리 파라미터
      * @return 주소 위치정보
      */
+    @Cacheable(cacheNames = "addressPositionCache", key = "#query.roadNameCode + ':' + #query.legalDongCode + ':' + #query.buildingMainNo + ':' + #query.buildingSubNo + ':' + #query.isUnderground")
     Optional<AddressPosition> findAddressPosition(AddressPositionFindQuery query);
 }
