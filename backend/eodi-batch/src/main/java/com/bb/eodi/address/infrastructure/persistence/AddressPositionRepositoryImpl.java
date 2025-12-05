@@ -41,14 +41,26 @@ public class AddressPositionRepositoryImpl implements AddressPositionRepository 
     @Override
     public Optional<AddressPosition> findAddressPosition(AddressPositionFindQuery query) {
         QAddressPosition addressPosition = QAddressPosition.addressPosition;
-        BooleanBuilder condition = new BooleanBuilder();
-
-        condition
+        BooleanBuilder condition = new BooleanBuilder()
                 .and(addressPosition.roadNameCode.eq(query.getRoadNameCode()))
-                .and(addressPosition.legalDongCode.eq(query.getLegalDongCode()))
-                .and(addressPosition.isUnderground.eq(query.getIsUnderground()))
-                .and(addressPosition.buildingMainNo.eq(query.getBuildingMainNo()))
-                .and(addressPosition.buildingSubNo.eq(query.getBuildingSubNo()));
+                .and(addressPosition.legalDongCode.eq(query.getLegalDongCode()));
+
+        if (query.getIsUnderground() != null) {
+            condition.and(addressPosition.isUnderground.eq(query.getIsUnderground()));
+        }
+
+        if (query.getBuildingMainNo() != null) {
+            condition.and(addressPosition.buildingMainNo.eq(query.getBuildingMainNo()));
+        }
+
+        if (query.getBuildingSubNo() != null) {
+            condition.and(addressPosition.buildingSubNo.eq(query.getBuildingSubNo()));
+        }
+
+        if (query.getBuildingName() != null) {
+            condition.and(addressPosition.buildingName.eq(query.getBuildingName()));
+        }
+
 
         return Optional.ofNullable(
                 queryFactory.selectFrom(addressPosition)

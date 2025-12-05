@@ -22,7 +22,7 @@ public class LandLotAddressJdbcRepository {
      * batch save
      * @param entities 저장할 entity
      */
-    public void saveAll(List<? extends LandLotAddress> entities) {
+    public void insertBatch(List<? extends LandLotAddress> entities) {
 
         String sql = """
                 INSERT INTO land_lot_address

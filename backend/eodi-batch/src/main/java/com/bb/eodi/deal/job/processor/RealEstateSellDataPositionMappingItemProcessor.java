@@ -2,15 +2,14 @@ package com.bb.eodi.deal.job.processor;
 
 import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
 import com.bb.eodi.address.domain.dto.AddressPositionIdentifier;
-import com.bb.eodi.address.domain.dto.BuildingAddressFindQuery;
+import com.bb.eodi.address.domain.dto.LandLotAddressFindQuery;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
-import com.bb.eodi.address.domain.repository.BuildingAddressRepository;
+import com.bb.eodi.address.domain.repository.LandLotAddressRepository;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongCacheRepository;
-import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -30,8 +29,7 @@ import java.util.stream.Collectors;
 public class RealEstateSellDataPositionMappingItemProcessor implements ItemProcessor<RealEstateSell, RealEstateSell> {
 
     private final AddressPositionRepository addressPositionRepository;
-    private final BuildingAddressRepository buildingAddressRepository;
-    private final LegalDongRepository legalDongRepository;
+    private final LandLotAddressRepository landLotAddressRepository;
 
     private final LegalDongCacheRepository legalDongCacheRepository;
 
@@ -52,22 +50,21 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
         LegalDong targetLegalDong = legalDongCacheRepository.findTargetByRegionIdAndDongName(item.getRegionId(), item.getLegalDongName())
                 .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
 
-        Set<AddressPositionIdentifier> addressPositionIdentifierSet = buildingAddressRepository.findBuildingAddress(
-                        BuildingAddressFindQuery
+        Set<AddressPositionIdentifier> addressPositionIdentifierSet = landLotAddressRepository.findLandLotAddress(
+                        LandLotAddressFindQuery
                                 .builder()
                                 .legalDongCode(targetLegalDong.getCode())
                                 .landLotMainNo(item.getLandLotMainNo())
                                 .landLotSubNo(item.getLandLotSubNo())
-                                .isMountain(item.getIsMountain() ? "1" : "0")
                                 .build())
                 .stream()
-                .map(buildingAddress -> AddressPositionIdentifier
+                .map(landLotAddress -> AddressPositionIdentifier
                         .builder()
-                        .roadNameCode(buildingAddress.getRoadNameCode())
-                        .legalDongCode(buildingAddress.getLegalDongCode().replaceFirst("..$", "00"))
-                        .isUnderground(buildingAddress.getIsUnderground())
-                        .buildingMainNo(buildingAddress.getBuildingMainNo())
-                        .buildingSubNo(buildingAddress.getBuildingSubNo())
+                        .roadNameCode(landLotAddress.getRoadNameCode())
+                        .legalDongCode(landLotAddress.getLegalDongCode().replaceFirst("..$", "00"))
+                        .isUnderground(landLotAddress.getIsUnderground())
+                        .buildingMainNo(landLotAddress.getBuildingMainNo())
+                        .buildingSubNo(landLotAddress.getBuildingSubNo())
                         .build())
                 .collect(Collectors.toSet());
 
@@ -85,10 +82,19 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
                         .buildingMainNo(addressPositionIdentifier.getBuildingMainNo())
                         .buildingSubNo(addressPositionIdentifier.getBuildingSubNo())
                         .build()
-        ).orElseThrow(() -> {
-            log.error(";;");
-            return new RuntimeException("주소 위치정보를 찾지못했습니다.");
-        });
+        ).orElse(
+                addressPositionRepository
+                        .findAddressPosition(AddressPositionFindQuery
+                                .builder()
+                                .roadNameCode(addressPositionIdentifier.getRoadNameCode())
+                                .legalDongCode(addressPositionIdentifier.getLegalDongCode())
+                                .buildingName(item.getTargetName())
+                                .build())
+                        .orElseThrow(() -> {
+                            log.debug("아오");
+                            return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
+                        })
+        );
 
         item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
         return item;
