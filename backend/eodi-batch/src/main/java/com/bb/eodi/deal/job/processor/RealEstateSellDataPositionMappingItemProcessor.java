@@ -4,12 +4,12 @@ import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
 import com.bb.eodi.address.domain.dto.AddressPositionIdentifier;
 import com.bb.eodi.address.domain.dto.BuildingAddressFindQuery;
 import com.bb.eodi.address.domain.entity.AddressPosition;
-import com.bb.eodi.address.domain.entity.BuildingAddress;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
 import com.bb.eodi.address.domain.repository.BuildingAddressRepository;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
+import com.bb.eodi.legaldong.domain.repository.LegalDongCacheRepository;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +17,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,8 +31,9 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
 
     private final AddressPositionRepository addressPositionRepository;
     private final BuildingAddressRepository buildingAddressRepository;
-
     private final LegalDongRepository legalDongRepository;
+
+    private final LegalDongCacheRepository legalDongCacheRepository;
 
     @Override
     public RealEstateSell process(RealEstateSell item) throws Exception {
@@ -50,13 +49,7 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
          * 매매데이터.지번 + 매매데이터.법정동코드 -> 건물주소.지번 -> 매매데이터.건물관리번호
          * 매매데이터.건물관리번호 + 주소좌표정보.좌표 -> 매매데이터.좌표
          */
-        LegalDong regionLegalDong = legalDongRepository.findById(item.getRegionId())
-                .orElseThrow(() -> new RuntimeException("해당 지역 법정동을 찾지 못했습니다."));
-
-        LegalDong targetLegalDong = legalDongRepository.findBySidoCodeAndSigunguCodeAndLegalDongName(
-                        regionLegalDong.getSidoCode(),
-                        regionLegalDong.getSigunguCode(),
-                        regionLegalDong.getName() + " " + item.getLegalDongName())
+        LegalDong targetLegalDong = legalDongCacheRepository.findTargetByRegionIdAndDongName(item.getRegionId(), item.getLegalDongName())
                 .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
 
         Set<AddressPositionIdentifier> addressPositionIdentifierSet = buildingAddressRepository.findBuildingAddress(
