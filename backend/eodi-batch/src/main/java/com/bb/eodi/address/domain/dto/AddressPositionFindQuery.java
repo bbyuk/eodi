@@ -14,4 +14,6 @@ public class AddressPositionFindQuery {
     private String isUnderground;
     private Integer buildingMainNo;
     private Integer buildingSubNo;
+
+    private String buildingName;
 }
