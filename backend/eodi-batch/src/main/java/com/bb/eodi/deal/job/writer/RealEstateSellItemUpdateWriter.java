@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @StepScope
-@Componentijkidjoikk
+@Component
 @RequiredArgsConstructor
 public class RealEstateSellItemUpdateWriter implements ItemWriter<RealEstateSell> {
 
