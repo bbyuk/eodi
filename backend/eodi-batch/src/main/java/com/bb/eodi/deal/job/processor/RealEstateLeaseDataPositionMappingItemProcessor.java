@@ -9,6 +9,7 @@ import com.bb.eodi.address.domain.repository.BuildingAddressRepository;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
+import com.bb.eodi.legaldong.domain.repository.LegalDongCacheRepository;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
     private final BuildingAddressRepository buildingAddressRepository;
     private final AddressPositionRepository addressPositionRepository;
 
+    private final LegalDongCacheRepository legalDongCacheRepository;
+
     @Override
     public RealEstateLease process(RealEstateLease item) throws Exception {
         // 정상 지번이 없을 경우 수기 후보정 처리
@@ -48,13 +51,7 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
          * 매매데이터.지번 + 매매데이터.법정동코드 -> 건물주소.지번 -> 매매데이터.건물관리번호
          * 매매데이터.건물관리번호 + 주소좌표정보.좌표 -> 매매데이터.좌표
          */
-        LegalDong regionLegalDong = legalDongRepository.findById(item.getRegionId())
-                .orElseThrow(() -> new RuntimeException("해당 지역 법정동을 찾지 못했습니다."));
-
-        LegalDong targetLegalDong = legalDongRepository.findBySidoCodeAndSigunguCodeAndLegalDongName(
-                        regionLegalDong.getSidoCode(),
-                        regionLegalDong.getSigunguCode(),
-                        regionLegalDong.getName() + " " + item.getLegalDongName())
+        LegalDong targetLegalDong = legalDongCacheRepository.findTargetByRegionIdAndDongName(item.getRegionId(), item.getLegalDongName())
                 .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
 
         Set<AddressPositionIdentifier> addressPositionIdentifierSet = buildingAddressRepository.findBuildingAddress(

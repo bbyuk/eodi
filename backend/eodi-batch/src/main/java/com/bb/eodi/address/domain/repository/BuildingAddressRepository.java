@@ -2,6 +2,7 @@ package com.bb.eodi.address.domain.repository;
 
 import com.bb.eodi.address.domain.dto.BuildingAddressFindQuery;
 import com.bb.eodi.address.domain.entity.BuildingAddress;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,5 +23,6 @@ public interface BuildingAddressRepository {
      * @param query 조회 쿼리 파라미터
      * @return 건물주소 목록
      */
+    @Cacheable(cacheNames = "buildingAddressCache", key = "#query.legalDongCode + ':' + #query.landLotMainNo + ':' + #query.landLotSubNo + ':' + #query.isMountain")
     List<BuildingAddress> findBuildingAddress(BuildingAddressFindQuery query);
 }

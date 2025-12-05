@@ -82,26 +82,26 @@ public class MonthlyDealDataLoadJobConfig {
     /**
      * 데이터 병렬 적재 flow
      * @param apartmentSellDataLoadFlow             아파트 매매 데이터 적재 flow
-     * @param apartmentPresaleRightSellDataLoadFlow 아파트 분양권 매매 데이터 적재 flow
-     * @param multiUnitDetachedSellDataLoadFlow     단독/다가구주택 매매 데이터 적재 flow
-     * @param multiHouseholdHouseSellDataLoadFlow   연립/다세대주택 매매 데이터 적재 flow
+//     * @param apartmentPresaleRightSellDataLoadFlow 아파트 분양권 매매 데이터 적재 flow
+//     * @param multiUnitDetachedSellDataLoadFlow     단독/다가구주택 매매 데이터 적재 flow
+//     * @param multiHouseholdHouseSellDataLoadFlow   연립/다세대주택 매매 데이터 적재 flow
      * @param officetelSellDataLoadFlow             오피스텔 매매 데이터 적재 flow
      * @param apartmentLeaseDataLoadFlow            아파트 임대차 데이터 적재 flow
-     * @param multiUnitDetachedLeaseDataLoadFlow    단독/다가구주택 임대차 데이터 적재 flow
-     * @param multiHouseholdHouseLeaseDataLoadFlow  연립/다세대주택 임대차 데이터 적재 flow
+//     * @param multiUnitDetachedLeaseDataLoadFlow    단독/다가구주택 임대차 데이터 적재 flow
+//     * @param multiHouseholdHouseLeaseDataLoadFlow  연립/다세대주택 임대차 데이터 적재 flow
      * @param officetelLeaseDataLoadFlow            오피스텔 임대차 데이터 적재 flow
      * @return 데이터 병렬 적재 flow
      */
     @Bean
     public Flow dataLoadParallelFlow(
             Flow apartmentSellDataLoadFlow,
-            Flow apartmentPresaleRightSellDataLoadFlow,
-            Flow multiUnitDetachedSellDataLoadFlow,
-            Flow multiHouseholdHouseSellDataLoadFlow,
+//            Flow apartmentPresaleRightSellDataLoadFlow,
+//            Flow multiUnitDetachedSellDataLoadFlow,
+//            Flow multiHouseholdHouseSellDataLoadFlow,
             Flow officetelSellDataLoadFlow,
             Flow apartmentLeaseDataLoadFlow,
-            Flow multiUnitDetachedLeaseDataLoadFlow,
-            Flow multiHouseholdHouseLeaseDataLoadFlow,
+//            Flow multiUnitDetachedLeaseDataLoadFlow,
+//            Flow multiHouseholdHouseLeaseDataLoadFlow,
             Flow officetelLeaseDataLoadFlow
     ) {
         SimpleAsyncTaskExecutor loadExecutor = new SimpleAsyncTaskExecutor();
@@ -111,13 +111,13 @@ public class MonthlyDealDataLoadJobConfig {
                 .start(apartmentSellDataLoadFlow)
                 .split(loadExecutor)
                 .add(
-                        apartmentPresaleRightSellDataLoadFlow,
-                        multiUnitDetachedSellDataLoadFlow,
-                        multiHouseholdHouseSellDataLoadFlow,
+//                        apartmentPresaleRightSellDataLoadFlow,
+//                        multiUnitDetachedSellDataLoadFlow,
+//                        multiHouseholdHouseSellDataLoadFlow,
                         officetelSellDataLoadFlow,
                         apartmentLeaseDataLoadFlow,
-                        multiUnitDetachedLeaseDataLoadFlow,
-                        multiHouseholdHouseLeaseDataLoadFlow,
+//                        multiUnitDetachedLeaseDataLoadFlow,
+//                        multiHouseholdHouseLeaseDataLoadFlow,
                         officetelLeaseDataLoadFlow
                 )
                 .build();
