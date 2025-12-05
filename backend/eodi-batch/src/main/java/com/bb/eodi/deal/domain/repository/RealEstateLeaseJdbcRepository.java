@@ -83,4 +83,19 @@ public class RealEstateLeaseJdbcRepository implements RealEstateLeaseRepository 
                 }
         );
     }
+
+    @Override
+    public void batchUpdatePosition(List<? extends RealEstateLease> items) {
+        String sql = """
+                UPDATE  real_estate_lease
+                SET     x_pos = ?,
+                        y_pos = ?
+                WHERE   id = ?
+                """;
+        jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
+            ps.setObject(1, entity.getXPos(), DECIMAL);
+            ps.setObject(2, entity.getYPos(), DECIMAL);
+            ps.setObject(3, entity.getId(), BIGINT);
+        });
+    }
 }

@@ -38,26 +38,26 @@ public class MonthlyDealDataLoadJobConfig {
     /**
      * API Fetch 병렬 flow
      * @param apartmentSellApiFetchFlow             아파트 매매 API
-     * @param apartmentPresaleRightSellApiFetchFlow 아파트 분양권 매매 API
-     * @param multiUnitDetachedSellApiFetchFlow     단독/다가구주택 매매 API
-     * @param multiHouseholdHouseSellApiFetchFlow   연립/다세대주택 매매 API
+//     * @param apartmentPresaleRightSellApiFetchFlow 아파트 분양권 매매 API
+//     * @param multiUnitDetachedSellApiFetchFlow     단독/다가구주택 매매 API
+//     * @param multiHouseholdHouseSellApiFetchFlow   연립/다세대주택 매매 API
      * @param officetelSellApiFetchFlow             오피스텔 매매 API
      * @param apartmentLeaseApiFetchFlow            아파트 임대차 API
-     * @param multiUnitDetachedLeaseApiFetchFlow    단독/다가구주택 임대차 API
-     * @param multiHouseholdHouseLeaseApiFetchFlow  연립/다세대주택 임대차 API
+//     * @param multiUnitDetachedLeaseApiFetchFlow    단독/다가구주택 임대차 API
+//     * @param multiHouseholdHouseLeaseApiFetchFlow  연립/다세대주택 임대차 API
      * @param officetelLeaseApiFetchFlow            오피스텔 임대차 API
      * @return API Fetch 병렬 flow
      */
     @Bean
     public Flow apiFetchParallelFlow(
             Flow apartmentSellApiFetchFlow,
-            Flow apartmentPresaleRightSellApiFetchFlow,
-            Flow multiUnitDetachedSellApiFetchFlow,
-            Flow multiHouseholdHouseSellApiFetchFlow,
+//            Flow apartmentPresaleRightSellApiFetchFlow,
+//            Flow multiUnitDetachedSellApiFetchFlow,
+//            Flow multiHouseholdHouseSellApiFetchFlow,
             Flow officetelSellApiFetchFlow,
             Flow apartmentLeaseApiFetchFlow,
-            Flow multiUnitDetachedLeaseApiFetchFlow,
-            Flow multiHouseholdHouseLeaseApiFetchFlow,
+//            Flow multiUnitDetachedLeaseApiFetchFlow,
+//            Flow multiHouseholdHouseLeaseApiFetchFlow,
             Flow officetelLeaseApiFetchFlow
     ) {
         SimpleAsyncTaskExecutor apiFetchExecutor = new SimpleAsyncTaskExecutor();
@@ -67,13 +67,13 @@ public class MonthlyDealDataLoadJobConfig {
                 .start(apartmentSellApiFetchFlow)
                 .split(apiFetchExecutor)
                 .add(
-                        apartmentPresaleRightSellApiFetchFlow,
-                        multiUnitDetachedSellApiFetchFlow,
-                        multiHouseholdHouseSellApiFetchFlow,
+//                        apartmentPresaleRightSellApiFetchFlow,
+//                        multiUnitDetachedSellApiFetchFlow,
+//                        multiHouseholdHouseSellApiFetchFlow,
                         officetelSellApiFetchFlow,
                         apartmentLeaseApiFetchFlow,
-                        multiUnitDetachedLeaseApiFetchFlow,
-                        multiHouseholdHouseLeaseApiFetchFlow,
+//                        multiUnitDetachedLeaseApiFetchFlow,
+//                        multiHouseholdHouseLeaseApiFetchFlow,
                         officetelLeaseApiFetchFlow
                 ).build();
     }

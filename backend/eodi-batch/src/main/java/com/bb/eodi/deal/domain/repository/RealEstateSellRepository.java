@@ -14,4 +14,10 @@ public interface RealEstateSellRepository {
      * @param items 저장할 데이터
      */
     void saveAllChunk(List<? extends RealEstateSell> items);
+
+    /**
+     * 부동산 매매 실거래가 데이터 위치 정보를 배치 업데이트한다.
+     * @param items 저장할 데이터
+     */
+    void batchUpdatePosition(List<? extends RealEstateSell> items);
 }

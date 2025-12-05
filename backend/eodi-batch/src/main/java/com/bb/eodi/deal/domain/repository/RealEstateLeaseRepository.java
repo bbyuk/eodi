@@ -11,8 +11,13 @@ public interface RealEstateLeaseRepository {
 
     /**
      * chunk 배치용 메소드
-     * 모든 데이터 chunk를 저장하고 1차 캐시를 flush, clear한다.
      * @param items 저장할 데이터
      */
     void saveAllChunk(List<? extends RealEstateLease> items);
+
+    /**
+     * 실거래 데이터 위치 정보를 배치 업데이트 한다.
+     * @param items chunk 데이터
+     */
+    void batchUpdatePosition(List<? extends RealEstateLease> items);
 }
