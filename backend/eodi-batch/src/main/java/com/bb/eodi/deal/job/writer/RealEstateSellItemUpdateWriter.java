@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @StepScope
-@Component
+@Componentijkidjoikk
 @RequiredArgsConstructor
 public class RealEstateSellItemUpdateWriter implements ItemWriter<RealEstateSell> {
 
@@ -22,7 +22,7 @@ public class RealEstateSellItemUpdateWriter implements ItemWriter<RealEstateSell
 
     @Override
     public void write(Chunk<? extends RealEstateSell> chunk) throws Exception {
-        realEstateSellRepository.saveAllChunk(chunk.getItems());
+        realEstateSellRepository.batchUpdatePosition(chunk.getItems());
         log.debug("update {} items", chunk.size());
     }
 }

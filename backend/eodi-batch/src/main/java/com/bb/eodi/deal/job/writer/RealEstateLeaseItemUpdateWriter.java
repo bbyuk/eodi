@@ -23,7 +23,7 @@ public class RealEstateLeaseItemUpdateWriter implements ItemWriter<RealEstateLea
 
     @Override
     public void write(Chunk<? extends RealEstateLease> chunk) throws Exception {
-        realEstateLeaseRepository.saveAllChunk(chunk.getItems());
+        realEstateLeaseRepository.batchUpdatePosition(chunk.getItems());
         log.debug("{} item update", chunk.size());
     }
 }
