@@ -1,5 +1,6 @@
 package com.bb.eodi.address.job.config;
 
+import com.bb.eodi.address.domain.repository.LandLotAddressRepository;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
@@ -40,7 +41,7 @@ public class LandLotAddressLoadJobConfig {
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
-    private final LandLotAddressJdbcRepository landLotAddressJdbcRepository;
+    private final LandLotAddressRepository landLotAddressRepository;
     private static final int CONCURRENCY_LIMIT = 12;
 
     /**
@@ -174,6 +175,6 @@ public class LandLotAddressLoadJobConfig {
     @StepScope
     public ItemWriter<LandLotAddress> landLotAddressItemWriter() {
         return landLotAddressChunk ->
-                landLotAddressJdbcRepository.saveAll(landLotAddressChunk.getItems());
+                landLotAddressRepository.insertBatch(landLotAddressChunk.getItems());
     }
 }
