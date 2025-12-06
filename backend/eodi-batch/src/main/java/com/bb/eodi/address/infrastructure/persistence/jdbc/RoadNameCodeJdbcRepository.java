@@ -10,6 +10,9 @@ import java.util.List;
 
 import static java.sql.Types.VARCHAR;
 
+/**
+ * 도로명코드 Jdbc Repository
+ */
 @Slf4j
 @Repository
 @RequiredArgsConstructor
