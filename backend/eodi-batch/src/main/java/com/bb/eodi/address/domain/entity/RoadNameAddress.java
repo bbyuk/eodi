@@ -18,66 +18,27 @@ public class RoadNameAddress {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "manage_no", length = 25, nullable = false)
+    private String manageNo;
+
     @Column(name = "road_name_code", length = 12, nullable = false)
     private String roadNameCode;
-
-    @Column(name = "sigungu_code", length = 5, nullable = false)
-    private String sigunguCode;
-
-    @Column(name = "road_name_no", length = 7, nullable = false)
-    private String roadNameNo;
-
-    @Column(name = "road_name", length = 80, nullable = false)
-    private String roadName;
-
-    @Column(name = "eng_road_name", length = 80)
-    private String engRoadName;
 
     @Column(name = "umd_seq", length = 2, nullable = false)
     private String umdSeq;
 
-    @Column(name = "sido_name", length = 40)
-    private String sidoName;
+    @Column(name = "is_underground", length = 1)
+    private String isUnderground;
 
-    @Column(name = "sigungu_name", length = 40)
-    private String sigunguName;
+    @Column(name = "building_main_no")
+    private String buildingMainNo;
 
-    @Column(name = "umd_gb", length = 1)
-    private String umdGb;
+    @Column(name = "building_sub_no")
+    private String buildingSubNo;
 
-    @Column(name = "umd_code", length = 3)
-    private String umdCode;
+    @Column(name = "basic_district_no", length = 5)
+    private String basicDistrictNo;
 
-    @Column(name = "umd_name", length = 40)
-    private String umdName;
-
-    @Column(name = "parent_road_name_no", length = 7)
-    private String parentRoadNameNo;
-
-    @Column(name = "parent_road_name", length =80)
-    private String parentRoadName;
-
-    @Column(name = "use_yn", length = 1)
-    private String useYn;
-
-    @Column(name = "change_history_reason", length = 1)
-    private String changeHistoryReason;
-
-    @Column(name = "change_history_info", length = 14)
-    private String changeHistoryInfo;
-
-    @Column(name = "eng_sido_name", length = 40)
-    private String engSidoName;
-
-    @Column(name= "eng_sigungu_name", length = 40)
-    private String engSigunguName;
-
-    @Column(name = "eng_umd_name", length = 8)
-    private String engUmdName;
-
-    @Column(name = "announcement_date", length = 8)
-    private String announcementDate;
-
-    @Column(name = "expiration_date", length = 8)
-    private String expirationDate;
+    @Column(name = "has_detail_address", length = 1)
+    private String hasDetailAddress;
 }
