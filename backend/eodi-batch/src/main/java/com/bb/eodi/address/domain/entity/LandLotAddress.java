@@ -3,6 +3,9 @@ package com.bb.eodi.address.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * 지번주소 address 도메인 entity
+ */
 @Getter
 @Entity
 @Builder
@@ -14,6 +17,12 @@ public class LandLotAddress {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "manage_no", length = 25, nullable = false)
+    private String manageNo;
+
+    @Column(name = "seq", nullable = false)
+    private Integer seq;
 
     @Column(name = "legal_dong_code", length = 10, nullable = false)
     private String legalDongCode;
@@ -39,21 +48,6 @@ public class LandLotAddress {
     @Column(name = "land_lot_sub_no")
     private Integer landLotSubNo;
 
-    @Column(name = "land_lot_seq")
-    private Long landLotSeq;
-
-    @Column(name = "road_name_code", length = 12)
-    private String roadNameCode;
-
-    @Column(name = "is_underground", length = 1)
-    private String isUnderground;
-
-    @Column(name = "building_main_no")
-    private Integer buildingMainNo;
-
-    @Column(name = "building_sub_no")
-    private Integer buildingSubNo;
-
-    @Column(name = "change_reason_code", length = 2)
-    private String changeReasonCode;
+    @Column(name = "is_representative", length = 1)
+    private String isRepresentative;
 }
