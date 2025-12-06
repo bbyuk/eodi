@@ -7,7 +7,7 @@ CREATE TABLE road_name_address
     manage_no               VARCHAR(25) NOT NULL     COMMENT '관리번호',
     road_name_code          VARCHAR(12) NOT NULL     COMMENT '도로명코드',
     umd_seq                 VARCHAR(2)  NOT NULL     COMMENT '읍면동일련번호',
-    is_underground          VARHCAR(1)               COMMENT '지하여부',
+    is_underground          VARCHAR(1)               COMMENT '지하여부',
     building_main_no        INTEGER                  COMMNET '건물본번',
     building_sub_no         INTEGER                  COMMENT '건물부번',
     basic_district_no       VARCHAR(5)               COMMENT '기초구역번호',
