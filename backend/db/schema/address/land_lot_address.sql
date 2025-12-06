@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS land_lot_address;
 CREATE TABLE land_lot_address
 (
     id                  BIGINT  AUTO_INCREMENT PRIMARY KEY COMMENT '지번주소ID',
+    manage_no           VARCHAR(25)     NOT NULL COMMENT '관리번호',
+    seq                 INTEGER         NOT NULL COMMENT '일련번호',
     legal_dong_code     VARCHAR(10)     NOT NULL COMMENT '법정동코드',
     sido_name           VARCHAR(40)              COMMENT '시도명',
     sigungu_name        VARCHAR(40)              COMMENT '시군구명',
@@ -12,14 +14,14 @@ CREATE TABLE land_lot_address
     is_mountain         VARCHAR(1)               COMMENT '산여부',
     land_lot_main_no    INT                      COMMENT '지번본번(번지)',
     land_lot_sub_no     INT                      COMMENT '지번부번(호)',
-    land_lot_seq        BIGINT                   COMMENT '지번일련번호',
-    road_name_code      VARCHAR(12)              COMMENT '도로명코드',
-    is_underground      VARCHAR(1)               COMMENT '지하여부',
-    building_main_no    INT                      COMMENT '건물본번',
-    building_sub_no     INT                      COMMENT '건물부번',
-    change_reason_code  VARCHAR(2)               COMMENT '이동사유코드'
+    is_representative   VARCHAR(1)               COMMENT '대표여부'
 ) COMMENT = '지번주소';
 -- -----------------------------------------------------------------------------------------
 -- constraint
 ALTER TABLE land_lot_address
-    ADD CONSTRAINT uq_land_lot_address_domain_key UNIQUE(road_name_code, is_mountain, building_main_no, building_sub_no, land_lot_seq);
+    ADD CONSTRAINT uq_land_lot_address_domain_key UNIQUE(manage_no, seq);
+-- -----------------------------------------------------------------------------------------
+-- index
+CREATE INDEX idx_land_lot_address_pk ON land_lot_address(manage_no, seq);
+CREATE INDEX idx_land_lot_address_apm ON land_lot_address(legal_dong_code, land_lot_main_no, land_lot_sub_no, is_mountain);
+
