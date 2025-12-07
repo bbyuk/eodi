@@ -8,7 +8,7 @@ import lombok.ToString;
 /**
  * 도로명 주소 원천 데이터 Item
  * <p>
- * 출처 : 주소기반산업지원서비스 - 건물DB
+ * 출처 : 주소기반산업지원서비스 - 주소DB
  * https://business.juso.go.kr/addrlink/main.do
  */
 @Getter
