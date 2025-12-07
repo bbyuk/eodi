@@ -1,6 +1,8 @@
-package com.bb.eodi.legaldong.domain.repository;
+package com.bb.eodi.legaldong.infrastructure.persistence;
 
 import com.bb.eodi.legaldong.domain.entity.LegalDongAdjacency;
+import com.bb.eodi.legaldong.infrastructure.persistence.jpa.LegalDongAdjacencyJpaRepository;
+import com.bb.eodi.legaldong.domain.repository.LegalDongAdjacencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

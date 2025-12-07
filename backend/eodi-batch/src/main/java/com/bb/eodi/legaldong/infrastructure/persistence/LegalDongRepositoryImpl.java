@@ -1,10 +1,11 @@
-package com.bb.eodi.legaldong.domain.repository;
+package com.bb.eodi.legaldong.infrastructure.persistence;
 
 import com.bb.eodi.legaldong.domain.dto.LegalDongSummaryDto;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.entity.QLegalDong;
+import com.bb.eodi.legaldong.infrastructure.persistence.jpa.LegalDongJpaRepository;
+import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
