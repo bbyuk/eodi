@@ -38,4 +38,9 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
                 .fetchOne()
         );
     }
+
+    @Override
+    public void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items) {
+        roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items);
+    }
 }

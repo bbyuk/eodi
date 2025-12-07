@@ -14,8 +14,7 @@ CREATE TABLE land_lot_address
     is_mountain         VARCHAR(1)               COMMENT '산여부',
     land_lot_main_no    INT                      COMMENT '지번본번(번지)',
     land_lot_sub_no     INT                      COMMENT '지번부번(호)',
-    is_representative   VARCHAR(1)               COMMENT '대표여부',
-    building_name       VARCHAR(40)              COMMENT '건축물대장 건물명'
+    is_representative   VARCHAR(1)               COMMENT '대표여부'
 ) COMMENT = '지번주소';
 -- -----------------------------------------------------------------------------------------
 -- constraint

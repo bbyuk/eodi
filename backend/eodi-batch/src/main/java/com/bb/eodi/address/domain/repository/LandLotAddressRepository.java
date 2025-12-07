@@ -36,10 +36,4 @@ public interface LandLotAddressRepository {
      * @return 대표 지번주소 관리번호
      */
     Optional<String> findRepresentativeLandLotAddressManageNo(LandLotAddressFindQuery query);
-
-    /**
-     * 부가정보에 해당하는 컬럼을 batch update한다.
-     * @param items update 대상 chunk item
-     */
-    void batchUpdateAdditionalInfo(List<? extends LandLotAddress> items);
 }

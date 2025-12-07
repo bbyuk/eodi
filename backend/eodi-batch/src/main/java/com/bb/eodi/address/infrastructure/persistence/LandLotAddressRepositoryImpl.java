@@ -39,6 +39,23 @@ public class LandLotAddressRepositoryImpl implements LandLotAddressRepository {
         landLotAddressJdbcRepository.insertBatch(entities);
     }
 
+
+    /**
+     * 관리번호로 지번주소 조회
+     * @param manageNo 관리번호
+     * @return 관리번호에 해당하는 지번주소
+     */
+    @Override
+    public Optional<LandLotAddress> findByManageNo(String manageNo) {
+        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
+
+        return Optional.ofNullable(
+                queryFactory.selectFrom(landLotAddress)
+                        .where(landLotAddress.manageNo.eq(manageNo))
+                        .fetchOne()
+        );
+    }
+
     /**
      * 지번주소 조회
      *

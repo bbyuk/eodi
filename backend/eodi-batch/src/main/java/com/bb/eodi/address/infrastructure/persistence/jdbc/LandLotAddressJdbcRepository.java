@@ -64,20 +64,4 @@ public class LandLotAddressJdbcRepository {
                 }
         );
     }
-
-    /**
-     * 부가정보에 해당하는 컬럼들을 batch update한다.
-     * @param items 업데이트 대상 items
-     */
-    public void batchUpdateAdditionalInfo(List<? extends LandLotAddress> items) {
-        String sql = """
-                UPDATE  land_lot_address
-                SET     building_name = ?
-                WHERE   id = ?
-                """;
-        jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
-            ps.setObject(1, entity.getBuildingName(), VARCHAR);
-            ps.setObject(2, entity.getId(), BIGINT);
-        });
-    }
 }

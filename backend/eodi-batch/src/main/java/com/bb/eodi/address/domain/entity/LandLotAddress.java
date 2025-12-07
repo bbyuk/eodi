@@ -50,16 +50,4 @@ public class LandLotAddress {
 
     @Column(name = "is_representative", length = 1)
     private String isRepresentative;
-
-    // ========= 부가정보 소스
-    @Column(name = "building_name")
-    private String buildingName;
-
-    /**
-     * 건물명을 update한다.
-     * @param newBuildingName 새로운 건물명
-     */
-    public void updateBuildingName(String newBuildingName) {
-        this.buildingName = newBuildingName;
-    }
 }

@@ -22,4 +22,10 @@ public interface RoadNameAddressRepository {
      * @return 도로명 주소
      */
     Optional<RoadNameAddress> findByManageNo(String addressManageNo);
+
+    /**
+     * 도로명주소 부가정보에 해당하는 컬럼을 batch update 한다.
+     * @param items batch update 대상 item 목록
+     */
+    void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items);
 }
