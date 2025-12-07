@@ -2,7 +2,6 @@ package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
-import com.bb.eodi.address.infrastructure.persistence.jpa.RoadNameAddressJpaRepository;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
@@ -48,7 +47,6 @@ public class RoadNameAddressLoadJobConfig {
 
     /**
      * 도로명주소 적재 job
-     *
      * 도로명주소 전체분 파일을 일괄 load한다.
      * DB초기 구축시 사용
      *
@@ -170,9 +168,7 @@ public class RoadNameAddressLoadJobConfig {
     @Bean
     @StepScope
     public ItemWriter<RoadNameAddress> roadNameAddressItemWriter() {
-        return item -> {
-            roadNameAddressRepository.insertBatch(item.getItems());
-        };
+        return item -> roadNameAddressRepository.insertBatch(item.getItems());
     }
 
 }

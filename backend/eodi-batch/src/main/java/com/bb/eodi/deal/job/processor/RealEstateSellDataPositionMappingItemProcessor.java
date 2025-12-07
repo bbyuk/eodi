@@ -1,7 +1,6 @@
 package com.bb.eodi.deal.job.processor;
 
 import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
-import com.bb.eodi.address.domain.dto.AddressPositionIdentifier;
 import com.bb.eodi.address.domain.dto.LandLotAddressFindQuery;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
@@ -11,16 +10,12 @@ import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.legaldong.domain.dto.LegalDongInfoDto;
-import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongCacheRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 부동산 매매 실거래가 데이터 좌표 매핑 ItemProcessor
@@ -87,7 +82,7 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
                 )
                 .orElseThrow(() -> {
                     log.debug("아오");
-                    throw new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
+                    return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
                 });
 
         item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());

@@ -85,7 +85,7 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
                 )
                 .orElseThrow(() -> {
                     log.debug("아오");
-                    throw new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
+                    return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
                 });
 
         item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
