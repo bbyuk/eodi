@@ -4,6 +4,7 @@ package com.bb.eodi.legaldong.domain.dto;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -65,19 +66,22 @@ public class LegalDongInfoDto {
      * @param legalDongName 법정동명
      * @return 대상 법정동
      */
-    public LegalDongInfoDto findSubtreeNode(String legalDongName) {
+    public Optional<LegalDongInfoDto> findSubtreeNode(String legalDongName) {
         if (name.endsWith(legalDongName)) {
-            return this;
+            return Optional.of(this);
         }
 
         if (getChildren().isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         for (LegalDongInfoDto child : getChildren()) {
-            return child.findSubtreeNode(legalDongName);
+            Optional<LegalDongInfoDto> result = child.findSubtreeNode(legalDongName);
+            if (result.isPresent()) {
+                return result;
+            }
         }
 
-        return null;
+        return Optional.empty();
     }
 }
