@@ -17,6 +17,13 @@ public interface LandLotAddressRepository {
     void insertBatch(List<? extends LandLotAddress> entities);
 
     /**
+     * 관리번호로 지번주소를 조회한다.
+     * @param manageNo 관리번호
+     * @return 관리번호에 해당하는 지번주소
+     */
+    Optional<LandLotAddress> findByManageNo(String manageNo);
+
+    /**
      * 조회 쿼리 파라미터에 해당하는 대표 지번주소를 찾아 리턴한다.
      * @param query 조회 쿼리 파라미터
      * @return 지번주소 목록
@@ -29,4 +36,10 @@ public interface LandLotAddressRepository {
      * @return 대표 지번주소 관리번호
      */
     Optional<String> findRepresentativeLandLotAddressManageNo(LandLotAddressFindQuery query);
+
+    /**
+     * 부가정보에 해당하는 컬럼을 batch update한다.
+     * @param items update 대상 chunk item
+     */
+    void batchUpdateAdditionalInfo(List<? extends LandLotAddress> items);
 }
