@@ -35,68 +35,68 @@ public class RealEstateSellDataPositionMappingItemProcessor implements ItemProce
 
     @Override
     public RealEstateSell process(RealEstateSell item) throws Exception {
-        // 정상 지번이 없을 경우 수기 후보정 처리
-        if (!item.hasCorrectLandLot()) return null;
-
-        // 아파트, 오피스텔 건만 우선적용
-        if (!item.getHousingType().equals(HousingType.APT) && !item.getHousingType().equals(HousingType.OFFICETEL)) {
-            return null;
-        }
-
-        /**
-         * 매매데이터.지번 + 매매데이터.법정동코드 -> 건물주소.지번 -> 매매데이터.건물관리번호
-         * 매매데이터.건물관리번호 + 주소좌표정보.좌표 -> 매매데이터.좌표
-         */
-        LegalDong targetLegalDong = legalDongCacheRepository.findTargetByRegionIdAndDongName(item.getRegionId(), item.getLegalDongName())
-                .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
-
-        Set<AddressPositionIdentifier> addressPositionIdentifierSet = landLotAddressRepository.findLandLotAddress(
-                        LandLotAddressFindQuery
-                                .builder()
-                                .legalDongCode(targetLegalDong.getCode())
-                                .landLotMainNo(item.getLandLotMainNo())
-                                .landLotSubNo(item.getLandLotSubNo())
-                                .build())
-                .stream()
-                .map(landLotAddress -> AddressPositionIdentifier
-                        .builder()
-                        .roadNameCode(landLotAddress.getRoadNameCode())
-                        .legalDongCode(landLotAddress.getLegalDongCode().replaceFirst("..$", "00"))
-                        .isUnderground(landLotAddress.getIsUnderground())
-                        .buildingMainNo(landLotAddress.getBuildingMainNo())
-                        .buildingSubNo(landLotAddress.getBuildingSubNo())
-                        .build())
-                .collect(Collectors.toSet());
-
-        // 대상 건물주소의 주소위치 identifier 매핑이 여러건인 경우 수기매핑
-        if (addressPositionIdentifierSet.size() != 1) {
-            return null;
-        }
-
-        AddressPositionIdentifier addressPositionIdentifier = addressPositionIdentifierSet.iterator().next();
-        AddressPosition addressPosition = addressPositionRepository.findAddressPosition(
-                AddressPositionFindQuery.builder()
-                        .roadNameCode(addressPositionIdentifier.getRoadNameCode())
-                        .legalDongCode(addressPositionIdentifier.getLegalDongCode())
-                        .isUnderground(addressPositionIdentifier.getIsUnderground())
-                        .buildingMainNo(addressPositionIdentifier.getBuildingMainNo())
-                        .buildingSubNo(addressPositionIdentifier.getBuildingSubNo())
-                        .build()
-        ).orElse(
-                addressPositionRepository
-                        .findAddressPosition(AddressPositionFindQuery
-                                .builder()
-                                .roadNameCode(addressPositionIdentifier.getRoadNameCode())
-                                .legalDongCode(addressPositionIdentifier.getLegalDongCode())
-                                .buildingName(item.getTargetName())
-                                .build())
-                        .orElseThrow(() -> {
-                            log.debug("아오");
-                            return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
-                        })
-        );
-
-        item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
+//        // 정상 지번이 없을 경우 수기 후보정 처리
+//        if (!item.hasCorrectLandLot()) return null;
+//
+//        // 아파트, 오피스텔 건만 우선적용
+//        if (!item.getHousingType().equals(HousingType.APT) && !item.getHousingType().equals(HousingType.OFFICETEL)) {
+//            return null;
+//        }
+//
+//        /**
+//         * 매매데이터.지번 + 매매데이터.법정동코드 -> 건물주소.지번 -> 매매데이터.건물관리번호
+//         * 매매데이터.건물관리번호 + 주소좌표정보.좌표 -> 매매데이터.좌표
+//         */
+//        LegalDong targetLegalDong = legalDongCacheRepository.findTargetByRegionIdAndDongName(item.getRegionId(), item.getLegalDongName())
+//                .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
+//
+//        Set<AddressPositionIdentifier> addressPositionIdentifierSet = landLotAddressRepository.findLandLotAddress(
+//                        LandLotAddressFindQuery
+//                                .builder()
+//                                .legalDongCode(targetLegalDong.getCode())
+//                                .landLotMainNo(item.getLandLotMainNo())
+//                                .landLotSubNo(item.getLandLotSubNo())
+//                                .build())
+//                .stream()
+//                .map(landLotAddress -> AddressPositionIdentifier
+//                        .builder()
+//                        .roadNameCode(landLotAddress.getRoadNameCode())
+//                        .legalDongCode(landLotAddress.getLegalDongCode().replaceFirst("..$", "00"))
+//                        .isUnderground(landLotAddress.getIsUnderground())
+//                        .buildingMainNo(landLotAddress.getBuildingMainNo())
+//                        .buildingSubNo(landLotAddress.getBuildingSubNo())
+//                        .build())
+//                .collect(Collectors.toSet());
+//
+//        // 대상 건물주소의 주소위치 identifier 매핑이 여러건인 경우 수기매핑
+//        if (addressPositionIdentifierSet.size() != 1) {
+//            return null;
+//        }
+//
+//        AddressPositionIdentifier addressPositionIdentifier = addressPositionIdentifierSet.iterator().next();
+//        AddressPosition addressPosition = addressPositionRepository.findAddressPosition(
+//                AddressPositionFindQuery.builder()
+//                        .roadNameCode(addressPositionIdentifier.getRoadNameCode())
+//                        .legalDongCode(addressPositionIdentifier.getLegalDongCode())
+//                        .isUnderground(addressPositionIdentifier.getIsUnderground())
+//                        .buildingMainNo(addressPositionIdentifier.getBuildingMainNo())
+//                        .buildingSubNo(addressPositionIdentifier.getBuildingSubNo())
+//                        .build()
+//        ).orElse(
+//                addressPositionRepository
+//                        .findAddressPosition(AddressPositionFindQuery
+//                                .builder()
+//                                .roadNameCode(addressPositionIdentifier.getRoadNameCode())
+//                                .legalDongCode(addressPositionIdentifier.getLegalDongCode())
+//                                .buildingName(item.getTargetName())
+//                                .build())
+//                        .orElseThrow(() -> {
+//                            log.debug("아오");
+//                            return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
+//                        })
+//        );
+//
+//        item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
         return item;
     }
 }

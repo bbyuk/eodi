@@ -1,11 +1,10 @@
 package com.bb.eodi.address.job.config;
 
+import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.repository.LandLotAddressRepository;
+import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.address.job.dto.LandLotAddressItem;
-import com.bb.eodi.address.domain.entity.LandLotAddress;
-import com.bb.eodi.address.infrastructure.persistence.jdbc.LandLotAddressJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -24,11 +23,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 지번 주소 적재 배치 jobConfig
@@ -71,7 +70,7 @@ public class LandLotAddressLoadJobConfig {
 
             File dir = new File(targetDirectory);
 
-            File[] files = dir.listFiles(file -> file.getName().startsWith("jibun"));
+            File[] files = dir.listFiles(file -> file.getName().startsWith("지번"));
 
             for (int i = 0; i < files.length; i++) {
                 ExecutionContext context = new ExecutionContext();
@@ -148,21 +147,18 @@ public class LandLotAddressLoadJobConfig {
     @Bean
     @StepScope
     public ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor() {
-        return landLotAddressItem -> LandLotAddress.builder()
-                .legalDongCode(landLotAddressItem.getLegalDongCode())
-                .sidoName(landLotAddressItem.getSidoName())
-                .sigunguName(landLotAddressItem.getSigunguName())
-                .legalUmdName(landLotAddressItem.getLegalUmdName())
-                .legalRiName(landLotAddressItem.getLegalRiName())
-                .isMountain(landLotAddressItem.getIsMountain())
-                .landLotMainNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getLandLotMainNo())))
-                .landLotSubNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getLandLotSubNo())))
-                .landLotSeq(Long.parseLong(Objects.requireNonNull(landLotAddressItem.getLandLotSeq())))
-                .roadNameCode(landLotAddressItem.getRoadNameCode())
-                .isUnderground(landLotAddressItem.getIsUnderground())
-                .buildingMainNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getLandLotMainNo())))
-                .buildingSubNo(Integer.parseInt(Objects.requireNonNull(landLotAddressItem.getBuildingSubNo())))
-                .changeReasonCode(landLotAddressItem.getChangeReasonCode())
+        return item -> LandLotAddress.builder()
+                .manageNo(item.getManageNo())
+                .seq(StringUtils.hasText(item.getSeq()) ? Integer.parseInt(item.getSeq()) : null)
+                .legalDongCode(item.getLegalDongCode())
+                .sidoName(item.getSidoName())
+                .sigunguName(item.getSigunguName())
+                .legalUmdName(item.getLegalUmdName())
+                .legalRiName(item.getLegalRiName())
+                .isMountain(item.getIsMountain())
+                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : null)
+                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : null)
+                .isRepresentative(item.getIsRepresentative())
                 .build();
     }
 
