@@ -31,10 +31,10 @@ public class RoadNameAddress {
     private String isUnderground;
 
     @Column(name = "building_main_no")
-    private String buildingMainNo;
+    private Integer buildingMainNo;
 
     @Column(name = "building_sub_no")
-    private String buildingSubNo;
+    private Integer buildingSubNo;
 
     @Column(name = "basic_district_no", length = 5)
     private String basicDistrictNo;

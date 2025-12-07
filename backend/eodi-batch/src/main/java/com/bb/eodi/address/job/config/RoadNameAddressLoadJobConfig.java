@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -145,7 +146,6 @@ public class RoadNameAddressLoadJobConfig {
 
     /**
      * 도로명주소 ItemProcessor
-     * TODO ItemProcessor 개발 및 파일 분리
      * @return 도로명주소 ItemProcessor
      */
     @Bean
@@ -156,8 +156,8 @@ public class RoadNameAddressLoadJobConfig {
                 .roadNameCode(item.getRoadNameCode())
                 .umdSeq(item.getUmdSeq())
                 .isUnderground(item.getIsUnderground())
-                .buildingMainNo(item.getBuildingMainNo())
-                .buildingSubNo(item.getBuildingSubNo())
+                .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : null)
+                .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : null)
                 .basicDistrictNo(item.getBasicDistrictNo())
                 .hasDetailAddress(item.getHasDetailAddress())
                 .build();
