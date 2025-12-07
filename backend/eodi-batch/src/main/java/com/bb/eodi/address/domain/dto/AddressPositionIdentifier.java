@@ -11,8 +11,8 @@ import java.util.Objects;
 @Data
 @Builder
 public class AddressPositionIdentifier {
-    private String roadNameCode;
     private String legalDongCode;
+    private String roadNameCode;
     private String isUnderground;
     private Integer buildingMainNo;
     private Integer buildingSubNo;
