@@ -15,7 +15,6 @@ import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +24,11 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 도로명주소 부가정보 매핑 job config
@@ -47,6 +48,7 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
 
     /**
      * 도로명주소 부가정보 매핑 job
+     *
      * @param roadNameAddressAdditionalInfoMappingMasterStep 도로명주소 부가정보 매핑 병렬처리 master step
      * @return 도로명주소 부가정보 매핑 job
      */
@@ -59,6 +61,7 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
 
     /**
      * 도로명주소 부가정보 매핑 병렬 partitioner
+     *
      * @param targetDirectory jobParameter 대상 경로
      * @return 도로명주소 부가정보 매핑 병렬 partitioner
      */
@@ -86,8 +89,9 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
 
     /**
      * 도로명주소 부가정보 매핑 병렬 master step
+     *
      * @param roadNameAddressAdditionalInfoMappingPartitioner 도로명주소 부가정보 매핑 병렬 partitioner
-     * @param roadNameAddressAdditionalInfoMappingWorkerStep 지분주소 부가정보 매핑 worker step
+     * @param roadNameAddressAdditionalInfoMappingWorkerStep  지분주소 부가정보 매핑 worker step
      * @return 도로명주소 부가정보 매핑 병렬 master step
      */
     @Bean
@@ -108,21 +112,19 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
 
     /**
      * 도로명주소 부가정보 매핑 worker step
-     * @param additionalInfoItemReader 부가정보 ItemReader
-     * @param additionalInfoMappingItemProcessor 부가정보 매핑 ItemProcessor
+     *
+     * @param additionalInfoItemReader                      부가정보 ItemReader
      * @param roadNameAddressUpdateAdditionalInfoItemWriter 도로명주소 부가정보 update ItemWriter
      * @return
      */
     @Bean
     public Step roadNameAddressAdditionalInfoMappingWorkerStep(
             ItemStreamReader<AdditionalInfoItem> additionalInfoItemReader,
-            ItemProcessor<AdditionalInfoItem, RoadNameAddress> additionalInfoMappingItemProcessor,
-            ItemWriter<RoadNameAddress> roadNameAddressUpdateAdditionalInfoItemWriter
+            ItemWriter<AdditionalInfoItem> roadNameAddressUpdateAdditionalInfoItemWriter
     ) {
         return new StepBuilder("roadNameAddressAdditionalInfoMappingWorkerStep", jobRepository)
-                .<AdditionalInfoItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .<AdditionalInfoItem, AdditionalInfoItem>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(additionalInfoItemReader)
-                .processor(additionalInfoMappingItemProcessor)
                 .writer(roadNameAddressUpdateAdditionalInfoItemWriter)
                 .stream(additionalInfoItemReader)
                 .build();
@@ -130,6 +132,7 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
 
     /**
      * 부가정보 ItemReader
+     *
      * @param filePath stepExecutionContext step별로 read할 파일 경로
      * @return 부가정보 ItemReader
      */
@@ -142,34 +145,32 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
     }
 
     /**
-     * 도로명주소 부가정보 매핑 ItemProcessor
-     * @return 부가정보 ItemProcessor
-     */
-    @Bean
-    @StepScope
-    public ItemProcessor<AdditionalInfoItem, RoadNameAddress> additionalInfoMappingItemProcessor() {
-        return item -> {
-            Optional<RoadNameAddress> result = roadNameAddressRepository.findByManageNo(item.getManageNo());
-            if (result.isEmpty()) {
-                return null;
-            }
-
-            RoadNameAddress roadNameAddress = result.get();
-            roadNameAddress.updateBuildingName(item.getBuildingName());
-
-            return roadNameAddress;
-        };
-    }
-
-    /**
      * 도로명주소 부가정보 매핑 update ItemWriter
+     *
+     * AdditionalInfoItem.manageNo bulk 조회 -> 매핑 및 update
+     *
      * @return 도로명주소 부가정보 매핑 update ItemWriter
      */
     @Bean
     @StepScope
-    public ItemWriter<RoadNameAddress> roadNameAddressUpdateAdditionalInfoItemWriter() {
+    public ItemWriter<AdditionalInfoItem> roadNameAddressUpdateAdditionalInfoItemWriter() {
         return chunk -> {
-            roadNameAddressRepository.batchUpdateAdditionalInfo(chunk.getItems());
+            // 1. manageNo 리스트 만들기 (stream 없이)
+            List<String> manageNos = new ArrayList<>(chunk.getItems().size());
+            for (AdditionalInfoItem item : chunk.getItems()) {
+                manageNos.add(item.getManageNo());
+            }
+
+            // 2. DB bulk 조회해서 Map으로 변환
+            List<RoadNameAddress> list = roadNameAddressRepository.findAllByManageNoList(manageNos);
+
+            Map<String, RoadNameAddress> result = list.stream()
+                    .collect(Collectors.toMap(
+                            RoadNameAddress::getManageNo,
+                            r -> r
+                    ));
+
+            roadNameAddressRepository.batchUpdateAdditionalInfo(result.values());
         };
     }
 

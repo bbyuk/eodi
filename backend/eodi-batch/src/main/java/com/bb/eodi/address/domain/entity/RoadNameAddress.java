@@ -2,6 +2,7 @@ package com.bb.eodi.address.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.util.StringUtils;
 
 /**
  * 도로명 주소 address 도메인 entity
@@ -51,6 +52,6 @@ public class RoadNameAddress {
      * @param newBuildingName 새로운 건물명
      */
     public void updateBuildingName(String newBuildingName) {
-        this.buildingName = newBuildingName;
+        this.buildingName = StringUtils.hasText(newBuildingName) ? newBuildingName : null;
     }
 }

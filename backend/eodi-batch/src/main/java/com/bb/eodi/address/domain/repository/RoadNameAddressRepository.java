@@ -2,6 +2,7 @@ package com.bb.eodi.address.domain.repository;
 
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,15 @@ public interface RoadNameAddressRepository {
     Optional<RoadNameAddress> findByManageNo(String addressManageNo);
 
     /**
+     * 주소 관리번호 목록에 해당하는 도로명주소 목록을 조회한다.
+     * @param addressManageNoList 조회 대상 주소 관리번호 목록
+     * @return 도로명주소 목록
+     */
+    List<RoadNameAddress> findAllByManageNoList(List<String> addressManageNoList);
+    
+    /**
      * 도로명주소 부가정보에 해당하는 컬럼을 batch update 한다.
      * @param items batch update 대상 item 목록
      */
-    void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items);
+    void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items);
 }
