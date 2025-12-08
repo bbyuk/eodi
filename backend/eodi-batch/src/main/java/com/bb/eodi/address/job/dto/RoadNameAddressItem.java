@@ -8,7 +8,7 @@ import lombok.ToString;
 /**
  * 도로명 주소 원천 데이터 Item
  * <p>
- * 출처 : 주소기반산업지원서비스 - 건물DB
+ * 출처 : 주소기반산업지원서비스 - 주소DB
  * https://business.juso.go.kr/addrlink/main.do
  */
 @Getter
@@ -16,44 +16,38 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class RoadNameAddressItem {
-    // 시군구코드
-    private String sigunguCode;
-    // 도로명번호
-    private String roadNameNo;
-    // 도로명
-    private String roadName;
-    // 영문도로명
-    private String engRoadName;
+
+    // 관리번호
+    private String manageNo;
+
+    // 도로명코드
+    private String roadNameCode;
+
     // 읍면동일련번호
     private String umdSeq;
-    // 시도명
-    private String sidoName;
-    // 시군구명
-    private String sigunguName;
-    // 읍면동구분
-    private String umdGb;
-    // 읍면동코드
-    private String umdCode;
-    // 읍면동명
-    private String umdName;
-    // 상위도로명번호
-    private String parentRoadNameNo;
-    // 상위도로명
-    private String parentRoadName;
-    // 사용여부
-    private String useYn;
-    // 변경이력사유
-    private String changeHistoryReason;
-    // 변경이력정보
-    private String changeHistoryInfo;
-    // 영문시도명
-    private String engSidoName;
-    // 영문시군구명
-    private String engSigunguName;
-    // 영문읍면동명
-    private String engUmdName;
+
+    // 지하여부
+    private String isUnderground;
+
+    // 건물본번
+    private String buildingMainNo;
+
+    // 건물부번
+    private String buildingSubNo;
+
+    // 기초구역번호
+    private String basicDistrictNo;
+
     // 고시일자
-    private String announcementDate;
-    // 말소일자
-    private String expirationDate;
+    private String entranceDate;
+
+    // 변경사유코드
+    private String changeReasonCode;
+
+    // 변경전도로명주소
+    private String beforeChangeRoadNameAddress;
+
+    // 상세주소부여여부
+    private String hasDetailAddress;
+
 }

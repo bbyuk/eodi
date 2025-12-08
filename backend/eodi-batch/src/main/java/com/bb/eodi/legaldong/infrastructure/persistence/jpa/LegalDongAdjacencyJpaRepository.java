@@ -1,4 +1,4 @@
-package com.bb.eodi.legaldong.domain.repository;
+package com.bb.eodi.legaldong.infrastructure.persistence.jpa;
 
 import com.bb.eodi.legaldong.domain.entity.LegalDongAdjacency;
 import org.springframework.data.jpa.repository.JpaRepository;

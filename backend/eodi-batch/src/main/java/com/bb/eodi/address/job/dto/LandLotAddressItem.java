@@ -15,32 +15,40 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LandLotAddressItem {
 
+    // 관리번호
+    private String manageNo;
+
+    // 일련번호
+    private String seq;
+
     // 법정동코드
     private String legalDongCode;
+
     // 시도명
     private String sidoName;
+
     // 시군구명
     private String sigunguName;
+
     // 법정읍면동명
     private String legalUmdName;
+
     // 법정리명
     private String legalRiName;
+
     // 산여부
     private String isMountain;
+
     // 지번본번(번지)
     private String landLotMainNo;
+
     // 지번부번(호)
     private String landLotSubNo;
-    // 지번일련번호
-    private String landLotSeq;
-    // 도로명코드
-    private String roadNameCode;
-    // 지하여부
-    private String isUnderground;
-    // 건물본번
-    private String buildingMainNo;
-    // 건물부번
-    private String buildingSubNo;
-    // 이동사유코드
+
+    // 대표여부
+    private String isRepresentative;
+
+    // 변경사유코드
     private String changeReasonCode;
+
 }

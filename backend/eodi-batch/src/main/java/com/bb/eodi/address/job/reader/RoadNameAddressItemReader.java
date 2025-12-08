@@ -11,37 +11,32 @@ import org.springframework.batch.item.UnexpectedInputException;
  * 도로명주소 단일 ItemReader
  */
 @Slf4j
-public class RoadNameAddressItemReader extends AbstractResourceAwareLineItemReader<RoadNameAddressItem> {
+public class RoadNameAddressItemReader extends AbstractAddressItemStreamReader<RoadNameAddressItem> {
+
+    public RoadNameAddressItemReader(String filePath) {
+        super(filePath);
+    }
 
     @Override
     public RoadNameAddressItem read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        String[] split = readLine("\\|");
+        String[] split = nextLine("\\|");
 
         if (split == null) return null;
 
         try {
             return RoadNameAddressItem
                     .builder()
-                    .sigunguCode(split[0])
-                    .roadNameNo(split[1])
-                    .roadName(split[2])
-                    .engRoadName(split[3])
-                    .umdSeq(split[4])
-                    .sidoName(split[5])
-                    .sigunguName(split[6])
-                    .umdGb(split[7])
-                    .umdCode(split[8])
-                    .umdName(split[9])
-                    .parentRoadNameNo(split[10])
-                    .parentRoadName(split[11])
-                    .useYn(split[12])
-                    .changeHistoryReason(split[13])
-                    .changeHistoryInfo(split[14])
-                    .engSidoName(split[15])
-                    .engSigunguName(split[16])
-                    .engUmdName(split[17])
-                    .announcementDate(split[18])
-                    .expirationDate(split.length == 20 ? split[19] : null)
+                    .manageNo(split[0])
+                    .roadNameCode(split[1])
+                    .umdSeq(split[2])
+                    .isUnderground(split[3])
+                    .buildingMainNo(split[4])
+                    .buildingSubNo(split[5])
+                    .basicDistrictNo(split[6])
+                    .changeReasonCode(split[7])
+                    .entranceDate(split[8])
+                    .beforeChangeRoadNameAddress(split[9])
+                    .hasDetailAddress(split[10])
                     .build();
         } catch (ArrayIndexOutOfBoundsException e) {
             log.error("매핑 실패 : {}", e.getMessage(), e);

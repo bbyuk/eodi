@@ -1,21 +1,46 @@
 package com.bb.eodi.address.infrastructure.persistence;
 
+import com.bb.eodi.address.domain.entity.QRoadNameAddress;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * 도로명주소 Repository 구현체
+ */
 @Repository
 @RequiredArgsConstructor
 public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository {
 
     private final RoadNameAddressJdbcRepository roadNameAddressJdbcRepository;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public void insertBatch(List<? extends RoadNameAddress> items) {
         roadNameAddressJdbcRepository.insertBatch(items);
+    }
+
+    @Override
+    @Cacheable(cacheNames = "roadNameAddressCache", key = "#addressManageNo")
+    public Optional<RoadNameAddress> findByManageNo(String addressManageNo) {
+        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
+
+        return Optional.ofNullable(
+                queryFactory.selectFrom(roadNameAddress)
+                .where(roadNameAddress.manageNo.eq(addressManageNo))
+                .fetchOne()
+        );
+    }
+
+    @Override
+    public void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items) {
+        roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items);
     }
 }

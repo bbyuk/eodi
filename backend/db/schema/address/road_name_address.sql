@@ -8,10 +8,12 @@ CREATE TABLE road_name_address
     road_name_code          VARCHAR(12) NOT NULL     COMMENT '도로명코드',
     umd_seq                 VARCHAR(2)  NOT NULL     COMMENT '읍면동일련번호',
     is_underground          VARCHAR(1)               COMMENT '지하여부',
-    building_main_no        INTEGER                  COMMNET '건물본번',
+    building_main_no        INTEGER                  COMMENT '건물본번',
     building_sub_no         INTEGER                  COMMENT '건물부번',
     basic_district_no       VARCHAR(5)               COMMENT '기초구역번호',
-    has_detail_address      VARCHAR(1)               COMMENT '상세주소부여 여부'
+    has_detail_address      VARCHAR(1)               COMMENT '상세주소부여 여부',
+    building_name           VARCHAR(40)              COMMENT '건축물대장 건물명'
+
 ) COMMENT = '도로명주소';
 -- -----------------------------------------------------------------------------------------
 -- constraint

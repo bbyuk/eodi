@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.VARCHAR;
+import static java.sql.Types.*;
 
 /**
  * 도로명주소 JdbcRepository
@@ -48,5 +47,21 @@ public class RoadNameAddressJdbcRepository {
             ps.setObject(8, entity.getHasDetailAddress(), VARCHAR);
         });
 
+    }
+
+    /**
+     * 도로명주소 부가정보에 해당하는 컬럼을 batch update 한다.
+     * @param items batch update 대상 item 목록
+     */
+    public void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items) {
+        String sql = """
+                UPDATE  road_name_address
+                SET     building_name = ?
+                WHERE   id = ?
+                """;
+        jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
+            ps.setObject(1, entity.getBuildingName(), VARCHAR);
+            ps.setObject(2, entity.getId(), BIGINT);
+        });
     }
 }

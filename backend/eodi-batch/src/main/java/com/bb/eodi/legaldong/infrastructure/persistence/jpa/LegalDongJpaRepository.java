@@ -1,4 +1,4 @@
-package com.bb.eodi.legaldong.domain.repository;
+package com.bb.eodi.legaldong.infrastructure.persistence.jpa;
 
 import com.bb.eodi.legaldong.domain.dto.LegalDongSummaryDto;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;

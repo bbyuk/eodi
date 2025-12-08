@@ -11,8 +11,8 @@ import java.util.Objects;
 @Data
 @Builder
 public class AddressPositionIdentifier {
-    private String roadNameCode;
     private String legalDongCode;
+    private String roadNameCode;
     private String isUnderground;
     private Integer buildingMainNo;
     private Integer buildingSubNo;
@@ -20,8 +20,7 @@ public class AddressPositionIdentifier {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AddressPositionIdentifier)) return false;
-        AddressPositionIdentifier other = (AddressPositionIdentifier) o;
+        if (!(o instanceof AddressPositionIdentifier other)) return false;
 
         return Objects.equals(this.roadNameCode, other.getRoadNameCode())
                 && Objects.equals(this.legalDongCode, other.getLegalDongCode())

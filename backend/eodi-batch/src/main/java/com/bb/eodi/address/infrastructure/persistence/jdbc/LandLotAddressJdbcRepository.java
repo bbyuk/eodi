@@ -56,13 +56,12 @@ public class LandLotAddressJdbcRepository {
                     ps.setObject(4, entity.getSidoName(), VARCHAR);
                     ps.setObject(5, entity.getSigunguName(), VARCHAR);
                     ps.setObject(6, entity.getLegalUmdName(), VARCHAR);
-                    ps.setObject(7, entity.getLegalRiName(), INTEGER);
-                    ps.setObject(8, entity.getIsMountain(), INTEGER);
+                    ps.setObject(7, entity.getLegalRiName(), VARCHAR);
+                    ps.setObject(8, entity.getIsMountain(), VARCHAR);
                     ps.setObject(9, entity.getLandLotMainNo(), INTEGER);
                     ps.setObject(10, entity.getLandLotSubNo(), INTEGER);
                     ps.setObject(11, entity.getIsRepresentative(), VARCHAR);
                 }
         );
     }
-
 }

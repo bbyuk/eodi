@@ -31,14 +31,26 @@ public class RoadNameAddress {
     private String isUnderground;
 
     @Column(name = "building_main_no")
-    private String buildingMainNo;
+    private Integer buildingMainNo;
 
     @Column(name = "building_sub_no")
-    private String buildingSubNo;
+    private Integer buildingSubNo;
 
     @Column(name = "basic_district_no", length = 5)
     private String basicDistrictNo;
 
     @Column(name = "has_detail_address", length = 1)
     private String hasDetailAddress;
+
+    // ========= 부가정보 소스
+    @Column(name = "building_name")
+    private String buildingName;
+
+    /**
+     * 건물명을 update한다.
+     * @param newBuildingName 새로운 건물명
+     */
+    public void updateBuildingName(String newBuildingName) {
+        this.buildingName = newBuildingName;
+    }
 }
