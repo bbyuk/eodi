@@ -6,9 +6,9 @@ import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +28,6 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     }
 
     @Override
-    @Cacheable(cacheNames = "roadNameAddressCache", key = "#addressManageNo")
     public Optional<RoadNameAddress> findByManageNo(String addressManageNo) {
         QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
 
@@ -40,7 +39,18 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     }
 
     @Override
-    public void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items) {
+    public List<RoadNameAddress> findAllByManageNoList(List<String> addressManageNoList) {
+        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
+
+        return queryFactory.selectFrom(roadNameAddress)
+                .where(roadNameAddress.manageNo.in(addressManageNoList))
+                .fetch();
+    }
+
+    @Override
+    public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items) {
         roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items);
     }
+
+
 }

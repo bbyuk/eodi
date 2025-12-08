@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import static java.sql.Types.*;
@@ -53,7 +54,7 @@ public class RoadNameAddressJdbcRepository {
      * 도로명주소 부가정보에 해당하는 컬럼을 batch update 한다.
      * @param items batch update 대상 item 목록
      */
-    public void batchUpdateAdditionalInfo(List<? extends RoadNameAddress> items) {
+    public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items) {
         String sql = """
                 UPDATE  road_name_address
                 SET     building_name = ?
