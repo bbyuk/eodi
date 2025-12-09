@@ -67,7 +67,7 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
         }
 
         if (parameter.getLandLotMainNo() != null) {
-            condition.and(landLotAddress.landLotMainNo.eq(parameter.getLandLotSubNo()));
+            condition.and(landLotAddress.landLotMainNo.eq(parameter.getLandLotMainNo()));
         }
 
         if (parameter.getLandLotSubNo() != null) {
