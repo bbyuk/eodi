@@ -9,6 +9,7 @@ import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRe
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -56,6 +57,7 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     }
 
     @Override
+    @Cacheable(cacheNames = "roadNameAddressJoinedWithLandLot", key = "#parameter.legalDongCode + ':' + #parameter.landLotMainNo + ':' + #parameter.landLotSubNo")
     public List<RoadNameAddress> findWithLandLot(RoadNameAddressQueryParameter parameter) {
         QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
         QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
