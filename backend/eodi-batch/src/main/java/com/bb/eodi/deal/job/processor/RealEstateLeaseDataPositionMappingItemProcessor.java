@@ -2,6 +2,7 @@ package com.bb.eodi.deal.job.processor;
 
 import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
 import com.bb.eodi.address.domain.dto.LandLotAddressFindQuery;
+import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * 부동산 임대차 실거래가 데이터 좌표 매핑 ItemProcessor
@@ -62,33 +65,69 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
                     log.error("매핑 실패 -> {}", item.getLegalDongName());
                     return new RuntimeException("대상 법정동 정보를 찾지 못했습니다.");
                 });
-
-        String addressManageNo = landLotAddressRepository.findRepresentativeLandLotAddressManageNo(LandLotAddressFindQuery
+        List<RoadNameAddress> roadNameAddresses = roadNameAddressRepository.findWithLandLot(
+                RoadNameAddressQueryParameter
                         .builder()
                         .legalDongCode(targetLegalDongInfo.getCode())
                         .landLotMainNo(item.getLandLotMainNo())
                         .landLotSubNo(item.getLandLotSubNo())
-                        .build())
-                .orElseThrow(() -> new RuntimeException("주소 관리번호를 찾지 못했습니다."));
+                        .build());
 
-        RoadNameAddress roadNameAddress = roadNameAddressRepository.findByManageNo(addressManageNo)
-                .orElseThrow(() -> new RuntimeException("주소 관리번호에 해당하는 도로명주소를 찾지 못했습니다."));
+        if (roadNameAddresses.isEmpty()) {
+            log.error("legalDongCode = {}, landLotMainNo = {}, landLotSubNo = {}"
+                    , targetLegalDongInfo.getCode()
+                    , item.getLandLotMainNo()
+                    , item.getLandLotSubNo());
+            throw new RuntimeException("매매 데이터와 매핑되는 주소 정보를 찾지 못했습니다.");
+        } else if (roadNameAddresses.size() == 1) {
+            AddressPosition addressPosition = addressPositionRepository.findAddressPosition(
+                            AddressPositionFindQuery.builder()
+                                    .roadNameCode(roadNameAddresses.get(0).getRoadNameCode())
+                                    .legalDongCode(targetLegalDongInfo.getCode())
+                                    .isUnderground(roadNameAddresses.get(0).getIsUnderground())
+                                    .buildingMainNo(roadNameAddresses.get(0).getBuildingMainNo())
+                                    .buildingSubNo(roadNameAddresses.get(0).getBuildingSubNo())
+                                    .build())
+                    .orElseThrow(() -> {
+                        log.error("legalDongCode = {}", targetLegalDongInfo.getCode());
+                        log.error("roadNameCode = {}", roadNameAddresses.get(0).getRoadNameCode());
+                        log.error("buildingMainNo = {}", roadNameAddresses.get(0).getBuildingMainNo());
+                        log.error("buildingSubNo = {}", roadNameAddresses.get(0).getBuildingSubNo());
+                        log.error("isUnderground = {}", roadNameAddresses.get(0).getIsUnderground());
+                        return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
+                    });
 
-        AddressPosition addressPosition = addressPositionRepository.findAddressPosition(
-                        AddressPositionFindQuery.builder()
-                                .roadNameCode(roadNameAddress.getRoadNameCode())
-                                .legalDongCode(targetLegalDongInfo.getCode())
-                                .isUnderground(roadNameAddress.getIsUnderground())
-                                .buildingMainNo(roadNameAddress.getBuildingMainNo())
-                                .buildingSubNo(roadNameAddress.getBuildingSubNo())
-                                .build()
-                )
-                .orElseThrow(() -> {
-                    log.debug("아오");
-                    return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
-                });
+            item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
+        } else if (roadNameAddresses.stream()
+                .filter(roadNameAddress -> item.getTargetName().equals(roadNameAddress.getBuildingName()))
+                .count() == 1) {
 
-        item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
+            RoadNameAddress roadNameAddress = roadNameAddresses.stream()
+                    .filter(address -> item.getTargetName().equals(address.getBuildingName()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("매매 데이터와 매핑되는 주소 정보를 찾지 못했습니다."));
+
+            addressPositionRepository.findAddressPosition(
+                    AddressPositionFindQuery.builder()
+                            .roadNameCode(roadNameAddress.getRoadNameCode())
+                            .legalDongCode(targetLegalDongInfo.getCode())
+                            .isUnderground(roadNameAddress.getIsUnderground())
+                            .buildingMainNo(roadNameAddress.getBuildingMainNo())
+                            .buildingSubNo(roadNameAddress.getBuildingSubNo())
+                            .build()
+            ).orElseThrow(() -> {
+                log.error("legalDongCode = {}", targetLegalDongInfo.getCode());
+                log.error("roadNameCode = {}", roadNameAddress.getRoadNameCode());
+                log.error("buildingMainNo = {}", roadNameAddress.getBuildingMainNo());
+                log.error("buildingSubNo = {}", roadNameAddress.getBuildingSubNo());
+                log.error("isUnderground = {}", roadNameAddress.getIsUnderground());
+                return new RuntimeException("주소 위치 정보를 찾지 못했습니다.");
+            });
+        }
+        else {
+            log.error(item.toString());
+            throw new RuntimeException("매매 데이터와 매핑되는 주소 정보를 찾지 못했습니다.");
+        }
 
         return item;
     }
