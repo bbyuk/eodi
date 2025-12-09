@@ -155,13 +155,11 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
     @StepScope
     public ItemWriter<AdditionalInfoItem> roadNameAddressUpdateAdditionalInfoItemWriter() {
         return chunk -> {
-            // 1. manageNo 리스트 만들기 (stream 없이)
             Map<String, ? extends AdditionalInfoItem> itemMap = chunk.getItems().stream().collect(Collectors.toMap(
                     AdditionalInfoItem::getManageNo,
                     item -> item
             ));
 
-            // 2. DB bulk 조회해서 Map으로 변환
             List<RoadNameAddress> list = roadNameAddressRepository.findAllByManageNoList(new ArrayList<>(itemMap.keySet()));
 
             list.forEach(roadNameAddress -> {
