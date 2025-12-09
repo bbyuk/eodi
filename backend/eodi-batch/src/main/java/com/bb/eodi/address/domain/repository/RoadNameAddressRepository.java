@@ -1,5 +1,6 @@
 package com.bb.eodi.address.domain.repository;
 
+import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 
 import java.util.Collection;
@@ -36,4 +37,12 @@ public interface RoadNameAddressRepository {
      * @param items batch update 대상 item 목록
      */
     void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items);
+
+
+    /**
+     * 지번주소와 join하여 도로명주소 조회
+     * @param parameter 쿼리 파라미터
+     * @return 도로명주소 목록
+     */
+    List<RoadNameAddress> findWithLandLot(RoadNameAddressQueryParameter parameter);
 }

@@ -107,10 +107,16 @@ public class LandLotAddressRepositoryImpl implements LandLotAddressRepository {
             condition.and(landLotAddress.landLotSubNo.eq(query.getLandLotSubNo()));
         }
 
-        return Optional.ofNullable(
-                queryFactory.select(landLotAddress.manageNo)
-                        .from(landLotAddress)
-                        .where(condition)
-                        .fetchOne());
+        try {
+            return Optional.ofNullable(
+                    queryFactory.select(landLotAddress.manageNo)
+                            .from(landLotAddress)
+                            .where(condition)
+                            .fetchOne());
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }
