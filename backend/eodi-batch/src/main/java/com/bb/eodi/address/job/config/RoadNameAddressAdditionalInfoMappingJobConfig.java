@@ -156,21 +156,18 @@ public class RoadNameAddressAdditionalInfoMappingJobConfig {
     public ItemWriter<AdditionalInfoItem> roadNameAddressUpdateAdditionalInfoItemWriter() {
         return chunk -> {
             // 1. manageNo 리스트 만들기 (stream 없이)
-            List<String> manageNos = new ArrayList<>(chunk.getItems().size());
-            for (AdditionalInfoItem item : chunk.getItems()) {
-                manageNos.add(item.getManageNo());
-            }
+            Map<String, ? extends AdditionalInfoItem> itemMap = chunk.getItems().stream().collect(Collectors.toMap(
+                    AdditionalInfoItem::getManageNo,
+                    item -> item
+            ));
 
             // 2. DB bulk 조회해서 Map으로 변환
-            List<RoadNameAddress> list = roadNameAddressRepository.findAllByManageNoList(manageNos);
+            List<RoadNameAddress> list = roadNameAddressRepository.findAllByManageNoList(new ArrayList<>(itemMap.keySet()));
 
-            Map<String, RoadNameAddress> result = list.stream()
-                    .collect(Collectors.toMap(
-                            RoadNameAddress::getManageNo,
-                            r -> r
-                    ));
-
-            roadNameAddressRepository.batchUpdateAdditionalInfo(result.values());
+            list.forEach(roadNameAddress -> {
+                roadNameAddress.updateBuildingName(itemMap.get(roadNameAddress.getManageNo()).getBuildingName());
+            });
+            roadNameAddressRepository.batchUpdateAdditionalInfo(list);
         };
     }
 
