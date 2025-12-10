@@ -76,8 +76,6 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
             condition.and(landLotAddress.landLotSubNo.eq(parameter.getLandLotSubNo()));
         }
 
-        condition.and(landLotAddress.isRepresentative.eq("1"));
-
         return queryFactory.select(roadNameAddress)
                 .from(roadNameAddress)
                 .join(landLotAddress)
