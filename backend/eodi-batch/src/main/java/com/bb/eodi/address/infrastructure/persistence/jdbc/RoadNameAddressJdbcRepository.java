@@ -21,7 +21,7 @@ public class RoadNameAddressJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void insertBatch(List<? extends RoadNameAddress> items) {
+    public void insertBatch(List<? extends RoadNameAddress> items, int batchSize) {
         log.debug("RoadNameAddressJdbcRepository.insertBatch");
         String sql = """
                 INSERT INTO road_name_address
@@ -37,7 +37,7 @@ public class RoadNameAddressJdbcRepository {
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-        jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
             ps.setObject(1, entity.getManageNo(), VARCHAR);
             ps.setObject(2, entity.getRoadNameCode(), VARCHAR);
             ps.setObject(3, entity.getUmdSeq(), VARCHAR);
@@ -54,13 +54,13 @@ public class RoadNameAddressJdbcRepository {
      * 도로명주소 부가정보에 해당하는 컬럼을 batch update 한다.
      * @param items batch update 대상 item 목록
      */
-    public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items) {
+    public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items, int batchSize) {
         String sql = """
                 UPDATE  road_name_address
                 SET     building_name = ?
                 WHERE   id = ?
                 """;
-        jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
             ps.setObject(1, entity.getBuildingName(), VARCHAR);
             ps.setObject(2, entity.getId(), BIGINT);
         });

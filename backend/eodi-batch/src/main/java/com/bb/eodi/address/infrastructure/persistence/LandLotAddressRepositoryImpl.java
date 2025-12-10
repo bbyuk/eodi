@@ -5,8 +5,10 @@ import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.entity.QLandLotAddress;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.LandLotAddressJdbcRepository;
 import com.bb.eodi.address.domain.repository.LandLotAddressRepository;
+import com.bb.eodi.core.EodiBatchProperties;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,16 +20,12 @@ import java.util.Optional;
  * 지번주소 Repository 구현체
  */
 @Repository
+@RequiredArgsConstructor
 public class LandLotAddressRepositoryImpl implements LandLotAddressRepository {
 
     private final LandLotAddressJdbcRepository landLotAddressJdbcRepository;
+    private final EodiBatchProperties eodiBatchProperties;
     private final JPAQueryFactory queryFactory;
-
-    public LandLotAddressRepositoryImpl(JdbcTemplate jdbcTemplate, JPAQueryFactory queryFactory) {
-        this.landLotAddressJdbcRepository = new LandLotAddressJdbcRepository(jdbcTemplate);
-        this.queryFactory = queryFactory;
-    }
-
 
     /**
      * 지번 주소 배치 insert
@@ -36,7 +34,7 @@ public class LandLotAddressRepositoryImpl implements LandLotAddressRepository {
      */
     @Override
     public void insertBatch(List<? extends LandLotAddress> entities) {
-        landLotAddressJdbcRepository.insertBatch(entities);
+        landLotAddressJdbcRepository.insertBatch(entities, eodiBatchProperties.batchSize());
     }
 
 
