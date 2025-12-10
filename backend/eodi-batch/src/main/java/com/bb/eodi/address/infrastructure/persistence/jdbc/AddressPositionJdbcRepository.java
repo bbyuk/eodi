@@ -3,6 +3,7 @@ package com.bb.eodi.address.infrastructure.persistence.jdbc;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import static java.sql.Types.*;
 /**
  * 주소위치정보 JdbcRepository 구현체
  */
+@Repository
 @RequiredArgsConstructor
 public class AddressPositionJdbcRepository {
 
@@ -20,7 +22,7 @@ public class AddressPositionJdbcRepository {
      * jdbc 배치 update로 파라미터 entity를 전체 저장한다.
      * @param entities 저장할 entity 목록
      */
-    public void insertBatch(List<? extends AddressPosition> entities) {
+    public void insertBatch(List<? extends AddressPosition> entities, int batchSize) {
 
         String sql = """
                 INSERT INTO address_position
@@ -52,7 +54,7 @@ public class AddressPositionJdbcRepository {
         jdbcTemplate.batchUpdate(
                 sql,
                 entities,
-                500,
+                batchSize,
                 (ps, entity) -> {
                     ps.setObject(1, entity.getSigunguCode(), VARCHAR);
                     ps.setObject(2, entity.getEntranceSeq(), VARCHAR);

@@ -3,6 +3,7 @@ package com.bb.eodi.address.infrastructure.persistence;
 import com.bb.eodi.address.domain.entity.RoadNameCode;
 import com.bb.eodi.address.domain.repository.RoadNameCodeRepository;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameCodeJdbcRepository;
+import com.bb.eodi.core.EodiBatchProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,9 +17,10 @@ import java.util.List;
 public class RoadNameCodeRepositoryImpl implements RoadNameCodeRepository {
 
     private final RoadNameCodeJdbcRepository roadNameCodeJdbcRepository;
+    private final EodiBatchProperties eodiBatchProperties;
 
     @Override
     public void insertBatch(List<? extends RoadNameCode> items) {
-        roadNameCodeJdbcRepository.insertBatch(items);
+        roadNameCodeJdbcRepository.insertBatch(items, eodiBatchProperties.batchSize());
     }
 }

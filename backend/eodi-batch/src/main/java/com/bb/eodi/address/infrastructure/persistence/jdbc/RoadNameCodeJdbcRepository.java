@@ -20,7 +20,7 @@ public class RoadNameCodeJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void insertBatch(List<? extends RoadNameCode> items) {
+    public void insertBatch(List<? extends RoadNameCode> items, int batchSize) {
 
         String sql = """
                 INSERT INTO road_name_code
@@ -43,7 +43,7 @@ public class RoadNameCodeJdbcRepository {
                 VALUES
                 ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
                 """;
-        jdbcTemplate.batchUpdate(sql, items, 500, (ps, entity) -> {
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
             ps.setObject(1, entity.getRoadNameCode(), VARCHAR);
             ps.setObject(2, entity.getRoadName(), VARCHAR);
             ps.setObject(3, entity.getEngRoadName(), VARCHAR);

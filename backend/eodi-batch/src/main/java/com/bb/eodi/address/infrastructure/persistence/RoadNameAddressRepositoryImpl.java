@@ -1,11 +1,16 @@
 package com.bb.eodi.address.infrastructure.persistence;
 
+import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
+import com.bb.eodi.address.domain.entity.QLandLotAddress;
 import com.bb.eodi.address.domain.entity.QRoadNameAddress;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRepository;
+import com.bb.eodi.core.EodiBatchProperties;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -20,11 +25,12 @@ import java.util.Optional;
 public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository {
 
     private final RoadNameAddressJdbcRepository roadNameAddressJdbcRepository;
+    private final EodiBatchProperties eodiBatchProperties;
     private final JPAQueryFactory queryFactory;
 
     @Override
     public void insertBatch(List<? extends RoadNameAddress> items) {
-        roadNameAddressJdbcRepository.insertBatch(items);
+        roadNameAddressJdbcRepository.insertBatch(items, eodiBatchProperties.batchSize());
     }
 
     @Override
@@ -49,8 +55,34 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
 
     @Override
     public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items) {
-        roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items);
+        roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items, eodiBatchProperties.batchSize());
     }
 
+    @Override
+    @Cacheable(cacheNames = "roadNameAddressJoinedWithLandLot", key = "#parameter.legalDongCode + ':' + #parameter.landLotMainNo + ':' + #parameter.landLotSubNo")
+    public List<RoadNameAddress> findWithLandLot(RoadNameAddressQueryParameter parameter) {
+        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
+        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
 
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (parameter.getLegalDongCode() != null) {
+            condition.and(landLotAddress.legalDongCode.eq(parameter.getLegalDongCode()));
+        }
+
+        if (parameter.getLandLotMainNo() != null) {
+            condition.and(landLotAddress.landLotMainNo.eq(parameter.getLandLotMainNo()));
+        }
+
+        if (parameter.getLandLotSubNo() != null) {
+            condition.and(landLotAddress.landLotSubNo.eq(parameter.getLandLotSubNo()));
+        }
+
+        return queryFactory.select(roadNameAddress)
+                .from(roadNameAddress)
+                .join(landLotAddress)
+                .on(roadNameAddress.manageNo.eq(landLotAddress.manageNo))
+                .where(condition)
+                .fetch();
+    }
 }

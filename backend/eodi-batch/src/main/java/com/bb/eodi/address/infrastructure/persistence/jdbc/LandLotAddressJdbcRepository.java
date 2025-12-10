@@ -22,7 +22,7 @@ public class LandLotAddressJdbcRepository {
      * batch save
      * @param entities 저장할 entity
      */
-    public void insertBatch(List<? extends LandLotAddress> entities) {
+    public void insertBatch(List<? extends LandLotAddress> entities, int batchSize) {
 
         String sql = """
                 INSERT INTO land_lot_address
@@ -48,7 +48,7 @@ public class LandLotAddressJdbcRepository {
         jdbcTemplate.batchUpdate(
                 sql,
                 entities,
-                500,
+                batchSize,
                 (ps, entity) -> {
                     ps.setObject(1, entity.getManageNo(), VARCHAR);
                     ps.setObject(2, entity.getSeq(), INTEGER);
