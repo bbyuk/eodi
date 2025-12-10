@@ -1,6 +1,7 @@
 package com.bb.eodi.address.domain.repository;
 
 import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
+import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -25,4 +26,11 @@ public interface AddressPositionRepository {
      */
     @Cacheable(cacheNames = "addressPositionCache", key = "#query.roadNameCode + ':' + #query.legalDongCode + ':' + #query.buildingMainNo + ':' + #query.buildingSubNo + ':' + #query.isUnderground")
     Optional<AddressPosition> findAddressPosition(AddressPositionFindQuery query);
+
+    /**
+     * 주소DB와 join해 주소 위치 정보 조회
+     * @param query 주소DB 조회 파라미터
+     * @return 주소위치정보
+     */
+    List<AddressPosition> findAddressPositionWithAddress(RoadNameAddressQueryParameter query);
 }

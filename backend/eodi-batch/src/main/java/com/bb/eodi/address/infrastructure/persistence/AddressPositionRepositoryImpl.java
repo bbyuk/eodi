@@ -1,8 +1,11 @@
 package com.bb.eodi.address.infrastructure.persistence;
 
 import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
+import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.AddressPosition;
 import com.bb.eodi.address.domain.entity.QAddressPosition;
+import com.bb.eodi.address.domain.entity.QLandLotAddress;
+import com.bb.eodi.address.domain.entity.QRoadNameAddress;
 import com.bb.eodi.address.domain.repository.AddressPositionRepository;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.AddressPositionJdbcRepository;
 import com.bb.eodi.address.infrastructure.persistence.jpa.AddressPositionJpaRepository;
@@ -10,6 +13,7 @@ import com.bb.eodi.core.EodiBatchProperties;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -61,5 +65,43 @@ public class AddressPositionRepositoryImpl implements AddressPositionRepository 
                         .where(condition)
                         .fetchOne()
         );
+    }
+
+    @Override
+    @Cacheable(cacheNames = "addressPositionWithAddress", key = "#query.legalDongCode + ':' + #query.landLotMainNo + ':' + #query.landLotSubNo")
+    public List<AddressPosition> findAddressPositionWithAddress(RoadNameAddressQueryParameter query) {
+        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
+        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
+        QAddressPosition addressPosition = QAddressPosition.addressPosition;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (query.getLegalDongCode() != null) {
+            condition.and(landLotAddress.legalDongCode.eq(query.getLegalDongCode()));
+        }
+
+        if (query.getLandLotMainNo() != null) {
+            condition.and(landLotAddress.landLotMainNo.eq(query.getLandLotMainNo()));
+        }
+
+        if (query.getLandLotSubNo() != null) {
+            condition.and(landLotAddress.landLotSubNo.eq(query.getLandLotSubNo()));
+        }
+
+
+        return queryFactory.select(addressPosition)
+                .from(landLotAddress)
+                .join(roadNameAddress)
+                .on(landLotAddress.manageNo.eq(roadNameAddress.manageNo))
+                .join(addressPosition)
+                .on(
+                        landLotAddress.legalDongCode.eq(addressPosition.legalDongCode)
+                                .and(roadNameAddress.roadNameCode.eq(addressPosition.roadNameCode))
+                                .and(roadNameAddress.buildingMainNo.eq(addressPosition.buildingMainNo))
+                                .and(roadNameAddress.buildingSubNo.eq(addressPosition.buildingSubNo))
+                                .and(roadNameAddress.isUnderground.eq(addressPosition.isUnderground))
+                )
+                .where(condition)
+                .fetch();
     }
 }
