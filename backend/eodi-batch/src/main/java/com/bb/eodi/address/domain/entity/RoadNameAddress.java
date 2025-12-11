@@ -63,4 +63,14 @@ public class RoadNameAddress {
     public void updateBuildingName(String newBuildingName) {
         this.buildingName = StringUtils.hasText(newBuildingName) ? newBuildingName : null;
     }
+
+    /**
+     * 도로명주소의 X좌표와 Y좌표를 변경한다.
+     * @param xPos X좌표
+     * @param yPos Y좌표
+     */
+    public void updatePosition(BigDecimal xPos, BigDecimal yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+    }
 }
