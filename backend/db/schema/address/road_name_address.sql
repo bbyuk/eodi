@@ -12,7 +12,9 @@ CREATE TABLE road_name_address
     building_sub_no         INTEGER                  COMMENT '건물부번',
     basic_district_no       VARCHAR(5)               COMMENT '기초구역번호',
     has_detail_address      VARCHAR(1)               COMMENT '상세주소부여 여부',
-    building_name           VARCHAR(40)              COMMENT '건축물대장 건물명'
+    building_name           VARCHAR(40)              COMMENT '건축물대장 건물명',
+    x_pos                   DECIMAL(15, 6)           COMMENT 'X좌표',
+    y_pos                   DECIMAL(15, 6)           COMMENT 'Y좌표'
 
 ) COMMENT = '도로명주소';
 -- -----------------------------------------------------------------------------------------
