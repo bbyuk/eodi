@@ -1,12 +1,7 @@
 package com.bb.eodi.deal.job.processor;
 
-import com.bb.eodi.address.domain.dto.AddressPositionFindQuery;
-import com.bb.eodi.address.domain.dto.LandLotAddressFindQuery;
+import com.bb.eodi.address.domain.dto.AddressPosition;
 import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
-import com.bb.eodi.address.domain.entity.AddressPosition;
-import com.bb.eodi.address.domain.entity.RoadNameAddress;
-import com.bb.eodi.address.domain.repository.AddressPositionRepository;
-import com.bb.eodi.address.domain.repository.LandLotAddressRepository;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.type.HousingType;
@@ -30,9 +25,6 @@ import java.util.List;
 public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProcessor<RealEstateLease, RealEstateLease> {
 
     private final RoadNameAddressRepository roadNameAddressRepository;
-    private final LandLotAddressRepository landLotAddressRepository;
-    private final AddressPositionRepository addressPositionRepository;
-
     private final LegalDongCacheRepository legalDongCacheRepository;
 
     @Override
@@ -66,26 +58,19 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
                     return new RuntimeException("대상 법정동 정보를 찾지 못했습니다.");
                 });
 
-        List<AddressPosition> addressPositions = addressPositionRepository.findAddressPositionWithAddress(
-                RoadNameAddressQueryParameter
-                        .builder()
-                        .legalDongCode(targetLegalDongInfo.getCode())
-                        .landLotMainNo(item.getLandLotMainNo())
-                        .landLotSubNo(item.getLandLotSubNo())
-                        .build()
-        );
+        List<AddressPosition> addressPositions = roadNameAddressRepository.findAddressPositions(RoadNameAddressQueryParameter
+                .builder()
+                .legalDongCode(targetLegalDongInfo.getCode())
+                .landLotMainNo(item.getLandLotMainNo())
+                .landLotSubNo(item.getLandLotSubNo())
+                .build());
 
         if (addressPositions.isEmpty() || addressPositions.size() > 1) {
-            log.error("legalDongCode = {}, landLotMainNo = {}, landLotSubNo = {}"
-                    , targetLegalDongInfo.getCode()
-                    , item.getLandLotMainNo()
-                    , item.getLandLotSubNo());
-            log.error("매매 데이터와 맞는 주소 위치 정보를 찾지못했습니다.");
+            log.error("매핑이 안되는 경우");
             return null;
         }
 
         item.mappingPos(addressPositions.get(0).getXPos(), addressPositions.get(0).getYPos());
-
         return item;
     }
 }

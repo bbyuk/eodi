@@ -1,5 +1,6 @@
 package com.bb.eodi.address.infrastructure.persistence;
 
+import com.bb.eodi.address.domain.dto.AddressPosition;
 import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
 import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.QLandLotAddress;
@@ -9,6 +10,7 @@ import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRepository;
 import com.bb.eodi.core.EodiBatchProperties;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -90,5 +92,33 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     @Override
     public void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items) {
         roadNameAddressJdbcRepository.batchUpdatePosition(items, eodiBatchProperties.batchSize());
+    }
+
+    @Override
+    public List<AddressPosition> findAddressPositions(RoadNameAddressQueryParameter parameter) {
+        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
+        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (parameter.getLegalDongCode() != null) {
+            condition.and(landLotAddress.legalDongCode.eq(parameter.getLegalDongCode()));
+        }
+
+        if (parameter.getLandLotMainNo() != null) {
+            condition.and(landLotAddress.landLotMainNo.eq(parameter.getLandLotMainNo()));
+        }
+
+        if (parameter.getLandLotSubNo() != null) {
+            condition.and(landLotAddress.landLotSubNo.eq(parameter.getLandLotSubNo()));
+        }
+
+
+        return queryFactory.selectDistinct(Projections.constructor(AddressPosition.class, roadNameAddress.xPos, roadNameAddress.yPos))
+                .from(roadNameAddress)
+                .join(landLotAddress)
+                .on(roadNameAddress.manageNo.eq(landLotAddress.manageNo))
+                .where(condition)
+                .fetch();
     }
 }
