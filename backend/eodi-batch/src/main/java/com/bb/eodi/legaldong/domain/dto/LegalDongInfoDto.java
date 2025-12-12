@@ -67,7 +67,7 @@ public class LegalDongInfoDto {
      * @return 대상 법정동
      */
     public Optional<LegalDongInfoDto> findSubtreeNode(String legalDongName) {
-        if (name.endsWith(legalDongName)) {
+        if (name.endsWith(" " + legalDongName)) {
             return Optional.of(this);
         }
 

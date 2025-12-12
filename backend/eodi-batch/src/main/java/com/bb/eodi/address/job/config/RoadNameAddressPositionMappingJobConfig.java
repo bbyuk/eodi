@@ -1,14 +1,11 @@
 package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
-import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
-import com.bb.eodi.address.domain.entity.AddressPosition;
-import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.domain.util.GeoToolsBigDecimalConverter;
+import com.bb.eodi.address.job.dto.AddressPositionItem;
 import com.bb.eodi.address.job.reader.AddressPositionAllItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.address.job.dto.AddressPositionItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
