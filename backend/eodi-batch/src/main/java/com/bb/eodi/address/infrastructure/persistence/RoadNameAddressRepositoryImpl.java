@@ -1,5 +1,6 @@
 package com.bb.eodi.address.infrastructure.persistence;
 
+import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
 import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.QLandLotAddress;
 import com.bb.eodi.address.domain.entity.QRoadNameAddress;
@@ -84,5 +85,10 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
                 .on(roadNameAddress.manageNo.eq(landLotAddress.manageNo))
                 .where(condition)
                 .fetch();
+    }
+
+    @Override
+    public void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items) {
+        roadNameAddressJdbcRepository.batchUpdatePosition(items, eodiBatchProperties.batchSize());
     }
 }
