@@ -42,8 +42,8 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
 
         return Optional.ofNullable(
                 queryFactory.selectFrom(roadNameAddress)
-                .where(roadNameAddress.manageNo.eq(addressManageNo))
-                .fetchOne()
+                        .where(roadNameAddress.manageNo.eq(addressManageNo))
+                        .fetchOne()
         );
     }
 
@@ -114,7 +114,13 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
         }
 
 
-        return queryFactory.selectDistinct(Projections.constructor(AddressPosition.class, roadNameAddress.xPos, roadNameAddress.yPos))
+        return queryFactory.selectDistinct(
+                        Projections.constructor(
+                                AddressPosition.class,
+                                roadNameAddress.xPos,
+                                roadNameAddress.yPos,
+                                roadNameAddress.buildingName
+                        ))
                 .from(roadNameAddress)
                 .join(landLotAddress)
                 .on(roadNameAddress.manageNo.eq(landLotAddress.manageNo))

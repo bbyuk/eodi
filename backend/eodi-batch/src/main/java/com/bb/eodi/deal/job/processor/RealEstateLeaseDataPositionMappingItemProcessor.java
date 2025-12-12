@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -61,16 +62,26 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
         List<AddressPosition> addressPositions = roadNameAddressRepository.findAddressPositions(RoadNameAddressQueryParameter
                 .builder()
                 .legalDongCode(targetLegalDongInfo.getCode())
-                .landLotMainNo(item.getLandLotMainNo())
-                .landLotSubNo(item.getLandLotSubNo())
+                .landLotMainNo(item.getLandLotMainNo() == null ? 0 : item.getLandLotMainNo())
+                .landLotSubNo(item.getLandLotSubNo() == null ? 0 : item.getLandLotSubNo())
                 .build());
 
-        if (addressPositions.isEmpty() || addressPositions.size() > 1) {
+        if (addressPositions.isEmpty()) {
             log.error("매핑이 안되는 경우");
             return null;
         }
 
-        item.mappingPos(addressPositions.get(0).getXPos(), addressPositions.get(0).getYPos());
+        addressPositions.stream()
+                .filter(addressPosition -> StringUtils.hasText(addressPosition.getBuildingName())).findFirst()
+                .ifPresentOrElse(
+                        addressPosition -> {
+                            item.mappingPos(addressPosition.getXPos(), addressPosition.getYPos());
+                        },
+                        () -> {
+                            item.mappingPos(addressPositions.get(0).getXPos(), addressPositions.get(0).getYPos());
+                        }
+                );
+
         return item;
     }
 }

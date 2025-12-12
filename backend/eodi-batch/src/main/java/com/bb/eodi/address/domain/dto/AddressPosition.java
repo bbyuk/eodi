@@ -13,4 +13,5 @@ import java.math.BigDecimal;
 public class AddressPosition {
     private BigDecimal xPos;
     private BigDecimal yPos;
+    private String buildingName;
 }
