@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
+
 /**
  * 도로명 주소 address 도메인 entity
  */
@@ -44,8 +46,15 @@ public class RoadNameAddress {
     private String hasDetailAddress;
 
     // ========= 부가정보 소스
-    @Column(name = "building_name")
+    @Column(name = "building_name", length = 40)
     private String buildingName;
+
+    // ========= 주소 위치정보 소스
+    @Column(name = "x_pos", precision = 15, scale = 6)
+    private BigDecimal xPos;
+
+    @Column(name = "y_pos", precision = 15, scale = 6)
+    private BigDecimal yPos;
 
     /**
      * 건물명을 update한다.
@@ -53,5 +62,15 @@ public class RoadNameAddress {
      */
     public void updateBuildingName(String newBuildingName) {
         this.buildingName = StringUtils.hasText(newBuildingName) ? newBuildingName : null;
+    }
+
+    /**
+     * 도로명주소의 X좌표와 Y좌표를 변경한다.
+     * @param xPos X좌표
+     * @param yPos Y좌표
+     */
+    public void updatePosition(BigDecimal xPos, BigDecimal yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
     }
 }

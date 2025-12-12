@@ -1,5 +1,6 @@
 package com.bb.eodi.address.infrastructure.persistence.jdbc;
 
+import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,34 @@ public class RoadNameAddressJdbcRepository {
         jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
             ps.setObject(1, entity.getBuildingName(), VARCHAR);
             ps.setObject(2, entity.getId(), BIGINT);
+        });
+    }
+
+    /**
+     * 도로명주소 주소위치정보를 배치 업데이트한다.
+     * @param items batch update 파라미터
+     */
+    public void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items, int batchSize) {
+        String sql = """
+                UPDATE  road_name_address rna
+                JOIN    land_lot_address lla
+                ON      rna.manage_no = lla.manage_no
+                SET     rna.x_pos = ?,
+                        rna.y_pos = ?
+                WHERE   lla.legal_dong_code = ?
+                AND     rna.road_name_code = ?
+                AND     rna.building_main_no = ?
+                AND     rna.building_sub_no = ?
+                AND     rna.is_underground = ?
+                """;
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
+            ps.setObject(1, entity.getXPos(), DECIMAL);
+            ps.setObject(2, entity.getYPos(), DECIMAL);
+            ps.setObject(3, entity.getLegalDongCode(), VARCHAR);
+            ps.setObject(4, entity.getRoadNameCode(), VARCHAR);
+            ps.setObject(5, entity.getBuildingMainNo(), INTEGER);
+            ps.setObject(6, entity.getBuildingSubNo(), INTEGER);
+            ps.setObject(7, entity.getIsUnderground(), VARCHAR);
         });
     }
 }

@@ -1,11 +1,11 @@
 package com.bb.eodi.address.job.config;
 
-import com.bb.eodi.address.domain.entity.AddressPosition;
+import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
+import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.domain.util.GeoToolsBigDecimalConverter;
+import com.bb.eodi.address.job.dto.AddressPositionItem;
 import com.bb.eodi.address.job.reader.AddressPositionAllItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.address.job.dto.AddressPositionItem;
-import com.bb.eodi.address.domain.repository.AddressPositionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -32,41 +32,41 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * 주소 위치정보 전체분 초기 적재 배치 job config
+ * 도로명주소 주소위치정보 전체분 매핑 배치 job config
  */
 @Configuration
 @RequiredArgsConstructor
-public class AddressPositionLoadJobConfig {
+public class RoadNameAddressPositionMappingJobConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final EodiBatchProperties eodiBatchProperties;
-    private final AddressPositionRepository addressPositionRepository;
+    private final RoadNameAddressRepository roadNameAddressRepository;
 
-    private static final int CONCURRENCY_LIMIT = 12;
+    private static final int CONCURRENCY_LIMIT = 6;
 
     /**
-     * 도로명주소DB - 위치요약정보DB 전체분 데이터 초기 적재 job
-     * @param addressPositionLoadMasterStep 위치요약정보 데이터 병렬 적재 master step
+     * 주소DB - 위치요약정보DB 전체분 도로명주소 매핑 job
+     * @param roadNameAddressPositionMappingMasterStep 위치요약정보 데이터 병렬 적재 master step
      * @return 도로명주소DB - 위치요약정보DB 전체분 데이터 초기적재 job
      */
     @Bean
-    public Job addressPositionLoadJob(
-            Step addressPositionLoadMasterStep
+    public Job roadNameAddressPositionMappingJob(
+            Step roadNameAddressPositionMappingMasterStep
     ) {
-        return new JobBuilder("addressPositionLoadJob", jobRepository)
-                .start(addressPositionLoadMasterStep)
+        return new JobBuilder("roadNameAddressPositionMappingJob", jobRepository)
+                .start(roadNameAddressPositionMappingMasterStep)
                 .build();
     }
 
     /**
-     * 주소상세위치 데이터 병렬 적재 partitioner
+     * 도로명주소 위치요약정보 데이터 매핑 병렬 partitioner
      * @param targetDirectory 대상 디렉터리 - job parameter
-     * @return 주소상세위치 데이터 병렬 적재 partitioner
+     * @return 도로명주소 위치요약정보 데이터 매핑 병렬 partitioner
      */
     @Bean
     @StepScope
-    public Partitioner addressPositionLoadPartitioner(
+    public Partitioner roadNameAddressPositionMappingPartitioner(
             @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         return gridSize -> {
@@ -87,45 +87,45 @@ public class AddressPositionLoadJobConfig {
     }
 
     /**
-     * 주소위치정보 전체분 병렬 적재 master step
-     * @param addressPositionLoadPartitioner 주소위치정보 전체분 병렬 적재 partitioner
-     * @param addressPositionLoadWorkerStep 주소위치정보 전체분 병렬 적재 worker step
+     * 도로명주소 주소 위치정보 매핑 병렬 처리 master step
+     * @param roadNameAddressPositionMappingPartitioner 도로명주소 주소 위치정보 매핑 병렬 partitioner
+     * @param roadNameAddressPositionMappingWorkerStep 도로명주소 주소 위치정보 매핑 병렬 처리 worker step
      * @return 주소위치정보 전체분 병렬 적재 master step
      */
     @Bean
-    public Step addressPositionLoadMasterStep(
-            Partitioner addressPositionLoadPartitioner,
-            Step addressPositionLoadWorkerStep
+    public Step roadNameAddressPositionMappingMasterStep(
+            Partitioner roadNameAddressPositionMappingPartitioner,
+            Step roadNameAddressPositionMappingWorkerStep
     ) {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setConcurrencyLimit(CONCURRENCY_LIMIT);
 
-        return new StepBuilder("addressPositionLoadMasterStep", jobRepository)
-                .partitioner("addressPositionLoadWorkerStep", addressPositionLoadPartitioner)
-                .step(addressPositionLoadWorkerStep)
+        return new StepBuilder("roadNameAddressPositionMappingMasterStep", jobRepository)
+                .partitioner("roadNameAddressPositionMappingWorkerStep", roadNameAddressPositionMappingPartitioner)
+                .step(roadNameAddressPositionMappingWorkerStep)
                 .taskExecutor(executor)
                 .gridSize(CONCURRENCY_LIMIT)
                 .build();
     }
 
     /**
-     * 주소위치정보 전체분 병렬 적재 worker step
+     * 도로명주소 주소 위치정보 매핑 병렬처리 worker step
      * @param addressPositionAllItemReader 주소위치정보 전체분 ItemReader
-     * @param addressPositionItemProcessor 주소위치정보 ItemProcessor
-     * @param addressPositionItemWriter 주소위치정보 ItemWriter
+     * @param roadNameAddressPositionMappingItemProcessor 도로명주소 주소 위치정보 매핑 ItemProcessor
+     * @param roadNameAddressPositionMappingItemWriter 도로명주소 주소 위치정보 매핑 ItemWriter
      * @return 주소위치정보 전체분 병렬 적재 worker step
      */
     @Bean
-    public Step addressPositionLoadWorkerStep(
+    public Step roadNameAddressPositionMappingWorkerStep(
             ItemStreamReader<AddressPositionItem> addressPositionAllItemReader,
-            ItemProcessor<AddressPositionItem, AddressPosition> addressPositionItemProcessor,
-            ItemWriter<AddressPosition> addressPositionItemWriter
+            ItemProcessor<AddressPositionItem, AddressPositionMappingParameter> roadNameAddressPositionMappingItemProcessor,
+            ItemWriter<AddressPositionMappingParameter> roadNameAddressPositionMappingItemWriter
     ) {
         return new StepBuilder("addressPositionLoadWorkerStep", jobRepository)
-                .<AddressPositionItem, AddressPosition>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .<AddressPositionItem, AddressPositionMappingParameter>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(addressPositionAllItemReader)
-                .processor(addressPositionItemProcessor)
-                .writer(addressPositionItemWriter)
+                .processor(roadNameAddressPositionMappingItemProcessor)
+                .writer(roadNameAddressPositionMappingItemWriter)
                 .stream(addressPositionAllItemReader)
                 .build();
     }
@@ -144,43 +144,33 @@ public class AddressPositionLoadJobConfig {
     }
 
     /**
-     * 주소위치정보 전체분 ItemProcessor
-     * @return 주소위치정보 전체분 ItemProcessor
+     * 도로명주소 주소 위치정보 매핑 ItemProcessor
+     * @return 도로명주소 주소 위치정보 매핑 ItemProcessor
      */
     @Bean
     @StepScope
-    public ItemProcessor<AddressPositionItem, AddressPosition> addressPositionItemProcessor() {
-        Function<String, Integer> parseIntWithNull = (str) -> str == null || !StringUtils.hasText(str) ? null : Integer.parseInt(str);
-        Function<String, BigDecimal> parseBigDecimalWithNull = (str) -> str == null || !StringUtils.hasText(str) ? null : new BigDecimal(str);
+    public ItemProcessor<AddressPositionItem, AddressPositionMappingParameter> roadNameAddressPositionMappingItemProcessor() {
+        Function<String, BigDecimal> parseBigDecimalWithNull = (str) -> !StringUtils.hasText(str) ? null : new BigDecimal(str);
 
         return item -> {
-
-            BigDecimal[] wgs84 = null;
-            if (StringUtils.hasText(item.getXPos()) && StringUtils.hasText(item.getYPos())) {
-                wgs84 = GeoToolsBigDecimalConverter.toWgs84(
-                        parseBigDecimalWithNull.apply(item.getXPos()),
-                        parseBigDecimalWithNull.apply(item.getYPos())
-                );
+            if (!StringUtils.hasText(item.getXPos()) || !StringUtils.hasText(item.getYPos())) {
+                return null;
             }
 
-            return AddressPosition.builder()
-                    .sigunguCode(item.getSigunguCode())
-                    .entranceSeq(item.getEntranceSeq())
+            BigDecimal[] wgs84 = GeoToolsBigDecimalConverter.toWgs84(
+                    parseBigDecimalWithNull.apply(item.getXPos()),
+                    parseBigDecimalWithNull.apply(item.getYPos())
+            );
+
+
+            return AddressPositionMappingParameter.builder()
                     .legalDongCode(item.getLegalDongCode())
-                    .sidoName(item.getSidoName())
-                    .sigunguName(item.getSigunguName())
-                    .umdName(item.getUmdName())
                     .roadNameCode(item.getRoadNameCode())
-                    .roadName(item.getRoadName())
+                    .buildingMainNo(Integer.parseInt(item.getBuildingMainNo()))
+                    .buildingSubNo(Integer.parseInt(item.getBuildingSubNo()))
                     .isUnderground(item.getIsUnderground())
-                    .buildingMainNo(parseIntWithNull.apply(item.getBuildingMainNo()))
-                    .buildingSubNo(parseIntWithNull.apply(item.getBuildingSubNo()))
-                    .buildingName(item.getBuildingName())
-                    .zipNo(item.getZipNo())
-                    .buildingType(item.getBuildingType())
-                    .isBuildingGroup(item.getIsBuildingGroup())
-                    .xPos(wgs84 != null ? wgs84[0] : null)
-                    .yPos(wgs84 != null ? wgs84[1] : null)
+                    .xPos(wgs84[0])
+                    .yPos(wgs84[1])
                     .build();
         };
     }
@@ -191,7 +181,7 @@ public class AddressPositionLoadJobConfig {
      */
     @Bean
     @StepScope
-    public ItemWriter<AddressPosition> addressPositionItemWriter() {
-        return chunk -> addressPositionRepository.insertBatch(chunk.getItems());
+    public ItemWriter<AddressPositionMappingParameter> addressPositionItemWriter() {
+        return chunk -> roadNameAddressRepository.batchUpdatePosition(chunk.getItems());
     }
 }
