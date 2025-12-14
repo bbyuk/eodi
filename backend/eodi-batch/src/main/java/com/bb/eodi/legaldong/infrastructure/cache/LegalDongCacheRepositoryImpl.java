@@ -20,10 +20,15 @@ public class LegalDongCacheRepositoryImpl implements LegalDongCacheRepository {
 
     private final LegalDongJpaRepository legalDongJpaRepository;
     private static final Map<Long, LegalDongInfoDto> cache = new HashMap<>();
+    private static final Map<String, LegalDongInfoDto> cacheByCode = new HashMap<>();
 
     @PostConstruct
     public void initCache() {
         refreshCache();
+        cacheByCode.putAll(cache.values().stream().collect(Collectors.toMap(
+                LegalDongInfoDto::getCode,
+                legalDongInfoDto -> legalDongInfoDto
+        )));
     }
 
     public void refreshCache() {
@@ -77,5 +82,10 @@ public class LegalDongCacheRepositoryImpl implements LegalDongCacheRepository {
     @Override
     public Optional<LegalDongInfoDto> findLegalDongInfoById(Long id) {
         return Optional.ofNullable(cache.get(id));
+    }
+
+    @Override
+    public Optional<LegalDongInfoDto> findLegalDongInfoByCode(String code) {
+        return Optional.ofNullable(cacheByCode.get(code));
     }
 }
