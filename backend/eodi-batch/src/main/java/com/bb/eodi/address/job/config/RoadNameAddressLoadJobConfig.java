@@ -154,8 +154,8 @@ public class RoadNameAddressLoadJobConfig {
                 .roadNameCode(item.getRoadNameCode())
                 .umdSeq(item.getUmdSeq())
                 .isUnderground(item.getIsUnderground())
-                .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : null)
-                .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : null)
+                .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : 0)
+                .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : 0)
                 .basicDistrictNo(item.getBasicDistrictNo())
                 .hasDetailAddress(item.getHasDetailAddress())
                 .build();

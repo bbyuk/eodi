@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -31,5 +32,19 @@ class LegalDongInfoDtoTest {
 
         // then
         Assertions.assertThat(subtreeNode.isPresent()).isTrue();
+    }
+
+    @Test
+    @DisplayName("서브트리 노드 목록 조회 메소드 테스트")
+    void testFindSubtreeNodes() {
+        // given
+        String legalDongCode = "2771025600";
+
+        // when
+        LegalDongInfoDto legalDongInfoDto = cacheRepository.findLegalDongInfoByCode(legalDongCode).orElseThrow(() -> new RuntimeException("법정동을 찾지 못했습니다."));
+
+        // then
+        List<LegalDongInfoDto> subtreeNodes = legalDongInfoDto.findSubtreeNodes();
+        Assertions.assertThat(subtreeNodes).isNotEmpty();
     }
 }

@@ -3,9 +3,7 @@ package com.bb.eodi.legaldong.domain.dto;
 
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 크로스도메인 법정동 정보 트리 노드
@@ -83,5 +81,16 @@ public class LegalDongInfoDto {
         }
 
         return Optional.empty();
+    }
+
+    public List<LegalDongInfoDto> findSubtreeNodes() {
+        if (isLeaf()) {
+            return List.of(this);
+        }
+
+        List<LegalDongInfoDto> result = new ArrayList<>();
+
+        children.forEach(child -> result.addAll(child.findSubtreeNodes()));
+        return result;
     }
 }

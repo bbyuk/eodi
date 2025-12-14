@@ -5,6 +5,9 @@ import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -21,6 +24,7 @@ import static java.sql.Types.*;
 public class RoadNameAddressJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public void insertBatch(List<? extends RoadNameAddress> items, int batchSize) {
         log.debug("RoadNameAddressJdbcRepository.insertBatch");
@@ -53,6 +57,7 @@ public class RoadNameAddressJdbcRepository {
 
     /**
      * 도로명주소 부가정보에 해당하는 컬럼을 batch update 한다.
+     *
      * @param items batch update 대상 item 목록
      */
     public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items, int batchSize) {
@@ -69,6 +74,7 @@ public class RoadNameAddressJdbcRepository {
 
     /**
      * 도로명주소 주소위치정보를 배치 업데이트한다.
+     *
      * @param items batch update 파라미터
      */
     public void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items, int batchSize) {
@@ -76,22 +82,26 @@ public class RoadNameAddressJdbcRepository {
                 UPDATE  road_name_address rna
                 JOIN    land_lot_address lla
                 ON      rna.manage_no = lla.manage_no
-                SET     rna.x_pos = ?,
-                        rna.y_pos = ?
-                WHERE   lla.legal_dong_code = ?
-                AND     rna.road_name_code = ?
-                AND     rna.building_main_no = ?
-                AND     rna.building_sub_no = ?
-                AND     rna.is_underground = ?
+                SET     rna.x_pos = :xPos,
+                        rna.y_pos = :yPos
+                WHERE   lla.legal_dong_code in (:legalDongCodes)
+                AND     rna.road_name_code = :roadNameCode
+                AND     rna.building_main_no = :buildingMainNo
+                AND     rna.building_sub_no = :buildingSubNo
+                AND     rna.is_underground = :isUnderground
                 """;
-        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
-            ps.setObject(1, entity.getXPos(), DECIMAL);
-            ps.setObject(2, entity.getYPos(), DECIMAL);
-            ps.setObject(3, entity.getLegalDongCode(), VARCHAR);
-            ps.setObject(4, entity.getRoadNameCode(), VARCHAR);
-            ps.setObject(5, entity.getBuildingMainNo(), INTEGER);
-            ps.setObject(6, entity.getBuildingSubNo(), INTEGER);
-            ps.setObject(7, entity.getIsUnderground(), VARCHAR);
-        });
+        namedParameterJdbcTemplate.batchUpdate(
+                sql,
+                items.stream()
+                        .map(item -> new MapSqlParameterSource()
+                                .addValue("xPos", item.getXPos())
+                                .addValue("yPos", item.getYPos())
+                                .addValue("legalDongCodes", item.getLegalDongCodes())
+                                .addValue("roadNameCode", item.getRoadNameCode())
+                                .addValue("buildingMainNo", item.getBuildingMainNo())
+                                .addValue("buildingSubNo", item.getBuildingSubNo())
+                                .addValue("isUnderground", item.getIsUnderground())
+                        ).toArray(SqlParameterSource[]::new)
+        );
     }
 }

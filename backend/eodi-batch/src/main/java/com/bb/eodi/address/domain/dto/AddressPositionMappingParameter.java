@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 주소 위치정보 매핑 Parameter
@@ -12,8 +13,8 @@ import java.math.BigDecimal;
 @Builder
 public class AddressPositionMappingParameter {
 
-    // 법정동주소
-    private String legalDongCode;
+    // 법정동코드목록
+    private List<String> legalDongCodes;
     // 도로명주소
     private String roadNameCode;
     // 건물본번
