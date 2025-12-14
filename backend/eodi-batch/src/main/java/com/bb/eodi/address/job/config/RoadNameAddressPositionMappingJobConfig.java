@@ -197,6 +197,6 @@ public class RoadNameAddressPositionMappingJobConfig {
     @Bean
     @StepScope
     public ItemWriter<AddressPositionMappingParameter> addressPositionItemWriter() {
-        return chunk -> roadNameAddressRepository.batchUpdatePosition(chunk.getItems());
+        return chunk -> roadNameAddressRepository.updatePosition(chunk.getItems());
     }
 }

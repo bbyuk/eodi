@@ -11,10 +11,12 @@ import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRe
 import com.bb.eodi.core.EodiBatchProperties;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,6 +59,7 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     }
 
     @Override
+    @Transactional
     public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items) {
         roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items, eodiBatchProperties.batchSize());
     }
@@ -90,8 +93,29 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     }
 
     @Override
-    public void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items) {
-        roadNameAddressJdbcRepository.batchUpdatePosition(items, eodiBatchProperties.batchSize());
+    @Transactional
+    public void updatePosition(Collection<? extends AddressPositionMappingParameter> items) {
+        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
+        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
+
+        items.stream()
+                .forEach(item -> {
+                    queryFactory.update(roadNameAddress)
+                            .set(roadNameAddress.xPos, item.getXPos())
+                            .set(roadNameAddress.yPos, item.getYPos())
+                            .where(roadNameAddress.manageNo.in(
+                                                    JPAExpressions
+                                                            .select(landLotAddress.manageNo)
+                                                            .from(landLotAddress)
+                                                            .where(landLotAddress.legalDongCode.in(item.getLegalDongCodes()))
+                                            )
+                                            .and(roadNameAddress.roadNameCode.eq(item.getRoadNameCode()))
+                                            .and(roadNameAddress.buildingMainNo.eq(item.getBuildingMainNo()))
+                                            .and(roadNameAddress.buildingSubNo.eq(item.getBuildingSubNo()))
+                                            .and(roadNameAddress.isUnderground.eq(item.getIsUnderground()))
+                            )
+                            .execute();
+                });
     }
 
     @Override

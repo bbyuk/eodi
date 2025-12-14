@@ -49,10 +49,10 @@ public interface RoadNameAddressRepository {
     List<RoadNameAddress> findWithLandLot(RoadNameAddressQueryParameter parameter);
 
     /**
-     * 도로명주소 주소위치 변경 배치 처리
+     * 도로명주소 주소위치 update 처리
      * @param items 주소위치 매핑 파라미터
      */
-    void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items);
+    void updatePosition(Collection<? extends AddressPositionMappingParameter> items);
 
     /**
      * 도로명주소 위치 정보 조회
