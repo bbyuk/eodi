@@ -156,8 +156,8 @@ public class LandLotAddressLoadJobConfig {
                 .legalUmdName(item.getLegalUmdName())
                 .legalRiName(item.getLegalRiName())
                 .isMountain(item.getIsMountain())
-                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : null)
-                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : null)
+                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : 0)
+                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : 0)
                 .isRepresentative(item.getIsRepresentative())
                 .build();
     }
