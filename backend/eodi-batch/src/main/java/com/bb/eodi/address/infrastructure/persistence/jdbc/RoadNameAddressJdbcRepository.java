@@ -78,20 +78,26 @@ public class RoadNameAddressJdbcRepository {
                 ON      rna.manage_no = lla.manage_no
                 SET     rna.x_pos = ?,
                         rna.y_pos = ?
-                WHERE   lla.legal_dong_code = ?
+                WHERE   lla.legal_dong_code in (?, ?)
                 AND     rna.road_name_code = ?
                 AND     rna.building_main_no = ?
                 AND     rna.building_sub_no = ?
                 AND     rna.is_underground = ?
                 """;
-        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
-            ps.setObject(1, entity.getXPos(), DECIMAL);
-            ps.setObject(2, entity.getYPos(), DECIMAL);
-            ps.setObject(3, entity.getLegalDongCode(), VARCHAR);
-            ps.setObject(4, entity.getRoadNameCode(), VARCHAR);
-            ps.setObject(5, entity.getBuildingMainNo(), INTEGER);
-            ps.setObject(6, entity.getBuildingSubNo(), INTEGER);
-            ps.setObject(7, entity.getIsUnderground(), VARCHAR);
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, parameter) -> {
+            if (parameter.getLegalDongCodes().contains("2771025600") && parameter.getRoadNameCode().equals("277103148013") && parameter.getBuildingMainNo().equals(50) && parameter.getBuildingSubNo().equals(0)) {
+                System.out.println("ps = " + ps);
+            }
+
+
+            ps.setObject(1, parameter.getXPos(), DECIMAL);
+            ps.setObject(2, parameter.getYPos(), DECIMAL);
+            ps.setObject(3, parameter.getLegalDongCodes().get(0), VARCHAR);
+            ps.setObject(4, parameter.getLegalDongCodes().get(1), VARCHAR);
+            ps.setObject(5, parameter.getRoadNameCode(), VARCHAR);
+            ps.setObject(6, parameter.getBuildingMainNo(), INTEGER);
+            ps.setObject(7, parameter.getBuildingSubNo(), INTEGER);
+            ps.setObject(8, parameter.getIsUnderground(), VARCHAR);
         });
     }
 }

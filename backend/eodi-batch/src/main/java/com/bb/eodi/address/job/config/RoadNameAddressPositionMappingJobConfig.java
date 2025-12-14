@@ -6,6 +6,8 @@ import com.bb.eodi.address.domain.util.GeoToolsBigDecimalConverter;
 import com.bb.eodi.address.job.dto.AddressPositionItem;
 import com.bb.eodi.address.job.reader.AddressPositionAllItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
+import com.bb.eodi.legaldong.domain.dto.LegalDongInfoDto;
+import com.bb.eodi.legaldong.domain.repository.LegalDongCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -28,8 +30,10 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 도로명주소 주소위치정보 전체분 매핑 배치 job config
@@ -42,6 +46,8 @@ public class RoadNameAddressPositionMappingJobConfig {
     private final PlatformTransactionManager transactionManager;
     private final EodiBatchProperties eodiBatchProperties;
     private final RoadNameAddressRepository roadNameAddressRepository;
+    private final LegalDongCacheRepository legalDongCacheRepository;
+
 
     private static final int CONCURRENCY_LIMIT = 6;
 
@@ -79,7 +85,7 @@ public class RoadNameAddressPositionMappingJobConfig {
             for (int i = 0; i < files.length; i++) {
                 ExecutionContext context = new ExecutionContext();
                 context.put("filePath", files[i].getAbsolutePath());
-                partition.put("partition-" + i, context);
+                partition.put("partition-" + files[i].getName(), context);
             }
 
             return partition;
@@ -162,9 +168,18 @@ public class RoadNameAddressPositionMappingJobConfig {
                     parseBigDecimalWithNull.apply(item.getYPos())
             );
 
+            if (item.getBuildingName().equals("죽곡 삼정 그린코아 더 베스트")) {
+                System.out.println("wgs84 = " + wgs84);
+            }
+
+            LegalDongInfoDto legalDongInfoDto = legalDongCacheRepository.findLegalDongInfoByCode(item.getLegalDongCode())
+                    .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
+
+            List<String> selectTargetLegalDongCodes = legalDongInfoDto.findSubtreeNodes().stream().map(LegalDongInfoDto::getCode).collect(Collectors.toList());
+            selectTargetLegalDongCodes.add(item.getLegalDongCode());
 
             return AddressPositionMappingParameter.builder()
-                    .legalDongCode(item.getLegalDongCode())
+                    .legalDongCodes(selectTargetLegalDongCodes)
                     .roadNameCode(item.getRoadNameCode())
                     .buildingMainNo(Integer.parseInt(item.getBuildingMainNo()))
                     .buildingSubNo(Integer.parseInt(item.getBuildingSubNo()))
