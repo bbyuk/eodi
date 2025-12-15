@@ -33,4 +33,17 @@ class NaverUrlGeneratorTest {
         Assertions.assertThat(url).isEqualTo(answer);
     }
 
+    @Test
+    @DisplayName("미매핑 케이스")
+    void testGenerateOnUnmapped() throws Exception {
+        // given
+        List<HousingType> housingTypes = List.of(HousingType.OFFICETEL);
+
+        // when
+        String answer = naverUrlGenerator.generate(null, null, housingTypes);
+
+        // then
+        Assertions.assertThat(answer).isNull();
+    }
+
 }

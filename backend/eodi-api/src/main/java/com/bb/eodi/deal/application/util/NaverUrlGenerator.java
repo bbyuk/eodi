@@ -21,6 +21,9 @@ public class NaverUrlGenerator {
             BigDecimal latitude,
             BigDecimal longitude,
             List<HousingType> housingTypes) {
+        if (latitude == null || longitude == null) {
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
 
         // TODO housingType별 코드 분기처리 추가
