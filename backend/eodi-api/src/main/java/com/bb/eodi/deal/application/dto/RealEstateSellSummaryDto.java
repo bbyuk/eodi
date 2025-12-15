@@ -14,10 +14,8 @@ public class RealEstateSellSummaryDto {
     private Long id;
     // 지역 ID
     private Long regionId;
-
     // 법정동 full name
     private String legalDongFullName;
-
     // 법정동 동명
     private String legalDongName;
     // 거래일
@@ -42,4 +40,6 @@ public class RealEstateSellSummaryDto {
     private String buildingDong;
     // 층
     private Integer floor;
+    // 네이버 부동산에서 보기 URL
+    private String naverUrl;
 }

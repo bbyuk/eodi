@@ -6,6 +6,7 @@ import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestPa
 import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.util.NaverUrlGenerator;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
@@ -37,6 +38,8 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellSummaryDtoMapper realEstateSellSummaryDtoMapper;
     private final RealEstateLeaseSummaryDtoMapper realEstateLeaseSummaryDtoMapper;
+
+    private final NaverUrlGenerator naverUrlGenerator;
 
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
@@ -235,6 +238,10 @@ public class RealEstateRecommendationService {
 
                     // 전용면적 소숫점 밑 2자리로 반올림
                     resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+                    // 네이버 URL 생성
+                    // TODO 선택 주택 유형 목록 파라미터화 로직 추가
+                    resultDto.setNaverUrl(naverUrlGenerator.generate(realEstateSell.getXPos(), realEstateSell.getYPos(), List.of()));
 
                     return resultDto;
                 });
