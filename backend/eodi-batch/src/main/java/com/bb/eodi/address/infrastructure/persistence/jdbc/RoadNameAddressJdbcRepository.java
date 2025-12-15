@@ -104,4 +104,29 @@ public class RoadNameAddressJdbcRepository {
                         ).toArray(SqlParameterSource[]::new)
         );
     }
+
+    public void batchInsertUnmapped(List<AddressPositionMappingParameter> unmappedList, int batchSize) {
+        String sql = """
+                INSERT INTO unmapped
+                (
+                    legal_dong_codes,
+                    road_name_code,
+                    building_main_no,
+                    building_sub_no,
+                    is_underground,
+                    x_pos,
+                    y_pos
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """;
+        jdbcTemplate.batchUpdate(sql, unmappedList, batchSize, (ps, entity) -> {
+            ps.setString(1, String.join(",", entity.getLegalDongCodes()));
+            ps.setObject(2, entity.getRoadNameCode(), VARCHAR);
+            ps.setObject(3, entity.getBuildingMainNo(), INTEGER);
+            ps.setObject(4, entity.getBuildingSubNo(), INTEGER);
+            ps.setObject(5, entity.getIsUnderground(), VARCHAR);
+            ps.setObject(6, entity.getXPos(), DECIMAL);
+            ps.setObject(7, entity.getYPos(), DECIMAL);
+        });
+    }
 }
