@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -98,9 +99,11 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
         QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
         QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
 
+        List<AddressPositionMappingParameter> unmappedList = new ArrayList<>();
+
         items.stream()
                 .forEach(item -> {
-                    queryFactory.update(roadNameAddress)
+                    long updated = queryFactory.update(roadNameAddress)
                             .set(roadNameAddress.xPos, item.getXPos())
                             .set(roadNameAddress.yPos, item.getYPos())
                             .where(roadNameAddress.manageNo.in(
@@ -115,7 +118,16 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
                                             .and(roadNameAddress.isUnderground.eq(item.getIsUnderground()))
                             )
                             .execute();
+
+                    // TODO 테스트 이후 제거 필요
+                    if (updated == 0) {
+                        unmappedList.add(item);
+                    }
                 });
+
+        if (!unmappedList.isEmpty()) {
+            roadNameAddressJdbcRepository.batchInsertUnmapped(unmappedList, eodiBatchProperties.batchSize());
+        }
     }
 
     @Override
