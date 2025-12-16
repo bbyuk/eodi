@@ -3,7 +3,7 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
-import com.bb.eodi.deal.application.dto.RecommendedRegionsDto;
+import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
 import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.service.RealEstateRecommendationService;
@@ -27,7 +27,7 @@ public class RealEstateRecommendationController {
     @GetMapping("region")
     @Operation(summary = "살펴볼 만한 지역 조회",
             description = "보유 현금 기준으로 살펴볼 만한 지역 조회")
-    public ResponseEntity<RecommendedRegionsDto> getRecommendedRegions(
+    public ResponseEntity<RecommendedRegionsResult> getRecommendedRegions(
             @ParameterObject @Valid
             RegionRecommendRequest requestParameter
     ) {
