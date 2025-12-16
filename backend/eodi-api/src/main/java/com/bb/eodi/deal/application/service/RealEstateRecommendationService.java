@@ -1,10 +1,7 @@
 package com.bb.eodi.deal.application.service;
 
-import com.bb.eodi.deal.application.dto.*;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
-import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.deal.application.dto.*;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.application.util.NaverUrlGenerator;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
@@ -13,6 +10,9 @@ import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -97,13 +97,13 @@ public class RealEstateRecommendationService {
                         .build()
         );
 
-        Map<String, RegionGroupDto> sellRegionGroups = allSellRegions.stream()
+        Map<String, RecommendedRegionsDto.RegionGroup> sellRegionGroups = allSellRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId))
                 .entrySet()
                 .stream()
                 .map(entry -> {
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    return new RegionGroupDto(
+                    return new RecommendedRegionsDto.RegionGroup(
                             rootLegalDongInfo.code(),
                             rootLegalDongInfo.name(),
                             rootLegalDongInfo.name(),
@@ -111,11 +111,11 @@ public class RealEstateRecommendationService {
                     );
                 })
                 .collect(Collectors.toMap(
-                        RegionGroupDto::code,
-                        regionGroupDto -> regionGroupDto
+                        RecommendedRegionsDto.RegionGroup::code,
+                        regionGroup -> regionGroup
                 ));
 
-        Map<String, List<RegionDto>> sellRegions = allSellRegions.stream()
+        Map<String, List<RecommendedRegionsDto.RegionItem>> sellRegions = allSellRegions.stream()
                 .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()))
                 .entrySet()
                 .stream()
@@ -123,7 +123,7 @@ public class RealEstateRecommendationService {
                     LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
-                    return new RegionDto(
+                    return new RecommendedRegionsDto.RegionItem(
                             secondLegalDongInfo.id(),
                             rootLegalDongInfo.code(),
                             secondLegalDongInfo.code(),
@@ -132,16 +132,16 @@ public class RealEstateRecommendationService {
                             entry.getValue().size()
                     );
                 })
-                .collect(Collectors.groupingBy(RegionDto::groupCode));
+                .collect(Collectors.groupingBy(RecommendedRegionsDto.RegionItem::groupCode));
 
 
-        Map<String, RegionGroupDto> leaseRegionGroups =  allLeaseRegions.stream()
+        Map<String, RecommendedRegionsDto.RegionGroup> leaseRegionGroups =  allLeaseRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId))
                 .entrySet()
                 .stream()
                 .map(entry -> {
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    return new RegionGroupDto(
+                    return new RecommendedRegionsDto.RegionGroup(
                             rootLegalDongInfo.code(),
                             rootLegalDongInfo.name(),
                             rootLegalDongInfo.name(),
@@ -149,11 +149,11 @@ public class RealEstateRecommendationService {
                     );
                 })
                 .collect(Collectors.toMap(
-                        RegionGroupDto::code,
-                        regionGroupDto -> regionGroupDto
+                        RecommendedRegionsDto.RegionGroup::code,
+                        regionGroup -> regionGroup
                 ));
 
-        Map<String, List<RegionDto>> leaseRegions = allLeaseRegions.stream()
+        Map<String, List<RecommendedRegionsDto.RegionItem>> leaseRegions = allLeaseRegions.stream()
                 .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()))
                 .entrySet()
                 .stream()
@@ -161,7 +161,7 @@ public class RealEstateRecommendationService {
                     LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
-                    return new RegionDto(
+                    return new RecommendedRegionsDto.RegionItem(
                             secondLegalDongInfo.id(),
                             rootLegalDongInfo.code(),
                             secondLegalDongInfo.code(),
@@ -170,7 +170,7 @@ public class RealEstateRecommendationService {
                             entry.getValue().size()
                     );
                 })
-                .collect(Collectors.groupingBy(RegionDto::groupCode));
+                .collect(Collectors.groupingBy(RecommendedRegionsDto.RegionItem::groupCode));
 
 
         /**
@@ -179,11 +179,11 @@ public class RealEstateRecommendationService {
          */
 
         sellRegions.replaceAll((key, value) -> value.stream()
-                .sorted(Comparator.comparing(RegionDto::code))
+                .sorted(Comparator.comparing(RecommendedRegionsDto.RegionItem::code))
                 .collect(Collectors.toList()));
 
         leaseRegions.replaceAll((key, value) -> value.stream()
-                .sorted(Comparator.comparing(RegionDto::code))
+                .sorted(Comparator.comparing(RecommendedRegionsDto.RegionItem::code))
                 .collect(Collectors.toList()));
 
         return new RecommendedRegionsDto(
