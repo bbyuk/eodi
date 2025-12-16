@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.model;
+package com.bb.eodi.deal.application.contract;
 
 import java.util.Set;
 

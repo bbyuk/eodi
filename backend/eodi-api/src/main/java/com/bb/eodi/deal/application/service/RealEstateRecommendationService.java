@@ -4,7 +4,7 @@ import com.bb.eodi.deal.application.dto.*;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
 import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
-import com.bb.eodi.deal.application.model.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.application.util.NaverUrlGenerator;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;

@@ -1,6 +1,6 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
-import com.bb.eodi.deal.application.model.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.contract.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
