@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.dto;
+package com.bb.eodi.deal.application.result;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -6,7 +6,7 @@ import java.time.LocalDate;
 /**
  * 부동산 임대차 실거래가 domain entity <-> application dto
  */
-public record RealEstateLeaseSummaryDto(
+public record RealEstateLeaseSummaryResult(
         Long id,
         // 대상지역 법정동 ID
         Long regionId,

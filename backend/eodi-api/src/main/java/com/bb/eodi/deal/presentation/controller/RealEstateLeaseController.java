@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
-import com.bb.eodi.deal.application.dto.RealEstateLeaseSummaryDto;
+import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ public class RealEstateLeaseController {
     @GetMapping("deals")
     @Operation(summary = "부동산 임대차 거래 목록 조회",
             description = "보증금, 월세, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
-    public ResponseEntity<PageResponse<RealEstateLeaseSummaryDto>> getRealEstateLeaseDeals(
+    public ResponseEntity<PageResponse<RealEstateLeaseSummaryResult>> getRealEstateLeaseDeals(
             @ParameterObject RealEstateLeaseRequestParameter requestParameter,
             @ParameterObject Pageable pageable) {
 

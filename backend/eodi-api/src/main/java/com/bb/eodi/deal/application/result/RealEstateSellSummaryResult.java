@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.dto;
+package com.bb.eodi.deal.application.result;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.time.LocalDate;
  * 부동산 매매 데이터
  */
 @Data
-public class RealEstateSellSummaryDto {
+public class RealEstateSellSummaryResult {
     // 부동산 매매 데이터 id
     private Long id;
     // 지역 ID

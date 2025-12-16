@@ -1,9 +1,8 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
-import com.bb.eodi.deal.application.dto.*;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
+import com.bb.eodi.deal.application.result.*;
 import com.bb.eodi.deal.application.util.NaverUrlGenerator;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
@@ -36,8 +35,8 @@ public class RealEstateRecommendationService {
     private final RealEstateLeaseRepository realEstateLeaseRepository;
     private final LegalDongCachePort legalDongCachePort;
 
-    private final RealEstateSellSummaryDtoMapper realEstateSellSummaryDtoMapper;
-    private final RealEstateLeaseSummaryDtoMapper realEstateLeaseSummaryDtoMapper;
+    private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
+    private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
     private final NaverUrlGenerator naverUrlGenerator;
 
@@ -209,7 +208,7 @@ public class RealEstateRecommendationService {
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateSellSummaryDto> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateSellSummaryResult> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
         RealEstateSellQuery realEstateSellQuery = RealEstateSellQuery.builder()
                 .maxPrice(requestParameter.cash() + sellPriceGap)
                 .minPrice(requestParameter.cash() - sellPriceGap)
@@ -228,7 +227,7 @@ public class RealEstateRecommendationService {
 
         return realEstateSellRepository.findBy(realEstateSellQuery, pageable)
                 .map(realEstateSell -> {
-                    RealEstateSellSummaryDto resultDto = realEstateSellSummaryDtoMapper.toDto(realEstateSell);
+                    RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 
                     // 법정동 명 concat
                     resultDto.setLegalDongFullName(
@@ -263,7 +262,7 @@ public class RealEstateRecommendationService {
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryDto> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
         // TODO 정책/ 대출 관련 로직 추가 필요
         return null;
     }

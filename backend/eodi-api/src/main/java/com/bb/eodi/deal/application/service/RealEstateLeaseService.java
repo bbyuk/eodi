@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.application.service;
 
-import com.bb.eodi.deal.application.dto.RealEstateLeaseSummaryDto;
-import com.bb.eodi.deal.application.dto.RealEstateLeaseSummaryDtoMapper;
+import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
+import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RealEstateLeaseService {
 
     private final RealEstateLeaseRepository realEstateLeaseRepository;
-    private final RealEstateLeaseSummaryDtoMapper realEstateLeaseSummaryDtoMapper;
+    private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
     /**
      * 부동산 임대차 데이터 조회
@@ -30,7 +30,7 @@ public class RealEstateLeaseService {
      * @return 부동산 임대차 데이터 목록
      */
     @Transactional
-    public Page<RealEstateLeaseSummaryDto> findRealEstateLeases(RealEstateLeaseRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateLeaseSummaryResult> findRealEstateLeases(RealEstateLeaseRequestParameter requestParameter, Pageable pageable) {
         return realEstateLeaseRepository.findBy(
                 RealEstateLeaseQuery
                         .builder()
@@ -45,6 +45,6 @@ public class RealEstateLeaseService {
                         .targetRegionIds(requestParameter.targetRegionIds())
                         .targetHousingTypes(requestParameter.targetHousingTypes())
                         .build(), pageable)
-                .map(realEstateLeaseSummaryDtoMapper::toDto);
+                .map(realEstateLeaseSummaryResultMapper::toResult);
     }
 }
