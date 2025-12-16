@@ -2,8 +2,7 @@ package com.bb.eodi.deal.application.service;
 
 
 import com.bb.eodi.deal.application.dto.RecommendedRegionsDto;
-import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
-import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

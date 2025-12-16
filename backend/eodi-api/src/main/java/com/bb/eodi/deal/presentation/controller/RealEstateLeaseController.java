@@ -2,7 +2,7 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.dto.RealEstateLeaseSummaryDto;
-import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

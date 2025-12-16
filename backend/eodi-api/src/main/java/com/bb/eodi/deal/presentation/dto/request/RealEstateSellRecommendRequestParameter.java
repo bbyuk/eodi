@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.dto.request;
+package com.bb.eodi.deal.presentation.dto.request;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

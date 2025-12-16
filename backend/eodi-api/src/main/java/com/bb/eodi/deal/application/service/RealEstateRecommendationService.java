@@ -1,13 +1,12 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.dto.*;
-import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestParameter;
-import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestParameter;
-import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.application.model.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.application.util.NaverUrlGenerator;
-import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;

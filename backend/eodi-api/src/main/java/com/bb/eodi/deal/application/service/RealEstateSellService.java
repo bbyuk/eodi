@@ -2,7 +2,7 @@ package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
 import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDtoMapper;
-import com.bb.eodi.deal.application.dto.request.RealEstateSellRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
