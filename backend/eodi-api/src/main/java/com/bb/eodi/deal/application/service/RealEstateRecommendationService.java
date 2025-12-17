@@ -1,21 +1,21 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
+import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
+import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.query.RegionQuery;
+import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
-import com.bb.eodi.deal.application.query.RealEstateSellQuery;
-import com.bb.eodi.deal.application.query.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
-import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +41,8 @@ public class RealEstateRecommendationService {
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
+    private final RecommendedRealEstateSellQueryAssembler queryAssembler;
+
     private String naverPayBaseUrl = "https://m.land.naver.com/map";
     private int naverPayMapLev = 14;
 
@@ -56,15 +58,15 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param requestParameter 요청 파라미터
+     * @param findRecommendedRegionInput 추천지역조회 application Input
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsResult findRecommendedRegions(RegionRecommendRequest requestParameter) {
+    public RecommendedRegionsResult findRecommendedRegions(FindRecommendedRegionInput findRecommendedRegionInput) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
-        Set<String> housingTypeSet = new HashSet<>(requestParameter.housingTypes());
+        Set<String> housingTypeSet = new HashSet<>(findRecommendedRegionInput.housingTypes());
         if (housingTypeSet.contains(HousingType.APT.code())) {
             // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
             housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
@@ -80,8 +82,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minCash(requestParameter.cash() - sellPriceGap)
-                        .maxCash(requestParameter.cash() + sellPriceGap)
+                        .minCash(findRecommendedRegionInput.cash() - sellPriceGap)
+                        .maxCash(findRecommendedRegionInput.cash() + sellPriceGap)
                         .startDate(startDate)
                         .endDate(today)
                         .housingTypes(
@@ -91,8 +93,8 @@ public class RealEstateRecommendationService {
 
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(
                 RegionQuery.builder()
-                        .minCash(requestParameter.cash() - leaseDepositGap)
-                        .maxCash(requestParameter.cash() + leaseDepositGap)
+                        .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
+                        .maxCash(findRecommendedRegionInput.cash() + leaseDepositGap)
                         .startDate(startDate)
                         .endDate(today)
                         .housingTypes(
@@ -139,7 +141,7 @@ public class RealEstateRecommendationService {
                 .collect(Collectors.groupingBy(RecommendedRegionsResult.RegionItem::groupCode));
 
 
-        Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups =  allLeaseRegions.stream()
+        Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups = allLeaseRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId))
                 .entrySet()
                 .stream()
@@ -207,29 +209,18 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param requestParameter 요청 파라미터
+     * @param input 요청 파라미터
      * @param pageable         pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateSellSummaryResult> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
-        RealEstateSellQuery realEstateSellQuery = RealEstateSellQuery.builder()
-                .maxPrice(requestParameter.cash() + sellPriceGap)
-                .minPrice(requestParameter.cash() - sellPriceGap)
-                .targetRegionIds(requestParameter.targetRegionIds())
-                .targetHousingTypes(
-                        requestParameter.targetHousingTypes()
-                                .stream()
-                                .map(HousingType::fromCode)
-                                .collect(Collectors.toList())
-                )
-                .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
-                .minNetLeasableArea(requestParameter.minNetLeasableArea())
-                .build();
-
+    public Page<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, Pageable pageable) {
         // TODO 정책 / 대출 관련 로직 추가 필요
 
-        return realEstateSellRepository.findBy(realEstateSellQuery, pageable)
+        return realEstateSellRepository.findBy(
+                        queryAssembler.assemble(input, sellPriceGap),
+                        pageable
+                )
                 .map(realEstateSell -> {
                     RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 
@@ -260,12 +251,12 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param requestParameter 요청 파라미터
-     * @param pageable         pageable 파라미터 객체
+     * @param input 부동산 임대차 실거래가 데이터 조회 application input
+     * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRealEstateLeaseInput input, Pageable pageable) {
         // TODO 정책/ 대출 관련 로직 추가 필요
         return null;
     }

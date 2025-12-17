@@ -2,6 +2,7 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateSellService;
+import com.bb.eodi.deal.presentation.dto.adapter.FindRealEstateSellInputAdapter;
 import com.bb.eodi.deal.presentation.dto.mapper.RealEstateSellFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateSellFindResponse;
@@ -29,6 +30,9 @@ public class RealEstateSellController {
     // mapper
     private final RealEstateSellFindResponseMapper realEstateSellFindResponseMapper;
 
+    // adapter
+    private final FindRealEstateSellInputAdapter findRealEstateSellInputAdapter;
+
     private final RealEstateSellService realEstateSellService;
 
     /**
@@ -47,7 +51,7 @@ public class RealEstateSellController {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateSellService.findRealEstateSells(
-                                requestParameter,
+                                findRealEstateSellInputAdapter.toInput(requestParameter),
                                 pageable
                         ).map(realEstateSellFindResponseMapper::toResponse)
                 )

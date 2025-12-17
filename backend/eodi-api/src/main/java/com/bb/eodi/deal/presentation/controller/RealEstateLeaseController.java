@@ -2,6 +2,7 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
+import com.bb.eodi.deal.presentation.dto.adapter.FindRealEstateLeaseInputAdapter;
 import com.bb.eodi.deal.presentation.dto.mapper.RealEstateLeaseFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateLeaseFindResponse;
@@ -28,6 +29,10 @@ public class RealEstateLeaseController {
     // mapper
     private final RealEstateLeaseFindResponseMapper realEstateLeaseFindResponseMapper;
 
+    // adapter
+    private final FindRealEstateLeaseInputAdapter findRealEstateLeaseInputAdapter;
+
+
     private final RealEstateLeaseService realEstateLeaseService;
 
     /**
@@ -46,7 +51,7 @@ public class RealEstateLeaseController {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateLeaseService.findRealEstateLeases(
-                                requestParameter,
+                                findRealEstateLeaseInputAdapter.toInput(requestParameter),
                                 pageable
                         ).map(realEstateLeaseFindResponseMapper::toResponse)
                 )

@@ -3,6 +3,8 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateRecommendationService;
+import com.bb.eodi.deal.presentation.dto.adapter.FindRealEstateSellInputAdapter;
+import com.bb.eodi.deal.presentation.dto.adapter.FindRegionInputAdapter;
 import com.bb.eodi.deal.presentation.dto.mapper.RealEstateSellFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.mapper.RegionFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
@@ -31,6 +33,9 @@ public class RealEstateRecommendationController {
     private final RealEstateSellFindResponseMapper realEstateSellFindResponseMapper;
     private final RegionFindResponseMapper regionFindResponseMapper;
 
+    private final FindRegionInputAdapter findRegionInputAdapter;
+    private final FindRealEstateSellInputAdapter findRealEstateSellInputAdapter;
+
     private final RealEstateRecommendationService realEstateRecommendationService;
 
     @GetMapping("region")
@@ -43,7 +48,9 @@ public class RealEstateRecommendationController {
 
         return ResponseEntity.ok(
                 regionFindResponseMapper.toResponse(
-                        realEstateRecommendationService.findRecommendedRegions(requestParameter)
+                        realEstateRecommendationService.findRecommendedRegions(
+                                findRegionInputAdapter.toInput(requestParameter)
+                        )
                 )
         );
     }
@@ -60,7 +67,10 @@ public class RealEstateRecommendationController {
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateRecommendationService
-                                .findRecommendedSells(requestParameter, pageable)
+                                .findRecommendedSells(
+                                        findRealEstateSellInputAdapter.toInput(requestParameter),
+                                        pageable
+                                )
                                 .map(realEstateSellFindResponseMapper::toResponse)
                 )
         );
