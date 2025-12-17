@@ -4,7 +4,7 @@ import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
+import com.bb.eodi.deal.application.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

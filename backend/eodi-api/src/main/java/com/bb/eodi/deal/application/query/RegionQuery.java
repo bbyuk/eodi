@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.domain.dto;
+package com.bb.eodi.deal.application.query;
 
 
 import com.bb.eodi.deal.domain.type.HousingType;

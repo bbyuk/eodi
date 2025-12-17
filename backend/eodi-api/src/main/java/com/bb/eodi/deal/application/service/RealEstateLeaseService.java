@@ -3,7 +3,7 @@ package com.bb.eodi.deal.application.service;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
-import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
+import com.bb.eodi.deal.application.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
