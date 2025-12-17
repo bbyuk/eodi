@@ -1,9 +1,10 @@
 package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
-import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateSellService;
+import com.bb.eodi.deal.presentation.dto.mapper.RealEstateSellFindResponseMapper;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
+import com.bb.eodi.deal.presentation.dto.response.RealEstateSellFindResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +26,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RealEstateSellController {
 
+    // mapper
+    private final RealEstateSellFindResponseMapper realEstateSellFindResponseMapper;
+
     private final RealEstateSellService realEstateSellService;
 
     /**
      * 부동산 매매 거래 목록 Page 조회
+     *
      * @param requestParameter API 요청 파라미터
-     * @param pageable paging 파라미터
+     * @param pageable         paging 파라미터
      * @return 부동산 매매 거래 목록 Page
      */
     @Operation(summary = "부동산 매매 거래 목록 조회",
             description = "거래 가격, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
     @GetMapping("deals")
-    public ResponseEntity<PageResponse<RealEstateSellSummaryResult>> getRecentRealEstateSells(
+    public ResponseEntity<PageResponse<RealEstateSellFindResponse>> getRecentRealEstateSells(
             @ParameterObject RealEstateSellRequestParameter requestParameter,
             @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(
@@ -44,7 +49,7 @@ public class RealEstateSellController {
                         realEstateSellService.findRealEstateSells(
                                 requestParameter,
                                 pageable
-                        )
+                        ).map(realEstateSellFindResponseMapper::toResponse)
                 )
         );
     }
