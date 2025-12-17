@@ -2,10 +2,11 @@ package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.application.result.*;
+import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
+import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
+import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
-import com.bb.eodi.deal.application.util.NaverUrlGenerator;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
