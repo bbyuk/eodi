@@ -1,5 +1,6 @@
-package com.bb.eodi.deal.application.result;
+package com.bb.eodi.deal.application.result.mapper;
 
+import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
