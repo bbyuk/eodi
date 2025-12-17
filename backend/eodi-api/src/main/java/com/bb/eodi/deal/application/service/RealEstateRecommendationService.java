@@ -40,7 +40,8 @@ public class RealEstateRecommendationService {
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
-    private final NaverUrlGenerator naverUrlGenerator;
+    private String naverPayBaseUrl = "https://m.land.naver.com/map";
+    private int naverPayMapLev = 14;
 
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
@@ -241,8 +242,7 @@ public class RealEstateRecommendationService {
                     resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
 
                     // 네이버 URL 생성
-                    // TODO 선택 주택 유형 목록 파라미터화 로직 추가
-                    resultDto.setNaverUrl(naverUrlGenerator.generate(realEstateSell.getXPos(), realEstateSell.getYPos(), List.of()));
+                    resultDto.setNaverUrl(realEstateSell.createUrl(naverPayBaseUrl, naverPayMapLev));
 
                     return resultDto;
                 });
