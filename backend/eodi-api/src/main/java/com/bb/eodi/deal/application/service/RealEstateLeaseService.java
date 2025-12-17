@@ -1,11 +1,10 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
-import com.bb.eodi.deal.application.query.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

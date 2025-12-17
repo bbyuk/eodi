@@ -5,7 +5,7 @@ import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.application.query.RegionQuery;
+import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;

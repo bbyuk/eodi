@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.query;
+package com.bb.eodi.deal.domain.query;
 
 import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.Builder;

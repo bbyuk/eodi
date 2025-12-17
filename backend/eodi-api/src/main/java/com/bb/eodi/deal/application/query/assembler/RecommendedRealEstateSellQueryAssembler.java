@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.application.query.assembler;
 
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
-import com.bb.eodi.deal.application.query.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.type.HousingType;
 import org.springframework.stereotype.Component;
 
