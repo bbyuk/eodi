@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.infrastructure.adapter;
 
-import com.bb.eodi.deal.application.model.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.LegalDongInfo;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;

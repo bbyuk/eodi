@@ -1,18 +1,20 @@
 package com.bb.eodi.deal.application.service;
 
-import com.bb.eodi.deal.application.dto.*;
-import com.bb.eodi.deal.application.dto.request.RealEstateLeaseRecommendRequestParameter;
-import com.bb.eodi.deal.application.dto.request.RealEstateSellRecommendRequestParameter;
-import com.bb.eodi.deal.application.dto.request.RegionRecommendRequest;
-import com.bb.eodi.deal.application.model.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
+import com.bb.eodi.deal.application.result.*;
+import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
+import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
+import com.bb.eodi.deal.application.util.NaverUrlGenerator;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,8 +37,10 @@ public class RealEstateRecommendationService {
     private final RealEstateLeaseRepository realEstateLeaseRepository;
     private final LegalDongCachePort legalDongCachePort;
 
-    private final RealEstateSellSummaryDtoMapper realEstateSellSummaryDtoMapper;
-    private final RealEstateLeaseSummaryDtoMapper realEstateLeaseSummaryDtoMapper;
+    private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
+    private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
+
+    private final NaverUrlGenerator naverUrlGenerator;
 
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
@@ -54,7 +58,7 @@ public class RealEstateRecommendationService {
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsDto findRecommendedRegions(RegionRecommendRequest requestParameter) {
+    public RecommendedRegionsResult findRecommendedRegions(RegionRecommendRequest requestParameter) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
@@ -95,13 +99,13 @@ public class RealEstateRecommendationService {
                         .build()
         );
 
-        Map<String, RegionGroupDto> sellRegionGroups = allSellRegions.stream()
+        Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = allSellRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId))
                 .entrySet()
                 .stream()
                 .map(entry -> {
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    return new RegionGroupDto(
+                    return new RecommendedRegionsResult.RegionGroup(
                             rootLegalDongInfo.code(),
                             rootLegalDongInfo.name(),
                             rootLegalDongInfo.name(),
@@ -109,11 +113,11 @@ public class RealEstateRecommendationService {
                     );
                 })
                 .collect(Collectors.toMap(
-                        RegionGroupDto::code,
-                        regionGroupDto -> regionGroupDto
+                        RecommendedRegionsResult.RegionGroup::code,
+                        regionGroup -> regionGroup
                 ));
 
-        Map<String, List<RegionDto>> sellRegions = allSellRegions.stream()
+        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegions = allSellRegions.stream()
                 .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()))
                 .entrySet()
                 .stream()
@@ -121,7 +125,7 @@ public class RealEstateRecommendationService {
                     LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
-                    return new RegionDto(
+                    return new RecommendedRegionsResult.RegionItem(
                             secondLegalDongInfo.id(),
                             rootLegalDongInfo.code(),
                             secondLegalDongInfo.code(),
@@ -130,16 +134,16 @@ public class RealEstateRecommendationService {
                             entry.getValue().size()
                     );
                 })
-                .collect(Collectors.groupingBy(RegionDto::groupCode));
+                .collect(Collectors.groupingBy(RecommendedRegionsResult.RegionItem::groupCode));
 
 
-        Map<String, RegionGroupDto> leaseRegionGroups =  allLeaseRegions.stream()
+        Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups =  allLeaseRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId))
                 .entrySet()
                 .stream()
                 .map(entry -> {
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    return new RegionGroupDto(
+                    return new RecommendedRegionsResult.RegionGroup(
                             rootLegalDongInfo.code(),
                             rootLegalDongInfo.name(),
                             rootLegalDongInfo.name(),
@@ -147,11 +151,11 @@ public class RealEstateRecommendationService {
                     );
                 })
                 .collect(Collectors.toMap(
-                        RegionGroupDto::code,
-                        regionGroupDto -> regionGroupDto
+                        RecommendedRegionsResult.RegionGroup::code,
+                        regionGroup -> regionGroup
                 ));
 
-        Map<String, List<RegionDto>> leaseRegions = allLeaseRegions.stream()
+        Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegions = allLeaseRegions.stream()
                 .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()))
                 .entrySet()
                 .stream()
@@ -159,7 +163,7 @@ public class RealEstateRecommendationService {
                     LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
                     LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
 
-                    return new RegionDto(
+                    return new RecommendedRegionsResult.RegionItem(
                             secondLegalDongInfo.id(),
                             rootLegalDongInfo.code(),
                             secondLegalDongInfo.code(),
@@ -168,7 +172,7 @@ public class RealEstateRecommendationService {
                             entry.getValue().size()
                     );
                 })
-                .collect(Collectors.groupingBy(RegionDto::groupCode));
+                .collect(Collectors.groupingBy(RecommendedRegionsResult.RegionItem::groupCode));
 
 
         /**
@@ -177,14 +181,14 @@ public class RealEstateRecommendationService {
          */
 
         sellRegions.replaceAll((key, value) -> value.stream()
-                .sorted(Comparator.comparing(RegionDto::code))
+                .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
                 .collect(Collectors.toList()));
 
         leaseRegions.replaceAll((key, value) -> value.stream()
-                .sorted(Comparator.comparing(RegionDto::code))
+                .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
                 .collect(Collectors.toList()));
 
-        return new RecommendedRegionsDto(
+        return new RecommendedRegionsResult(
                 sellRegionGroups,
                 sellRegions,
                 leaseRegionGroups,
@@ -206,7 +210,7 @@ public class RealEstateRecommendationService {
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateSellSummaryDto> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateSellSummaryResult> findRecommendedSells(RealEstateSellRecommendRequestParameter requestParameter, Pageable pageable) {
         RealEstateSellQuery realEstateSellQuery = RealEstateSellQuery.builder()
                 .maxPrice(requestParameter.cash() + sellPriceGap)
                 .minPrice(requestParameter.cash() - sellPriceGap)
@@ -225,7 +229,7 @@ public class RealEstateRecommendationService {
 
         return realEstateSellRepository.findBy(realEstateSellQuery, pageable)
                 .map(realEstateSell -> {
-                    RealEstateSellSummaryDto resultDto = realEstateSellSummaryDtoMapper.toDto(realEstateSell);
+                    RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 
                     // 법정동 명 concat
                     resultDto.setLegalDongFullName(
@@ -235,6 +239,10 @@ public class RealEstateRecommendationService {
 
                     // 전용면적 소숫점 밑 2자리로 반올림
                     resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+                    // 네이버 URL 생성
+                    // TODO 선택 주택 유형 목록 파라미터화 로직 추가
+                    resultDto.setNaverUrl(naverUrlGenerator.generate(realEstateSell.getXPos(), realEstateSell.getYPos(), List.of()));
 
                     return resultDto;
                 });
@@ -256,7 +264,7 @@ public class RealEstateRecommendationService {
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryDto> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(RealEstateLeaseRecommendRequestParameter requestParameter, Pageable pageable) {
         // TODO 정책/ 대출 관련 로직 추가 필요
         return null;
     }

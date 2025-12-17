@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.dto;
+package com.bb.eodi.deal.application.result;
 
 import lombok.Data;
 
@@ -9,15 +9,13 @@ import java.time.LocalDate;
  * 부동산 매매 데이터
  */
 @Data
-public class RealEstateSellSummaryDto {
+public class RealEstateSellSummaryResult {
     // 부동산 매매 데이터 id
     private Long id;
     // 지역 ID
     private Long regionId;
-
     // 법정동 full name
     private String legalDongFullName;
-
     // 법정동 동명
     private String legalDongName;
     // 거래일
@@ -42,4 +40,6 @@ public class RealEstateSellSummaryDto {
     private String buildingDong;
     // 층
     private Integer floor;
+    // 네이버 부동산에서 보기 URL
+    private String naverUrl;
 }

@@ -53,6 +53,10 @@ public class RealEstateSell {
     private Integer floor;
     // 토지임대부 여부
     private Boolean isLandLease;
+    // X 좌표
+    private BigDecimal xPos;
+    // Y 좌표
+    private BigDecimal yPos;
     // 생성일시
     private LocalDateTime createdAt;
     // 수정일시

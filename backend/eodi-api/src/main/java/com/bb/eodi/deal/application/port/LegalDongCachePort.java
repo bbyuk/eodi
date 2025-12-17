@@ -1,6 +1,6 @@
 package com.bb.eodi.deal.application.port;
 
-import com.bb.eodi.deal.application.model.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.LegalDongInfo;
 
 /**
  * 법정동 캐시 조회 포트

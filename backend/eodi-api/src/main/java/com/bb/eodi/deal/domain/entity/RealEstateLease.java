@@ -48,6 +48,10 @@ public class RealEstateLease {
     private Integer floor;
     // 갱신계약청구권 사용
     private boolean useRRRight;
+    // x 좌표
+    private BigDecimal xPos;
+    // y 좌표
+    private BigDecimal yPos;
     // 생성일시
     private LocalDateTime createdAt;
     // 수정일시

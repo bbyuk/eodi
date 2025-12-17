@@ -1,8 +1,8 @@
 package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
-import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
-import com.bb.eodi.deal.application.dto.request.RealEstateSellRequestParameter;
+import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateSellService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +36,7 @@ public class RealEstateSellController {
     @Operation(summary = "부동산 매매 거래 목록 조회",
             description = "거래 가격, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
     @GetMapping("deals")
-    public ResponseEntity<PageResponse<RealEstateSellSummaryDto>> getRecentRealEstateSells(
+    public ResponseEntity<PageResponse<RealEstateSellSummaryResult>> getRecentRealEstateSells(
             @ParameterObject RealEstateSellRequestParameter requestParameter,
             @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(

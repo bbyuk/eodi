@@ -1,8 +1,8 @@
 package com.bb.eodi.deal.application.service;
 
-import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDto;
-import com.bb.eodi.deal.application.dto.RealEstateSellSummaryDtoMapper;
-import com.bb.eodi.deal.application.dto.request.RealEstateSellRequestParameter;
+import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
+import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class RealEstateSellService {
 
     private final RealEstateSellRepository realEstateSellRepository;
-    private final RealEstateSellSummaryDtoMapper summaryDtoMapper;
+    private final RealEstateSellSummaryResultMapper summaryDtoMapper;
     private final LegalDongCachePort legalDongCachePort;
-    private final RealEstateSellSummaryDtoMapper realEstateSellSummaryDtoMapper;
+    private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
 
 
     /**
@@ -35,7 +35,7 @@ public class RealEstateSellService {
      * @return 부동산 매매 데이터 목록
      */
     @Transactional
-    public Page<RealEstateSellSummaryDto> findRealEstateSells(
+    public Page<RealEstateSellSummaryResult> findRealEstateSells(
             @ParameterObject RealEstateSellRequestParameter requestParameter,
             @ParameterObject Pageable pageable) {
         return realEstateSellRepository.findBy(
@@ -51,7 +51,7 @@ public class RealEstateSellService {
                         .targetRegionIds(requestParameter.targetRegionIds())
                         .build(), pageable)
                 .map(realEstateSell -> {
-                    RealEstateSellSummaryDto resultDto = realEstateSellSummaryDtoMapper.toDto(realEstateSell);
+                    RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 
                     // legalDongFullName set -> 지역명 + 동명
                     resultDto.setLegalDongFullName(legalDongCachePort.findById(resultDto.getRegionId()) + " " + resultDto.getLegalDongName());

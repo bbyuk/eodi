@@ -90,6 +90,12 @@ public class RealEstateLeaseJpaEntity {
     @Column(name = "use_rr_right")
     private boolean useRRRight;
 
+    @Column(name = "x_pos")
+    private BigDecimal xPos;
+
+    @Column(name = "y_pos")
+    private BigDecimal yPos;
+
     // 생성일시
     @Column(name = "created_at")
     private LocalDateTime createdAt;

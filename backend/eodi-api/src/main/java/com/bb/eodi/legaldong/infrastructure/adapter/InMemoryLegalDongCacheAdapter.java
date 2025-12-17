@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.infrastructure.adapter;
 
-import com.bb.eodi.deal.application.model.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaRepository;

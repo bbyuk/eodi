@@ -98,6 +98,12 @@ public class RealEstateSellJpaEntity {
     @Column(name = "is_land_lease")
     private Boolean isLandLease;
 
+    @Column(name = "x_pos")
+    private BigDecimal xPos;
+
+    @Column(name = "y_pos")
+    private BigDecimal yPos;
+
     // 생성일시
     @Column(name = "created_at")
     private LocalDateTime createdAt;

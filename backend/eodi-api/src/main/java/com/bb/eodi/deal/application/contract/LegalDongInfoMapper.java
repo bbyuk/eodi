@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.model;
+package com.bb.eodi.deal.application.contract;
 
 import com.bb.eodi.deal.domain.entity.Region;
 import org.mapstruct.Mapper;

@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.domain.repository;
 
 import com.bb.eodi.config.QuerydslConfig;
-import com.bb.eodi.deal.application.model.LegalDongInfoMapperImpl;
+import com.bb.eodi.deal.application.contract.LegalDongInfoMapperImpl;
 import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.dto.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
