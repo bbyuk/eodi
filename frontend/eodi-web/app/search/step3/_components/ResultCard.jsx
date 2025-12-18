@@ -39,7 +39,7 @@ export default function ResultCard({ data, dealType }) {
       {data.dateOfRegistration && (
         <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-[11px] font-medium shadow-sm">
           <CheckCircle className="w-3.5 h-3.5 text-green-600" />
-          <span>등기 완료</span>
+          <span>등기</span>
         </div>
       )}
       <div>
