@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.presentation.dto.adapter;
+package com.bb.eodi.deal.presentation.adapter;
 
 import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;

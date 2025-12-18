@@ -3,10 +3,10 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateRecommendationService;
-import com.bb.eodi.deal.presentation.dto.adapter.FindRealEstateSellInputAdapter;
-import com.bb.eodi.deal.presentation.dto.adapter.FindRegionInputAdapter;
-import com.bb.eodi.deal.presentation.dto.mapper.RealEstateSellFindResponseMapper;
-import com.bb.eodi.deal.presentation.dto.mapper.RegionFindResponseMapper;
+import com.bb.eodi.deal.presentation.adapter.FindRealEstateSellInputAdapter;
+import com.bb.eodi.deal.presentation.adapter.FindRegionInputAdapter;
+import com.bb.eodi.deal.presentation.mapper.RealEstateSellFindResponseMapper;
+import com.bb.eodi.deal.presentation.mapper.RegionFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
 import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateSellFindResponse;

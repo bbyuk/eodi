@@ -2,8 +2,8 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
-import com.bb.eodi.deal.presentation.dto.adapter.FindRealEstateLeaseInputAdapter;
-import com.bb.eodi.deal.presentation.dto.mapper.RealEstateLeaseFindResponseMapper;
+import com.bb.eodi.deal.presentation.adapter.FindRealEstateLeaseInputAdapter;
+import com.bb.eodi.deal.presentation.mapper.RealEstateLeaseFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateLeaseFindResponse;
 import io.swagger.v3.oas.annotations.Operation;

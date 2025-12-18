@@ -2,8 +2,8 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateSellService;
-import com.bb.eodi.deal.presentation.dto.adapter.FindRealEstateSellInputAdapter;
-import com.bb.eodi.deal.presentation.dto.mapper.RealEstateSellFindResponseMapper;
+import com.bb.eodi.deal.presentation.adapter.FindRealEstateSellInputAdapter;
+import com.bb.eodi.deal.presentation.mapper.RealEstateSellFindResponseMapper;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateSellFindResponse;
 import io.swagger.v3.oas.annotations.Operation;

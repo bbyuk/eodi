@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.presentation.dto.mapper;
+package com.bb.eodi.deal.presentation.mapper;
 
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateLeaseFindResponse;
