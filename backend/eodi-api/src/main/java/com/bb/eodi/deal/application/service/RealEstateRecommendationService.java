@@ -5,6 +5,7 @@ import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
@@ -42,8 +43,7 @@ public class RealEstateRecommendationService {
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
-    private String naverPayBaseUrl = "https://m.land.naver.com/map";
-    private int naverPayMapLev = 14;
+    private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
 
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
@@ -245,7 +245,9 @@ public class RealEstateRecommendationService {
                     resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
 
                     // 네이버 URL 생성
-                    resultDto.setNaverUrl(realEstateSell.createUrl(naverPayBaseUrl, naverPayMapLev));
+                    resultDto.setNaverUrl(
+                            realEstatePlatformUrlGeneratePort.generate(realEstateSell)
+                    );
 
                     return resultDto;
                 });
@@ -301,7 +303,9 @@ public class RealEstateRecommendationService {
                     resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
 
                     // 네이버 URL 생성
-                    resultDto.setNaverUrl(realEstateLease.createUrl(naverPayBaseUrl, naverPayMapLev));
+                    resultDto.setNaverUrl(
+                            realEstatePlatformUrlGeneratePort.generate(realEstateLease)
+                    );
 
                     return resultDto;
                 });

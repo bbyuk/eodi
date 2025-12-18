@@ -20,6 +20,11 @@ logging:
     org.springframework: debug
     com.bb: debug
 
+external:
+  naver:
+    base-url: https://m.land.naver.com/map
+    default-map-size: 15
+
 springdoc:
   api-docs:
     path: /api-docs      # OpenAPI JSON 문서 경로 (기본: /v3/api-docs)
