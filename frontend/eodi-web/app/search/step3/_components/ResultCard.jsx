@@ -65,7 +65,7 @@ export default function ResultCard({ data, dealType }) {
       </div>
 
       <a
-        href={data.url}
+        href={data.naverUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-5 w-full flex items-center justify-center gap-2 py-2 rounded-md bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition cursor-pointer"
