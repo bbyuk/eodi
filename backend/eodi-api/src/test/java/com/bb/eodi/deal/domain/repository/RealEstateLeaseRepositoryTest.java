@@ -1,11 +1,11 @@
 package com.bb.eodi.deal.domain.repository;
 
 import com.bb.eodi.config.QuerydslConfig;
-import com.bb.eodi.deal.application.contract.LegalDongInfoMapperImpl;
-import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
-import com.bb.eodi.deal.domain.query.RegionQuery;
+import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapperImpl;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseRepositoryImpl;
 import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
