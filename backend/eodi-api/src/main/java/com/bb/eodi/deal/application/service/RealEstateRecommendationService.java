@@ -5,7 +5,7 @@ import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.domain.query.RegionQuery;
+import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
 import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
@@ -13,6 +13,7 @@ import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
@@ -43,8 +44,8 @@ public class RealEstateRecommendationService {
 
     private final RecommendedRealEstateSellQueryAssembler queryAssembler;
 
-    private String naverPayBaseUrl = "https://m.land.naver.com/map";
-    private int naverPayMapLev = 14;
+    private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
+
 
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
@@ -234,7 +235,9 @@ public class RealEstateRecommendationService {
                     resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
 
                     // 네이버 URL 생성
-                    resultDto.setNaverUrl(realEstateSell.createUrl(naverPayBaseUrl, naverPayMapLev));
+                    resultDto.setNaverUrl(
+                            realEstatePlatformUrlGeneratePort.generate(realEstateSell)
+                    );
 
                     return resultDto;
                 });
