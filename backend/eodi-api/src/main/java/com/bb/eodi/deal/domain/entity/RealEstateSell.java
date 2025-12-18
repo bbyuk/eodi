@@ -67,9 +67,8 @@ public class RealEstateSell {
             return null;
         }
 
-        // TODO HousingType 별 분기 로직 추가
         StringBuilder sb = new StringBuilder();
-        sb.append(baseUrl).append("/").append(xPos.toString()).append(":").append(yPos.toString()).append(":").append(lev).append("/").append("APT").append("/").append("A1").append(":").append("B1");
+        sb.append(baseUrl).append("/").append(xPos.toString()).append(":").append(yPos.toString()).append(":").append(lev).append("/").append("APT").append("/").append("A1");
         return sb.toString();
     }
 }

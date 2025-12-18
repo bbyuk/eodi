@@ -1,5 +1,6 @@
-package com.bb.eodi.deal.application.contract;
+package com.bb.eodi.deal.application.contract.mapper;
 
+import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.domain.entity.Region;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
