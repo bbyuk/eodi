@@ -39,7 +39,7 @@ export default function ResultCard({ data, dealType }) {
       {data.dateOfRegistration && (
         <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-[11px] font-medium shadow-sm">
           <CheckCircle className="w-3.5 h-3.5 text-green-600" />
-          <span>등기 완료</span>
+          <span>등기</span>
         </div>
       )}
       <div>
@@ -65,13 +65,13 @@ export default function ResultCard({ data, dealType }) {
       </div>
 
       <a
-        href={data.url}
+        href={data.naverUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-5 w-full flex items-center justify-center gap-2 py-2 rounded-md bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition"
+        className="mt-5 w-full flex items-center justify-center gap-2 py-2 rounded-md bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition cursor-pointer"
       >
         <Search className="w-4 h-4 relative top-[1px]" />
-        네이버 부동산에서 보기
+        네이버 부동산에서 더 보기
       </a>
     </article>
   );

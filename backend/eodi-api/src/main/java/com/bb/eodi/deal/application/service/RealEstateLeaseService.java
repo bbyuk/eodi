@@ -1,9 +1,9 @@
 package com.bb.eodi.deal.application.service;
 
+import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
+import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
-import com.bb.eodi.deal.domain.dto.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,25 +25,25 @@ public class RealEstateLeaseService {
 
     /**
      * 부동산 임대차 데이터 조회
-     * @param requestParameter 부동산 임대차 데이터 조회 요청 파라미터
+     * @param input 부동산 임대차 데이터 조회 요청 파라미터
      * @param pageable pageable 객체
      * @return 부동산 임대차 데이터 목록
      */
     @Transactional
-    public Page<RealEstateLeaseSummaryResult> findRealEstateLeases(RealEstateLeaseRequestParameter requestParameter, Pageable pageable) {
+    public Page<RealEstateLeaseSummaryResult> findRealEstateLeases(FindRealEstateLeaseInput input, Pageable pageable) {
         return realEstateLeaseRepository.findBy(
                 RealEstateLeaseQuery
                         .builder()
-                        .maxDeposit(requestParameter.maxDeposit())
-                        .minDeposit(requestParameter.minDeposit())
-                        .maxMonthlyRentFee(requestParameter.maxMonthlyRentFee())
-                        .minMonthlyRentFee(requestParameter.minMonthlyRentFee())
-                        .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
-                        .minNetLeasableArea(requestParameter.minNetLeasableArea())
-                        .startYearMonth(requestParameter.startYearMonth())
-                        .endYearMonth(requestParameter.endYearMonth())
-                        .targetRegionIds(requestParameter.targetRegionIds())
-                        .targetHousingTypes(requestParameter.targetHousingTypes())
+                        .maxDeposit(input.maxDeposit())
+                        .minDeposit(input.minDeposit())
+                        .maxMonthlyRentFee(input.maxMonthlyRentFee())
+                        .minMonthlyRentFee(input.minMonthlyRentFee())
+                        .maxNetLeasableArea(input.maxNetLeasableArea())
+                        .minNetLeasableArea(input.minNetLeasableArea())
+                        .startYearMonth(input.startYearMonth())
+                        .endYearMonth(input.endYearMonth())
+                        .targetRegionIds(input.targetRegionIds())
+                        .targetHousingTypes(input.targetHousingTypes())
                         .build(), pageable)
                 .map(realEstateLeaseSummaryResultMapper::toResult);
     }

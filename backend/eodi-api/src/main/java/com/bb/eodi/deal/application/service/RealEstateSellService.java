@@ -1,14 +1,13 @@
 package com.bb.eodi.deal.application.service;
 
+import com.bb.eodi.deal.application.input.FindRealEstateSellInput;
+import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.query.assembler.FindRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRequestParameter;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,33 +22,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class RealEstateSellService {
 
     private final RealEstateSellRepository realEstateSellRepository;
-    private final RealEstateSellSummaryResultMapper summaryDtoMapper;
     private final LegalDongCachePort legalDongCachePort;
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
 
+    private final FindRealEstateSellQueryAssembler queryAssembler;
 
     /**
      * 부동산 매재 데이터 조회
-     * @param requestParameter 부동산 매매 데이터 조회 요청 파라미터
-     * @param pageable pageable 객체
+     *
+     * @param input 부동산 매매 데이터 조회 요청 파라미터
+     * @param pageable         pageable 객체
      * @return 부동산 매매 데이터 목록
      */
     @Transactional
     public Page<RealEstateSellSummaryResult> findRealEstateSells(
-            @ParameterObject RealEstateSellRequestParameter requestParameter,
-            @ParameterObject Pageable pageable) {
+            FindRealEstateSellInput input,
+            Pageable pageable) {
         return realEstateSellRepository.findBy(
-                RealEstateSellQuery
-                        .builder()
-                        .maxPrice(requestParameter.maxPrice())
-                        .minPrice(requestParameter.minPrice())
-                        .maxNetLeasableArea(requestParameter.maxNetLeasableArea())
-                        .minNetLeasableArea(requestParameter.minNetLeasableArea())
-                        .startYearMonth(requestParameter.startYearMonth())
-                        .endYearMonth(requestParameter.endYearMonth())
-                        .targetHousingTypes(requestParameter.targetHousingTypes())
-                        .targetRegionIds(requestParameter.targetRegionIds())
-                        .build(), pageable)
+                        queryAssembler.assemble(input), pageable)
                 .map(realEstateSell -> {
                     RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 

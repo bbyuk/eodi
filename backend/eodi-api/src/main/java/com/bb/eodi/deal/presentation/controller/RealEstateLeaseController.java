@@ -1,9 +1,11 @@
 package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.presentation.response.PageResponse;
-import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
 import com.bb.eodi.deal.application.service.RealEstateLeaseService;
+import com.bb.eodi.deal.presentation.adapter.FindRealEstateLeaseInputAdapter;
+import com.bb.eodi.deal.presentation.mapper.RealEstateLeaseFindResponseMapper;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRequestParameter;
+import com.bb.eodi.deal.presentation.dto.response.RealEstateLeaseFindResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RealEstateLeaseController {
 
+    // mapper
+    private final RealEstateLeaseFindResponseMapper realEstateLeaseFindResponseMapper;
+
+    // adapter
+    private final FindRealEstateLeaseInputAdapter findRealEstateLeaseInputAdapter;
+
+
     private final RealEstateLeaseService realEstateLeaseService;
 
     /**
@@ -35,16 +44,16 @@ public class RealEstateLeaseController {
     @GetMapping("deals")
     @Operation(summary = "부동산 임대차 거래 목록 조회",
             description = "보증금, 월세, 계약일, 대상 지역 등의 조건으로 부동산 매매 실거래가 정보를 조회한다.")
-    public ResponseEntity<PageResponse<RealEstateLeaseSummaryResult>> getRealEstateLeaseDeals(
+    public ResponseEntity<PageResponse<RealEstateLeaseFindResponse>> getRealEstateLeaseDeals(
             @ParameterObject RealEstateLeaseRequestParameter requestParameter,
             @ParameterObject Pageable pageable) {
 
         return ResponseEntity.ok(
                 PageResponse.from(
                         realEstateLeaseService.findRealEstateLeases(
-                                requestParameter,
+                                findRealEstateLeaseInputAdapter.toInput(requestParameter),
                                 pageable
-                        )
+                        ).map(realEstateLeaseFindResponseMapper::toResponse)
                 )
         );
     }

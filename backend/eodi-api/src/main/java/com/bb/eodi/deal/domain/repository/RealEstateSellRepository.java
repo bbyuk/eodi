@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.domain.repository;
 
-import com.bb.eodi.deal.domain.dto.RealEstateSellQuery;
-import com.bb.eodi.deal.domain.dto.RegionQuery;
+import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import org.springframework.data.domain.Page;
