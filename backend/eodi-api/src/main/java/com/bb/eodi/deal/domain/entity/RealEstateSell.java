@@ -61,15 +61,4 @@ public class RealEstateSell {
     private LocalDateTime createdAt;
     // 수정일시
     private LocalDateTime updatedAt;
-
-    public String createUrl(String baseUrl, int lev) {
-        if (xPos == null || yPos == null) {
-            return null;
-        }
-
-        // TODO HousingType 별 분기 로직 추가
-        StringBuilder sb = new StringBuilder();
-        sb.append(baseUrl).append("/").append(xPos.toString()).append(":").append(yPos.toString()).append(":").append(lev).append("/").append("APT").append("/").append("A1").append(":").append("B1");
-        return sb.toString();
-    }
 }
