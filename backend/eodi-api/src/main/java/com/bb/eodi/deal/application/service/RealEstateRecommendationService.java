@@ -5,13 +5,14 @@ import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
@@ -40,8 +41,6 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
-
-    private final RecommendedRealEstateQueryAssembler queryAssembler;
 
     private String naverPayBaseUrl = "https://m.land.naver.com/map";
     private int naverPayMapLev = 14;
@@ -218,7 +217,19 @@ public class RealEstateRecommendationService {
         // TODO 정책 / 대출 관련 로직 추가 필요
 
         return realEstateSellRepository.findBy(
-                        queryAssembler.assemble(input, sellPriceGap),
+                        RealEstateSellQuery.builder()
+                                .maxPrice(input.cash() + sellPriceGap)
+                                .minPrice(input.cash() - sellPriceGap)
+                                .targetRegionIds(input.targetRegionIds())
+                                .targetHousingTypes(
+                                        input.targetHousingTypes()
+                                                .stream()
+                                                .map(HousingType::fromCode)
+                                                .collect(Collectors.toList())
+                                )
+                                .maxNetLeasableArea(input.maxNetLeasableArea())
+                                .minNetLeasableArea(input.minNetLeasableArea())
+                                .build(),
                         pageable
                 )
                 .map(realEstateSell -> {
@@ -260,7 +271,21 @@ public class RealEstateRecommendationService {
         // TODO 정책 / 대출 관련 로직 추가 필요
 
         return realEstateLeaseRepository.findBy(
-                        queryAssembler.assemble(input),
+                        RealEstateLeaseQuery.builder()
+                                .targetRegionIds(input.targetRegionIds())
+                                .maxDeposit(input.maxDeposit())
+                                .minDeposit(input.minDeposit())
+                                .maxMonthlyRentFee(input.maxMonthlyRentFee())
+                                .minMonthlyRentFee(input.minMonthlyRentFee())
+                                .targetHousingTypes(
+                                        input.targetHousingTypes()
+                                                .stream()
+                                                .map(HousingType::fromCode)
+                                                .collect(Collectors.toList())
+                                )
+                                .maxNetLeasableArea(input.maxNetLeasableArea())
+                                .minNetLeasableArea(input.minNetLeasableArea())
+                                .build(),
                         pageable
                 )
                 .map(realEstateLease -> {
