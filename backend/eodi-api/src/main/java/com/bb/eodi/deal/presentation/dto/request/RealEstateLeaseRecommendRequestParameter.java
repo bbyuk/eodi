@@ -45,7 +45,7 @@ public record RealEstateLeaseRecommendRequestParameter(
                         )
                 )
         )
-        List<HousingType> targetHousingTypes,
+        List<String> targetHousingTypes,
         @Parameter(description = "최대 보증금 (단위: 만원)", example = "70000")
         Integer maxDeposit,
         @Parameter(description = "최소 보증금 (단위: 만원)", example = "1000")
