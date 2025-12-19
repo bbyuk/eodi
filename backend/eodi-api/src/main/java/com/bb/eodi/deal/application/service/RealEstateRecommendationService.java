@@ -1,18 +1,18 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
-import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
+import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
-import com.bb.eodi.deal.domain.query.RegionQuery;
-import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateSellQueryAssembler;
+import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
@@ -41,7 +41,7 @@ public class RealEstateRecommendationService {
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
-    private final RecommendedRealEstateSellQueryAssembler queryAssembler;
+    private final RecommendedRealEstateQueryAssembler queryAssembler;
 
     private String naverPayBaseUrl = "https://m.land.naver.com/map";
     private int naverPayMapLev = 14;
@@ -209,8 +209,8 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param input 요청 파라미터
-     * @param pageable         pageable 파라미터 객체
+     * @param input    요청 파라미터
+     * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
@@ -251,13 +251,34 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param input 부동산 임대차 실거래가 데이터 조회 application input
+     * @param input    부동산 임대차 실거래가 데이터 조회 application input
      * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRealEstateLeaseInput input, Pageable pageable) {
-        // TODO 정책/ 대출 관련 로직 추가 필요
-        return null;
+    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRecommendedLeaseInput input, Pageable pageable) {
+        // TODO 정책 / 대출 관련 로직 추가 필요
+
+        return realEstateLeaseRepository.findBy(
+                        queryAssembler.assemble(input),
+                        pageable
+                )
+                .map(realEstateLease -> {
+                    RealEstateLeaseSummaryResult resultDto = realEstateLeaseSummaryResultMapper.toResult(realEstateLease);
+
+                    // 법정동 명 concat
+                    resultDto.setLegalDongFullName(
+                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
+                                    " " +
+                                    resultDto.getLegalDongName());
+
+                    // 전용면적 소숫점 밑 2자리로 반올림
+                    resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+                    // 네이버 URL 생성
+                    resultDto.setNaverUrl(realEstateLease.createUrl(naverPayBaseUrl, naverPayMapLev));
+
+                    return resultDto;
+                });
     }
 }
