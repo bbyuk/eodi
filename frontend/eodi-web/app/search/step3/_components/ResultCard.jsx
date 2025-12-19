@@ -34,6 +34,17 @@ import { definedHousingType } from "@/const/code";
  */
 
 export default function ResultCard({ data, dealType }) {
+  const priceLabel = () => {
+    if (dealType.code === "sell") {
+      return formatWon(data.prcie);
+    } else if (dealType.code === "charter") {
+      return formatWon(data.deposit);
+    } else if (dealType.code === "monthly-rent") {
+      return `${formatWon(data.deposit)} · ${data.monthlyRent}`;
+    }
+    return formatWon(0);
+  };
+
   return (
     <article className="relative border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
       {data.dateOfRegistration && (
@@ -50,14 +61,14 @@ export default function ResultCard({ data, dealType }) {
 
         <div className="mt-3 space-y-1 text-sm">
           <p>
-            <span className="font-medium text-gray-800">{dealType}</span> ·{" "}
+            <span className="font-medium text-gray-800">{dealType.label}</span> ·{" "}
             <span className="text-gray-600">{data.netLeasableArea}㎡</span>
             <span className="text-gray-600">{data.floor ? ` · ${data.floor}층` : ""}</span>
           </p>
           <p>
             <span className="text-gray-600">{definedHousingType[data.housingType].name}</span>
           </p>
-          <p className="text-blue-600 font-semibold">{formatWon(data.price)}</p>
+          <p className="text-blue-600 font-semibold">{priceLabel()}</p>
           <p className="text-xs text-gray-400">
             {data.contractDate ? `${data.contractDate} 계약` : ""}
           </p>
