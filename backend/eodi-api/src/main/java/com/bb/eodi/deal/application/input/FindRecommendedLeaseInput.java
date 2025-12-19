@@ -1,7 +1,5 @@
 package com.bb.eodi.deal.application.input;
 
-import com.bb.eodi.deal.domain.type.HousingType;
-
 import java.util.List;
 
 /**

@@ -1,6 +1,5 @@
 package com.bb.eodi.deal.presentation.dto.request;
 
-import com.bb.eodi.deal.domain.type.HousingType;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
