@@ -36,7 +36,7 @@ import { definedHousingType } from "@/const/code";
 export default function ResultCard({ data, dealType }) {
   const priceLabel = () => {
     if (dealType.code === "sell") {
-      return formatWon(data.prcie);
+      return formatWon(data.price);
     } else if (dealType.code === "charter") {
       return formatWon(data.deposit);
     } else if (dealType.code === "monthly-rent") {
