@@ -1,18 +1,19 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
-import com.bb.eodi.deal.application.input.FindRealEstateLeaseInput;
+import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
-import com.bb.eodi.deal.application.query.assembler.RecommendedRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
+import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
@@ -42,10 +43,7 @@ public class RealEstateRecommendationService {
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
-    private final RecommendedRealEstateSellQueryAssembler queryAssembler;
-
     private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
-
 
     private final int sellPriceGap = 5000;
     private final int leaseDepositGap = 1000;
@@ -210,8 +208,8 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param input 요청 파라미터
-     * @param pageable         pageable 파라미터 객체
+     * @param input    요청 파라미터
+     * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
@@ -219,7 +217,19 @@ public class RealEstateRecommendationService {
         // TODO 정책 / 대출 관련 로직 추가 필요
 
         return realEstateSellRepository.findBy(
-                        queryAssembler.assemble(input, sellPriceGap),
+                        RealEstateSellQuery.builder()
+                                .maxPrice(input.cash() + sellPriceGap)
+                                .minPrice(input.cash() - sellPriceGap)
+                                .targetRegionIds(input.targetRegionIds())
+                                .targetHousingTypes(
+                                        input.targetHousingTypes()
+                                                .stream()
+                                                .map(HousingType::fromCode)
+                                                .collect(Collectors.toList())
+                                )
+                                .maxNetLeasableArea(input.maxNetLeasableArea())
+                                .minNetLeasableArea(input.minNetLeasableArea())
+                                .build(),
                         pageable
                 )
                 .map(realEstateSell -> {
@@ -254,13 +264,50 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param input 부동산 임대차 실거래가 데이터 조회 application input
+     * @param input    부동산 임대차 실거래가 데이터 조회 application input
      * @param pageable pageable 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRealEstateLeaseInput input, Pageable pageable) {
-        // TODO 정책/ 대출 관련 로직 추가 필요
-        return null;
+    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRecommendedLeaseInput input, Pageable pageable) {
+        // TODO 정책 / 대출 관련 로직 추가 필요
+
+        return realEstateLeaseRepository.findBy(
+                        RealEstateLeaseQuery.builder()
+                                .targetRegionIds(input.targetRegionIds())
+                                .maxDeposit(input.maxDeposit())
+                                .minDeposit(input.minDeposit())
+                                .maxMonthlyRentFee(input.maxMonthlyRentFee())
+                                .minMonthlyRentFee(input.minMonthlyRentFee())
+                                .targetHousingTypes(
+                                        input.targetHousingTypes()
+                                                .stream()
+                                                .map(HousingType::fromCode)
+                                                .collect(Collectors.toList())
+                                )
+                                .maxNetLeasableArea(input.maxNetLeasableArea())
+                                .minNetLeasableArea(input.minNetLeasableArea())
+                                .build(),
+                        pageable
+                )
+                .map(realEstateLease -> {
+                    RealEstateLeaseSummaryResult resultDto = realEstateLeaseSummaryResultMapper.toResult(realEstateLease);
+
+                    // 법정동 명 concat
+                    resultDto.setLegalDongFullName(
+                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
+                                    " " +
+                                    resultDto.getLegalDongName());
+
+                    // 전용면적 소숫점 밑 2자리로 반올림
+                    resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+                    // 네이버 URL 생성
+                    resultDto.setNaverUrl(
+                            realEstatePlatformUrlGeneratePort.generate(realEstateLease)
+                    );
+
+                    return resultDto;
+                });
     }
 }

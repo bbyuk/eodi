@@ -1,8 +1,10 @@
 package com.bb.eodi.deal.application.service;
 
 
+import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
+import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
@@ -65,6 +67,34 @@ class RealEstateRecommendationServiceMediumTest {
         Assertions.assertThat(allResult).isNotEmpty();
         Assertions.assertThat(
                 allResult.getContent().stream().map(RealEstateSellSummaryResult::getNaverUrl)
+                        .anyMatch(url -> StringUtils.hasText(url))
+        ).isTrue();
+    }
+
+
+    @Test
+    @DisplayName("medium - 입력된 파라미터 기반으로 추천 임대차 데이터 목록을 리턴한다.")
+    void testFindRecommendedLease() throws Exception {
+        // given
+
+        FindRecommendedLeaseInput input = new FindRecommendedLeaseInput(
+                22121,
+                List.of(14363L, 14415L, 14584L),
+                List.of("AP", "OF"),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        // when
+        Page<RealEstateLeaseSummaryResult> result = realEstateRecommendationService.findRecommendedLeases(input, PageRequest.of(0, 20));
+
+        // then
+        Assertions.assertThat(result).isNotEmpty();
+        Assertions.assertThat(
+                result.getContent().stream().map(RealEstateLeaseSummaryResult::getNaverUrl)
                         .anyMatch(url -> StringUtils.hasText(url))
         ).isTrue();
     }

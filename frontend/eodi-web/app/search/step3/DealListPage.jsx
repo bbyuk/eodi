@@ -97,7 +97,7 @@ export default function DealListPage() {
       .get("/real-estate/recommendation/leases", {
         cash: cash,
         targetRegionIds: Array.from(selectedLeaseRegions).map((region) => region.id),
-        targetHousingTypes: Array.from(selectedHousingTypes),
+        targetHousingTypes: Array.from(inquiredHousingTypes),
         size: pageSize,
         page: leaseInfo.page,
       })
@@ -181,14 +181,21 @@ export default function DealListPage() {
         {selectedTab === "sell" ? (
           <ResultGrid>
             {sellInfo.data.map((sell) => (
-              <ResultCard key={sell.id} data={sell} dealType={"매매"} />
+              <ResultCard key={sell.id} data={sell} dealType={{ code: "sell", label: "매매" }} />
             ))}
             <div ref={sellLoadMoreRef} className={"h-6"} />
           </ResultGrid>
         ) : selectedTab === "lease" ? (
           <ResultGrid>
             {leaseInfo.data.map((lease) => (
-              <ResultCard key={lease.id} data={lease} dealType={"임대차"} />
+              <ResultCard
+                key={lease.id}
+                data={lease}
+                dealType={{
+                  code: lease.monthlyRent === 0 ? "charter" : "monthly-rent",
+                  label: lease.monthlyRent === 0 ? "전세" : "월세",
+                }}
+              />
             ))}
             <div ref={leaseLoadMoreRef} className={"h-6"} />
           </ResultGrid>

@@ -39,6 +39,8 @@ public record RealEstateLeaseFindResponse(
         // 층
         Integer floor,
         // 갱신계약청구권 사용
-        boolean useRRRight
+        boolean useRRRight,
+        // 네이버 부동산 URL
+        String naverUrl
 ) {
 }

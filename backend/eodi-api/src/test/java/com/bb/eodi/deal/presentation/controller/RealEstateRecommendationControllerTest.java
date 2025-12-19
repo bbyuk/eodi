@@ -24,6 +24,7 @@ class RealEstateRecommendationControllerTest {
 
 
     @Test
+    @DisplayName("medium - 부동산 매매 추천 데이터 조회 API 통합 테스트")
     void testGetRecommendedRealEstateSells() throws Exception {
         String url = "/sells";
 
@@ -35,14 +36,29 @@ class RealEstateRecommendationControllerTest {
                         .param("targetRegionIds", "14302")
                         .param("targetHousingTypes", "AP")
                         .param("targetHousingTypes", "OF")
-                        .param("pageNum", "0")
-                        .param("pageSize", "20")
+                        .param("page", "0")
+                        .param("size", "20")
         )
                 .andExpect(status().is2xxSuccessful());
 
-        // given
-        // when
+    }
 
-        // then
+    @Test
+    @DisplayName("medium - 부동산 임대차 추천 데이터 조회 API 통합 테스트")
+    void testGetRecommendedRealEsstateLease() throws Exception {
+        String url = "/leases";
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(baseUrl + url)
+                        .param("cash", "21221")
+                        .param("targetRegionIds", "14306")
+                        .param("targetRegionIds", "14262")
+                        .param("targetRegionIds", "14302")
+                        .param("targetHousingTypes", "AP")
+                        .param("targetHousingTypes", "OF")
+                        .param("page", "0")
+                        .param("size", "20")
+        ).andExpect(status().is2xxSuccessful());
+
     }
 }
