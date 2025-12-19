@@ -97,7 +97,7 @@ export default function DealListPage() {
       .get("/real-estate/recommendation/leases", {
         cash: cash,
         targetRegionIds: Array.from(selectedLeaseRegions).map((region) => region.id),
-        targetHousingTypes: Array.from(selectedHousingTypes),
+        targetHousingTypes: Array.from(inquiredHousingTypes),
         size: pageSize,
         page: leaseInfo.page,
       })
