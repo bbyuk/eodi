@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { formatWon } from "@/app/search/_util/util";
+import { useRef, useState } from "react";
 
-export default function DualThumbSliderInput({
+export default function SliderInput({
   min = 0,
   max = 200_000,
   step = 5000,
