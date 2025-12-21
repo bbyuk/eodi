@@ -55,6 +55,7 @@ export default function DealListPage() {
 
     if (init) {
       setSellInfo({ ...initialDealInfo, isLoading: true });
+      window.scrollTo({top: 0})
     }
     else {
       setSellInfo((prev) => ({ ...prev, isLoading: true }));
@@ -86,6 +87,7 @@ export default function DealListPage() {
     }
     if (init) {
       setLeaseInfo({...initialDealInfo, isLoading: true});
+      window.scrollTo({top: 0})
     }
     else {
       setLeaseInfo((prev) => ({ ...prev, isLoading: true }));
