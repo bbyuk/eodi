@@ -19,7 +19,11 @@ export default function DualThumbSliderInput({
 
   const getValueFromClientX = (clientX) => {
     const rect = trackRef.current.getBoundingClientRect();
-    const percent = (clientX - rect.left) / rect.width;
+
+    const rawPercent = (clientX - rect.left) / rect.width;
+
+    const percent = Math.min(1, Math.max(0, rawPercent));
+
     const raw = min + percent * (max - min);
     return Math.round(raw / step) * step;
   };
@@ -33,9 +37,17 @@ export default function DualThumbSliderInput({
       const value = getValueFromClientX(clientX);
 
       if (type === "min") {
-        onMinValueChange(Math.min(value, maxValue - step));
+        const next = Math.min(
+          Math.max(value, min), // min 아래 방지
+          maxValue - step // max 침범 방지
+        );
+        onMinValueChange(next);
       } else {
-        onMaxValueChange(Math.max(value, minValue + step));
+        const next = Math.max(
+          Math.min(value, max), // max 초과 방지
+          minValue + step // min 침범 방지
+        );
+        onMaxValueChange(next);
       }
     };
 
