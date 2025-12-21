@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { formatWon } from "@/app/search/_util/util";
 
 export default function DualThumbSliderInput({
   min = 0,
@@ -8,11 +9,19 @@ export default function DualThumbSliderInput({
   step = 5000,
   minValue = 50_000,
   maxValue = 100_000,
+  valueFormatter = (value) => {},
   enableMin = false,
   enableMax = false,
+  onEnableMinChange = (enableMin) => {},
+  onEnableMaxChange = (enableMax) => {},
   onMinValueChange = (minValue) => {},
   onMaxValueChange = (maxValue) => {},
 }) {
+  const baseInput =
+    "relative h-11 w-full rounded-md border px-3 text-sm flex items-center text-left transition cursor-pointer";
+  const enabledInput = "bg-white text-gray-900 border-gray-300";
+  const disabledInput = "bg-gray-100 text-gray-400 border-dashed border-gray-300";
+
   const trackRef = useRef(null);
   const [active, setActive] = useState(null); // 'min' | 'max'
 
@@ -71,46 +80,93 @@ export default function DualThumbSliderInput({
   };
 
   return (
-    <div className="pt-3">
-      <div ref={trackRef} className="relative h-6 select-none">
-        {/* Track */}
-        <div className="absolute top-1/2 h-[3px] w-full -translate-y-1/2 rounded bg-neutral-200" />
-
-        {/* Range */}
-        {(enableMin || enableMax) && (
+    <>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1">
+          <div className="text-[11px] text-gray-500">최소</div>
           <div
-            className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded bg-primary"
-            style={{
-              left: `${minPct}%`,
-              width: `${maxPct - minPct}%`,
+            onClick={() => {
+              if (!enableMin) {
+                onMinValueChange((prev) => (prev < maxValue ? prev : minValue - step));
+              }
+              onEnableMinChange((prev) => !prev);
             }}
-          />
-        )}
-
-        {/* Min thumb */}
-        {enableMin && (
+            className={`${baseInput} ${enableMin ? enabledInput : disabledInput}`}
+          >
+            <div className="flex items-center justify-between">
+              <span>{enableMin ? valueFormatter(minValue) : "미적용"}</span>
+              <span
+                className={`absolute right-3 top-1/2 -translate-y-1/2 text-[14px] leading-none ${enableMin ? "text-gray-400" : "text-gray-500"}`}
+              >
+                {enableMin ? "−" : "+"}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="text-[11px] text-gray-500">최대</div>
           <div
-            className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
-              active === "min" ? "z-20" : "z-10"
-            }`}
-            style={{ left: `calc(${minPct}% - 8px)` }}
-            onMouseDown={startDrag("min")}
-            onTouchStart={startDrag("min")}
-          />
-        )}
+            onClick={() => {
+              if (!enableMax) {
+                onMaxValueChange((prev) => (prev > minValue ? prev : minValue + step));
+              }
+              onEnableMaxChange((prev) => !prev);
+            }}
+            className={`${baseInput} ${enableMax ? enabledInput : disabledInput}`}
+          >
+            <div className="flex items-center justify-between">
+              <span>{enableMax ? valueFormatter(maxValue) : "미적용"}</span>
 
-        {/* Max thumb */}
-        {enableMax && (
-          <div
-            className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
-              active === "max" ? "z-20" : "z-10"
-            }`}
-            style={{ left: `calc(${maxPct}% - 8px)` }}
-            onMouseDown={startDrag("max")}
-            onTouchStart={startDrag("max")}
-          />
-        )}
+              <span
+                className={`absolute right-3 top-1/2 -translate-y-1/2 text-[14px] leading-none ${enableMax ? "text-gray-400" : "text-gray-500"}`}
+              >
+                {enableMax ? "−" : "+"}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+      <div className="pt-3">
+        <div ref={trackRef} className="relative h-6 select-none">
+          {/* Track */}
+          <div className="absolute top-1/2 h-[3px] w-full -translate-y-1/2 rounded bg-neutral-200" />
+
+          {/* Range */}
+          {(enableMin || enableMax) && (
+            <div
+              className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded bg-primary"
+              style={{
+                left: `${minPct}%`,
+                width: `${maxPct - minPct}%`,
+              }}
+            />
+          )}
+
+          {/* Min thumb */}
+          {enableMin && (
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
+                active === "min" ? "z-20" : "z-10"
+              }`}
+              style={{ left: `calc(${minPct}% - 8px)` }}
+              onMouseDown={startDrag("min")}
+              onTouchStart={startDrag("min")}
+            />
+          )}
+
+          {/* Max thumb */}
+          {enableMax && (
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
+                active === "max" ? "z-20" : "z-10"
+              }`}
+              style={{ left: `calc(${maxPct}% - 8px)` }}
+              onMouseDown={startDrag("max")}
+              onTouchStart={startDrag("max")}
+            />
+          )}
+        </div>
+      </div>
+    </>
   );
 }
