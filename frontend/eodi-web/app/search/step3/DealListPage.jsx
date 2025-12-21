@@ -26,21 +26,16 @@ export default function DealListPage() {
 
   const [tabList, setTabList] = useState([]);
 
-  const [sellInfo, setSellInfo] = useState({
+  const initialDealInfo = {
     totalCount: 0,
     totalPages: 0,
     page: 0,
     data: [],
     isLoading: false,
-  });
+  };
+  const [sellInfo, setSellInfo] = useState(initialDealInfo);
 
-  const [leaseInfo, setLeaseInfo] = useState({
-    totalCount: 0,
-    totalPages: 0,
-    page: 0,
-    data: [],
-    isLoading: false,
-  });
+  const [leaseInfo, setLeaseInfo] = useState(initialDealInfo);
 
   const {
     setCurrentContext,
@@ -53,11 +48,18 @@ export default function DealListPage() {
   const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(null);
 
-  const findSell = () => {
+  const findSell = (init) => {
     if (sellInfo.isLoading) {
       return;
     }
-    setSellInfo((prev) => ({ ...prev, isLoading: true }));
+
+    if (init) {
+      setSellInfo({ ...initialDealInfo, isLoading: true });
+    }
+    else {
+      setSellInfo((prev) => ({ ...prev, isLoading: true }));
+    }
+
 
     api
       .get("/real-estate/recommendation/sells", {
@@ -87,11 +89,17 @@ export default function DealListPage() {
       .finally(() => setSellInfo((prev) => ({ ...prev, isLoading: false })));
   };
 
-  const findLease = () => {
+  const findLease = (init) => {
     if (leaseInfo.isLoading) {
       return;
     }
-    setLeaseInfo((prev) => ({ ...prev, isLoading: true }));
+    if (init) {
+      setSellInfo({...initialDealInfo, isLoading: true});
+    }
+    else {
+      setLeaseInfo((prev) => ({ ...prev, isLoading: true }));
+    }
+
 
     api
       .get("/real-estate/recommendation/leases", {
@@ -148,12 +156,15 @@ export default function DealListPage() {
 
     setTabList(tempTabs);
     setSelectedTab(tempTabs[0].code);
-    if (tempTabs[0].code === "sell") {
-      findSell();
-    } else if (tempTabs[0].code === "lease") {
-      findLease();
-    }
   }, [cash, selectedSellRegions, selectedLeaseRegions]);
+
+  useEffect(() => {
+    if (selectedTab === "sell") {
+      findSell(true);
+    } else if (selectedTab === "lease") {
+      findLease(true);
+    }
+  }, [selectedTab]);
 
   const sellLoadMoreRef = useInfiniteScroll(findSell, sellInfo.page < sellInfo.totalPages);
   const leaseLoadMoreRef = useInfiniteScroll(findLease, leaseInfo.page < leaseInfo.totalPages);
