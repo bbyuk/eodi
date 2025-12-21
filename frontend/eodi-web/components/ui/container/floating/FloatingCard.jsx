@@ -9,7 +9,7 @@ export default function FloatingCard({ close, label, icon, children }) {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 20, opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="w-[260px] rounded-2xl border border-gray-200
+      className="w-[300px] rounded-2xl border border-gray-200
                  bg-white/90 backdrop-blur-md shadow-lg overflow-hidden"
     >
       {/* Header */}
