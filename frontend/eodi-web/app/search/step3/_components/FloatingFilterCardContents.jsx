@@ -5,6 +5,9 @@ import { formatWon } from "@/app/search/_util/util";
 import { useState } from "react";
 
 export default function FloatingFilterCardContents({ close, tradeType }) {
+  const inputClass = "h-11 w-full rounded-md border px-3 text-sm bg-gray-50 text-gray-800";
+
+  const [enablePriceFilter, setEnablePriceFilter] = useState(false);
   const [enablePriceMin, setEnablePriceMin] = useState(true);
   const [enablePriceMax, setEnablePriceMax] = useState(true);
   const [priceMin, setPriceMin] = useState(50_000);
@@ -12,21 +15,29 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
 
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-      <FilterInput label={"가격"}>
+      <FilterInput label={"가격"} enable={enablePriceFilter} changeEnable={setEnablePriceFilter}>
         {/* 금액 표시 */}
         <div className="grid grid-cols-2 gap-3">
-          <input
-            value={enablePriceMin ? formatWon(priceMin) : ""}
-            readOnly
-            placeholder={"미지정"}
-            className="h-11 rounded-md border px-3 text-sm bg-gray-50 text-gray-800"
-          />
-          <input
-            value={enablePriceMax ? formatWon(priceMax) : ""}
-            readOnly
-            placeholder={"미지정"}
-            className="h-11 rounded-md border px-3 text-sm bg-gray-50 text-gray-800"
-          />
+          <div>
+            {/* label */}
+            <div className="text-[11px] text-gray-500">{"최소"}</div>
+            <input
+              value={enablePriceMin ? formatWon(priceMin) : ""}
+              readOnly
+              placeholder={"미지정"}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            {/* label */}
+            <div className="text-[11px] text-gray-500">{"최대"}</div>
+            <input
+              value={enablePriceMax ? formatWon(priceMax) : ""}
+              readOnly
+              placeholder={"미지정"}
+              className={inputClass}
+            />
+          </div>
         </div>
         <SliderInput
           step={5000}
@@ -55,11 +66,26 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
   );
 }
 
-function FilterInput({ label, children }) {
+function FilterInput({ label, enable, changeEnable, children }) {
   return (
-    <div>
-      <label className="text-xs font-medium text-gray-600">{label}</label>
-      {children}
+    <div className="space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-medium text-gray-600">{label}</label>
+
+        {enable ? (
+          <button onClick={() => changeEnable(false)} className="text-xs text-gray-400">
+            해제
+          </button>
+        ) : (
+          <button onClick={() => changeEnable(true)} className="text-xs text-primary">
+            +추가
+          </button>
+        )}
+      </div>
+
+      {/* Content */}
+      {enable && <div className="pt-1">{children}</div>}
     </div>
   );
 }

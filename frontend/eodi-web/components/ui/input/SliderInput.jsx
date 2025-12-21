@@ -6,10 +6,10 @@ export default function DualThumbSliderInput({
   min = 0,
   max = 200_000,
   step = 5000,
-  minValue,
-  maxValue,
-  onMinValueChange,
-  onMaxValueChange,
+  minValue = 50_000,
+  maxValue = 100_000,
+  onMinValueChange = (minValue) => {},
+  onMaxValueChange = (maxValue) => {},
 }) {
   const trackRef = useRef(null);
   const [active, setActive] = useState(null); // 'min' | 'max'
