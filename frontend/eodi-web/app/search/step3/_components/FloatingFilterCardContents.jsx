@@ -5,7 +5,12 @@ import { formatWon } from "@/app/search/_util/util";
 import { useState } from "react";
 
 export default function FloatingFilterCardContents({ close, tradeType }) {
-  const inputClass = "h-11 w-full rounded-md border px-3 text-sm bg-gray-50 text-gray-800";
+  const baseInput =
+    "relative h-11 w-full rounded-md border px-3 text-sm flex items-center text-left transition cursor-pointer";
+
+  const enabledInput = "bg-white text-gray-900 border-gray-300";
+
+  const disabledInput = "bg-gray-100 text-gray-400 border-dashed border-gray-300";
 
   const [enablePriceFilter, setEnablePriceFilter] = useState(false);
   const [enablePriceMin, setEnablePriceMin] = useState(true);
@@ -18,25 +23,39 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
       <FilterInput label={"가격"} enable={enablePriceFilter} changeEnable={setEnablePriceFilter}>
         {/* 금액 표시 */}
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            {/* label */}
-            <div className="text-[11px] text-gray-500">{"최소"}</div>
-            <input
-              value={enablePriceMin ? formatWon(priceMin) : ""}
-              readOnly
-              placeholder={"미지정"}
-              className={inputClass}
-            />
+          <div className="flex flex-col gap-1">
+            <div className="text-[11px] text-gray-500">최소</div>
+
+            <div
+              onClick={() => setEnablePriceMin((prev) => !prev)}
+              className={`${baseInput} ${enablePriceMin ? enabledInput : disabledInput}`}
+            >
+              <div className="flex items-center justify-between">
+                <span>{enablePriceMin ? formatWon(priceMin) : "미적용"}</span>
+                <span
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-[14px] leading-none ${enablePriceMin ? "text-gray-400" : "text-gray-500"}`}
+                >
+                  {enablePriceMin ? "−" : "+"}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            {/* label */}
-            <div className="text-[11px] text-gray-500">{"최대"}</div>
-            <input
-              value={enablePriceMax ? formatWon(priceMax) : ""}
-              readOnly
-              placeholder={"미지정"}
-              className={inputClass}
-            />
+          <div className="flex flex-col gap-1">
+            <div className="text-[11px] text-gray-500">최대</div>
+            <div
+              onClick={() => setEnablePriceMax((prev) => !prev)}
+              className={`${baseInput} ${enablePriceMax ? enabledInput : disabledInput}`}
+            >
+              <div className="flex items-center justify-between">
+                <span>{enablePriceMax ? formatWon(priceMax) : "미적용"}</span>
+
+                <span
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-[14px] leading-none ${enablePriceMin ? "text-gray-400" : "text-gray-500"}`}
+                >
+                  {enablePriceMax ? "−" : "+"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <SliderInput
