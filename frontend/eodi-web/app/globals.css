@@ -62,6 +62,7 @@ html, body {
   appearance: none;
   background: transparent;
   pointer-events: auto;
+  cursor: pointer;
 }
 
 .range-thumb::-webkit-slider-thumb {
