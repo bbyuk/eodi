@@ -60,31 +60,22 @@ export default function DealListPage() {
       setSellInfo((prev) => ({ ...prev, isLoading: true }));
     }
 
-
     api
       .get("/real-estate/recommendation/sells", {
         cash: cash,
         targetRegionIds: Array.from(selectedSellRegions).map((region) => region.id),
         targetHousingTypes: Array.from(inquiredHousingTypes),
         size: pageSize,
-        page: sellInfo.page,
+        page: init ? 0 : sellInfo.page,
       })
       .then((res) => {
-        if (sellInfo.page === 0) {
-          setSellInfo((prev) => ({
-            ...prev,
-            totalCount: res.totalElements,
-            totalPages: res.totalPages,
-            page: res.page + 1,
-            data: res.content,
-          }));
-        } else {
-          setSellInfo((prev) => ({
-            ...prev,
-            page: res.page + 1,
-            data: [...prev.data, ...res.content],
-          }));
-        }
+        setSellInfo((prev) => ({
+          ...prev,
+          totalCount: res.totalElements,
+          totalPages: res.totalPages,
+          page: res.page + 1,
+          data: init ? res.content : [...prev.data, ...res.content],
+        }));
       })
       .finally(() => setSellInfo((prev) => ({ ...prev, isLoading: false })));
   };
@@ -94,12 +85,11 @@ export default function DealListPage() {
       return;
     }
     if (init) {
-      setSellInfo({...initialDealInfo, isLoading: true});
+      setLeaseInfo({...initialDealInfo, isLoading: true});
     }
     else {
       setLeaseInfo((prev) => ({ ...prev, isLoading: true }));
     }
-
 
     api
       .get("/real-estate/recommendation/leases", {
@@ -107,24 +97,16 @@ export default function DealListPage() {
         targetRegionIds: Array.from(selectedLeaseRegions).map((region) => region.id),
         targetHousingTypes: Array.from(inquiredHousingTypes),
         size: pageSize,
-        page: leaseInfo.page,
+        page: init ? 0 : leaseInfo.page,
       })
       .then((res) => {
-        if (leaseInfo.page === 0) {
-          setLeaseInfo((prev) => ({
-            ...prev,
-            totalCount: res.totalElements,
-            totalPages: res.totalPages,
-            page: res.page + 1,
-            data: res.content,
-          }));
-        } else {
-          setLeaseInfo((prev) => ({
-            ...prev,
-            page: res.page + 1,
-            data: [...prev.data, ...res.content],
-          }));
-        }
+        setLeaseInfo((prev) => ({
+          ...prev,
+          totalCount: res.totalElements,
+          totalPages: res.totalPages,
+          page: res.page + 1,
+          data: init ? res.content : [...prev.data, ...res.content],
+        }));
       })
       .finally(() => setLeaseInfo((prev) => ({ ...prev, isLoading: false })));
   };
