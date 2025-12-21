@@ -7,10 +7,10 @@ import { useState } from "react";
 export default function FloatingFilterCardContents({ close, tradeType }) {
   const baseInput =
     "relative h-11 w-full rounded-md border px-3 text-sm flex items-center text-left transition cursor-pointer";
-
   const enabledInput = "bg-white text-gray-900 border-gray-300";
-
   const disabledInput = "bg-gray-100 text-gray-400 border-dashed border-gray-300";
+
+  const priceStep = 5000;
 
   const [enablePriceFilter, setEnablePriceFilter] = useState(false);
   const [enablePriceMin, setEnablePriceMin] = useState(true);
@@ -27,7 +27,12 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
             <div className="text-[11px] text-gray-500">최소</div>
 
             <div
-              onClick={() => setEnablePriceMin((prev) => !prev)}
+              onClick={() => {
+                if (!enablePriceMin) {
+                  setPriceMin((prev) => (priceMax > prev ? prev : priceMax - priceStep));
+                }
+                setEnablePriceMin((prev) => !prev);
+              }}
               className={`${baseInput} ${enablePriceMin ? enabledInput : disabledInput}`}
             >
               <div className="flex items-center justify-between">
@@ -43,7 +48,12 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
           <div className="flex flex-col gap-1">
             <div className="text-[11px] text-gray-500">최대</div>
             <div
-              onClick={() => setEnablePriceMax((prev) => !prev)}
+              onClick={() => {
+                if (!enablePriceMax) {
+                  setPriceMax((prev) => (priceMin < prev ? prev : priceMin + priceStep));
+                }
+                setEnablePriceMax((prev) => !prev);
+              }}
               className={`${baseInput} ${enablePriceMax ? enabledInput : disabledInput}`}
             >
               <div className="flex items-center justify-between">
@@ -59,7 +69,7 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
           </div>
         </div>
         <SliderInput
-          step={5000}
+          step={priceStep}
           enableMin={enablePriceMin}
           enableMax={enablePriceMax}
           min={0}

@@ -8,14 +8,19 @@ export default function DualThumbSliderInput({
   step = 5000,
   minValue = 50_000,
   maxValue = 100_000,
+  enableMin = false,
+  enableMax = false,
   onMinValueChange = (minValue) => {},
   onMaxValueChange = (maxValue) => {},
 }) {
   const trackRef = useRef(null);
   const [active, setActive] = useState(null); // 'min' | 'max'
 
-  const minPct = (minValue / max) * 100;
-  const maxPct = (maxValue / max) * 100;
+  const effectiveMin = enableMin ? minValue : min;
+  const effectiveMax = enableMax ? maxValue : max;
+
+  const minPct = ((effectiveMin - min) / (max - min)) * 100;
+  const maxPct = ((effectiveMax - min) / (max - min)) * 100;
 
   const getValueFromClientX = (clientX) => {
     const rect = trackRef.current.getBoundingClientRect();
@@ -36,17 +41,17 @@ export default function DualThumbSliderInput({
       const clientX = ev.touches ? ev.touches[0].clientX : ev.clientX;
       const value = getValueFromClientX(clientX);
 
-      if (type === "min") {
-        const next = Math.min(
-          Math.max(value, min), // min 아래 방지
-          maxValue - step // max 침범 방지
-        );
+      if (type === "min" && enableMin) {
+        const upperBound = enableMax ? maxValue - step : max;
+
+        const next = Math.min(Math.max(value, min), upperBound);
         onMinValueChange(next);
-      } else {
-        const next = Math.max(
-          Math.min(value, max), // max 초과 방지
-          minValue + step // min 침범 방지
-        );
+      }
+
+      if (type === "max" && enableMax) {
+        const lowerBound = enableMin ? minValue + step : min;
+
+        const next = Math.max(Math.min(value, max), lowerBound);
         onMaxValueChange(next);
       }
     };
@@ -72,33 +77,39 @@ export default function DualThumbSliderInput({
         <div className="absolute top-1/2 h-[3px] w-full -translate-y-1/2 rounded bg-neutral-200" />
 
         {/* Range */}
-        <div
-          className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded bg-primary"
-          style={{
-            left: `${minPct}%`,
-            width: `${maxPct - minPct}%`,
-          }}
-        />
+        {(enableMin || enableMax) && (
+          <div
+            className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded bg-primary"
+            style={{
+              left: `${minPct}%`,
+              width: `${maxPct - minPct}%`,
+            }}
+          />
+        )}
 
         {/* Min thumb */}
-        <div
-          className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
-            active === "min" ? "z-20" : "z-10"
-          }`}
-          style={{ left: `calc(${minPct}% - 8px)` }}
-          onMouseDown={startDrag("min")}
-          onTouchStart={startDrag("min")}
-        />
+        {enableMin && (
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
+              active === "min" ? "z-20" : "z-10"
+            }`}
+            style={{ left: `calc(${minPct}% - 8px)` }}
+            onMouseDown={startDrag("min")}
+            onTouchStart={startDrag("min")}
+          />
+        )}
 
         {/* Max thumb */}
-        <div
-          className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
-            active === "max" ? "z-20" : "z-10"
-          }`}
-          style={{ left: `calc(${maxPct}% - 8px)` }}
-          onMouseDown={startDrag("max")}
-          onTouchStart={startDrag("max")}
-        />
+        {enableMax && (
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-white border shadow cursor-pointer ${
+              active === "max" ? "z-20" : "z-10"
+            }`}
+            style={{ left: `calc(${maxPct}% - 8px)` }}
+            onMouseDown={startDrag("max")}
+            onTouchStart={startDrag("max")}
+          />
+        )}
       </div>
     </div>
   );
