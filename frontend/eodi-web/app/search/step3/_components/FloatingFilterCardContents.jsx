@@ -3,14 +3,32 @@
 import SliderInput from "@/components/ui/input/SliderInput";
 import { useState } from "react";
 import { formatWon } from "@/app/search/_util/util";
+import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
 
 export default function FloatingFilterCardContents({ close, tradeType }) {
+  /**
+   * ================= 가격 상태 ===================
+   * @type {number}
+   */
   const priceStep = 5000;
   const [enablePriceFilter, setEnablePriceFilter] = useState(false);
   const [enablePriceMin, setEnablePriceMin] = useState(true);
   const [enablePriceMax, setEnablePriceMax] = useState(true);
-  const [priceMin, setPriceMin] = useState(50_000);
-  const [priceMax, setPriceMax] = useState(100_000);
+  const [priceMinValue, setPriceMinValue] = useState(50_000);
+  const [priceMaxValue, setPriceMaxValue] = useState(100_000);
+  const [priceMin, setPriceMin] = useState(0);
+  const [priceMax, setPriceMax] = useState(200_000);
+  /**
+   * ================= 가격 상태 ===================
+   * @type {number}
+   */
+
+  const [enableNetLeasableAreaFilter, setEnableNetLeasableAreaFilter] = useState(false);
+  const netLeasableAreaList = [33, 66, 99, 132, 165, 198, 231];
+  const [enableNetLeasableAreaMin, setEnableNetLeasableAreaMin] = useState(false);
+  const [enableNetLeasableAreaMax, setEnableNetLeasableAreaMax] = useState(false);
+  const [netLeasableAreaMinIndex, setNetLeasableAreaMinIndex] = useState(0);
+  const [netLeasableAreaMaxIndex, setNetLeasableAreaMaxIndex] = useState(2);
 
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
@@ -19,21 +37,36 @@ export default function FloatingFilterCardContents({ close, tradeType }) {
         <SliderInput
           step={priceStep}
           enableMin={enablePriceMin}
+          enableMax={enablePriceMax}
           onEnableMinChange={setEnablePriceMin}
           onEnableMaxChange={setEnablePriceMax}
-          enableMax={enablePriceMax}
-          min={0}
-          minValue={priceMin}
-          max={200_000}
-          maxValue={priceMax}
+          min={priceMin}
+          minValue={priceMinValue}
+          max={priceMax}
+          maxValue={priceMaxValue}
           valueFormatter={formatWon}
-          onMinValueChange={setPriceMin}
-          onMaxValueChange={setPriceMax}
+          onMinValueChange={setPriceMinValue}
+          onMaxValueChange={setPriceMaxValue}
         />
       </FilterInput>
 
-      <FilterInput label={"전용면적"}>
-        <SliderInput />
+      <FilterInput
+        label={"전용면적"}
+        enable={enableNetLeasableAreaFilter}
+        changeEnable={setEnableNetLeasableAreaFilter}
+      >
+        <DiscreteSliderInput
+          options={netLeasableAreaList}
+          enableMin={enableNetLeasableAreaMin}
+          enableMax={enableNetLeasableAreaMax}
+          onEnableMinChange={setEnableNetLeasableAreaMin}
+          onEnableMaxChange={setEnableNetLeasableAreaMax}
+          minIndex={netLeasableAreaMinIndex}
+          maxIndex={netLeasableAreaMaxIndex}
+          onMinIndexChange={setNetLeasableAreaMinIndex}
+          onMaxIndexChange={setNetLeasableAreaMaxIndex}
+          valueFormatter={(value) => `${value}㎡`}
+        />
       </FilterInput>
 
       <button
