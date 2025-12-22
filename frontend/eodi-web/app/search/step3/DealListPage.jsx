@@ -73,10 +73,6 @@ export default function DealListPage() {
     }
   }, [cash, selectedSellRegions, selectedLeaseRegions]);
 
-  useEffect(() => {
-    console.log(sellPriceFilter);
-  }, [sellPriceFilter]);
-
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
       <FloatingContainer
