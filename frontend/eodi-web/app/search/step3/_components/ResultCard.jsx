@@ -2,37 +2,6 @@ import { CheckCircle, Search } from "lucide-react";
 import { formatWon } from "@/app/search/_util/util";
 import { definedHousingType } from "@/const/code";
 
-/**
- * const MOCK_DATA = [
- *   {
- *     id: 1,
- *     region: "강남구 삼성동",
- *     price: "18억 2,000만원",
- *     dealType: "매매",
- *     building: "래미안 삼성1차",
- *     area: "84",
- *     floor: "15층",
- *     date: "2025.10.15",
- *     url: "https://new.land.naver.com/complexes?ms=강남구 삼성동 아파트",
- *   },
- *   {
- *     id: 2,
- *     region: "노원구 중계동",
- *     price: "6억 5,000만원",
- *     dealType: "매매",
- *     building: "중계주공3단지",
- *     area: "59.21",
- *     floor: "8층",
- *     date: "2025.09.10",
- *     url: "https://new.land.naver.com/complexes?ms=노원구 중계동 아파트",
- *   },
- * ];
- * @param data 결과 데이터
- * @param dealType 거래 유형
- * @returns {JSX.Element}
- * @constructor
- */
-
 export default function ResultCard({ data, dealType }) {
   const priceLabel = () => {
     if (dealType.code === "sell") {
