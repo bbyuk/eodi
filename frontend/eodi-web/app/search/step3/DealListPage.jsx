@@ -81,7 +81,7 @@ export default function DealListPage() {
         close={() => setIsFloatingFilterCardOpen(false)}
         buttonLabel={"필터"}
         buttonIcon={<SlidersHorizontal size={16} />}
-        cardLabel={"추가조건"}
+        cardLabel={"필터"}
         cardIcon={<SlidersHorizontal size={16} className="text-primary" />}
       >
         <FloatingFilterCardContents
