@@ -4,6 +4,7 @@ import SliderInput from "@/components/ui/input/SliderInput";
 import { useEffect, useRef, useState } from "react";
 import { formatWon } from "@/app/search/_util/util";
 import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
+import FilterInput from "@/app/search/step3/_components/FilterInput";
 
 export default function FloatingFilterCardContents({
   close,
@@ -120,30 +121,6 @@ export default function FloatingFilterCardContents({
       >
         적용하기
       </button>
-    </div>
-  );
-}
-
-function FilterInput({ label, enable, changeEnable, children }) {
-  return (
-    <div className="space-y-2">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-gray-600">{label}</label>
-
-        {enable ? (
-          <button onClick={() => changeEnable(false)} className="text-xs text-gray-400">
-            해제
-          </button>
-        ) : (
-          <button onClick={() => changeEnable(true)} className="text-xs text-primary">
-            +추가
-          </button>
-        )}
-      </div>
-
-      {/* Content */}
-      {enable && <div className="pt-1">{children}</div>}
     </div>
   );
 }
