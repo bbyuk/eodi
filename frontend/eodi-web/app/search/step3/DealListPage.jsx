@@ -52,6 +52,9 @@ export default function DealListPage() {
     minIndex: 0,
     maxIndex: 2,
   });
+
+  const [sellFilterApplied, setSellFilterApplied] = useState(true);
+  const [sellFilterCount, setSellFilterCount] = useState(0);
   /**
    * ============= Floating Filter ==================
    */
@@ -73,6 +76,20 @@ export default function DealListPage() {
     }
   }, [cash, selectedSellRegions, selectedLeaseRegions]);
 
+  useEffect(() => {
+    if (sellFilterApplied) return;
+    applySellFilter();
+  }, [sellFilterApplied]);
+
+  // 필터 처리
+  const applySellFilter = () => {
+    let tmp = 0;
+    if (sellPriceFilter.enable) tmp++;
+    if (sellNetLeasableFilter.enable) tmp++;
+    setSellFilterCount(tmp);
+    setSellFilterApplied(true);
+  };
+
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
       <FloatingContainer
@@ -83,9 +100,14 @@ export default function DealListPage() {
         buttonIcon={<SlidersHorizontal size={16} />}
         cardLabel={"필터"}
         cardIcon={<SlidersHorizontal size={16} className="text-primary" />}
+        activeCount={sellFilterCount}
       >
         <FloatingFilterCardContents
           close={() => setIsFloatingFilterCardOpen(false)}
+          apply={() => {
+            setSellFilterApplied(false);
+            setIsFloatingFilterCardOpen(false);
+          }}
           priceFilter={sellPriceFilter}
           setPriceFilter={setSellPriceFilter}
           netLeasableFilter={sellNetLeasableFilter}

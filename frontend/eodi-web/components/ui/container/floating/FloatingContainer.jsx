@@ -12,6 +12,7 @@ export default function FloatingContainer({
   buttonLabel,
   cardIcon,
   cardLabel,
+  activeCount,
 }) {
   return (
     <div className="fixed right-6 top-[calc(4rem + 12vh)] z-40 md:right-6 sm:right-3">
@@ -21,7 +22,12 @@ export default function FloatingContainer({
             {children}
           </FloatingCard>
         ) : (
-          <FloatingButton label={buttonLabel} icon={buttonIcon} open={open} />
+          <FloatingButton
+            label={buttonLabel}
+            icon={buttonIcon}
+            open={open}
+            activeCount={activeCount}
+          />
         )}
       </AnimatePresence>
     </div>

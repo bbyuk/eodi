@@ -1,17 +1,33 @@
 "use client";
 
 import SliderInput from "@/components/ui/input/SliderInput";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatWon } from "@/app/search/_util/util";
 import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
 
 export default function FloatingFilterCardContents({
   close,
+  apply,
   priceFilter,
   setPriceFilter,
   netLeasableFilter,
   setNetLeasableFilter,
 }) {
+  const initialPriceFilter = useRef(priceFilter);
+  const initialNetLeasableFilter = useRef(netLeasableFilter);
+  const appliedRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (appliedRef.current) {
+        return;
+      }
+
+      setPriceFilter(initialPriceFilter.current);
+      setNetLeasableFilter(initialNetLeasableFilter.current);
+    };
+  }, []);
+
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       <FilterInput
@@ -56,7 +72,10 @@ export default function FloatingFilterCardContents({
       </FilterInput>
 
       <button
-        onClick={close}
+        onClick={() => {
+          appliedRef.current = true;
+          apply();
+        }}
         className="w-full mt-4 py-2 rounded-md bg-primary text-white font-medium text-sm hover:bg-primary/90 transition"
       >
         적용하기
