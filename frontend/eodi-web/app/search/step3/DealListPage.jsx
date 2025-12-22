@@ -20,25 +20,49 @@ const description = ["최근 3개월간의 실거래 데이터를 기준으로 �
 
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
-
   const { setCurrentContext, cash, selectedSellRegions, selectedLeaseRegions } = useSearchStore();
 
   const tabs = useDealTabs();
   const [selectedTab, setSelectedTab] = useState(tabs[0]?.code);
+
   const sell = useDealSearch({ dealType: "sell", enabled: selectedTab === "sell" });
   const lease = useDealSearch({ dealType: "lease", enabled: selectedTab === "lease" });
+
+  /**
+   * ============= Floating Filter ==================
+   */
+  const [isFloatingFilterCardOpen, setIsFloatingFilterCardOpen] = useState(false);
+  const [sellPriceFilter, setSellPriceFilter] = useState({
+    label: "가격",
+    step: 5000,
+    enable: false,
+    enableMin: true,
+    enableMax: true,
+    minValue: 50_000,
+    maxValue: 100_000,
+    min: 0,
+    max: 200_000,
+  });
+  const [sellNetLeasableFilter, setSellNetLeasableFilter] = useState({
+    label: "전용면적",
+    enable: false,
+    options: [33, 66, 99, 132, 165, 198, 231],
+    enableMin: false,
+    enableMax: false,
+    minIndex: 0,
+    maxIndex: 2,
+  });
+  /**
+   * ============= Floating Filter ==================
+   */
 
   useEffect(() => {
     selectedTab === "sell" && sell.fetchInit();
     selectedTab === "lease" && lease.fetchInit();
   }, [selectedTab]);
-
   useEffect(() => {
     setCurrentContext(context[id]);
   }, []);
-
-  const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
-
   useEffect(() => {
     if (
       !cash ||
@@ -52,15 +76,21 @@ export default function DealListPage() {
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
       <FloatingContainer
-        isOpen={isFloatingCardOpen}
-        open={() => setIsFloatingCardOpen(true)}
-        close={() => setIsFloatingCardOpen(false)}
+        isOpen={isFloatingFilterCardOpen}
+        open={() => setIsFloatingFilterCardOpen(true)}
+        close={() => setIsFloatingFilterCardOpen(false)}
         buttonLabel={"필터"}
         buttonIcon={<SlidersHorizontal size={16} />}
         cardLabel={"추가조건"}
         cardIcon={<SlidersHorizontal size={16} className="text-primary" />}
       >
-        <FloatingFilterCardContents close={() => setIsFloatingCardOpen(false)} />
+        <FloatingFilterCardContents
+          close={() => setIsFloatingFilterCardOpen(false)}
+          priceFilter={sellPriceFilter}
+          setPriceFilter={setSellPriceFilter}
+          netLeasableFilter={sellNetLeasableFilter}
+          setNetLeasableFilter={setSellNetLeasableFilter}
+        />
       </FloatingContainer>
 
       {/* Header */}

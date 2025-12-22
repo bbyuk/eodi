@@ -5,66 +5,52 @@ import { useState } from "react";
 import { formatWon } from "@/app/search/_util/util";
 import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
 
-export default function FloatingFilterCardContents({ close, tradeType }) {
-  /**
-   * ================= 가격 상태 ===================
-   * @type {number}
-   */
-  const priceStep = 5000;
-  const [enablePriceFilter, setEnablePriceFilter] = useState(false);
-  const [enablePriceMin, setEnablePriceMin] = useState(true);
-  const [enablePriceMax, setEnablePriceMax] = useState(true);
-  const [priceMinValue, setPriceMinValue] = useState(50_000);
-  const [priceMaxValue, setPriceMaxValue] = useState(100_000);
-  const [priceMin, setPriceMin] = useState(0);
-  const [priceMax, setPriceMax] = useState(200_000);
-  /**
-   * ================= 가격 상태 ===================
-   * @type {number}
-   */
-
-  const [enableNetLeasableAreaFilter, setEnableNetLeasableAreaFilter] = useState(false);
-  const netLeasableAreaList = [33, 66, 99, 132, 165, 198, 231];
-  const [enableNetLeasableAreaMin, setEnableNetLeasableAreaMin] = useState(false);
-  const [enableNetLeasableAreaMax, setEnableNetLeasableAreaMax] = useState(false);
-  const [netLeasableAreaMinIndex, setNetLeasableAreaMinIndex] = useState(0);
-  const [netLeasableAreaMaxIndex, setNetLeasableAreaMaxIndex] = useState(2);
-
+export default function FloatingFilterCardContents({
+  close,
+  priceFilter,
+  setPriceFilter,
+  netLeasableFilter,
+  setNetLeasableFilter,
+}) {
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-      <FilterInput label={"가격"} enable={enablePriceFilter} changeEnable={setEnablePriceFilter}>
+      <FilterInput
+        label={priceFilter.label}
+        enable={priceFilter.enable}
+        changeEnable={(v) => setPriceFilter((prev) => ({ ...prev, enable: v }))}
+      >
         {/* 금액 표시 */}
         <SliderInput
-          step={priceStep}
-          enableMin={enablePriceMin}
-          enableMax={enablePriceMax}
-          onEnableMinChange={setEnablePriceMin}
-          onEnableMaxChange={setEnablePriceMax}
-          min={priceMin}
-          minValue={priceMinValue}
-          max={priceMax}
-          maxValue={priceMaxValue}
+          step={priceFilter.step}
+          enableMin={priceFilter.enableMin}
+          enableMax={priceFilter.enableMax}
+          onEnableMinChange={(v) => setPriceFilter((prev) => ({ ...prev, enableMin: v }))}
+          onEnableMaxChange={(v) => setPriceFilter((prev) => ({ ...prev, enableMax: v }))}
+          min={priceFilter.min}
+          minValue={priceFilter.minValue}
+          max={priceFilter.max}
+          maxValue={priceFilter.maxValue}
           valueFormatter={formatWon}
-          onMinValueChange={setPriceMinValue}
-          onMaxValueChange={setPriceMaxValue}
+          onMinValueChange={(v) => setPriceFilter((prev) => ({ ...prev, minValue: v }))}
+          onMaxValueChange={(v) => setPriceFilter((prev) => ({ ...prev, maxValue: v }))}
         />
       </FilterInput>
 
       <FilterInput
-        label={"전용면적"}
-        enable={enableNetLeasableAreaFilter}
-        changeEnable={setEnableNetLeasableAreaFilter}
+        label={netLeasableFilter.label}
+        enable={netLeasableFilter.enable}
+        changeEnable={(v) => setNetLeasableFilter((prev) => ({ ...prev, enable: v }))}
       >
         <DiscreteSliderInput
-          options={netLeasableAreaList}
-          enableMin={enableNetLeasableAreaMin}
-          enableMax={enableNetLeasableAreaMax}
-          onEnableMinChange={setEnableNetLeasableAreaMin}
-          onEnableMaxChange={setEnableNetLeasableAreaMax}
-          minIndex={netLeasableAreaMinIndex}
-          maxIndex={netLeasableAreaMaxIndex}
-          onMinIndexChange={setNetLeasableAreaMinIndex}
-          onMaxIndexChange={setNetLeasableAreaMaxIndex}
+          options={netLeasableFilter.options}
+          enableMin={netLeasableFilter.enableMin}
+          enableMax={netLeasableFilter.enableMax}
+          onEnableMinChange={(v) => setNetLeasableFilter((prev) => ({ ...prev, enableMin: v }))}
+          onEnableMaxChange={(v) => setNetLeasableFilter((prev) => ({ ...prev, enableMax: v }))}
+          minIndex={netLeasableFilter.minIndex}
+          maxIndex={netLeasableFilter.maxIndex}
+          onMinIndexChange={(v) => setNetLeasableFilter((prev) => ({ ...prev, minIndex: v }))}
+          onMaxIndexChange={(v) => setNetLeasableFilter((prev) => ({ ...prev, maxIndex: v }))}
           valueFormatter={(value) => `${value}㎡`}
         />
       </FilterInput>
