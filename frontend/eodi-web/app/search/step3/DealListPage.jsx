@@ -13,6 +13,7 @@ import { useSearchContext } from "@/app/search/layout";
 import { useDealTabs } from "@/app/search/step3/_hooks/useDealTabs";
 import { useDealSearch } from "@/app/search/step3/_hooks/useDealSearch";
 import DealResultSection from "@/app/search/step3/_components/DealResultSection";
+import { formatWon } from "@/app/search/_util/util";
 
 const id = "result";
 const title = "선택한 지역의 실거래 내역을 찾았어요";
@@ -34,6 +35,7 @@ export default function DealListPage() {
   const [isFloatingFilterCardOpen, setIsFloatingFilterCardOpen] = useState(false);
   const [sellPriceFilter, setSellPriceFilter] = useState({
     label: "가격",
+    valueFormatter: formatWon,
     step: 5000,
     enable: false,
     enableMin: true,
@@ -45,6 +47,7 @@ export default function DealListPage() {
   });
   const [sellNetLeasableFilter, setSellNetLeasableFilter] = useState({
     label: "전용면적",
+    valueFormatter: (value) => `${value}㎡`,
     enable: false,
     options: [33, 66, 99, 132, 165, 198, 231],
     enableMin: false,
@@ -108,10 +111,20 @@ export default function DealListPage() {
             setSellFilterApplied(false);
             setIsFloatingFilterCardOpen(false);
           }}
-          priceFilter={sellPriceFilter}
-          setPriceFilter={setSellPriceFilter}
-          netLeasableFilter={sellNetLeasableFilter}
-          setNetLeasableFilter={setSellNetLeasableFilter}
+          filters={[
+            {
+              key: "price",
+              filter: sellPriceFilter,
+              setFilter: setSellPriceFilter,
+              type: "slider",
+            },
+            {
+              key: "netLeasableArea",
+              filter: sellNetLeasableFilter,
+              setFilter: setSellNetLeasableFilter,
+              type: "discrete-slider",
+            },
+          ]}
         />
       </FloatingContainer>
 
