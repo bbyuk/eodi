@@ -45,6 +45,14 @@ public record RealEstateSellRecommendRequestParameter(
                 )
         )
         List<String> targetHousingTypes,
+
+        /**
+         * ============ 필터 조건 ============
+         */
+        @Parameter(description = "최대 가격 (단위: 만원)", example = "34000")
+        Integer maxPrice,
+        @Parameter(description = "최소 가격 (단위: 만원)", example = "24000")
+        Integer minPrice,
         @Parameter(description = "최대 전용면적", example = "84")
         Integer maxNetLeasableArea,
         @Parameter(description = "최소 전용면적", example = "39")
