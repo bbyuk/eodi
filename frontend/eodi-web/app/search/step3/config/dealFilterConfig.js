@@ -16,6 +16,8 @@ export const createInitialFilters = () => ({
       key: "price",
       label: "가격",
       dirtyChecker: (current, initial) => {
+        if (!initial) return;
+
         return (
           current.enable !== initial.enable ||
           current.enableMin !== initial.enableMin ||
@@ -39,6 +41,8 @@ export const createInitialFilters = () => ({
       key: "netLeasableArea",
       label: "전용면적",
       dirtyChecker: (current, initial) => {
+        if (!initial) return;
+
         return (
           current.enable !== initial.enable ||
           current.enableMin !== initial.enableMin ||
@@ -62,6 +66,8 @@ export const createInitialFilters = () => ({
       key: "deposit",
       label: "보증금",
       dirtyChecker: (current, initial) => {
+        if (!initial) return;
+
         return (
           current.enable !== initial.enable ||
           current.enableMin !== initial.enableMin ||
@@ -78,13 +84,15 @@ export const createInitialFilters = () => ({
       minValue: 10_000,
       maxValue: 50_000,
       min: 0,
-      max: 10_000_000,
+      max: 120_000,
       type: "slider",
     },
     monthlyRent: {
       key: "monthlyRentFee",
       label: "월세",
       dirtyChecker: (current, initial) => {
+        if (!initial) return;
+
         return (
           current.enable !== initial.enable ||
           current.enableMin !== initial.enableMin ||
@@ -101,13 +109,15 @@ export const createInitialFilters = () => ({
       minValue: 20,
       maxValue: 100,
       min: 0,
-      max: 100_000,
+      max: 500,
       type: "slider",
     },
     netLeasableArea: {
       key: "netLeasableArea",
       label: "전용면적",
       dirtyChecker: (current, initial) => {
+        if (!initial) return;
+
         return (
           current.enable !== initial.enable ||
           current.enableMin !== initial.enableMin ||
