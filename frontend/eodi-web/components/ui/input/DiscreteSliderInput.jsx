@@ -9,10 +9,10 @@ export default function DiscreteSliderInput({
   enableMax = false,
   minIndex = 0,
   maxIndex = options.length - 1,
-  onEnableMinChange = () => {},
-  onEnableMaxChange = () => {},
-  onMinIndexChange = () => {},
-  onMaxIndexChange = () => {},
+  onEnableMinChange = (v) => {},
+  onEnableMaxChange = (v) => {},
+  onMinIndexChange = (v) => {},
+  onMaxIndexChange = (v) => {},
 }) {
   const baseInput =
     "relative h-11 w-full rounded-md border px-3 text-sm flex items-center text-left transition cursor-pointer";
@@ -79,7 +79,17 @@ export default function DiscreteSliderInput({
         <div className="flex flex-col gap-1">
           <div className="text-[11px] text-gray-500">최소</div>
           <div
-            onClick={() => onEnableMinChange((prev) => !prev)}
+            onClick={() => {
+              if (!enableMin) {
+                if (maxIndex === 0) {
+                  onMaxIndexChange(1);
+                  onMinIndexChange(0);
+                } else if (minIndex >= maxIndex) {
+                  onMinIndexChange(maxIndex - 1);
+                }
+              }
+              onEnableMinChange(!enableMin);
+            }}
             className={`${baseInput} ${enableMin ? enabledInput : disabledInput}`}
           >
             <span>{enableMin ? valueFormatter(options[minIndex]) : "미적용"}</span>
@@ -93,7 +103,17 @@ export default function DiscreteSliderInput({
         <div className="flex flex-col gap-1">
           <div className="text-[11px] text-gray-500">최대</div>
           <div
-            onClick={() => onEnableMaxChange((prev) => !prev)}
+            onClick={() => {
+              if (!enableMax) {
+                if (minIndex === options.length - 1) {
+                  onMinIndexChange(options.length - 2);
+                  onMaxIndexChange(options.length - 1);
+                } else if (minIndex >= maxIndex) {
+                  onMaxIndexChange(minIndex + 1);
+                }
+              }
+              onEnableMaxChange(!enableMax);
+            }}
             className={`${baseInput} ${enableMax ? enabledInput : disabledInput}`}
           >
             <span>{enableMax ? valueFormatter(options[maxIndex]) : "미적용"}</span>

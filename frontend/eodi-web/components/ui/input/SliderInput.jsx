@@ -86,9 +86,14 @@ export default function SliderInput({
           <div
             onClick={() => {
               if (!enableMin) {
-                onMinValueChange((prev) => (prev < maxValue ? prev : minValue - step));
+                if (maxValue === min) {
+                  onMaxValueChange(min + step);
+                  onMinValueChange(min);
+                } else if (minValue >= maxValue) {
+                  onMinValueChange(maxValue - step);
+                }
               }
-              onEnableMinChange((prev) => !prev);
+              onEnableMinChange(!enableMin);
             }}
             className={`${baseInput} ${enableMin ? enabledInput : disabledInput}`}
           >
@@ -107,9 +112,14 @@ export default function SliderInput({
           <div
             onClick={() => {
               if (!enableMax) {
-                onMaxValueChange((prev) => (prev > minValue ? prev : minValue + step));
+                if (minValue === max) {
+                  onMinValueChange(max - step);
+                  onMaxValueChange(max);
+                } else if (minValue >= maxValue) {
+                  onMaxValueChange(minValue + step);
+                }
               }
-              onEnableMaxChange((prev) => !prev);
+              onEnableMaxChange(!enableMax);
             }}
             className={`${baseInput} ${enableMax ? enabledInput : disabledInput}`}
           >

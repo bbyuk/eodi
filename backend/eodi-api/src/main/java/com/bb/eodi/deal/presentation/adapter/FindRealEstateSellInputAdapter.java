@@ -22,6 +22,8 @@ public class FindRealEstateSellInputAdapter {
                 requestParameter.cash(),
                 requestParameter.targetRegionIds(),
                 requestParameter.targetHousingTypes(),
+                requestParameter.maxPrice(),
+                requestParameter.minPrice(),
                 requestParameter.maxNetLeasableArea(),
                 requestParameter.minNetLeasableArea()
         );

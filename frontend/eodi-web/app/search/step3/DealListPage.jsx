@@ -13,6 +13,7 @@ import { useSearchContext } from "@/app/search/layout";
 import { useDealTabs } from "@/app/search/step3/_hooks/useDealTabs";
 import { useDealSearch } from "@/app/search/step3/_hooks/useDealSearch";
 import DealResultSection from "@/app/search/step3/_components/DealResultSection";
+import { buildFilterParam, createInitialFilters } from "@/app/search/step3/config/dealFilterConfig";
 
 const id = "result";
 const title = "선택한 지역의 실거래 내역을 찾았어요";
@@ -20,25 +21,49 @@ const description = ["최근 3개월간의 실거래 데이터를 기준으로 �
 
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
-
   const { setCurrentContext, cash, selectedSellRegions, selectedLeaseRegions } = useSearchStore();
 
   const tabs = useDealTabs();
   const [selectedTab, setSelectedTab] = useState(tabs[0]?.code);
+
   const sell = useDealSearch({ dealType: "sell", enabled: selectedTab === "sell" });
   const lease = useDealSearch({ dealType: "lease", enabled: selectedTab === "lease" });
+
+  /**
+   * ============= Floating Filter ==================
+   */
+  const [isFloatingFilterCardOpen, setIsFloatingFilterCardOpen] = useState(false);
+
+  const [filtersByDealType, setFiltersByDealType] = useState(createInitialFilters());
+  const currentFilters = filtersByDealType[selectedTab];
+  const updateFilter = (dealType, filterKey, updater) => {
+    setFiltersByDealType((prev) => {
+      const prevFilter = prev[dealType][filterKey];
+      const nextFilter = typeof updater === "function" ? updater(prevFilter) : updater;
+
+      return {
+        ...prev,
+        [dealType]: {
+          ...prev[dealType],
+          [filterKey]: nextFilter,
+        },
+      };
+    });
+  };
+
+  const [filterApplied, setFilterApplied] = useState({ sell: true, lease: true });
+  const [filterCount, setFilterCount] = useState({ sell: 0, lease: 0 });
+  /**
+   * ============= Floating Filter ==================
+   */
 
   useEffect(() => {
     selectedTab === "sell" && sell.fetchInit();
     selectedTab === "lease" && lease.fetchInit();
   }, [selectedTab]);
-
   useEffect(() => {
     setCurrentContext(context[id]);
   }, []);
-
-  const [isFloatingCardOpen, setIsFloatingCardOpen] = useState(false);
-
   useEffect(() => {
     if (
       !cash ||
@@ -49,18 +74,58 @@ export default function DealListPage() {
     }
   }, [cash, selectedSellRegions, selectedLeaseRegions]);
 
+  useEffect(() => {
+    if (filterApplied[selectedTab]) return;
+
+    applyFilter();
+  }, [filterApplied[selectedTab]]);
+
+  // 필터 처리
+  const applyFilter = () => {
+    const count = currentFilters
+      ? Object.values(filtersByDealType[selectedTab]).filter((f) => f.enable).length
+      : 0;
+
+    const filterParam = buildFilterParam(currentFilters);
+
+    if (selectedTab === "sell") {
+      sell.fetchWithFilter(filterParam);
+    } else if (selectedTab === "lease") {
+      lease.fetchWithFilter(filterParam);
+    }
+
+    setFilterCount((prev) => ({ ...prev, [selectedTab]: count }));
+    setFilterApplied((prev) => ({ ...prev, [selectedTab]: true }));
+  };
+
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
       <FloatingContainer
-        isOpen={isFloatingCardOpen}
-        open={() => setIsFloatingCardOpen(true)}
-        close={() => setIsFloatingCardOpen(false)}
+        isOpen={isFloatingFilterCardOpen}
+        open={() => setIsFloatingFilterCardOpen(true)}
+        close={() => setIsFloatingFilterCardOpen(false)}
         buttonLabel={"필터"}
         buttonIcon={<SlidersHorizontal size={16} />}
-        cardLabel={"추가조건"}
+        cardLabel={"필터"}
         cardIcon={<SlidersHorizontal size={16} className="text-primary" />}
+        activeCount={filterCount[selectedTab]}
       >
-        <FloatingFilterCardContents close={() => setIsFloatingCardOpen(false)} />
+        <FloatingFilterCardContents
+          close={() => setIsFloatingFilterCardOpen(false)}
+          apply={() => {
+            setFilterApplied((prev) => ({ ...prev, [selectedTab]: false }));
+            setIsFloatingFilterCardOpen(false);
+          }}
+          filters={
+            currentFilters &&
+            Object.entries(currentFilters).map(([key, filter]) => ({
+              key,
+              filter,
+              setFilter: (updater) => updateFilter(selectedTab, key, updater),
+              type: filter.type,
+            }))
+          }
+        />
       </FloatingContainer>
 
       {/* Header */}

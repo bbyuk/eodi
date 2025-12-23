@@ -1,104 +1,111 @@
 "use client";
 
 import SliderInput from "@/components/ui/input/SliderInput";
-import { useState } from "react";
-import { formatWon } from "@/app/search/_util/util";
+import { useEffect, useRef } from "react";
 import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
+import FilterInput from "@/app/search/step3/_components/FilterInput";
 
-export default function FloatingFilterCardContents({ close, tradeType }) {
-  /**
-   * ================= 가격 상태 ===================
-   * @type {number}
-   */
-  const priceStep = 5000;
-  const [enablePriceFilter, setEnablePriceFilter] = useState(false);
-  const [enablePriceMin, setEnablePriceMin] = useState(true);
-  const [enablePriceMax, setEnablePriceMax] = useState(true);
-  const [priceMinValue, setPriceMinValue] = useState(50_000);
-  const [priceMaxValue, setPriceMaxValue] = useState(100_000);
-  const [priceMin, setPriceMin] = useState(0);
-  const [priceMax, setPriceMax] = useState(200_000);
-  /**
-   * ================= 가격 상태 ===================
-   * @type {number}
-   */
+export default function FloatingFilterCardContents({ apply, filters }) {
+  const initialMapRef = useRef(
+    new Map(filters.map((f) => [f.key, { key: f.key, type: f.type, filter: f.filter }]))
+  );
+  const appliedRef = useRef(false);
 
-  const [enableNetLeasableAreaFilter, setEnableNetLeasableAreaFilter] = useState(false);
-  const netLeasableAreaList = [33, 66, 99, 132, 165, 198, 231];
-  const [enableNetLeasableAreaMin, setEnableNetLeasableAreaMin] = useState(false);
-  const [enableNetLeasableAreaMax, setEnableNetLeasableAreaMax] = useState(false);
-  const [netLeasableAreaMinIndex, setNetLeasableAreaMinIndex] = useState(0);
-  const [netLeasableAreaMaxIndex, setNetLeasableAreaMaxIndex] = useState(2);
+  const isDirty = filters.some((cur) => {
+    const initial = initialMapRef.current.get(cur.key);
+    return cur.filter.dirtyChecker(cur.filter, initial?.filter);
+  });
+
+  useEffect(() => {
+    return () => {
+      if (appliedRef.current) return;
+
+      filters.forEach((cur) => {
+        const initial = initialMapRef.current.get(cur.key);
+        if (initial) cur.setFilter(initial.filter);
+      });
+    };
+  }, []);
 
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-      <FilterInput label={"가격"} enable={enablePriceFilter} changeEnable={setEnablePriceFilter}>
-        {/* 금액 표시 */}
-        <SliderInput
-          step={priceStep}
-          enableMin={enablePriceMin}
-          enableMax={enablePriceMax}
-          onEnableMinChange={setEnablePriceMin}
-          onEnableMaxChange={setEnablePriceMax}
-          min={priceMin}
-          minValue={priceMinValue}
-          max={priceMax}
-          maxValue={priceMaxValue}
-          valueFormatter={formatWon}
-          onMinValueChange={setPriceMinValue}
-          onMaxValueChange={setPriceMaxValue}
-        />
-      </FilterInput>
+      {filters.map(({ key, filter, setFilter, type }) => {
+        const changeEnable = (v) => setFilter((prev) => ({ ...prev, enable: v }));
 
-      <FilterInput
-        label={"전용면적"}
-        enable={enableNetLeasableAreaFilter}
-        changeEnable={setEnableNetLeasableAreaFilter}
-      >
-        <DiscreteSliderInput
-          options={netLeasableAreaList}
-          enableMin={enableNetLeasableAreaMin}
-          enableMax={enableNetLeasableAreaMax}
-          onEnableMinChange={setEnableNetLeasableAreaMin}
-          onEnableMaxChange={setEnableNetLeasableAreaMax}
-          minIndex={netLeasableAreaMinIndex}
-          maxIndex={netLeasableAreaMaxIndex}
-          onMinIndexChange={setNetLeasableAreaMinIndex}
-          onMaxIndexChange={setNetLeasableAreaMaxIndex}
-          valueFormatter={(value) => `${value}㎡`}
-        />
-      </FilterInput>
+        const changeEnableMin = (v) => setFilter((prev) => ({ ...prev, enableMin: v }));
+
+        const changeEnableMax = (v) => setFilter((prev) => ({ ...prev, enableMax: v }));
+
+        switch (type) {
+          case "slider":
+            return (
+              <FilterInput
+                key={key}
+                label={filter.label}
+                enable={filter.enable}
+                changeEnable={changeEnable}
+              >
+                {/* 금액 표시 */}
+                <SliderInput
+                  step={filter.step}
+                  enableMin={filter.enableMin}
+                  enableMax={filter.enableMax}
+                  onEnableMinChange={changeEnableMin}
+                  onEnableMaxChange={changeEnableMax}
+                  min={filter.min}
+                  minValue={filter.minValue}
+                  max={filter.max}
+                  maxValue={filter.maxValue}
+                  valueFormatter={filter.valueFormatter}
+                  onMinValueChange={(v) => setFilter((prev) => ({ ...prev, minValue: v }))}
+                  onMaxValueChange={(v) => setFilter((prev) => ({ ...prev, maxValue: v }))}
+                />
+              </FilterInput>
+            );
+          case "discrete-slider":
+            return (
+              <FilterInput
+                key={filter.key}
+                label={filter.label}
+                enable={filter.enable}
+                changeEnable={changeEnable}
+              >
+                <DiscreteSliderInput
+                  options={filter.options}
+                  enableMin={filter.enableMin}
+                  enableMax={filter.enableMax}
+                  onEnableMinChange={changeEnableMin}
+                  onEnableMaxChange={changeEnableMax}
+                  minIndex={filter.minIndex}
+                  maxIndex={filter.maxIndex}
+                  onMinIndexChange={(v) => setFilter((prev) => ({ ...prev, minIndex: v }))}
+                  onMaxIndexChange={(v) => setFilter((prev) => ({ ...prev, maxIndex: v }))}
+                  valueFormatter={filter.valueFormatter}
+                />
+              </FilterInput>
+            );
+          default:
+            return null;
+        }
+      })}
 
       <button
-        onClick={close}
-        className="w-full mt-4 py-2 rounded-md bg-primary text-white font-medium text-sm hover:bg-primary/90 transition"
+        onClick={() => {
+          if (!isDirty) return;
+          appliedRef.current = true;
+
+          filters.forEach(({ key, filter, setFilter }) => {
+            if (filter.enable && !filter.enableMin && !filter.enableMax) {
+              setFilter((prev) => ({ ...prev, enable: false }));
+            }
+          });
+
+          apply();
+        }}
+        className={`w-full mt-4 py-2 rounded-md font-medium text-sm transition ${isDirty ? "bg-primary text-white hover:bg-primary/90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
       >
         적용하기
       </button>
-    </div>
-  );
-}
-
-function FilterInput({ label, enable, changeEnable, children }) {
-  return (
-    <div className="space-y-2">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-gray-600">{label}</label>
-
-        {enable ? (
-          <button onClick={() => changeEnable(false)} className="text-xs text-gray-400">
-            해제
-          </button>
-        ) : (
-          <button onClick={() => changeEnable(true)} className="text-xs text-primary">
-            +추가
-          </button>
-        )}
-      </div>
-
-      {/* Content */}
-      {enable && <div className="pt-1">{children}</div>}
     </div>
   );
 }
