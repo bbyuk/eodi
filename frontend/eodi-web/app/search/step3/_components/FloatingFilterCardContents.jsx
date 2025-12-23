@@ -61,6 +61,10 @@ export default function FloatingFilterCardContents({ apply, filters }) {
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       {filters.map(({ key, filter, setFilter, type }) => {
+        const changeEnable = (v) => setFilter((prev) => ({ ...prev, enable: v }));
+        const changeEnableMax = (v) => setFilter((prev) => ({ ...prev, enableMax: v }));
+        const changeEnableMin = (v) => setFilter((prev) => ({ ...prev, enableMin: v }));
+
         switch (type) {
           case "slider":
             return (
@@ -68,15 +72,21 @@ export default function FloatingFilterCardContents({ apply, filters }) {
                 key={key}
                 label={filter.label}
                 enable={filter.enable}
-                changeEnable={(v) => setFilter((prev) => ({ ...prev, enable: v }))}
+                changeEnable={changeEnable}
               >
                 {/* 금액 표시 */}
                 <SliderInput
                   step={filter.step}
                   enableMin={filter.enableMin}
                   enableMax={filter.enableMax}
-                  onEnableMinChange={(v) => setFilter((prev) => ({ ...prev, enableMin: v }))}
-                  onEnableMaxChange={(v) => setFilter((prev) => ({ ...prev, enableMax: v }))}
+                  onEnableMinChange={(v) => {
+                    if (filter.enableMin && !filter.enableMax) changeEnable(false);
+                    changeEnableMin(v);
+                  }}
+                  onEnableMaxChange={(v) => {
+                    if (!filter.enableMin && filter.enableMax) changeEnable(false);
+                    changeEnableMax(v);
+                  }}
                   min={filter.min}
                   minValue={filter.minValue}
                   max={filter.max}
@@ -93,14 +103,20 @@ export default function FloatingFilterCardContents({ apply, filters }) {
                 key={filter.key}
                 label={filter.label}
                 enable={filter.enable}
-                changeEnable={(v) => setFilter((prev) => ({ ...prev, enable: v }))}
+                changeEnable={changeEnable}
               >
                 <DiscreteSliderInput
                   options={filter.options}
                   enableMin={filter.enableMin}
                   enableMax={filter.enableMax}
-                  onEnableMinChange={(v) => setFilter((prev) => ({ ...prev, enableMin: v }))}
-                  onEnableMaxChange={(v) => setFilter((prev) => ({ ...prev, enableMax: v }))}
+                  onEnableMinChange={(v) => {
+                    if (filter.enableMin && !filter.enableMax) changeEnable(false);
+                    changeEnableMin(v);
+                  }}
+                  onEnableMaxChange={(v) => {
+                    if (!filter.enableMin && filter.enableMax) changeEnable(false);
+                    changeEnableMax(v);
+                  }}
                   minIndex={filter.minIndex}
                   maxIndex={filter.maxIndex}
                   onMinIndexChange={(v) => setFilter((prev) => ({ ...prev, minIndex: v }))}
