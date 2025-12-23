@@ -13,8 +13,7 @@ import { useSearchContext } from "@/app/search/layout";
 import { useDealTabs } from "@/app/search/step3/_hooks/useDealTabs";
 import { useDealSearch } from "@/app/search/step3/_hooks/useDealSearch";
 import DealResultSection from "@/app/search/step3/_components/DealResultSection";
-import { createInitialFilters } from "@/app/search/step3/config/dealFilterConfig";
-import { toMaxFilterParam, toMinFilterParam } from "@/app/search/step3/util/paramUtil";
+import { buildFilterParam, createInitialFilters } from "@/app/search/step3/config/dealFilterConfig";
 
 const id = "result";
 const title = "선택한 지역의 실거래 내역을 찾았어요";
@@ -87,29 +86,7 @@ export default function DealListPage() {
       ? Object.values(filtersByDealType[selectedTab]).filter((f) => f.enable).length
       : 0;
 
-    const filterParam =
-      currentFilters &&
-      Object.values(currentFilters)
-        .filter((f) => f.enable)
-        .reduce((acc, cur, index, arr) => {
-          if (cur.type === "slider") {
-            if (cur.enableMin) {
-              acc[toMinFilterParam(cur.key)] = cur.minValue;
-            }
-            if (cur.enableMax) {
-              acc[toMaxFilterParam(cur.key)] = cur.maxValue;
-            }
-          } else if (cur.type === "discrete-slider") {
-            if (cur.enableMin) {
-              acc[toMinFilterParam(cur.key)] = cur.options[cur.minIndex];
-            }
-            if (cur.enableMax) {
-              acc[toMaxFilterParam(cur.key)] = cur.options[cur.maxIndex];
-            }
-          }
-
-          return acc;
-        }, {});
+    const filterParam = buildFilterParam(currentFilters);
 
     console.log(filterParam);
 

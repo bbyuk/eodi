@@ -2,6 +2,14 @@ import { formatWon } from "@/app/search/_util/util";
 
 const NET_LEASABLE_AREA_OPTION = [33, 66, 99, 132, 165, 198, 231];
 
+const toMinFilterParam = (key) => {
+  return `min${key.charAt(0).toUpperCase() + key.slice(1)}`;
+};
+
+const toMaxFilterParam = (key) => {
+  return `max${key.charAt(0).toUpperCase() + key.slice(1)}`;
+};
+
 export const createInitialFilters = () => ({
   sell: {
     price: {
@@ -74,3 +82,29 @@ export const createInitialFilters = () => ({
     },
   },
 });
+
+export const buildFilterParam = (filters) => {
+  if (!filters) return {};
+
+  return Object.values(filters)
+    .filter((f) => f.enable)
+    .reduce((acc, cur, index, arr) => {
+      if (cur.type === "slider") {
+        if (cur.enableMin) {
+          acc[toMinFilterParam(cur.key)] = cur.minValue;
+        }
+        if (cur.enableMax) {
+          acc[toMaxFilterParam(cur.key)] = cur.maxValue;
+        }
+      } else if (cur.type === "discrete-slider") {
+        if (cur.enableMin) {
+          acc[toMinFilterParam(cur.key)] = cur.options[cur.minIndex];
+        }
+        if (cur.enableMax) {
+          acc[toMaxFilterParam(cur.key)] = cur.options[cur.maxIndex];
+        }
+      }
+
+      return acc;
+    }, {});
+};
