@@ -91,7 +91,7 @@ export default function DealListPage() {
     if (selectedTab === "sell") {
       sell.fetchWithFilter(filterParam);
     } else if (selectedTab === "lease") {
-      console.log(currentFilters);
+      lease.fetchWithFilter(filterParam);
     }
 
     setFilterCount((prev) => ({ ...prev, [selectedTab]: count }));
