@@ -9,10 +9,10 @@ export default function DiscreteSliderInput({
   enableMax = false,
   minIndex = 0,
   maxIndex = options.length - 1,
-  onEnableMinChange = () => {},
-  onEnableMaxChange = () => {},
-  onMinIndexChange = () => {},
-  onMaxIndexChange = () => {},
+  onEnableMinChange = (v) => {},
+  onEnableMaxChange = (v) => {},
+  onMinIndexChange = (v) => {},
+  onMaxIndexChange = (v) => {},
 }) {
   const baseInput =
     "relative h-11 w-full rounded-md border px-3 text-sm flex items-center text-left transition cursor-pointer";
