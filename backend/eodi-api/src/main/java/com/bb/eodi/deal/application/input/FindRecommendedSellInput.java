@@ -12,6 +12,10 @@ public record FindRecommendedSellInput(
         List<Long> targetRegionIds,
         // 대상 주택 유형 list
         List<String> targetHousingTypes,
+        // 최대 가격 (만원 단위)
+        Integer maxPrice,
+        // 최소 가격 (만원 단위)
+        Integer minPrice,
         // 최대전용면적
         Integer maxNetLeasableArea,
         // 최소전용면적
