@@ -5,7 +5,7 @@ const NET_LEASABLE_AREA_OPTION = [33, 66, 99, 132, 165, 198, 231];
 export const createInitialFilters = () => ({
   sell: {
     price: {
-      key: "sell-price",
+      key: "price",
       label: "가격",
       valueFormatter: formatWon,
       step: 5000,
@@ -19,7 +19,7 @@ export const createInitialFilters = () => ({
       type: "slider",
     },
     netLeasableArea: {
-      key: "sell-netLeasableArea",
+      key: "netLeasableArea",
       label: "전용면적",
       valueFormatter: (v) => `${v}㎡`,
       enable: false,
@@ -33,7 +33,7 @@ export const createInitialFilters = () => ({
   },
   lease: {
     deposit: {
-      key: "lease-deposit",
+      key: "deposit",
       label: "보증금",
       valueFormatter: formatWon,
       step: 1000,
@@ -47,7 +47,7 @@ export const createInitialFilters = () => ({
       type: "slider",
     },
     monthlyRent: {
-      key: "lease-monthlyRent",
+      key: "monthlyRentFee",
       label: "월세",
       valueFormatter: formatWon,
       step: 50,
@@ -61,7 +61,7 @@ export const createInitialFilters = () => ({
       type: "slider",
     },
     netLeasableArea: {
-      key: "lease-netLeasableArea",
+      key: "netLeasableArea",
       label: "전용면적",
       valueFormatter: (v) => `${v}㎡`,
       enable: false,

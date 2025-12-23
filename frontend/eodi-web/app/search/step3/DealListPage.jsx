@@ -15,6 +15,7 @@ import { useDealSearch } from "@/app/search/step3/_hooks/useDealSearch";
 import DealResultSection from "@/app/search/step3/_components/DealResultSection";
 import { formatWon } from "@/app/search/_util/util";
 import { createInitialFilters } from "@/app/search/step3/config/dealFilterConfig";
+import { toMaxFilterParam, toMinFilterParam } from "@/app/search/step3/util/paramUtil";
 
 const id = "result";
 const title = "선택한 지역의 실거래 내역을 찾았어요";
@@ -83,9 +84,31 @@ export default function DealListPage() {
 
   // 필터 처리
   const applyFilter = () => {
-    const count = filtersByDealType[selectedTab]
+    const count = currentFilters
       ? Object.values(filtersByDealType[selectedTab]).filter((f) => f.enable).length
       : 0;
+
+    const filterParam =
+      currentFilters &&
+      Object.values(currentFilters)
+        .filter((f) => f.enable)
+        .reduce((acc, cur, index, arr) => {
+          if (cur.enableMin) {
+            acc[toMinFilterParam(cur.key)] = cur.minValue;
+          }
+          if (cur.enableMax) {
+            acc[toMaxFilterParam(cur.key)] = cur.maxValue;
+          }
+          return acc;
+        }, {});
+
+    console.log(filterParam);
+
+    if (selectedTab === "sell") {
+    } else if (selectedTab === "lease") {
+      console.log(currentFilters);
+    }
+
     setFilterCount((prev) => ({ ...prev, [selectedTab]: count }));
     setFilterApplied((prev) => ({ ...prev, [selectedTab]: true }));
   };
