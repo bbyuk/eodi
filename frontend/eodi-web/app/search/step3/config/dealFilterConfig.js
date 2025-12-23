@@ -15,6 +15,15 @@ export const createInitialFilters = () => ({
     price: {
       key: "price",
       label: "가격",
+      dirtyChecker: (current, initial) => {
+        return (
+          current.enable !== initial.enable ||
+          current.enableMin !== initial.enableMin ||
+          current.enableMax !== initial.enableMax ||
+          current.minValue !== initial.minValue ||
+          current.maxValue !== initial.maxValue
+        );
+      },
       valueFormatter: formatWon,
       step: 5000,
       enable: false,
@@ -29,6 +38,15 @@ export const createInitialFilters = () => ({
     netLeasableArea: {
       key: "netLeasableArea",
       label: "전용면적",
+      dirtyChecker: (current, initial) => {
+        return (
+          current.enable !== initial.enable ||
+          current.enableMin !== initial.enableMin ||
+          current.enableMax !== initial.enableMax ||
+          current.maxIndex !== initial.maxIndex ||
+          current.minIndex !== initial.minIndex
+        );
+      },
       valueFormatter: (v) => `${v}㎡`,
       enable: false,
       options: NET_LEASABLE_AREA_OPTION,
@@ -43,6 +61,15 @@ export const createInitialFilters = () => ({
     deposit: {
       key: "deposit",
       label: "보증금",
+      dirtyChecker: (current, initial) => {
+        return (
+          current.enable !== initial.enable ||
+          current.enableMin !== initial.enableMin ||
+          current.enableMax !== initial.enableMax ||
+          current.minValue !== initial.minValue ||
+          current.maxValue !== initial.maxValue
+        );
+      },
       valueFormatter: formatWon,
       step: 1000,
       enable: false,
@@ -57,6 +84,15 @@ export const createInitialFilters = () => ({
     monthlyRent: {
       key: "monthlyRentFee",
       label: "월세",
+      dirtyChecker: (current, initial) => {
+        return (
+          current.enable !== initial.enable ||
+          current.enableMin !== initial.enableMin ||
+          current.enableMax !== initial.enableMax ||
+          current.minValue !== initial.minValue ||
+          current.maxValue !== initial.maxValue
+        );
+      },
       valueFormatter: formatWon,
       step: 50,
       enable: false,
@@ -71,6 +107,15 @@ export const createInitialFilters = () => ({
     netLeasableArea: {
       key: "netLeasableArea",
       label: "전용면적",
+      dirtyChecker: (current, initial) => {
+        return (
+          current.enable !== initial.enable ||
+          current.enableMin !== initial.enableMin ||
+          current.enableMax !== initial.enableMax ||
+          current.maxIndex !== initial.maxIndex ||
+          current.minIndex !== initial.minIndex
+        );
+      },
       valueFormatter: (v) => `${v}㎡`,
       enable: false,
       options: NET_LEASABLE_AREA_OPTION,

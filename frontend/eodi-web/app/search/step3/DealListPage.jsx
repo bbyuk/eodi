@@ -88,9 +88,8 @@ export default function DealListPage() {
 
     const filterParam = buildFilterParam(currentFilters);
 
-    console.log(filterParam);
-
     if (selectedTab === "sell") {
+      sell.fetchWithFilter(filterParam);
     } else if (selectedTab === "lease") {
       console.log(currentFilters);
     }

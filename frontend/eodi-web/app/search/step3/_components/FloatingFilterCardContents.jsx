@@ -11,40 +11,9 @@ export default function FloatingFilterCardContents({ apply, filters }) {
   );
   const appliedRef = useRef(false);
 
-  const isPriceFilterDirty = (current, initial) => {
-    return (
-      current.enable !== initial.enable ||
-      current.enableMin !== initial.enableMin ||
-      current.enableMax !== initial.enableMax ||
-      current.minValue !== initial.minValue ||
-      current.maxValue !== initial.maxValue
-    );
-  };
-  const isNetLeasableFilterDirty = (current, initial) => {
-    return (
-      current.enable !== initial.enable ||
-      current.enableMin !== initial.enableMin ||
-      current.enableMax !== initial.enableMax ||
-      current.maxIndex !== initial.maxIndex ||
-      current.minIndex !== initial.minIndex
-    );
-  };
-
-  const isFilterDirty = (currentWrapper, initialWrapper) => {
-    switch (currentWrapper.key) {
-      case "price":
-        return isPriceFilterDirty(currentWrapper.filter, initialWrapper.filter);
-      case "netLeasableArea":
-        return isNetLeasableFilterDirty(currentWrapper.filter, initialWrapper.filter);
-      default:
-        return false;
-    }
-  };
-
   const isDirty = filters.some((cur) => {
     const initial = initialMapRef.current.get(cur.key);
-    if (!initial) return false;
-    return isFilterDirty(cur, initial);
+    return cur.filter.dirtyChecker(cur.filter, initial.filter);
   });
 
   useEffect(() => {
@@ -61,9 +30,12 @@ export default function FloatingFilterCardContents({ apply, filters }) {
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       {filters.map(({ key, filter, setFilter, type }) => {
+        const initial = initialMapRef.current.get(key)?.filter;
         const changeEnable = (v) => setFilter((prev) => ({ ...prev, enable: v }));
-        const changeEnableMax = (v) => setFilter((prev) => ({ ...prev, enableMax: v }));
+
         const changeEnableMin = (v) => setFilter((prev) => ({ ...prev, enableMin: v }));
+
+        const changeEnableMax = (v) => setFilter((prev) => ({ ...prev, enableMax: v }));
 
         switch (type) {
           case "slider":
@@ -79,14 +51,8 @@ export default function FloatingFilterCardContents({ apply, filters }) {
                   step={filter.step}
                   enableMin={filter.enableMin}
                   enableMax={filter.enableMax}
-                  onEnableMinChange={(v) => {
-                    if (filter.enableMin && !filter.enableMax) changeEnable(false);
-                    changeEnableMin(v);
-                  }}
-                  onEnableMaxChange={(v) => {
-                    if (!filter.enableMin && filter.enableMax) changeEnable(false);
-                    changeEnableMax(v);
-                  }}
+                  onEnableMinChange={changeEnableMin}
+                  onEnableMaxChange={changeEnableMax}
                   min={filter.min}
                   minValue={filter.minValue}
                   max={filter.max}
@@ -109,14 +75,8 @@ export default function FloatingFilterCardContents({ apply, filters }) {
                   options={filter.options}
                   enableMin={filter.enableMin}
                   enableMax={filter.enableMax}
-                  onEnableMinChange={(v) => {
-                    if (filter.enableMin && !filter.enableMax) changeEnable(false);
-                    changeEnableMin(v);
-                  }}
-                  onEnableMaxChange={(v) => {
-                    if (!filter.enableMin && filter.enableMax) changeEnable(false);
-                    changeEnableMax(v);
-                  }}
+                  onEnableMinChange={changeEnableMin}
+                  onEnableMaxChange={changeEnableMax}
                   minIndex={filter.minIndex}
                   maxIndex={filter.maxIndex}
                   onMinIndexChange={(v) => setFilter((prev) => ({ ...prev, minIndex: v }))}
@@ -136,7 +96,7 @@ export default function FloatingFilterCardContents({ apply, filters }) {
           appliedRef.current = true;
 
           filters.forEach(({ key, filter, setFilter }) => {
-            if (filter.enable && filter.enableMin === false && filter.enableMax === false) {
+            if (filter.enable && !filter.enableMin && !filter.enableMax) {
               setFilter((prev) => ({ ...prev, enable: false }));
             }
           });
