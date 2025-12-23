@@ -13,7 +13,7 @@ export default function FloatingFilterCardContents({ apply, filters }) {
 
   const isDirty = filters.some((cur) => {
     const initial = initialMapRef.current.get(cur.key);
-    return cur.filter.dirtyChecker(cur.filter, initial.filter);
+    return cur.filter.dirtyChecker(cur.filter, initial?.filter);
   });
 
   useEffect(() => {
@@ -30,7 +30,6 @@ export default function FloatingFilterCardContents({ apply, filters }) {
   return (
     <div className="p-1 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       {filters.map(({ key, filter, setFilter, type }) => {
-        const initial = initialMapRef.current.get(key)?.filter;
         const changeEnable = (v) => setFilter((prev) => ({ ...prev, enable: v }));
 
         const changeEnableMin = (v) => setFilter((prev) => ({ ...prev, enableMin: v }));
