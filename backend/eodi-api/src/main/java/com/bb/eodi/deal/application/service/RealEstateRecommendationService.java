@@ -218,8 +218,8 @@ public class RealEstateRecommendationService {
 
         return realEstateSellRepository.findBy(
                         RealEstateSellQuery.builder()
-                                .maxPrice(input.cash() + sellPriceGap)
-                                .minPrice(input.cash() - sellPriceGap)
+                                .maxPrice(input.maxPrice() != null ? input.maxPrice() : input.cash() + sellPriceGap)
+                                .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
                                 .targetRegionIds(input.targetRegionIds())
                                 .targetHousingTypes(
                                         input.targetHousingTypes()
