@@ -21,8 +21,9 @@ export function useDealSearch({ dealType, enabled }) {
     data: [],
     isLoading: false,
   });
+  const [filterParam, setFilterParam] = useState({});
 
-  const fetchData = (init = false) => {
+  const fetchData = (init = false, newFilterParam) => {
     if (!enabled || info.isLoading) return;
     setInfo((prev) => ({ ...(init ? { page: 0, data: [] } : prev), isLoading: true }));
 
@@ -37,8 +38,17 @@ export function useDealSearch({ dealType, enabled }) {
       },
     };
 
+    if (init && newFilterParam) {
+      setFilterParam(newFilterParam);
+    }
+
+    const currentFilterParam = newFilterParam ? newFilterParam : filterParam;
+
+    console.log(init && newFilterParam);
+
     api
       .get(apiInfo[dealType].url, {
+        ...currentFilterParam,
         cash,
         targetRegionIds: Array.from(apiInfo[dealType].targetRegions).map((region) => region.id),
         targetHousingTypes: Array.from(inquiredHousingTypes),
@@ -62,6 +72,7 @@ export function useDealSearch({ dealType, enabled }) {
   return {
     info,
     fetchInit: () => fetchData(true),
+    fetchWithFilter: (filterParam) => fetchData(true, filterParam),
     loadMoreRef,
   };
 }
