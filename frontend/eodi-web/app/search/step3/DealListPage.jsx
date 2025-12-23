@@ -13,7 +13,6 @@ import { useSearchContext } from "@/app/search/layout";
 import { useDealTabs } from "@/app/search/step3/_hooks/useDealTabs";
 import { useDealSearch } from "@/app/search/step3/_hooks/useDealSearch";
 import DealResultSection from "@/app/search/step3/_components/DealResultSection";
-import { formatWon } from "@/app/search/_util/util";
 import { createInitialFilters } from "@/app/search/step3/config/dealFilterConfig";
 import { toMaxFilterParam, toMinFilterParam } from "@/app/search/step3/util/paramUtil";
 
@@ -93,12 +92,22 @@ export default function DealListPage() {
       Object.values(currentFilters)
         .filter((f) => f.enable)
         .reduce((acc, cur, index, arr) => {
-          if (cur.enableMin) {
-            acc[toMinFilterParam(cur.key)] = cur.minValue;
+          if (cur.type === "slider") {
+            if (cur.enableMin) {
+              acc[toMinFilterParam(cur.key)] = cur.minValue;
+            }
+            if (cur.enableMax) {
+              acc[toMaxFilterParam(cur.key)] = cur.maxValue;
+            }
+          } else if (cur.type === "discrete-slider") {
+            if (cur.enableMin) {
+              acc[toMinFilterParam(cur.key)] = cur.options[cur.minIndex];
+            }
+            if (cur.enableMax) {
+              acc[toMaxFilterParam(cur.key)] = cur.options[cur.maxIndex];
+            }
           }
-          if (cur.enableMax) {
-            acc[toMaxFilterParam(cur.key)] = cur.maxValue;
-          }
+
           return acc;
         }, {});
 
