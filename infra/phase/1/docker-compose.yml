@@ -43,6 +43,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ../../common/mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
+      - ../../common/mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
     restart: always
     mem_limit: 1g
 volumes:
