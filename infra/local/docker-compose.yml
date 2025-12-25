@@ -21,7 +21,7 @@ services:
     image: eodi-api:latest
     container_name: eodi-app
     env_file:
-      - ../common/env/app.env
+      - ./app.env
     depends_on:
       - mysql
     restart: always
@@ -39,11 +39,11 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     env_file:
-      - ../common/env/db.env
+      - ./db.env
     volumes:
       - mysql-data:/var/lib/mysql
-      - ../common/mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
-      - ../common/mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
+      - ../db/mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
+      - ../db/mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
     restart: always
     mem_limit: 1g
 volumes:
