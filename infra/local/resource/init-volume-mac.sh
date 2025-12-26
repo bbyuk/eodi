@@ -2,7 +2,7 @@
 set -e
 
 VOLUMES=(
-  mysql-data
+  eodi-mysql-data
 )
 
 for VOLUME in "${VOLUMES[@]}"; do

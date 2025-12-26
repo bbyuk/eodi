@@ -63,7 +63,7 @@ chmod +x ~/local/resource/*
 ```
 
 생성되는 volume:
-- mysql-data
+- eodi-mysql-data
 
 ### 2. DB 컨테이너 실행
 DB 서비스는 eodi-backend-net 네트워크에만 연결됩니다.

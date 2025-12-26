@@ -15,13 +15,13 @@ services:
     env_file:
       - .env
     volumes:
-      - mysql-data:/var/lib/mysql
+      - eodi-mysql-data:/var/lib/mysql
       - ../../db/mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
       - ../../db/mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
     restart: always
     mem_limit: 2g
 volumes:
-  mysql-data:
+  eodi-mysql-data:
     external: true
 networks:
   eodi-backend-net:
