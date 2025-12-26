@@ -1,64 +1,117 @@
-# Phase 1 – Single EC2 (Web / App / DB 통합)
+Production Environment Setup
 
-## 개요
+이 문서는 운영(PROD) 환경에서 Docker Compose 기반으로
+서비스를 기동하는 방법을 설명합니다.
 
-Phase 1은 **단일 EC2 인스턴스에서 Web / Application / Database를 모두 운영하는 초기 MVP 단계**이다.  
-운영 복잡도를 최소화하고, 로컬 개발 환경과 운영 환경을 최대한 동일하게 유지하는 것을 목표로 한다.
+(App / DB 서로 다른 EC2 인스턴스, EBS 기반 스토리지 분리 구조)
 
-- 대상: MVP / 초기 사용자 검증 단계
-- 인프라 비용 최소화
-- 빠른 배포 및 롤백 가능
-- 이후 Phase 2, Phase 3로 확장 가능한 구조
+<hr>
 
----
-
-## 구성 요소
-
-이 Phase에서는 다음 컨테이너들이 하나의 `docker-compose`로 관리된다.
-
-- **Web**: Nginx 기반 외부 트래픽 수신 및 App 프록시
-- **Application**: Spring Boot 기반 API 서버
-- **DB**: MySQL 기반 운영 DB (Docker Volume 기반 영속화)
-
----
-
-## 설계 의도
-
-### 1. 로컬 ↔ 운영 환경 동일성
-환경 차이로 인한 버그를 최소화한다.
-- 동일한 Docker 이미지
-- 동일한 compose 파일
-- 동일한 DB 버전
+### 디렉터리 구조
+env 파일은 서버 로컬에서 관리
+```
+prod/
+├─ app/
+│  ├─ nginx/
+│  └─ docker-compose.yml
+├─ db/
+│  └─ docker-compose.yml
+├─ resource/
+│  └─ init-network.sh
+└─ README.md
 
 ```
-# 로컬 & 운영
+
+### 사전 요구사항
+#### 공통
+- Linux EC2 인스턴스
+- Docker 설치
+- Docker Compose V2 설치
+
+#### App EC2
+- 80, 443 포트 오픈 (public)
+- DB EC2로의 VPC 네트워크 접근 허용
+
+#### DB EC2
+- MySQL 포트 App EC2 Security Group에서만 허용
+
+
+#### 네트워크 구성
+```
+[App EC2]
+nginx <-> node <-> api (docker network)
+
+[DB EC2]
+api -> MySQL (VPC Private IP / DNS)
+```
+<hr>
+
+### 1. Docker 네트워크 생성 [수동]
+
+대상 : App EC2
+
+compose lifecycle과 분리된 infra 자원은 별도 스크립트로 한 번만 생성합니다.
+
+#### 실행 권한 부여 (최초 1회)
+```
+chmod +x /opt/eodi/compose/resource/init-network.sh
+```
+
+#### network 생성
+```
+~/prod/resource/init-network.sh
+```
+생성되는 network:
+- eodi-frontend-net
+
+이미 존재하지 않는 경우 재생성하지 않습니다.
+
+### 2. 환경변수 설정 [수동]
+환경변수는 보안상 레포에 포함하지 않으며,
+각 EC2 인스턴스에 `/opt/eodi/env` 경로로 수동 배포합니다.
+
+#### App EC2
+```
+/opt/eodi/env/
+└─ api.env
+```
+
+#### DB EC2
+```
+/opt/eodi/env/
+└─ db.env
+```
+
+### 3. DB EC2 설정 및 컨테이너 실행
+
+#### EBS 마운트
+DB EC2에는 MySQL 데이터용 EBS 볼륨을 연결합니다.
+```
+# MySQL 데이터
+/data/db
+```
+
+#### 권한 설정 (최초 1회)
+```
+sudo chown -R 999:999 /data/db
+sudo chmod 750 /data/db
+```
+
+#### DB 컨테이너 실행
+```
+cd /opt/eodi/compose/db
 docker-compose up -d
 ```
 
----
+### 4. App EC2 설정 및 컨테이너 실행
 
-### 2. 비용 효율성
-
-- RDS, ElastiCache 등 Managed Service 미사용
-- 단일 EC2 인스턴스 비용만 발생
-- MVP 단계에서 과도한 인프라 비용 방지
-
----
-
-### 3. 운영 단순성
-
-- SSH 접속 포인트 1개
-- 로그, 설정, 백업 위치 명확
-- 장애 포인트 최소화
-
----
-### 4. docker-compose 파일
-
+#### nginx 설정 파일 위치
 ```
-infra/phase/1/docker-compose.yml
+/opt/eodi/compose/app/nginx/nginx.conf
 ```
 
-- 주요 특징:
-  - MySQL 데이터는 Docker Volume으로 영속화
-  - DB 포트는 외부로 노출하지 않음 
-  - 컨테이너별 메모리 제한 설정
+#### App 컨테이너 실행
+```
+cd /opt/eodi/compose/app
+docker-compose up -d
+```
