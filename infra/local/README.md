@@ -1,64 +1,69 @@
-# Phase 1 – Single EC2 (Web / App / DB 통합)
+## Local Environment Setup
 
-## 개요
+이 문서는 로컬 개발 환경을 Docker Compose로 기동하는 방법을 설명합니다.
 
-Phase 1은 **단일 EC2 인스턴스에서 Web / Application / Database를 모두 운영하는 초기 MVP 단계**이다.  
-운영 복잡도를 최소화하고, 로컬 개발 환경과 운영 환경을 최대한 동일하게 유지하는 것을 목표로 한다.
+(Web - App - DB 분리, 네트워크 분리 구조)
 
-- 대상: MVP / 초기 사용자 검증 단계
-- 인프라 비용 최소화
-- 빠른 배포 및 롤백 가능
-- 이후 Phase 2, Phase 3로 확장 가능한 구조
+<hr>
 
----
-
-## 구성 요소
-
-이 Phase에서는 다음 컨테이너들이 하나의 `docker-compose`로 관리된다.
-
-- **Web**: Nginx 기반 외부 트래픽 수신 및 App 프록시
-- **Application**: Spring Boot 기반 API 서버
-- **DB**: MySQL 기반 운영 DB (Docker Volume 기반 영속화)
-
----
-
-## 설계 의도
-
-### 1. 로컬 ↔ 운영 환경 동일성
-환경 차이로 인한 버그를 최소화한다.
-- 동일한 Docker 이미지
-- 동일한 compose 파일
-- 동일한 DB 버전
-
+### 디렉터리 구조
 ```
-# 로컬 & 운영
-docker-compose up -d
+local/
+├─ app/
+│  ├─ nginx/
+│  ├─ app.env
+│  ├─ web.env
+│  └─ docker-compose.yml
+├─ db/
+│  ├─ .env
+│  └─ docker-compose.yml
+├─ network/
+│  └─ init-mac.sh
+└─ README.md
 ```
 
----
+### 사전 요구사항
+- Docker Desktop 설치 및 실행
+- Docker Compose v2 설치
 
-### 2. 비용 효율성
-
-- RDS, ElastiCache 등 Managed Service 미사용
-- 단일 EC2 인스턴스 비용만 발생
-- MVP 단계에서 과도한 인프라 비용 방지
-
----
-
-### 3. 운영 단순성
-
-- SSH 접속 포인트 1개
-- 로그, 설정, 백업 위치 명확
-- 장애 포인트 최소화
-
----
-### 4. docker-compose 파일
-
+### 네트워크 구성
 ```
-infra/phase/1/docker-compose.yml
+frontend-net : web/nodejs ↔ app
+backend-net  : app ↔ db
+```
+<hr>
+
+### 1. Docker 네트워크 생성
+네트워크는 compose lifecycle과 분리된 infra 자원이므로 별도 스크립트로 한 번만 생성합니다.
+
+#### 실행 권한 부여 (최초 1회)
+```
+# Mac 사용자
+chmod +x ~/local/network/init-mac.sh
 ```
 
-- 주요 특징:
-  - MySQL 데이터는 Docker Volume으로 영속화
-  - DB 포트는 외부로 노출하지 않음 
-  - 컨테이너별 메모리 제한 설정
+#### 네트워크 생성
+```
+~/local/network/init-mac.sh
+```
+
+생성되는 네트워크:
+
+- eodi-frontend-net
+- eodi-backend-net
+
+이미 존재하는 경우 재생성하지 않습니다.
+
+### 2. DB 컨테이너 실행
+DB 서비스는 eodi-backend-net 네트워크에만 연결됩니다.
+```
+# 백그라운드 db 컨테이너 실행
+~/local/db/docker-compose up -d
+```
+
+### 3. App + Web(nginx) + Web(node.js) 컨테이너 기동
+App은 eodi-frontend-net / eodi-backend-net 네트워크 모두 연결되며, Web(nginx), Web(node.js)은 eodi-frontend-net 네트워크에만 연결됩니다.
+```
+# 백그라운드 app 컨테이너 실행
+~/local/app/docker-compose up -d
+```

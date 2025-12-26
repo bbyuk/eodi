@@ -31,32 +31,14 @@ services:
   # =========================
   app:
     image: eodi-api:latest
-    container_name: eodi-app
+    container_name: eodi-api
+    networks:
+      - eodi-net
     env_file:
-      - ./app.env
-    depends_on:
-      - mysql
+      - app.env
     restart: always
     mem_limit: 2g
 
-  # =========================
-  # Database (MySQL)
-  # =========================
-  mysql:
-    image: mysql:8.0
-    container_name: eodi-mysql
-    ports:
-      - "3306:3306"
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    env_file:
-      - ./db.env
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ../db/mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
-      - ../db/mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
-    restart: always
-    mem_limit: 2g
-volumes:
-  mysql-data:
+networks:
+  eodi-net:
+    external: true
