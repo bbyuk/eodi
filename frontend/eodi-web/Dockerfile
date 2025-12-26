@@ -7,6 +7,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+
 ################################
 # 2. builder
 ################################
@@ -18,6 +19,7 @@ COPY . .
 
 ENV NODE_ENV=production
 RUN npm run build
+
 
 ################################
 # 3. runner
@@ -32,12 +34,14 @@ ENV PORT=3000
 RUN addgroup -g 1001 nodejs \
  && adduser -u 1001 -G nodejs -s /bin/sh -D nextjs
 
-# standalone output
+# 실행에 필요한 최소 파일만 복사
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
 
 USER nextjs
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# next start 실행
+CMD ["npm", "run", "start"]
