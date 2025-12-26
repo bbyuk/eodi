@@ -6,7 +6,7 @@ services:
     image: mysql:8.0
     container_name: eodi-mysql
     networks:
-      - eodi-net
+      - eodi-backend-net
     ports:
       - "3306:3306"
     command:
@@ -23,5 +23,5 @@ services:
 volumes:
   mysql-data:
 networks:
-  eodi-net:
+  eodi-backend-net:
     external: true

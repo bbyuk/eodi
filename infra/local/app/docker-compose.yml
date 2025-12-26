@@ -5,6 +5,8 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
+    networks:
+      - eodi-frontend-net
     ports:
       - "80:80"
     volumes:
@@ -18,6 +20,8 @@ services:
   node:
     image: eodi-web:latest
     container_name: eodi-web
+    networks:
+      - eodi-frontend-net
     command: "npm run start"
     expose:
       - "3000"
@@ -33,12 +37,15 @@ services:
     image: eodi-api:latest
     container_name: eodi-api
     networks:
-      - eodi-net
+      - eodi-frontend-net
+      - eodi-backend-net
     env_file:
       - app.env
     restart: always
     mem_limit: 2g
 
 networks:
-  eodi-net:
+  eodi-backend-net:
+    external: true
+  eodi-frontend-net:
     external: true
