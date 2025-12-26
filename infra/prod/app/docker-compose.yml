@@ -1,0 +1,42 @@
+services:
+  # =========================
+  # Web (Nginx)
+  # =========================
+  nginx:
+    image: nginx:alpine
+    networks:
+      - eodi-frontend-net
+    ports:
+      - "80:80"
+    volumes:
+      - /opt/eodi/compose/app/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: always
+    mem_limit: 100m
+
+  # =========================
+  # Node.js
+  # =========================
+  node:
+    image: eodi-web:latest
+    networks:
+      - eodi-frontend-net
+    mem_limit: 512m
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=512
+
+
+  # =========================
+  # Application (Spring Boot)
+  # =========================
+  api:
+    image: eodi-api:latest
+    networks:
+      - eodi-frontend-net
+    env_file:
+      - /opt/eodi/env/api.env
+    restart: always
+    mem_limit: 1g
+
+networks:
+  eodi-frontend-net:
+    external: true

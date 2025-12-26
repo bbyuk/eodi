@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 어디살까 Frontend (Next.js)
 
-## Getting Started
+이 프로젝트의 프론트엔드는 Next.js 기반 SSR 애플리케이션입니다.
 
-First, run the development server:
+로컬 개발 환경에서는 Node.js로 직접 실행하며, 운영/배포 환경을 위해 Dockerfile을 통해 컨테이너 빌드가 가능하도록 구성되어 있습니다.
 
-```bash
+<hr>
+
+### Stack
+- Framework: Next.js
+- Runtime: Node.js (v22.21.1)
+- Language: JavaScript
+- Styling: Tailwind
+- Package Manager: npm
+
+<hr>
+
+### 로컬 개발 환경 구성
+```
+# Node.js 버전 확인
+node -v
+# v22.21.1
+
+# 의존성 설치
+npm install
+
+# 개발 서버 실행
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+로컬 접속 URL : http://localhost:3000
 
-You can start editing the page by modifying `app/page.jsx`. The page auto-updates as you edit the file.
+Next.js 개발 모드로 실행되며 HMR, 개발용 에러 오버레이, 개발 전용 설정이 활성화 됩니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<hr>
 
-## Learn More
+### Docker build & Run
+```
+# 빌드
+docker build -t eodi-web .
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 실행
+docker run -p 3000:3000 eodi-web
+```

@@ -2,8 +2,8 @@ import "./globals.css";
 import Navbar from "@/components/layout/NavBar";
 
 export const metadata = {
-  title: "Lorem Ipsum",
-  description: "Lorem ipsum dolor sit amet",
+  title: "어디살까",
+  description: "부동산 실거래가 기반 추천 서비스",
 };
 
 export default function RootLayout({ children }) {
