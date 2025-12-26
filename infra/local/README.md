@@ -33,26 +33,37 @@ backend-net  : app ↔ db
 ```
 <hr>
 
-### 1. Docker 네트워크 생성
-네트워크는 compose lifecycle과 분리된 infra 자원이므로 별도 스크립트로 한 번만 생성합니다.
+### 1. Docker 리소스 생성
+compose lifecycle과 분리된 infra 자원은 별도 스크립트로 한 번만 생성합니다.
+
+- network
+- volume
 
 #### 실행 권한 부여 (최초 1회)
 ```
-# Mac 사용자
-chmod +x ~/local/network/init-mac.sh
+chmod +x ~/local/resource/*
 ```
 
-#### 네트워크 생성
+#### network 생성
 ```
-~/local/network/init-mac.sh
+~/local/resource/init-network-mac.sh
 ```
 
-생성되는 네트워크:
+생성되는 network:
 
 - eodi-frontend-net
 - eodi-backend-net
 
 이미 존재하는 경우 재생성하지 않습니다.
+
+#### volume 생성
+
+```
+~/local/resource/init-volume-mac.sh
+```
+
+생성되는 volume:
+- mysql-data
 
 ### 2. DB 컨테이너 실행
 DB 서비스는 eodi-backend-net 네트워크에만 연결됩니다.
