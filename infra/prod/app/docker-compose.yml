@@ -4,6 +4,9 @@ services:
   # =========================
   nginx:
     image: nginx:alpine
+    options:
+      max-size: "100m"
+      max-file: "5"
     networks:
       - eodi-frontend-net
     ports:
@@ -18,6 +21,9 @@ services:
   # =========================
   node:
     image: eodi-web:latest
+    options:
+      max-size: "100m"
+      max-file: "5"
     networks:
       - eodi-frontend-net
     mem_limit: 512m
@@ -30,6 +36,9 @@ services:
   # =========================
   api:
     image: eodi-api:latest
+    options:
+      max-size: "100m"
+      max-file: "5"
     networks:
       - eodi-frontend-net
     env_file:
