@@ -1,5 +1,9 @@
 ### Root-level .gitignore ###
 
+### key 파일 / env 파일 ###
+*.pem
+*.env
+
 ### 부트스트랩 데이터/정적 리소스 디렉터리 (Git 미관리) ###
 bootstrap/
 
