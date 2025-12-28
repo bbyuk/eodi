@@ -19,13 +19,13 @@ sed \
   -e "s/__MYSQL_DATABASE__/${MYSQL_DATABASE}/g" \
   -e "s/__MYSQL_USER__/${MYSQL_USER}/g" \
   -e "s/__MYSQL_PASSWORD__/${MYSQL_PASSWORD}/g" \
-  /opt/eodi/mysql/init/00-init.sql \
+  /opt/eodi/mysql/init-scripts/00-init.sql \
 | $MYSQL
 
 # 10-schema.sql 치환 실행
 sed \
   -e "s/__MYSQL_DATABASE__/${MYSQL_DATABASE}/g" \
-  /opt/eodi/mysql/init/10-schema.sql \
+  /opt/eodi/mysql/init-scripts/10-schema.sql \
 | $MYSQL
 
 echo "eodi DB init completed"
