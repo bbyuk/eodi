@@ -16,5 +16,6 @@ services:
       - /opt/eodi/env/db.env
     volumes:
       - /data/mysql:/var/lib/mysql
+      - /opt/eodi/mysql:/opt/eodi/mysql:ro
     restart: always
     mem_limit: 1g
