@@ -4,12 +4,18 @@ services:
   # =========================
   mysql:
     image: mysql:8.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     env_file:
       - /opt/eodi/env/db.env
     volumes:
-      - /data/db:/var/lib/mysql
+      - /data/mysql:/var/lib/mysql
+      - /opt/eodi/mysql:/opt/eodi/mysql:ro
     restart: always
     mem_limit: 1g
