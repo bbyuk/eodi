@@ -41,7 +41,7 @@ public class LegalDongDataApiClient implements LegalDongDataPort {
 
         try {
             legalDongApiResponse = objectMapper.readValue(legalDongDataApi.getLegalDong(
-                    0,
+                    1,
                     governmentDataApiProperties.pageSize(),
                     targetRegion,
                     API_TYPE
