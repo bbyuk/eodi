@@ -25,7 +25,7 @@ public interface LegalDongDataApi {
     String getLegalDong(
             @RequestParam("pageNo") int pageNum,
             @RequestParam("numOfRows") int pageSize,
-            @RequestParam("locatadd_nm") String targetRegion,
+            @RequestParam(value = "locatadd_nm", required = false) String targetRegion,
             @RequestParam("type") String type
     );
 }
