@@ -168,10 +168,6 @@ public class RoadNameAddressPositionMappingJobConfig {
                     parseBigDecimalWithNull.apply(item.getYPos())
             );
 
-            if (item.getBuildingName().equals("죽곡 삼정 그린코아 더 베스트")) {
-                System.out.println("wgs84 = " + wgs84);
-            }
-
             LegalDongInfoDto legalDongInfoDto = legalDongCacheRepository.findLegalDongInfoByCode(item.getLegalDongCode())
                     .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
 
