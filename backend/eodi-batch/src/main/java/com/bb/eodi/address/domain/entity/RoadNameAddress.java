@@ -21,33 +21,77 @@ public class RoadNameAddress {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "manage_no", length = 25, nullable = false)
+    @Column(name = "manage_no", length = 26, nullable = false)
     private String manageNo;
+
+    @Column(name = "legal_dong_code", length = 10)
+    private String legalDongCode;
+
+    @Column(name = "sido_name", length = 40)
+    private String sidoName;
+
+    @Column(name = "sigungu_name", length = 40)
+    private String sigunguName;
+
+    @Column(name = "umd_name", length = 40)
+    private String umdName;
+
+    @Column(name = "ri_name", length = 40)
+    private String riName;
+
+    @Column(name = "is_mountain", length = 1)
+    private String isMountain;
+
+    @Column(name = "land_lot_main_no")
+    private Integer landLotMainNo;
+
+    @Column(name = "land_lot_sub_no")
+    private Integer landLotSubNo;
 
     @Column(name = "road_name_code", length = 12, nullable = false)
     private String roadNameCode;
 
-    @Column(name = "umd_seq", length = 2, nullable = false)
-    private String umdSeq;
+    @Column(name = "road_name", length = 80)
+    private String roadName;
 
-    @Column(name = "is_underground", length = 1)
+    @Column(name = "is_underground", length = 1, nullable = false)
     private String isUnderground;
 
-    @Column(name = "building_main_no")
+    @Column(name = "building_main_no", nullable = false)
     private Integer buildingMainNo;
 
-    @Column(name = "building_sub_no")
+    @Column(name = "building_sub_no", nullable = false)
     private Integer buildingSubNo;
+
+    @Column(name = "adm_dong_code", length = 60)
+    private String admDongCode;
+
+    @Column(name = "adm_dong_name", length = 60)
+    private String admDongName;
 
     @Column(name = "basic_district_no", length = 5)
     private String basicDistrictNo;
 
-    @Column(name = "has_detail_address", length = 1)
-    private String hasDetailAddress;
+    @Column(name = "before_road_name_address", length = 400)
+    private String beforeRoadNameAddress;
 
-    // ========= 부가정보 소스
-    @Column(name = "building_name", length = 40)
+    @Column(name = "effect_start_date", length = 8)
+    private String effectStartDate;
+
+    @Column(name = "is_multi", length = 1)
+    private String isMulti;
+
+    @Column(name = "update_reason_code", length = 2)
+    private String updateReasonCode;
+
+    @Column(name = "building_name", length = 400)
     private String buildingName;
+
+    @Column(name = "sigungu_building_name", length = 400)
+    private String sigunguBuildingName;
+
+    @Column(name = "remark", length = 200)
+    private String remark;
 
     // ========= 주소 위치정보 소스
     @Column(name = "x_pos", precision = 15, scale = 6)

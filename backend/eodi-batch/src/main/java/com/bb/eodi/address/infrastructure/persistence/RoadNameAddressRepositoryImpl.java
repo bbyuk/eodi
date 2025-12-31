@@ -40,60 +40,6 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
     }
 
     @Override
-    public Optional<RoadNameAddress> findByManageNo(String addressManageNo) {
-        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
-
-        return Optional.ofNullable(
-                queryFactory.selectFrom(roadNameAddress)
-                        .where(roadNameAddress.manageNo.eq(addressManageNo))
-                        .fetchOne()
-        );
-    }
-
-    @Override
-    public List<RoadNameAddress> findAllByManageNoList(List<String> addressManageNoList) {
-        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
-
-        return queryFactory.selectFrom(roadNameAddress)
-                .where(roadNameAddress.manageNo.in(addressManageNoList))
-                .fetch();
-    }
-
-    @Override
-    @Transactional
-    public void batchUpdateAdditionalInfo(Collection<? extends RoadNameAddress> items) {
-        roadNameAddressJdbcRepository.batchUpdateAdditionalInfo(items, eodiBatchProperties.batchSize());
-    }
-
-    @Override
-    @Cacheable(cacheNames = "roadNameAddressJoinedWithLandLot", key = "#parameter.legalDongCode + ':' + #parameter.landLotMainNo + ':' + #parameter.landLotSubNo")
-    public List<RoadNameAddress> findWithLandLot(RoadNameAddressQueryParameter parameter) {
-        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
-        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
-
-        BooleanBuilder condition = new BooleanBuilder();
-
-        if (parameter.getLegalDongCode() != null) {
-            condition.and(landLotAddress.legalDongCode.eq(parameter.getLegalDongCode()));
-        }
-
-        if (parameter.getLandLotMainNo() != null) {
-            condition.and(landLotAddress.landLotMainNo.eq(parameter.getLandLotMainNo()));
-        }
-
-        if (parameter.getLandLotSubNo() != null) {
-            condition.and(landLotAddress.landLotSubNo.eq(parameter.getLandLotSubNo()));
-        }
-
-        return queryFactory.select(roadNameAddress)
-                .from(roadNameAddress)
-                .join(landLotAddress)
-                .on(roadNameAddress.manageNo.eq(landLotAddress.manageNo))
-                .where(condition)
-                .fetch();
-    }
-
-    @Override
     @Transactional
     public void updatePosition(Collection<? extends AddressPositionMappingParameter> items) {
         QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
