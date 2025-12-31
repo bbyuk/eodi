@@ -25,6 +25,10 @@ ALTER TABLE land_lot_address
     ADD CONSTRAINT uq_land_lot_address_domain_key UNIQUE(manage_no, legal_dong_code, is_mountain, land_lot_main_no, land_lot_sub_no);
 -- -----------------------------------------------------------------------------------------
 -- index
-CREATE INDEX idx_land_lot_address_pk ON land_lot_address(manage_no, legal_dong_code, is_mountain, land_lot_main_no, land_lot_sub_no);
-CREATE INDEX idx_land_lot_address_apm ON land_lot_address(legal_dong_code, land_lot_main_no, land_lot_sub_no, is_mountain);
-
+CREATE INDEX idx_lla_land_match
+    ON land_lot_address (
+                         legal_dong_code,
+                         is_mountain,
+                         land_lot_main_no,
+                         land_lot_sub_no
+        );

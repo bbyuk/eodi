@@ -23,7 +23,7 @@ public interface RoadNameAddressRepository {
      * 도로명주소 주소위치 update 처리
      * @param items 주소위치 매핑 파라미터
      */
-    void updatePosition(Collection<? extends AddressPositionMappingParameter> items);
+    void updatePosition(Collection<? extends RoadNameAddress> items);
 
     /**
      * 도로명주소 위치 정보 조회

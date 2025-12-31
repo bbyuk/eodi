@@ -38,5 +38,18 @@ ALTER TABLE road_name_address
 
 -- -----------------------------------------------------------------------------------------
 -- index
-CREATE INDEX idx_road_name_address_pk ON road_name_address(manage_no, road_name_code, is_underground, building_main_no, building_sub_no);
-CREATE INDEX idx_road_name_address_land_lot ON road_name_address (legal_dong_code, is_mountain, land_lot_main_no, land_lot_sub_no);
+CREATE INDEX idx_rna_road_match
+    ON road_name_address (
+                          road_name_code,
+                          is_underground,
+                          building_main_no,
+                          building_sub_no
+        );
+
+CREATE INDEX idx_rna_land_match
+    ON road_name_address (
+                          legal_dong_code,
+                          is_mountain,
+                          land_lot_main_no,
+                          land_lot_sub_no
+        );

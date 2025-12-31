@@ -16,4 +16,5 @@ public class RoadNameAddressQueryParameter {
     private Integer landLotMainNo;
     // 지번부번
     private Integer landLotSubNo;
+
 }

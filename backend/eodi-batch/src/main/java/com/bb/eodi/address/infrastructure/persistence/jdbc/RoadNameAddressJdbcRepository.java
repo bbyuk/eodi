@@ -195,4 +195,34 @@ public class RoadNameAddressJdbcRepository {
             ps.setObject(7, entity.getYPos(), DECIMAL);
         });
     }
+
+    /**
+     * 도로명주소 주소위치정보를 배치 업데이트한다.
+     *
+     * @param items batch update 파라미터
+     */
+    public void updatePositionBatch(Collection<? extends RoadNameAddress> items, int batchSize) {
+        String sql = """
+                UPDATE  road_name_address
+                SET     x_pos = ?,
+                        y_pos = ?
+                WHERE   manage_no = ?
+                AND     road_name_code = ? 
+                AND     is_underground = ?
+                AND     building_main_no = ?
+                AND     building_sub_no = ?
+                """;
+
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
+            int i = 1;
+            ps.setObject(i++, entity.getXPos(), DECIMAL);
+            ps.setObject(i++, entity.getYPos(), DECIMAL);
+
+            ps.setObject(i++, entity.getManageNo(), VARCHAR);
+            ps.setObject(i++, entity.getRoadNameCode(), VARCHAR);
+            ps.setObject(i++, entity.getIsUnderground(), VARCHAR);
+            ps.setObject(i++, entity.getBuildingMainNo(), INTEGER);
+            ps.setObject(i++, entity.getBuildingSubNo(), INTEGER);
+        });
+    }
 }

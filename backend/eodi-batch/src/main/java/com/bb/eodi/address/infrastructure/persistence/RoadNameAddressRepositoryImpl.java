@@ -1,7 +1,6 @@
 package com.bb.eodi.address.infrastructure.persistence;
 
 import com.bb.eodi.address.domain.dto.AddressPosition;
-import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
 import com.bb.eodi.address.domain.dto.RoadNameAddressQueryParameter;
 import com.bb.eodi.address.domain.entity.QLandLotAddress;
 import com.bb.eodi.address.domain.entity.QRoadNameAddress;
@@ -11,17 +10,13 @@ import com.bb.eodi.address.infrastructure.persistence.jdbc.RoadNameAddressJdbcRe
 import com.bb.eodi.core.EodiBatchProperties;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 도로명주소 Repository 구현체
@@ -41,60 +36,27 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
 
     @Override
     @Transactional
-    public void updatePosition(Collection<? extends AddressPositionMappingParameter> items) {
-        QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
-        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
-
-        List<AddressPositionMappingParameter> unmappedList = new ArrayList<>();
-
-        items.stream()
-                .forEach(item -> {
-                    long updated = queryFactory.update(roadNameAddress)
-                            .set(roadNameAddress.xPos, item.getXPos())
-                            .set(roadNameAddress.yPos, item.getYPos())
-                            .where(roadNameAddress.manageNo.in(
-                                                    JPAExpressions
-                                                            .select(landLotAddress.manageNo)
-                                                            .from(landLotAddress)
-                                                            .where(landLotAddress.legalDongCode.in(item.getLegalDongCodes()))
-                                            )
-                                            .and(roadNameAddress.roadNameCode.eq(item.getRoadNameCode()))
-                                            .and(roadNameAddress.buildingMainNo.eq(item.getBuildingMainNo()))
-                                            .and(roadNameAddress.buildingSubNo.eq(item.getBuildingSubNo()))
-                                            .and(roadNameAddress.isUnderground.eq(item.getIsUnderground()))
-                            )
-                            .execute();
-
-                    // TODO 테스트 이후 제거 필요
-                    if (updated == 0) {
-                        unmappedList.add(item);
-                    }
-                });
-
-        if (!unmappedList.isEmpty()) {
-            roadNameAddressJdbcRepository.batchInsertUnmapped(unmappedList, eodiBatchProperties.batchSize());
-        }
+    public void updatePosition(Collection<? extends RoadNameAddress> items) {
+        roadNameAddressJdbcRepository.updatePositionBatch(items, eodiBatchProperties.batchSize());
     }
 
     @Override
     public List<AddressPosition> findAddressPositions(RoadNameAddressQueryParameter parameter) {
         QRoadNameAddress roadNameAddress = QRoadNameAddress.roadNameAddress;
-        QLandLotAddress landLotAddress = QLandLotAddress.landLotAddress;
 
         BooleanBuilder condition = new BooleanBuilder();
 
         if (parameter.getLegalDongCode() != null) {
-            condition.and(landLotAddress.legalDongCode.eq(parameter.getLegalDongCode()));
+            condition.and(roadNameAddress.legalDongCode.eq(parameter.getLegalDongCode()));
         }
 
         if (parameter.getLandLotMainNo() != null) {
-            condition.and(landLotAddress.landLotMainNo.eq(parameter.getLandLotMainNo()));
+            condition.and(roadNameAddress.landLotMainNo.eq(parameter.getLandLotMainNo()));
         }
 
         if (parameter.getLandLotSubNo() != null) {
-            condition.and(landLotAddress.landLotSubNo.eq(parameter.getLandLotSubNo()));
+            condition.and(roadNameAddress.landLotSubNo.eq(parameter.getLandLotSubNo()));
         }
-
 
         return queryFactory.selectDistinct(
                         Projections.constructor(
@@ -104,8 +66,6 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
                                 roadNameAddress.buildingName
                         ))
                 .from(roadNameAddress)
-                .join(landLotAddress)
-                .on(roadNameAddress.manageNo.eq(landLotAddress.manageNo))
                 .where(condition)
                 .fetch();
     }
