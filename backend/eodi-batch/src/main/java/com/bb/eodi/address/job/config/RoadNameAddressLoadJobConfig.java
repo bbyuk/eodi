@@ -1,8 +1,12 @@
 package com.bb.eodi.address.job.config;
 
+import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
+import com.bb.eodi.address.domain.repository.LandLotAddressRepository;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
+import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
+import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.core.EodiBatchProperties;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 도로명 주소 적재 배치 jobConfig
+ * 도로명주소 한글 적재 배치 jobConfig
  */
 @Slf4j
 @Configuration
@@ -42,21 +46,25 @@ public class RoadNameAddressLoadJobConfig {
     private final PlatformTransactionManager transactionManager;
 
     private final RoadNameAddressRepository roadNameAddressRepository;
+    private final LandLotAddressRepository landLotAddressRepository;
 
     private static final int CONCURRENCY_LIMIT = 8;
 
     /**
      * 도로명주소 적재 job
-     * 도로명주소 전체분 파일을 일괄 load한다.
+     * 도로명주소 한글 전체분 파일을 일괄 load한다.
+     *  - 도로명주소 한글
+     *  - 도로명주소 한글 관련지번
      * DB초기 구축시 사용
      *
      * @param roadNameAddressLoadMasterStep 도로명주소 데이터를 로드해 DB에 적재하는 Step
      * @return 도로명주소 적재 job
      */
     @Bean
-    public Job roadNameAddressLoadJob(Step roadNameAddressLoadMasterStep) {
+    public Job roadNameAddressLoadJob(Step roadNameAddressLoadMasterStep, Step landLotAddressLoadMasterStep) {
         return new JobBuilder("roadNameAddressLoadJob", jobRepository)
                 .start(roadNameAddressLoadMasterStep)
+                .next(landLotAddressLoadMasterStep)
                 .build();
     }
 
@@ -74,7 +82,7 @@ public class RoadNameAddressLoadJobConfig {
             Map<String, ExecutionContext> partition = new HashMap<>();
 
             File dir = new File(targetDirectory);
-            File[] files = dir.listFiles(file -> file.getName().startsWith("주소"));
+            File[] files = dir.listFiles(file -> file.getName().startsWith("rnaddrkor"));
 
             for (int i = 0; i < files.length; i++) {
                 ExecutionContext context = new ExecutionContext();
@@ -151,13 +159,29 @@ public class RoadNameAddressLoadJobConfig {
     public ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressItemProcessor() {
         return item -> RoadNameAddress.builder()
                 .manageNo(item.getManageNo())
+                .legalDongCode(item.getLegalDongCode())
+                .sidoName(item.getSidoName())
+                .sigunguName(item.getSigunguName())
+                .umdName(item.getUmdName())
+                .riName(item.getRiName())
+                .isMountain(item.getIsMountain())
+                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : 0)
+                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : 0)
                 .roadNameCode(item.getRoadNameCode())
-                .umdSeq(item.getUmdSeq())
+                .roadName(item.getRoadName())
                 .isUnderground(item.getIsUnderground())
                 .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : 0)
                 .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : 0)
+                .admDongCode(item.getAdmDongCode())
+                .admDongName(item.getAdmDongName())
                 .basicDistrictNo(item.getBasicDistrictNo())
-                .hasDetailAddress(item.getHasDetailAddress())
+                .beforeRoadNameAddress(item.getBeforeRoadNameAddress())
+                .effectStartDate(item.getEffectStartDate())
+                .isMulti(item.getIsMulti())
+                .updateReasonCode(item.getUpdateReasonCode())
+                .buildingName(item.getBuildingName())
+                .sigunguBuildingName(item.getSigunguBuildingName())
+                .remark(item.getRemark())
                 .build();
     }
 
@@ -169,6 +193,129 @@ public class RoadNameAddressLoadJobConfig {
     @StepScope
     public ItemWriter<RoadNameAddress> roadNameAddressItemWriter() {
         return item -> roadNameAddressRepository.insertBatch(item.getItems());
+    }
+
+
+    /**
+     * 지번주소 초기 적재 배치 Partitioner
+     * @param targetDirectory 대상 directory job parameter
+     * @return 지번주소 초기 적재 배치 Partitioner
+     */
+    @Bean
+    @StepScope
+    public Partitioner landLotAddressPartitioner(
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
+    ) {
+        return gridSize -> {
+            Map<String, ExecutionContext> partition = new HashMap<>();
+
+            File dir = new File(targetDirectory);
+
+            File[] files = dir.listFiles(file -> file.getName().startsWith("jibun"));
+
+            for (int i = 0; i < files.length; i++) {
+                ExecutionContext context = new ExecutionContext();
+                context.put("filePath", files[i].getAbsolutePath());
+                partition.put("partition-" + i, context);
+            }
+
+            return partition;
+        };
+    }
+
+    /**
+     * 지번주소 적재 병렬처리 master Step
+     * @param landLotAddressPartitioner 지번주소 step partitioner
+     * @param landLotAddressLoadWorkerStep 지번주소 적재 worker step
+     * @return 지번주소 적재 병렬처리 master Step
+     */
+    @Bean
+    public Step landLotAddressLoadMasterStep(
+            Partitioner landLotAddressPartitioner,
+            Step landLotAddressLoadWorkerStep
+    ) {
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        executor.setConcurrencyLimit(CONCURRENCY_LIMIT);
+
+        return new StepBuilder("landLotAddressLoadMasterStep", jobRepository)
+                .partitioner("landLotAddressLoadWorkerStep", landLotAddressPartitioner)
+                .step(landLotAddressLoadWorkerStep)
+                .gridSize(CONCURRENCY_LIMIT)
+                .taskExecutor(executor)
+                .build();
+    }
+
+    /**
+     * 지번주소 적재 worker step
+     *
+     * @param landLotAddressItemReader              지번주소 ItemReader
+     * @param landLotAddressItemProcessor           지번주소 ItemProcessor
+     * @param landLotAddressItemWriter              지번주소 ItemWriter
+     * @return 지번주소 적재 worker step
+     */
+    @Bean
+    public Step landLotAddressLoadWorkerStep(
+            ItemStreamReader<LandLotAddressItem> landLotAddressItemReader,
+            ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor,
+            ItemWriter<LandLotAddress> landLotAddressItemWriter
+    ) {
+        return new StepBuilder("landLotAddressLoadWorkerStep", jobRepository)
+                .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(landLotAddressItemReader)
+                .processor(landLotAddressItemProcessor)
+                .writer(landLotAddressItemWriter)
+                .stream(landLotAddressItemReader)
+                .build();
+    }
+
+    /**
+     * 지번주소 ItemStreamReader
+     * @param filePath ItemStreamReader 대상 파일 경로
+     * @return 지번주소 ItemStreamReader
+     */
+    @Bean
+    @StepScope
+    public ItemStreamReader<LandLotAddressItem> landLotAddressItemReader(
+            @Value("#{stepExecutionContext['filePath']}") String filePath) {
+        return new LandLotAddressItemReader(filePath);
+    }
+
+    /**
+     * 지번주소 ItemProcessor
+     *
+     * @return 지번주소 ItemProcessor
+     */
+    @Bean
+    @StepScope
+    public ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor() {
+        return item -> LandLotAddress.builder()
+                .manageNo(item.getManageNo())
+                .legalDongCode(item.getLegalDongCode())
+                .sidoName(item.getSidoName())
+                .sigunguName(item.getSigunguName())
+                .umdName(item.getUmdName())
+                .riName(item.getRiName())
+                .isMountain(item.getIsMountain())
+                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : 0)
+                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : 0)
+                .roadNameCode(item.getRoadNameCode())
+                .isUnderground(item.getIsUnderground())
+                .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : 0)
+                .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : 0)
+                .updateReasonCode(item.getUpdateReasonCode())
+                .build();
+    }
+
+    /**
+     * 지번주소 ItemWriter
+     *
+     * @return 지번주소 ItemWriter
+     */
+    @Bean
+    @StepScope
+    public ItemWriter<LandLotAddress> landLotAddressItemWriter() {
+        return landLotAddressChunk ->
+                landLotAddressRepository.insertBatch(landLotAddressChunk.getItems());
     }
 
 }

@@ -10,11 +10,8 @@ import lombok.Data;
 @Builder
 public class AddressPositionItem {
 
-    // 시군구코드
-    private String sigunguCode;
-
-    // 출입구일련번호
-    private String entranceSeq;
+    // 도로명주소관리번호 (PK)
+    private String manageNo;
 
     // 법정동코드
     private String legalDongCode;
@@ -28,43 +25,47 @@ public class AddressPositionItem {
     // 읍면동명
     private String umdName;
 
-    // 도로명코드
+    // 리명
+    private String riName;
+
+    // 도로명코드(PK)
     private String roadNameCode;
 
     // 도로명
     private String roadName;
 
-    // 지하여부
+    // 지하여부 (PK)
     private String isUnderground;
 
-    // 건물본번
+    // 건물본번 (PK)
     private String buildingMainNo;
 
-    // 건물부번
+    // 건물부번 (PK)
     private String buildingSubNo;
 
-    // 건물명
-    private String buildingName;
+    // 기초구역번호
+    private String basicDistrictNo;
 
-    // 우편번호
-    private String zipNo;
+    // 효력발생일
+    private String effectStartDate;
 
-    // 건물용도분류
-    private String buildingType;
+    // 이동사유코드 (31: 신규 / 34: 수정 / 63: 폐지)
+    private String updateReasonCode;
 
-    // 건물군여부
-    private String isBuildingGroup;
+    // 출입구일련번호
+    private String entranceSeq;
 
-    // 관할행정동
-    private String admDong;
+    // 출입구구분 (RM: 주출입구)
+    private String entranceCode;
 
-    // X좌표
+    // 출입구유형 (01: 공용 / 02: 차량용)
+    private String entranceType;
+
+    // 출입구좌표X
     private String xPos;
 
-    // y좌표
+    // 출입구좌표Y
     private String yPos;
 
-    // 이동사유코드
-    private String changeReasonCode;
 
 }

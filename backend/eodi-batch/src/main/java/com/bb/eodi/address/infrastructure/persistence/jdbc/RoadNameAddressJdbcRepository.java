@@ -33,24 +33,90 @@ public class RoadNameAddressJdbcRepository {
                 (
                     manage_no,
                     road_name_code,
-                    umd_seq,
                     is_underground,
                     building_main_no,
                     building_sub_no,
+                
+                    legal_dong_code,
+                    sido_name,
+                    sigungu_name,
+                    umd_name,
+                    ri_name,
+                
+                    is_mountain,
+                    land_lot_main_no,
+                    land_lot_sub_no,
+                
+                    road_name,
+                    adm_dong_code,
+                    adm_dong_name,
                     basic_district_no,
-                    has_detail_address
+                
+                    before_road_name_address,
+                    effect_start_date,
+                    is_multi,
+                    update_reason_code,
+                
+                    building_name,
+                    sigungu_building_name,
+                    remark,
+                
+                    x_pos,
+                    y_pos
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (
+                    ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?,
+                    ?, ?, ?,
+                    ?, ?, ?, ?,
+                    ?, ?, ?, ?,
+                    ?, ?, ?,
+                    ?, ?
+                )
                 """;
         jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
-            ps.setObject(1, entity.getManageNo(), VARCHAR);
-            ps.setObject(2, entity.getRoadNameCode(), VARCHAR);
-            ps.setObject(3, entity.getUmdSeq(), VARCHAR);
-            ps.setObject(4, entity.getIsUnderground(), VARCHAR);
-            ps.setObject(5, entity.getBuildingMainNo(), INTEGER);
-            ps.setObject(6, entity.getBuildingSubNo(), INTEGER);
-            ps.setObject(7, entity.getBasicDistrictNo(), VARCHAR);
-            ps.setObject(8, entity.getHasDetailAddress(), VARCHAR);
+
+            int i = 1;
+
+            // === 도메인 키 (UNIQUE)
+            ps.setObject(i++, entity.getManageNo(), VARCHAR);
+            ps.setObject(i++, entity.getRoadNameCode(), VARCHAR);
+            ps.setObject(i++, entity.getIsUnderground(), VARCHAR);
+            ps.setObject(i++, entity.getBuildingMainNo(), INTEGER);
+            ps.setObject(i++, entity.getBuildingSubNo(), INTEGER);
+
+            // === 행정 주소
+            ps.setObject(i++, entity.getLegalDongCode(), VARCHAR);
+            ps.setObject(i++, entity.getSidoName(), VARCHAR);
+            ps.setObject(i++, entity.getSigunguName(), VARCHAR);
+            ps.setObject(i++, entity.getUmdName(), VARCHAR);
+            ps.setObject(i++, entity.getRiName(), VARCHAR);
+
+            // === 지번 매핑
+            ps.setObject(i++, entity.getIsMountain(), VARCHAR);
+            ps.setObject(i++, entity.getLandLotMainNo(), INTEGER);
+            ps.setObject(i++, entity.getLandLotSubNo(), INTEGER);
+
+            // === 도로명 상세
+            ps.setObject(i++, entity.getRoadName(), VARCHAR);
+            ps.setObject(i++, entity.getAdmDongCode(), VARCHAR);
+            ps.setObject(i++, entity.getAdmDongName(), VARCHAR);
+            ps.setObject(i++, entity.getBasicDistrictNo(), VARCHAR);
+
+            // === 이력 / 상태
+            ps.setObject(i++, entity.getBeforeRoadNameAddress(), VARCHAR);
+            ps.setObject(i++, entity.getEffectStartDate(), VARCHAR);
+            ps.setObject(i++, entity.getIsMulti(), VARCHAR);
+            ps.setObject(i++, entity.getUpdateReasonCode(), VARCHAR);
+
+            // === 건물명
+            ps.setObject(i++, entity.getBuildingName(), VARCHAR);
+            ps.setObject(i++, entity.getSigunguBuildingName(), VARCHAR);
+            ps.setObject(i++, entity.getRemark(), VARCHAR);
+
+            // === 좌표
+            ps.setObject(i++, entity.getXPos(), DECIMAL);
+            ps.setObject(i++, entity.getYPos(), DECIMAL);
         });
 
     }
@@ -127,6 +193,36 @@ public class RoadNameAddressJdbcRepository {
             ps.setObject(5, entity.getIsUnderground(), VARCHAR);
             ps.setObject(6, entity.getXPos(), DECIMAL);
             ps.setObject(7, entity.getYPos(), DECIMAL);
+        });
+    }
+
+    /**
+     * 도로명주소 주소위치정보를 배치 업데이트한다.
+     *
+     * @param items batch update 파라미터
+     */
+    public void updatePositionBatch(Collection<? extends RoadNameAddress> items, int batchSize) {
+        String sql = """
+                UPDATE  road_name_address
+                SET     x_pos = ?,
+                        y_pos = ?
+                WHERE   manage_no = ?
+                AND     road_name_code = ? 
+                AND     is_underground = ?
+                AND     building_main_no = ?
+                AND     building_sub_no = ?
+                """;
+
+        jdbcTemplate.batchUpdate(sql, items, batchSize, (ps, entity) -> {
+            int i = 1;
+            ps.setObject(i++, entity.getXPos(), DECIMAL);
+            ps.setObject(i++, entity.getYPos(), DECIMAL);
+
+            ps.setObject(i++, entity.getManageNo(), VARCHAR);
+            ps.setObject(i++, entity.getRoadNameCode(), VARCHAR);
+            ps.setObject(i++, entity.getIsUnderground(), VARCHAR);
+            ps.setObject(i++, entity.getBuildingMainNo(), INTEGER);
+            ps.setObject(i++, entity.getBuildingSubNo(), INTEGER);
         });
     }
 }

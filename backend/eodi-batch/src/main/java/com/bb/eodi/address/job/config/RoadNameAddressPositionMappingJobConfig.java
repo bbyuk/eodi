@@ -1,6 +1,7 @@
 package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.domain.dto.AddressPositionMappingParameter;
+import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.repository.RoadNameAddressRepository;
 import com.bb.eodi.address.domain.util.GeoToolsBigDecimalConverter;
 import com.bb.eodi.address.job.dto.AddressPositionItem;
@@ -80,7 +81,7 @@ public class RoadNameAddressPositionMappingJobConfig {
 
             File dir = new File(targetDirectory);
 
-            File[] files = dir.listFiles(file -> file.getName().startsWith("entrc"));
+            File[] files = dir.listFiles(file -> file.getName().startsWith("RNENTDATA"));
 
             for (int i = 0; i < files.length; i++) {
                 ExecutionContext context = new ExecutionContext();
@@ -124,14 +125,14 @@ public class RoadNameAddressPositionMappingJobConfig {
     @Bean
     public Step roadNameAddressPositionMappingWorkerStep(
             ItemStreamReader<AddressPositionItem> addressPositionAllItemReader,
-            ItemProcessor<AddressPositionItem, AddressPositionMappingParameter> roadNameAddressPositionMappingItemProcessor,
-            ItemWriter<AddressPositionMappingParameter> roadNameAddressPositionMappingItemWriter
+            ItemProcessor<AddressPositionItem, RoadNameAddress> roadNameAddressPositionMappingItemProcessor,
+            ItemWriter<RoadNameAddress> addressPositionItemWriter
     ) {
         return new StepBuilder("addressPositionLoadWorkerStep", jobRepository)
-                .<AddressPositionItem, AddressPositionMappingParameter>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .<AddressPositionItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(addressPositionAllItemReader)
                 .processor(roadNameAddressPositionMappingItemProcessor)
-                .writer(roadNameAddressPositionMappingItemWriter)
+                .writer(addressPositionItemWriter)
                 .stream(addressPositionAllItemReader)
                 .build();
     }
@@ -155,7 +156,7 @@ public class RoadNameAddressPositionMappingJobConfig {
      */
     @Bean
     @StepScope
-    public ItemProcessor<AddressPositionItem, AddressPositionMappingParameter> roadNameAddressPositionMappingItemProcessor() {
+    public ItemProcessor<AddressPositionItem, RoadNameAddress> roadNameAddressPositionMappingItemProcessor() {
         Function<String, BigDecimal> parseBigDecimalWithNull = (str) -> !StringUtils.hasText(str) ? null : new BigDecimal(str);
 
         return item -> {
@@ -168,22 +169,18 @@ public class RoadNameAddressPositionMappingJobConfig {
                     parseBigDecimalWithNull.apply(item.getYPos())
             );
 
-            if (item.getBuildingName().equals("죽곡 삼정 그린코아 더 베스트")) {
-                System.out.println("wgs84 = " + wgs84);
-            }
-
             LegalDongInfoDto legalDongInfoDto = legalDongCacheRepository.findLegalDongInfoByCode(item.getLegalDongCode())
                     .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
 
             List<String> selectTargetLegalDongCodes = legalDongInfoDto.findSubtreeNodes().stream().map(LegalDongInfoDto::getCode).collect(Collectors.toList());
             selectTargetLegalDongCodes.add(item.getLegalDongCode());
 
-            return AddressPositionMappingParameter.builder()
-                    .legalDongCodes(selectTargetLegalDongCodes)
+            return RoadNameAddress.builder()
+                    .manageNo(item.getManageNo())
                     .roadNameCode(item.getRoadNameCode())
+                    .isUnderground(item.getIsUnderground())
                     .buildingMainNo(Integer.parseInt(item.getBuildingMainNo()))
                     .buildingSubNo(Integer.parseInt(item.getBuildingSubNo()))
-                    .isUnderground(item.getIsUnderground())
                     .xPos(wgs84[0])
                     .yPos(wgs84[1])
                     .build();
@@ -196,7 +193,7 @@ public class RoadNameAddressPositionMappingJobConfig {
      */
     @Bean
     @StepScope
-    public ItemWriter<AddressPositionMappingParameter> addressPositionItemWriter() {
+    public ItemWriter<RoadNameAddress> addressPositionItemWriter() {
         return chunk -> roadNameAddressRepository.updatePosition(chunk.getItems());
     }
 }

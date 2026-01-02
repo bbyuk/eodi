@@ -29,17 +29,20 @@ public class LandLotAddressItemReader extends AbstractAddressItemStreamReader<La
         if (line == null) return null;
 
         return LandLotAddressItem.builder()
-                .manageNo(line[0])
-                .seq(line[1])
-                .legalDongCode(line[2])
-                .sidoName(line[3])
-                .sigunguName(line[4])
-                .legalUmdName(line[5])
-                .legalRiName(line[6])
-                .isMountain(line[7])
-                .landLotMainNo(line[8])
-                .landLotSubNo(line[9])
-                .isRepresentative(line[10])
+                .manageNo(line[0])              // 도로명주소관리번호
+                .legalDongCode(line[1])         // 법정동코드
+                .sidoName(line[2])              // 시도명
+                .sigunguName(line[3])           // 시군구명
+                .umdName(line[4])               // 법정읍면동명
+                .riName(line[5])                // 법정리명
+                .isMountain(line[6])            // 산여부
+                .landLotMainNo(line[7])         // 지번본번
+                .landLotSubNo(line[8])          // 지번부번
+                .roadNameCode(line[9])          // 도로명코드
+                .isUnderground(line[10])        // 지하여부
+                .buildingMainNo(line[11])       // 건물본번
+                .buildingSubNo(line[12])        // 건물부번
+                .updateReasonCode(line[13])     // 이동사유코드
                 .build();
     }
 }

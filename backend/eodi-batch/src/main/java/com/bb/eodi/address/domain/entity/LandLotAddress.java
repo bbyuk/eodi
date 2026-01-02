@@ -18,11 +18,8 @@ public class LandLotAddress {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "manage_no", length = 25, nullable = false)
+    @Column(name = "manage_no", length = 26, nullable = false)
     private String manageNo;
-
-    @Column(name = "seq", nullable = false)
-    private Integer seq;
 
     @Column(name = "legal_dong_code", length = 10, nullable = false)
     private String legalDongCode;
@@ -33,21 +30,34 @@ public class LandLotAddress {
     @Column(name = "sigungu_name", length = 40)
     private String sigunguName;
 
-    @Column(name = "legal_umd_name", length = 40)
-    private String legalUmdName;
+    @Column(name = "umd_name", length = 40)
+    private String umdName;
 
-    @Column(name = "legal_ri_name", length = 40)
-    private String legalRiName;
+    @Column(name = "ri_name", length = 40)
+    private String riName;
 
-    @Column(name = "is_mountain", length = 1)
+    @Column(name = "is_mountain", length = 1, nullable = false)
     private String isMountain;
 
-    @Column(name = "land_lot_main_no")
+    @Column(name = "land_lot_main_no", nullable = false)
     private Integer landLotMainNo;
 
-    @Column(name = "land_lot_sub_no")
+    @Column(name = "land_lot_sub_no", nullable = false)
     private Integer landLotSubNo;
 
-    @Column(name = "is_representative", length = 1)
-    private String isRepresentative;
+    @Column(name = "road_name_code", length = 12, nullable = false)
+    private String roadNameCode;
+
+    @Column(name = "is_underground", length = 1)
+    private String isUnderground;
+
+    @Column(name = "building_main_no")
+    private Integer buildingMainNo;
+
+    @Column(name = "building_sub_no")
+    private Integer buildingSubNo;
+
+    @Column(name = "update_reason_code")
+    private String updateReasonCode;
+
 }
