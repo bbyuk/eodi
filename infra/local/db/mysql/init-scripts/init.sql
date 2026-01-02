@@ -9,7 +9,6 @@ USE eodi_db;
 -- address
 SOURCE /docker-entrypoint-initdb.d/schema/address/land_lot_address.sql;
 SOURCE /docker-entrypoint-initdb.d/schema/address/road_name_address.sql;
-SOURCE /docker-entrypoint-initdb.d/schema/address/road_name_code.sql;
 SOURCE /docker-entrypoint-initdb.d/schema/address/unmapped.sql;
 
 -- deal
