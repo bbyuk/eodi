@@ -1,10 +1,6 @@
 spring:
   application:
     name: eodi-api
-  datasource:
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 20
   jpa:
     hibernate:
       ddl-auto: none
