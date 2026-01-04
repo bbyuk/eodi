@@ -5,6 +5,7 @@ services:
   nginx:
     image: nginx:alpine
     logging:
+      driver: "json-file"
       options:
         max-size: "100m"
         max-file: "5"
@@ -24,6 +25,7 @@ services:
     image: eodi-web:latest
     logging:
       options:
+        driver: "json-file"
         max-size: "100m"
         max-file: "5"
     networks:
@@ -39,6 +41,7 @@ services:
   api:
     image: eodi-api:latest
     logging:
+      driver: "json-file"
       options:
         max-size: "100m"
         max-file: "5"
