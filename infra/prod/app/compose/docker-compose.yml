@@ -22,7 +22,7 @@ services:
   # Node.js
   # =========================
   node:
-    image: eodi-web:latest
+    image: 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:latest
     logging:
       options:
         driver: "json-file"
@@ -39,7 +39,7 @@ services:
   # Application (Spring Boot)
   # =========================
   api:
-    image: eodi-api:latest
+    image: 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-api:latest
     logging:
       driver: "json-file"
       options:
