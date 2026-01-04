@@ -24,8 +24,8 @@ services:
   node:
     image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:latest
     logging:
+      driver: "json-file"
       options:
-        driver: "json-file"
         max-size: "100m"
         max-file: "5"
     networks:
