@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /opt/eodi/prod
+            cd /opt/eodi/compose
             sed -i "s/^EODI_API_TAG=.*/EODI_API_TAG=${IMAGE_TAG}/" .env
             docker compose pull api
             docker compose up -d api
@@ -115,7 +115,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /opt/eodi/prod
+            cd /opt/eodi/compose
             sed -i "s/^EODI_WEB_TAG=.*/EODI_WEB_TAG=${IMAGE_TAG}/" .env
             docker compose pull web
             docker compose up -d web
@@ -124,7 +124,7 @@ jobs:
   # Nginx
   # ========================
   nginx:
-    name: Nginx Build & Deploy
+    name: Nginx Config Deploy
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'push' ||
@@ -134,28 +134,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate image tag
-        run: |
-          TAG="$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}"
-          echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
-
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Copy nginx.conf to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: infra/prod/app/nginx/nginx.conf
+          target: /opt/eodi/nginx/
+          strip_components: 4
 
-      - uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build & Push Nginx Image
-        run: |
-          docker buildx build \
-            --platform linux/amd64 \
-            -t $ECR_REGISTRY/eodi-nginx:${IMAGE_TAG} \
-            -t $ECR_REGISTRY/eodi-nginx:latest \
-            --push ./infra/prod/app/nginx
-
-      - name: Deploy Nginx
+      - name: Restart nginx via docker compose
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -163,5 +152,5 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /opt/eodi/prod
-            docker compose pull nginx
+            docker compose down nginx
             docker compose up -d nginx
