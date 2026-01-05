@@ -1,4 +1,6 @@
-create table unmapped (
+DROP TABLE IF EXISTS unmapped;
+
+CREATE TABLE unmapped (
                           legal_dong_codes TEXT,
                           road_name_code VARCHAR(12),
                           building_main_no INTEGER,

@@ -13,11 +13,11 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     env_file:
-      - .env
+      - ../.env
     volumes:
       - eodi-mysql-data:/var/lib/mysql
-      - ../../db/mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
-      - ../../db/mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
+      - ../mysql/init-scripts:/docker-entrypoint-initdb.d # 초기화 SQL 실행 경로
+      - ../mysql/schema:/docker-entrypoint-initdb.d/schema # db schema
     restart: always
     mem_limit: 2g
 volumes:

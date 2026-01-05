@@ -5,7 +5,6 @@ USE __MYSQL_DATABASE__;
 -- address
 SOURCE /opt/eodi/mysql/schema/address/land_lot_address.sql;
 SOURCE /opt/eodi/mysql/schema/address/road_name_address.sql;
-SOURCE /opt/eodi/mysql/schema/address/road_name_code.sql;
 SOURCE /opt/eodi/mysql/schema/address/unmapped.sql;
 
 -- deal

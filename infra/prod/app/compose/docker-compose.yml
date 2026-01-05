@@ -1,50 +1,56 @@
-services:
+\services:
   # =========================
-  # Web (Nginx)
+  # Reverse Proxy (Nginx)
   # =========================
   nginx:
     image: nginx:alpine
-    options:
-      max-size: "100m"
-      max-file: "5"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
     networks:
       - eodi-frontend-net
     ports:
       - "80:80"
     volumes:
-      - /opt/eodi/compose/app/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /opt/eodi/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     restart: always
-    mem_limit: 100m
+    mem_limit: 64m
 
   # =========================
-  # Node.js
+  # WEB (Node.js + next.js)
   # =========================
-  node:
-    image: eodi-web:latest
-    options:
-      max-size: "100m"
-      max-file: "5"
+  web:
+    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
     networks:
       - eodi-frontend-net
-    mem_limit: 512m
+    mem_limit: 256m
     environment:
-      - NODE_OPTIONS=--max-old-space-size=512
+      - NODE_OPTIONS=--max-old-space-size=256
 
 
   # =========================
   # Application (Spring Boot)
   # =========================
   api:
-    image: eodi-api:latest
-    options:
-      max-size: "100m"
-      max-file: "5"
+    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-api:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
     networks:
       - eodi-frontend-net
     env_file:
       - /opt/eodi/env/api.env
     restart: always
-    mem_limit: 1g
+    mem_limit: 512m
 
 networks:
   eodi-frontend-net:

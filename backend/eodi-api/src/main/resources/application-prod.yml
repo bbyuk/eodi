@@ -1,0 +1,29 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 20
+
+logging:
+  level:
+    root: ERROR
+    com.bb: ERROR
+
+    # 서버/기동 맥락
+    org.springframework.boot: INFO
+    org.springframework.context: INFO
+
+    # 웹 요청 성공 로그 차단
+    org.springframework.web: ERROR
+
+    # DB 관련 소음 제거
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql: OFF

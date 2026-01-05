@@ -13,8 +13,9 @@ spring:
 
 logging:
   level:
-    org.springframework: debug
-    com.bb: debug
+    root: INFO
+    org.springframework: INFO
+    com.bb: INFO
 
 external:
   naver:
