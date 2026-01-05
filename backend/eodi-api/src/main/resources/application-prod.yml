@@ -11,3 +11,19 @@ spring:
     hikari:
       maximum-pool-size: 20
       minimum-idle: 20
+
+logging:
+  level:
+    root: ERROR
+    com.bb: ERROR
+
+    # 서버/기동 맥락
+    org.springframework.boot: INFO
+    org.springframework.context: INFO
+
+    # 웹 요청 성공 로그 차단
+    org.springframework.web: ERROR
+
+    # DB 관련 소음 제거
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql: OFF
