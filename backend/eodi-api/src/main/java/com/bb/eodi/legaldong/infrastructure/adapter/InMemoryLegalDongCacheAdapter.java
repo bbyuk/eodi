@@ -70,10 +70,6 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
             return;
         }
 
-        if (currentNode.getId().equals(6760L)) {
-            System.out.println("tree = " + tree);
-        }
-
         currentNode.connectToParent(tree.get(currentNode.getParentId()));
         traverse(tree, currentNode.getParent());
 
