@@ -59,7 +59,7 @@ jobs:
             --platform linux/amd64 \
             -t $ECR_REGISTRY/eodi-api:${IMAGE_TAG} \
             -t $ECR_REGISTRY/eodi-api:latest \
-            --push ./backend
+            --push ./backend/eodi-api
 
       - name: Deploy Backend
         uses: appleboy/ssh-action@v1.0.3
@@ -106,7 +106,7 @@ jobs:
             --platform linux/amd64 \
             -t $ECR_REGISTRY/eodi-web:${IMAGE_TAG} \
             -t $ECR_REGISTRY/eodi-web:latest \
-            --push ./frontend
+            --push ./frontend/eodi-web
 
       - name: Deploy Frontend
         uses: appleboy/ssh-action@v1.0.3
