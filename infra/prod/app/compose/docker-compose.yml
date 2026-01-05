@@ -1,6 +1,6 @@
-services:
+\services:
   # =========================
-  # Web (Nginx)
+  # Reverse Proxy (Nginx)
   # =========================
   nginx:
     image: nginx:alpine
@@ -19,9 +19,9 @@ services:
     mem_limit: 64m
 
   # =========================
-  # Node.js
+  # WEB (Node.js + next.js)
   # =========================
-  node:
+  web:
     image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:latest
     logging:
       driver: "json-file"
@@ -32,7 +32,7 @@ services:
       - eodi-frontend-net
     mem_limit: 256m
     environment:
-      - NODE_OPTIONS=--max-old-space-size=512
+      - NODE_OPTIONS=--max-old-space-size=256
 
 
   # =========================
