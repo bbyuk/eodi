@@ -22,7 +22,7 @@ services:
   # WEB (Node.js + next.js)
   # =========================
   web:
-    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:latest
+    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:${EODI_WEB_TAG}
     logging:
       driver: "json-file"
       options:
@@ -39,7 +39,7 @@ services:
   # Application (Spring Boot)
   # =========================
   api:
-    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-api:latest
+    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-api:${EODI_API_TAG}
     logging:
       driver: "json-file"
       options:
