@@ -4,28 +4,16 @@
 FROM gradle:8.6-jdk17 AS builder
 WORKDIR /app
 
-# ⭐ Gradle 옵션 (429 방지 핵심)
-ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2"
-
-# 1️⃣ 의존성 관련 파일만 먼저 복사 (캐시 핵심)
-COPY build.gradle settings.gradle gradle.properties ./
+# Gradle 캐시 최적화
+COPY build.gradle settings.gradle ./
 COPY gradle gradle
+RUN gradle dependencies --no-daemon || true
 
-# 2️⃣ 의존성만 미리 다운로드 (실패해도 캐시 유지)
-RUN gradle dependencies \
-    --no-daemon \
-    --no-parallel \
-    --max-workers=2 \
-    || true
-
-# 3️⃣ 소스 복사
+# 소스 복사
 COPY src src
 
-# 4️⃣ 실제 빌드
-RUN gradle build -x test \
-    --no-daemon \
-    --no-parallel \
-    --max-workers=2
+# 빌드
+RUN gradle build -x test --no-daemon
 
 
 # =========================
