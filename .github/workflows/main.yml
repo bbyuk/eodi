@@ -20,6 +20,7 @@ on:
           - backend
           - frontend
           - nginx
+          - compose
 
 permissions:
   id-token: write # OIDC 필수
@@ -174,3 +175,37 @@ jobs:
               "docker compose up -d nginx"
             ]'
 
+
+
+  # ========================
+  # Docker Compose Deploy
+  # ========================
+  compose:
+    name: Docker Compose Deploy
+    runs-on: ubuntu-latest
+
+    if: |
+      github.event_name == 'push' && (
+        contains(github.event.head_commit.modified, 'infra/prod/app/compose')
+      ) ||
+      github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'compose'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials - OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::265507129563:role/role-github-actions-eodi
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy docker-compose via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=tag:Name,Values=eodi-app" \
+            --parameters 'commands=[
+              "cd /opt/eodi/compose",
+              "docker compose pull",
+              "docker compose up -d"
+            ]'
