@@ -71,6 +71,7 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/amd64 \
+            -f backend/eodi-api/Dockerfile \
             -t $ECR_REGISTRY/eodi-api:${IMAGE_TAG} \
             -t $ECR_REGISTRY/eodi-api:latest \
             --push ./backend/eodi-api
