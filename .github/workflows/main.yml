@@ -1,4 +1,4 @@
-name: Build & Deploy (Monorepo)
+name: Build & Deploy
 
 on:
   push:
@@ -20,6 +20,10 @@ on:
           - backend
           - frontend
           - nginx
+
+permissions:
+  id-token: write # OIDC 필수
+  contents: read
 
 env:
   AWS_REGION: ap-northeast-2
@@ -45,11 +49,11 @@ jobs:
           TAG="$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}"
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials - OIDC
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::265507129563:role/role-github-actions-eodi
+          aws-region: ap-northeast-2
 
       - uses: aws-actions/amazon-ecr-login@v2
 
@@ -61,17 +65,17 @@ jobs:
             -t $ECR_REGISTRY/eodi-api:latest \
             --push ./backend/eodi-api
 
-      - name: Deploy Backend
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /opt/eodi/compose
-            sed -i "s/^EODI_API_TAG=.*/EODI_API_TAG=${IMAGE_TAG}/" .env
-            docker compose pull api
-            docker compose up -d api
+      - name: Deploy Backend via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=tag:Name,Values=eodi-app" \
+            --parameters 'commands=[
+              "cd /opt/eodi/compose",
+              "sed -i \"s/^EODI_API_TAG=.*/EODI_API_TAG='${IMAGE_TAG}'/\" .env",
+              "docker compose pull api",
+              "docker compose up -d api"
+            ]'
 
   # ========================
   # Frontend (Web)
@@ -92,11 +96,11 @@ jobs:
           TAG="$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}"
           echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials - OIDC
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::265507129563:role/role-github-actions-eodi
+          aws-region: ap-northeast-2
 
       - uses: aws-actions/amazon-ecr-login@v2
 
@@ -108,17 +112,17 @@ jobs:
             -t $ECR_REGISTRY/eodi-web:latest \
             --push ./frontend/eodi-web
 
-      - name: Deploy Frontend
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /opt/eodi/compose
-            sed -i "s/^EODI_WEB_TAG=.*/EODI_WEB_TAG=${IMAGE_TAG}/" .env
-            docker compose pull web
-            docker compose up -d web
+      - name: Deploy Frontend via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=tag:Name,Values=eodi-app" \
+            --parameters 'commands=[
+              "cd /opt/eodi/compose",
+              "sed -i \"s/^EODI_WEB_TAG=.*/EODI_WEB_TAG='${IMAGE_TAG}'/\" .env",
+              "docker compose pull web",
+              "docker compose up -d web"
+            ]'
 
   # ========================
   # Nginx
@@ -134,23 +138,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy nginx.conf to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: infra/prod/app/nginx/nginx.conf
-          target: /opt/eodi/nginx/
-          strip_components: 4
+      - name: Deploy Nginx via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=tag:Name,Values=eodi-app" \
+            --parameters 'commands=[
+              "cp infra/prod/app/nginx/nginx.conf /opt/eodi/nginx/nginx.conf",
+              "cd /opt/eodi/prod",
+              "docker compose down nginx",
+              "docker compose up -d nginx"
+            ]'
 
-      - name: Restart nginx via docker compose
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /opt/eodi/prod
-            docker compose down nginx
-            docker compose up -d nginx
