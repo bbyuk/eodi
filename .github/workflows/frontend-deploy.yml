@@ -47,7 +47,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --targets Key=tag:project,Values=eodi Key=tag:phase,Values=prod Key=tag:role,Values=app \
             --parameters 'commands=[
-              "cd /opt/eodi/compose",
+              "cd /opt/eodi/infra/prod/app/compose",
               "echo \"[DEPLOY] frontend image tag: ${{ inputs.image_tag }}\"",
               "sed -i \"s/^EODI_WEB_TAG=.*/EODI_WEB_TAG=${{ inputs.image_tag }}/\" .env",
               "docker compose pull web",
