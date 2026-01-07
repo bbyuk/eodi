@@ -9,10 +9,10 @@ permissions:
 
 jobs:
   build:
-    uses: ./.github/workflows/frontend/frontend-build.yml
+    uses: ./.github/workflows/frontend-build.yml
 
   deploy:
     needs: build
-    uses: ./.github/workflows/frontend/frontend-deploy.yml
+    uses: ./.github/workflows/frontend-deploy.yml
     with:
       image_tag: ${{ needs.build.outputs.image_tag }}

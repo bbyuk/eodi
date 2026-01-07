@@ -9,10 +9,10 @@ permissions:
 
 jobs:
   build:
-    uses: ./.github/workflows/backend/backend-build.yml
+    uses: ./.github/workflows/backend-build.yml
 
   deploy:
     needs: build
-    uses: ./.github/workflows/backend/backend-deploy.yml
+    uses: ./.github/workflows/backend-deploy.yml
     with:
       image_tag: ${{ needs.build.outputs.image_tag }}
