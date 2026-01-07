@@ -1,0 +1,55 @@
+name: Backend - Deploy (Compose)
+
+on:
+  # 단독 수동 배포 (롤백 / 재배포용)
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "ECR image tag to deploy (e.g. 20260107-2230-a1b2c3d)"
+        required: true
+
+  # orchestration에서 호출 가능
+  workflow_call:
+    inputs:
+      image_tag:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  AWS_IAM_ROLE: arn:aws:iam::265507129563:role/role-github-actions-eodi
+
+jobs:
+  deploy:
+    name: Deploy Backend API
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------
+      # AWS OIDC 인증
+      # ------------------------
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ------------------------
+      # EC2 (SSM)에서 compose 재기동
+      # ------------------------
+      - name: Deploy backend via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets Key=tag:project,Values=eodi Key=tag:phase,Values=prod Key=tag:role,Values=app \
+            --parameters 'commands=[
+              "cd /opt/eodi/compose",
+              "echo \"[DEPLOY] backend image tag: ${{ inputs.image_tag }}\"",
+              "sed -i \"s/^EODI_API_TAG=.*/EODI_API_TAG=${{ inputs.image_tag }}/\" .env",
+              "docker compose pull api",
+              "docker compose up -d api"
+            ]'
