@@ -52,11 +52,15 @@ jobs:
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --targets Key=tag:project,Values=eodi Key=tag:phase,Values=prod Key=tag:role,Values=app \
+            --targets '[
+              {"Key":"tag:project","Values":["eodi"]},
+              {"Key":"tag:phase","Values":["prod"]},
+              {"Key":"tag:role","Values":["app"]}
+            ]' \
             --parameters 'commands=[
               "cd /opt/eodi/infra/prod/app/compose",
               "echo \"[DEPLOY] backend image tag: $IMAGE_TAG\"",
-              "export EODI_API_TAG=IMAGE_TAG",
+              "export EODI_API_TAG=$IMAGE_TAG",
               "docker compose -f docker-compose.api.yml pull",
               "docker compose -f docker-compose.api.yml up -d"
             ]'
