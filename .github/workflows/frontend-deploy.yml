@@ -19,6 +19,8 @@ on:
         required: true
       AWS_IAM_ROLE:
         required: true
+      AWS_ECR_REGISTRY:
+        required: true
 
 permissions:
   id-token: write
@@ -27,6 +29,7 @@ permissions:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
+  AWS_ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
 
 jobs:
   deploy:
@@ -47,19 +50,38 @@ jobs:
       # EC2 (SSM)에서 compose 재기동
       # ------------------------
       - name: Deploy frontend via SSM
+        id: ssm_web
         env:
           IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          aws ssm send-command \
+          COMMAND_ID=$(aws ssm send-command \
+            --region $AWS_REGION \
             --document-name "AWS-RunShellScript" \
             --targets \
               "Key=tag:project,Values=eodi" \
               "Key=tag:phase,Values=prod" \
               "Key=tag:role,Values=app" \
             --parameters 'commands=[
+              "set -e",
               "cd /opt/eodi/infra/prod/app/compose",
-              "echo \"[DEPLOY] backend image tag: $IMAGE_TAG\"",
-              "export EODI_WEB_TAG=$IMAGE_TAG",
+              "echo \"[DEPLOY] frontend image tag: '"$IMAGE_TAG"'\"",
+              
+              \"aws ecr get-login-password --region '"$AWS_REGION"' | docker login --username AWS --password-stdin '"$AWS_ECR_REGISTRY"'\",
+              
+              "export EODI_WEB_TAG='"$IMAGE_TAG"'",
               "docker compose -f docker-compose.web.yml pull",
               "docker compose -f docker-compose.web.yml up -d"
-            ]'
+            ]' \
+            --query 'Command.CommandId' \
+            --output text)
+          
+          echo "COMMAND_ID=$COMMAND_ID" >> $GITHUB_ENV
+          echo "SSM Web CommandId = $COMMAND_ID"
+      - name: Fetch frontend SSM result
+        run: |
+          sleep 5
+          aws ssm list-command-invocations \
+            --command-id "$COMMAND_ID" \
+            --details \
+            --region "$AWS_REGION"
+
