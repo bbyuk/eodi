@@ -64,7 +64,7 @@ jobs:
               "cd /opt/eodi/infra/prod/app/compose",
               "echo \"[DEPLOY] backend image tag: '"$IMAGE_TAG"'\"",
               "export EODI_API_TAG='"$IMAGE_TAG"'",
-              \"aws ecr get-login-password --region '"$AWS_REGION"' | docker login --username AWS --password-stdin '"$AWS_ECR_REGISTRY"'\",
+              "aws ecr get-login-password --region '"$AWS_REGION"' | docker login --username AWS --password-stdin '"$AWS_ECR_REGISTRY"'",
               "docker compose -f docker-compose.api.yml pull",
               "docker compose -f docker-compose.api.yml up -d"
             ]' \
