@@ -10,9 +10,16 @@ permissions:
 jobs:
   build:
     uses: ./.github/workflows/frontend-build.yml
+    secrets:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
+      AWS_ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
 
   deploy:
     needs: build
     uses: ./.github/workflows/frontend-deploy.yml
     with:
       image_tag: ${{ needs.build.outputs.image_tag }}
+    secrets:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
