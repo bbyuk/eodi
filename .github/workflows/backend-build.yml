@@ -21,11 +21,6 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  AWS_REGION: ap-northeast-2
-  AWS_IAM_ROLE: arn:aws:iam::265507129563:role/role-github-actions-eodi
-  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-
 jobs:
   build:
     name: Build Backend Docker Image
@@ -53,8 +48,8 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_IAM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -71,6 +66,6 @@ jobs:
             --platform linux/amd64 \
             --progress=plain \
             -f backend/eodi-api/Dockerfile \
-            -t $ECR_REGISTRY/eodi-api:${{ steps.meta.outputs.image_tag }} \
-            -t $ECR_REGISTRY/eodi-api:latest \
+            -t ${{ secrets.AWS_ECR_REGISTRY }}/eodi-api:${{ steps.meta.outputs.image_tag }} \
+            -t ${{ secrets.AWS_ECR_REGISTRY }}/eodi-api:latest \
             --push backend/eodi-api
