@@ -19,6 +19,9 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
 
 jobs:
   deploy:
@@ -32,21 +35,23 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
 
       # ------------------------
       # EC2 (SSM)에서 compose 재기동
       # ------------------------
       - name: Deploy frontend via SSM
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets Key=tag:project,Values=eodi Key=tag:phase,Values=prod Key=tag:role,Values=app \
             --parameters 'commands=[
               "cd /opt/eodi/infra/prod/app/compose",
-              "echo \"[DEPLOY] frontend image tag: ${{ inputs.image_tag }}\"",
-              "sed -i \"s/^EODI_WEB_TAG=.*/EODI_WEB_TAG=${{ inputs.image_tag }}/\" .env",
+              "echo \"[DEPLOY] backend image tag: $IMAGE_TAG\"",
+              "export EODI_WEB_TAG=IMAGE_TAG",
               "docker compose -f docker-compose.web.yml pull",
               "docker compose -f docker-compose.web.yml up -d"
             ]'
