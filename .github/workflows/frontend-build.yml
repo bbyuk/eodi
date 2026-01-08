@@ -18,6 +18,11 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
+  AWS_ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
+
 jobs:
   build:
     name: Build Frontend Docker Image
@@ -45,8 +50,8 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -58,11 +63,13 @@ jobs:
       # Docker Build & Push
       # ------------------------
       - name: Build & Push Frontend Image
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.image_tag }}
         run: |
           docker buildx build \
             --platform linux/amd64 \
             --progress=plain \
             -f frontend/eodi-web/Dockerfile \
-            -t ${{ secrets.ECR_REGISTRY }}/eodi-web:${{ steps.meta.outputs.image_tag }} \
-            -t ${{ secrets.ECR_REGISTRY }}/eodi-web:latest \
+            -t $AWS_ECR_REGISTRY/eodi-web:$IMAGE_TAG \
+            -t $AWS_ECR_REGISTRY/eodi-web:latest \
             --push frontend/eodi-web
