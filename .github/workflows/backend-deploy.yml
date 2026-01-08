@@ -50,6 +50,6 @@ jobs:
               "cd /opt/eodi/infra/prod/app/compose",
               "echo \"[DEPLOY] backend image tag: ${{ inputs.image_tag }}\"",
               "export EODI_API_TAG=${{ inputs.image_tag }}",
-              "docker compose pull api",
-              "docker compose up -d api"
+              "docker compose -f docker-compose.api.yml pull",
+              "docker compose -f docker-compose.api.yml up -d"
             ]'

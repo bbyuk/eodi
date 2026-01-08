@@ -50,6 +50,6 @@ jobs:
               "cd /opt/eodi/infra/prod/app/compose",
               "echo \"[DEPLOY] frontend image tag: ${{ inputs.image_tag }}\"",
               "sed -i \"s/^EODI_WEB_TAG=.*/EODI_WEB_TAG=${{ inputs.image_tag }}/\" .env",
-              "docker compose pull web",
-              "docker compose up -d web"
+              "docker compose -f docker-compose.web.yml pull",
+              "docker compose -f docker-compose.web.yml up -d"
             ]'
