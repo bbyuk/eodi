@@ -63,3 +63,10 @@ jobs:
               "docker compose -f docker-compose.api.yml pull",
               "docker compose -f docker-compose.api.yml up -d"
             ]'
+      - name: Wait & fetch SSM result
+        run: |
+          sleep 5
+          aws ssm list-command-invocations \
+            --command-id $COMMAND_ID \
+            --details \
+            --region $AWS_REGION
