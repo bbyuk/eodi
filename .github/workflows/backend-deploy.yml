@@ -19,6 +19,8 @@ on:
         required: true
       AWS_IAM_ROLE:
         required: true
+      AWS_ECR_REGISTRY:
+        required: true
 
 permissions:
   id-token: write
@@ -27,6 +29,7 @@ permissions:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
+  AWS_ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
 
 jobs:
   deploy:
@@ -61,6 +64,7 @@ jobs:
               "cd /opt/eodi/infra/prod/app/compose",
               "echo \"[DEPLOY] backend image tag: '"$IMAGE_TAG"'\"",
               "export EODI_API_TAG='"$IMAGE_TAG"'",
+              \"aws ecr get-login-password --region '"$AWS_REGION"' | docker login --username AWS --password-stdin '"$AWS_ECR_REGISTRY"'\",
               "docker compose -f docker-compose.api.yml pull",
               "docker compose -f docker-compose.api.yml up -d"
             ]' \
