@@ -12,6 +12,13 @@ on:
 
   # 다음 단계에서 orchestration용
   workflow_call:
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_IAM_ROLE:
+        required: true
+      AWS_ECR_REGISTRY:
+        required: true
     outputs:
       image_tag:
         description: "Built backend image tag"

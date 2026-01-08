@@ -9,6 +9,13 @@ on:
   workflow_dispatch:
 
   workflow_call:
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_IAM_ROLE:
+        required: true
+      AWS_ECR_REGISTRY:
+        required: true
     outputs:
       image_tag:
         description: "Built frontend image tag"
