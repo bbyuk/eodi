@@ -47,10 +47,11 @@ jobs:
       # EC2 (SSM)에서 compose 재기동
       # ------------------------
       - name: Deploy backend via SSM
+        id: ssm
         env:
           IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          aws ssm send-command \
+          COMMAND_ID=$(aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets \
               "Key=tag:project,Values=eodi" \
@@ -58,15 +59,21 @@ jobs:
               "Key=tag:role,Values=app" \
             --parameters 'commands=[
               "cd /opt/eodi/infra/prod/app/compose",
-              "echo \"[DEPLOY] backend image tag: $IMAGE_TAG\"",
-              "export EODI_API_TAG=$IMAGE_TAG",
+              "echo \"[DEPLOY] backend image tag: '"$IMAGE_TAG"'\"",
+              "export EODI_API_TAG='"$IMAGE_TAG"'",
               "docker compose -f docker-compose.api.yml pull",
               "docker compose -f docker-compose.api.yml up -d"
-            ]'
+            ]' \
+            --query 'Command.CommandId' \
+            --output text)
+
+          echo "COMMAND_ID=$COMMAND_ID" >> $GITHUB_ENV
+          echo "SSM CommandId = $COMMAND_ID"
       - name: Wait & fetch SSM result
         run: |
           sleep 5
           aws ssm list-command-invocations \
-            --command-id $COMMAND_ID \
+            --command-id "$COMMAND_ID" \
             --details \
-            --region $AWS_REGION
+            --region "$AWS_REGION"
+
