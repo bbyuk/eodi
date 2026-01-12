@@ -16,6 +16,8 @@ on:
         required: true
       AWS_ECR_REGISTRY:
         required: true
+      NEXT_PUBLIC_API_BASE_URL:
+        required: true
     outputs:
       image_tag:
         description: "Built frontend image tag"
@@ -29,6 +31,7 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
   AWS_ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
+  NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
 jobs:
   build:
@@ -79,4 +82,5 @@ jobs:
             -f frontend/eodi-web/Dockerfile \
             -t $AWS_ECR_REGISTRY/eodi-web:$IMAGE_TAG \
             -t $AWS_ECR_REGISTRY/eodi-web:latest \
+            -t build-arg NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
             --push frontend/eodi-web
