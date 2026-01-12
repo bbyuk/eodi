@@ -25,5 +25,10 @@ logging:
     org.springframework.web: ERROR
 
     # DB 관련 소음 제거
-    org.hibernate.SQL: OFF
-    org.hibernate.type.descriptor.sql: OFF
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql: WARN
+    org.springframework.data.jpa.repository.query.QueryEnhancerFactory: OFF
+
+cors:
+  allowed-origins:
+    - https://eodi.net

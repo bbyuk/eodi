@@ -4,3 +4,7 @@ spring:
     username: eodi_app
     password: eodi_app_pw
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+cors:
+  allowed-origins:
+    - http://localhost:3000
