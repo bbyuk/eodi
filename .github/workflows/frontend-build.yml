@@ -79,8 +79,8 @@ jobs:
           docker buildx build \
             --platform linux/amd64 \
             --progress=plain \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
             -f frontend/eodi-web/Dockerfile \
             -t $AWS_ECR_REGISTRY/eodi-web:$IMAGE_TAG \
             -t $AWS_ECR_REGISTRY/eodi-web:latest \
-            -t build-arg NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
             --push frontend/eodi-web
