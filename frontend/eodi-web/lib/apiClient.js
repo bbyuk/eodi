@@ -1,5 +1,12 @@
 // /lib/apiClient.js
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+
+const BASE_URL = (() => {
+  const value = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  if (!value) throw new Error("BASE_URL environment variable is not set");
+
+  return value;
+})();
 
 /**
  * 객체 → 쿼리스트링 변환
