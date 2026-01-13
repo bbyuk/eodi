@@ -1,6 +1,8 @@
 spring:
   application:
     name: eodi-api
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:
