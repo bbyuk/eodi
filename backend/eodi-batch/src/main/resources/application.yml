@@ -55,7 +55,9 @@ api:
         phase: dev
         path: 1741000/StanReginCd/getStanReginCdList
         expiration: 2027-09-05
-
+  juso:
+    key: ${JUSO_LINKAGE_API_KEY:default}
+    temp-file-path: C:\\Users\\User\\Desktop\\private\\workspace\\eodi-project\\eodi\\bootstrap\\address\\address_temp
 # 로깅
 logging:
   level:
