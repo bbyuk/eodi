@@ -20,8 +20,10 @@ class AddressLinkageApiClientTest {
         LocalDate yesterday = LocalDate.of(2026, 1, 13);
         LocalDate today = LocalDate.of(2026, 1, 14);
 
-        addressLinkageApiClient.downloadUpdatedAddress(yesterday, today);
+        String targetDirectory = "/Users/kanghyuk/Desktop/workspace/eodi-project/eodi/bootstrap";
+
         // when
+        addressLinkageApiClient.downloadUpdatedAddress(targetDirectory, yesterday, today);
 
         // then
     }

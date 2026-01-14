@@ -26,9 +26,6 @@ public class AddressLinkageApiClient implements AddressLinkageApiPort {
     @Value("${api.juso.key}")
     private String apiKey;
 
-    @Value("${api.juso.temp-file-path}")
-    private String tempFilePath;
-
     /**
      * ============= 송수신포맷 =============
      */
@@ -44,12 +41,12 @@ public class AddressLinkageApiClient implements AddressLinkageApiPort {
 
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    private void callAPI(String fromDate, String toDate, String targetCode) {
+    private void callAPI(String targetDirectory, String fromDate, String toDate, String targetCode) {
         ADSReceiver ads = new ADSReceiver();  // ADSReceiver객체 생성
         String retry_in = "Y";        // 재반영 요청 여부
 
         // 일변동 자료를 저장할 파일경로를 설정합니다.
-        ads.setFilePath(tempFilePath);
+        ads.setFilePath(targetDirectory);
         ads.setCreateDateDirectory(ADSUtils.YYMMDD);
         try {
             // 변동자료 연계서비스 요청 및 응답데이터 확인
@@ -63,13 +60,16 @@ public class AddressLinkageApiClient implements AddressLinkageApiPort {
                 log.error("Result code : {}", receiveDatas.getResult());
                 log.error("Response code : {}", receiveDatas.getResCode());
                 log.error("Response msg : {}", receiveDatas.getResMsg());
-                return;
+
+                throw new RuntimeException(receiveDatas.getResMsg());
             }
 
             if (!"P0000".equals(receiveDatas.getResCode())) {
                 log.error("Result code : {}", receiveDatas.getResult());
                 log.error("Response code : {}", receiveDatas.getResCode());
                 log.error("Response msg : {}", receiveDatas.getResMsg());
+
+                throw new RuntimeException(receiveDatas.getResMsg());
             }
 
             log.info("Response code : {}", receiveDatas.getResCode());  // 응답 코드
@@ -90,11 +90,12 @@ public class AddressLinkageApiClient implements AddressLinkageApiPort {
                     log.error("해당파일에 대한 응답이 정상이 아니기에 재요청 필요");
                     log.error("Response code : {}", receiveData.getResCode());
                     log.error("Response msg : {}", receiveData.getResMsg());
-                    throw new RuntimeException("해당파일에 대한 응답이 정상이 아니기에 재요청 필요");
+                    throw new RuntimeException(receiveData.getResMsg());
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -120,9 +121,9 @@ public class AddressLinkageApiClient implements AddressLinkageApiPort {
      * @param toDate 대상기간 종료일자
      */
     @Override
-    public void downloadUpdatedAddress(LocalDate fromDate, LocalDate toDate) {
+    public void downloadUpdatedAddress(String targetDirectory, LocalDate fromDate, LocalDate toDate) {
         validateDateParameter(fromDate, toDate);
-        callAPI(dtf.format(fromDate), dtf.format(toDate), ROAD_NAME_ADDRESS_CODE);
+        callAPI(targetDirectory, dtf.format(fromDate), dtf.format(toDate), ROAD_NAME_ADDRESS_CODE);
     }
 
     /**
@@ -131,9 +132,9 @@ public class AddressLinkageApiClient implements AddressLinkageApiPort {
      * @param toDate 대상기간 종료일자
      */
     @Override
-    public void downloadUpdatedAddressPosition(LocalDate fromDate, LocalDate toDate) {
+    public void downloadUpdatedAddressPosition(String targetDirectory, LocalDate fromDate, LocalDate toDate) {
         validateDateParameter(fromDate, toDate);
-        callAPI(dtf.format(fromDate), dtf.format(toDate), ROAD_NAME_ADDRESS_ENTRANCE_CODE);
+        callAPI(targetDirectory, dtf.format(fromDate), dtf.format(toDate), ROAD_NAME_ADDRESS_ENTRANCE_CODE);
     }
 
 
