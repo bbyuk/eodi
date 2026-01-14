@@ -4,11 +4,13 @@ spring:
     name: eodi-batch
   datasource:
     hikari:
-      maximum-pool-size: 1
-      minimum-idle: 1
+      maximum-pool-size: 15
+      minimum-idle: 15
   jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: none         # none, validate, update, create, create-drop
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
@@ -17,7 +19,6 @@ spring:
           batch_size: 1000
         order_inserts: true
         order_updates: true
-    open-in-view: false      # 배치/백엔드 서비스라면 false 권장
   config:
     import: optional:classpath:.env[.properties]
   main:
