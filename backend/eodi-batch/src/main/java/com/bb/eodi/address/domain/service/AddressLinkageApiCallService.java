@@ -1,7 +1,6 @@
 package com.bb.eodi.address.domain.service;
 
 import com.bb.eodi.address.domain.port.AddressLinkageApiPort;
-import com.bb.eodi.address.domain.vo.AddressLinkagePeriod;
 import com.bb.eodi.ops.domain.entity.ReferenceVersion;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import static com.bb.eodi.ops.domain.enums.ReferenceTarget.ADDRESS;
+
 /**
  * 주소 연계 API 요청 담당 서비스
  */
@@ -21,7 +22,6 @@ public class AddressLinkageApiCallService {
 
     private final ReferenceVersionRepository referenceVersionRepository;
     private final AddressLinkageApiPort addressLinkageApiPort;
-    private static final String addressReferenceName = "address";
 
     /**
      * 대상 디렉터리에 마지막 최신 일자부터 현재 일자까지 변동분 파일을 다운로드한다.
@@ -32,8 +32,8 @@ public class AddressLinkageApiCallService {
      */
     @Transactional(readOnly = true)
     public AddressLinkageResult downloadNewFiles(String targetDirectory, AddressLinkagePeriod period) throws JobInterruptedException {
-        ReferenceVersion referenceVersion = referenceVersionRepository.findByTargetName(addressReferenceName)
-                .orElseThrow(() -> new RuntimeException(addressReferenceName + " 기준정보 버전 정보를 찾지 못했습니다."));
+        ReferenceVersion referenceVersion = referenceVersionRepository.findByTargetName(ADDRESS.getValue())
+                .orElseThrow(() -> new RuntimeException(ADDRESS.getValue() + " 기준정보 버전 정보를 찾지 못했습니다."));
 
         if (!period.to().isAfter(referenceVersion.getEffectiveDate())) {
             return AddressLinkageResult.ALREADY_UP_TO_DATE;
@@ -70,7 +70,7 @@ public class AddressLinkageApiCallService {
     @Transactional(readOnly = true)
     public AddressLinkagePeriod findTargetPeriod() {
         return new AddressLinkagePeriod(
-                referenceVersionRepository.findByTargetName(addressReferenceName)
+                referenceVersionRepository.findByTargetName(ADDRESS.getValue())
                         .orElseThrow(() -> new RuntimeException("주소 기준정보 버전을 찾지 못했습니다."))
                         .getEffectiveDate()
                         .plusDays(1),

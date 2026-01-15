@@ -1,12 +1,9 @@
 package com.bb.eodi.address.job.config;
 
-import com.bb.eodi.address.domain.port.AddressLinkageApiPort;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
 import com.bb.eodi.address.domain.service.AddressLinkageResult;
-import com.bb.eodi.address.domain.vo.AddressLinkagePeriod;
+import com.bb.eodi.address.domain.service.AddressLinkagePeriod;
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.ops.domain.entity.ReferenceVersion;
-import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobInterruptedException;
@@ -23,9 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 /**
  * 도로명주소 일변동 적용 일배치 job config
