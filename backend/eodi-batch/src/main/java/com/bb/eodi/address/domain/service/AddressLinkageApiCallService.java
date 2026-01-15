@@ -48,7 +48,7 @@ public class AddressLinkageApiCallService {
 
             for (int i = 0; i < mul; i++) {
                 LocalDate fixedFromDate = period.from().plusDays(i * 10);
-                LocalDate fixedToDate = period.to().plusDays((i + 1) * 10);
+                LocalDate fixedToDate = period.from().plusDays((i + 1) * 10 - 1);
 
                 addressLinkageApiPort.downloadUpdatedAddress(targetDirectory, fixedFromDate, fixedToDate);
             }

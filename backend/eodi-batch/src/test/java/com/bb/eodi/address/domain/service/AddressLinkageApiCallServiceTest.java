@@ -12,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,14 +34,6 @@ class AddressLinkageApiCallServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-
-    }
-
-
-    @Test
-    @DisplayName("대상 기간 조회 테스트")
-    void testFindTargetPeriod() throws Exception {
-        // given
         when(referenceVersionRepository.findByTargetName(any()))
                 .thenReturn(Optional.of(
                         ReferenceVersion.builder()
@@ -47,6 +41,13 @@ class AddressLinkageApiCallServiceTest {
                                 .effectiveDate(LocalDate.of(2025, 11, 30))
                                 .build()
                 ));
+    }
+
+
+    @Test
+    @DisplayName("대상 기간 조회 테스트")
+    void testFindTargetPeriod() throws Exception {
+        // given
 
 
         // when
@@ -56,5 +57,30 @@ class AddressLinkageApiCallServiceTest {
         // then
         Assertions.assertThat(targetPeriod.duration()).isEqualTo(45);
     }
+
+    @Test
+    @DisplayName("연계 API 호출 및 다운로드 테스트")
+    void testLinkageApiCallAndDownload() throws Exception {
+        // given
+
+        // when
+        AddressLinkagePeriod targetPeriod = service.findTargetPeriod();
+        String targetDirectory = "C:\\Users\\User\\Desktop\\private\\workspace\\eodi-project\\eodi\\bootstrap\\address\\address_temp";
+        AddressLinkageResult addressLinkageResult = service.downloadNewFiles(
+                targetDirectory,
+                targetPeriod
+        );
+
+        File dir = new File(targetDirectory);
+
+        // then
+        try {
+            Assertions.assertThat(dir.listFiles().length).isEqualTo(46);
+        }
+        finally {
+            Arrays.stream(dir.listFiles()).forEach(File::delete);
+        }
+    }
+
 
 }
