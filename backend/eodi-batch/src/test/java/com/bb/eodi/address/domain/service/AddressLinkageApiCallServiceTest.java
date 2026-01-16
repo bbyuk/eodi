@@ -1,5 +1,6 @@
 package com.bb.eodi.address.domain.service;
 
+import com.bb.eodi.common.utils.FileCleaner;
 import com.bb.eodi.ops.domain.entity.ReferenceVersion;
 import com.bb.eodi.ops.domain.enums.ReferenceTarget;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
@@ -78,7 +79,9 @@ class AddressLinkageApiCallServiceTest {
             Assertions.assertThat(dir.listFiles().length).isEqualTo(46);
         }
         finally {
-            Arrays.stream(dir.listFiles()).forEach(File::delete);
+            Arrays.stream(dir.listFiles())
+                    .map(File::toPath)
+                    .forEach(FileCleaner::deleteAll);
         }
     }
 
