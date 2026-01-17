@@ -61,6 +61,10 @@ public class LandLotAddressUpdateItemReader implements ResourceAwareItemReaderIt
             return null; // 파일 끝 → MultiResourceItemReader가 다음 파일로 전환
         }
 
+        if (line.equals("No Data")) {
+            return null;
+        }
+
         lineNumber++;
 
         return parse(line);
