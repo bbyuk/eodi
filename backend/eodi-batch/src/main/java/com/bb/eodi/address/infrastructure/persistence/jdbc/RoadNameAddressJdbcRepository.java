@@ -225,4 +225,79 @@ public class RoadNameAddressJdbcRepository {
             ps.setObject(i++, entity.getBuildingSubNo(), INTEGER);
         });
     }
+
+    /**
+     * 도로명 주소를 batch update한다.
+     *
+     * @param items     배치 Update할 데이터
+     * @param batchSize 배치 size
+     */
+    public void batchUpdate(Collection<? extends RoadNameAddress> items, int batchSize) {
+        String sql = """
+                UPDATE  road_name_address
+                SET     legal_dong_code = ?,
+                        sido_name = ?,
+                        sigungu_name = ?,
+                        umd_name = ?,
+                        ri_name = ?,
+                        is_mountain = ?,
+                        land_lot_main_no = ?,
+                        land_lot_sub_no = ?,
+                        road_name = ?,
+                        adm_donc_code = ?,
+                        adm_dong_name = ?,
+                        basic_district_no = ?,
+                        before_road_name_address = ?,
+                        effect_start_date = ?,
+                        is_multi = ?,
+                        update_reason_code = ?,
+                        building_name = ?,
+                        sigungu_building_name = ?,
+                        remark = ?
+                WHERE   id = ?
+                """;
+
+        jdbcTemplate.batchUpdate(
+                sql, items, batchSize, (ps, entity) -> {
+                    ps.setObject(1, entity.getLegalDongCode(), VARCHAR);
+                    ps.setObject(2, entity.getSidoName(), VARCHAR);
+                    ps.setObject(3, entity.getSigunguName(), VARCHAR);
+                    ps.setObject(4, entity.getUmdName(), VARCHAR);
+                    ps.setObject(5, entity.getIsMountain(), VARCHAR);
+                    ps.setObject(6, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(7, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(8, entity.getRoadNameCode(), VARCHAR);
+                    ps.setObject(9, entity.getAdmDongCode(), VARCHAR);
+                    ps.setObject(10, entity.getAdmDongName(), VARCHAR);
+                    ps.setObject(11, entity.getBasicDistrictNo(), VARCHAR);
+                    ps.setObject(12, entity.getBeforeRoadNameAddress(), VARCHAR);
+                    ps.setObject(13, entity.getEffectStartDate(), VARCHAR);
+                    ps.setObject(14, entity.getIsMulti(), VARCHAR);
+                    ps.setObject(15, entity.getUpdateReasonCode(), VARCHAR);
+                    ps.setObject(16, entity.getBuildingName(), VARCHAR);
+                    ps.setObject(17, entity.getSigunguBuildingName(), VARCHAR);
+                    ps.setObject(18, entity.getRemark(), VARCHAR);
+                    ps.setObject(19, entity.getId(), BIGINT);
+                }
+        );
+    }
+
+    /**
+     * 도로명 주소를 batch delete한다.
+     *
+     * @param items     배치 delete할 데이터
+     * @param batchSize 배치 size
+     */
+    public void batchDelete(Collection<? extends RoadNameAddress> items, int batchSize) {
+
+        String sql = """
+                DELETE
+                FROM    road_name_address
+                WHERE   id = ?
+                """;
+        jdbcTemplate.batchUpdate(
+                sql, items, batchSize, (ps, entity) -> {
+                     ps.setObject(1, entity.getId(), BIGINT);
+                });
+    }
 }

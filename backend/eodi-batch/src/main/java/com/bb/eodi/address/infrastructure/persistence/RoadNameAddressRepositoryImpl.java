@@ -69,4 +69,14 @@ public class RoadNameAddressRepositoryImpl implements RoadNameAddressRepository 
                 .where(condition)
                 .fetch();
     }
+
+    @Override
+    public void updateBatch(Collection<? extends RoadNameAddress> items) {
+        roadNameAddressJdbcRepository.batchUpdate(items, eodiBatchProperties.batchSize());
+    }
+
+    @Override
+    public void deleteBatch(Collection<? extends RoadNameAddress> items) {
+        roadNameAddressJdbcRepository.batchDelete(items, eodiBatchProperties.batchSize());
+    }
 }
