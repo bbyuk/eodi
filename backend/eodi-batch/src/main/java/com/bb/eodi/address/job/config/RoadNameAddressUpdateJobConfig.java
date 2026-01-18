@@ -7,43 +7,40 @@ import com.bb.eodi.address.domain.service.AddressLinkagePeriod;
 import com.bb.eodi.address.domain.service.AddressLinkageResult;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
-import com.bb.eodi.address.job.reader.LandLotAddressUpdateItemReader;
+import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
-import com.bb.eodi.address.job.reader.RoadNameAddressUpdateItemReader;
 import com.bb.eodi.common.utils.FileCleaner;
 import com.bb.eodi.core.EodiBatchProperties;
+import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -59,6 +56,8 @@ public class RoadNameAddressUpdateJobConfig {
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
 
+    private static final DateTimeFormatter API_CALL_PARAMETER_DTF = DateTimeFormatter.ofPattern("yyMMdd");
+    private static final DateTimeFormatter DOWNLOADED_FILE_DTF = DateTimeFormatter.ofPattern("yyyyMMdd");
     private static final int CONCURRENCY_LIMIT = 6;
 
 
@@ -68,24 +67,31 @@ public class RoadNameAddressUpdateJobConfig {
      * - 이미 반영된 경우 skip 처리
      *
      * @param addressLinkageApiCallStep 주소연계 API 호출 Step (변동분 파일 다운로드)
-     * @param roadNameAddressUpdateStep 도로명주소 일변동분 반영 step
-     * @param landLotAddressUpdateStep  관련지번 일변동분 반영 step
+     * @param addressLinkageFileUnzipStep 주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
+     * @param roadNameAddressUpdateFlow 도로명주소 일변동분 반영 step
+     * @param landLotAddressUpdateFlow  관련지번 일변동분 반영 step
+     * @param tempFileDeleteStep 주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
      * @return 도로명주소 일변동 적용 일배치 Job
      */
     @Bean
     public Job roadNameAddressUpdateJob(
             Step addressLinkageApiCallStep,
             Step addressLinkageFileUnzipStep,
-            Step roadNameAddressUpdateStep,
-            Step landLotAddressUpdateStep,
+            Flow roadNameAddressUpdateFlow,
+            Flow landLotAddressUpdateFlow,
             Step tempFileDeleteStep
     ) {
-        return new JobBuilder("roadNameAddressUpdateJob", jobRepository)
+        Flow mainFlow = new FlowBuilder<Flow>("mainFlow")
                 .start(addressLinkageApiCallStep)
                 .next(addressLinkageFileUnzipStep)
-                .next(roadNameAddressUpdateStep)
-                .next(landLotAddressUpdateStep)
+                .next(roadNameAddressUpdateFlow)
+                .next(landLotAddressUpdateFlow)
                 .next(tempFileDeleteStep)
+                .end();
+
+        return new JobBuilder("roadNameAddressUpdateJob", jobRepository)
+                .start(mainFlow)
+                .end()
                 .build();
     }
 
@@ -127,7 +133,6 @@ public class RoadNameAddressUpdateJobConfig {
             }
 
             ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
 
             AddressLinkagePeriod targetPeriod = addressLinkageApiCallService.findTargetPeriod();
             AddressLinkageResult addressLinkageResult = addressLinkageApiCallService.downloadNewFiles(targetDirectory, targetPeriod);
@@ -136,8 +141,8 @@ public class RoadNameAddressUpdateJobConfig {
                 throw new JobInterruptedException("주소 DB가 이미 최신 상태입니다.");
             }
 
-            jobCtx.put("fromDate", targetPeriod.from().format(dtf));
-            jobCtx.put("toDate", targetPeriod.to().format(dtf));
+            jobCtx.put("fromDate", targetPeriod.from().format(DOWNLOADED_FILE_DTF));
+            jobCtx.put("toDate", targetPeriod.to().format(DOWNLOADED_FILE_DTF));
 
             return RepeatStatus.FINISHED;
         };
@@ -220,140 +225,173 @@ public class RoadNameAddressUpdateJobConfig {
 
 
     /**
+     * 도로명주소 update flow
+     *
+     * @param fromDate                        시작 Date
+     * @param toDate                          종료 Date
+     * @param targetDirectory                 주소 연계 API 파일 다운로드 대상 디렉터리
+     * @param roadNameAddressItemProcessor    도로명주소 ItemProcessor
+     * @param roadNameAddressUpdateItemWriter 도로명주소 update ItemWriter
+     * @return 도로명주소 update flow
+     */
+    @Bean
+    public Flow roadNameAddressUpdateFlow(
+            @Value("#{jobExecutionContext['fromDate']}") String fromDate,
+            @Value("#{jobExecutionContext['toDate']}") String toDate,
+            @Value("#{jobParameters['target-directory']}") String targetDirectory,
+            ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressItemProcessor,
+            ItemWriter<RoadNameAddress> roadNameAddressUpdateItemWriter,
+            ReferenceVersionRepository referenceVersionRepository
+    ) {
+        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("roadNameAddressUpdateFlow");
+
+        LocalDate from = LocalDate.parse(fromDate, DOWNLOADED_FILE_DTF);
+        LocalDate to = LocalDate.parse(toDate, DOWNLOADED_FILE_DTF);
+
+        from.datesUntil(to.plusDays(1))
+                .forEach(date -> {
+                    File targetFile = Arrays.stream(
+                                    Objects.requireNonNull(Paths.get(targetDirectory).resolve(date.format(DOWNLOADED_FILE_DTF)).toFile()
+                                            .listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_MST.TXT")))).findFirst()
+                            .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
+
+                    Step workerStep = roadNameAddressUpdateStep(targetFile.getAbsolutePath(), roadNameAddressItemProcessor, roadNameAddressUpdateItemWriter);
+                    Step referenceVersionUpdateStep = referenceVersionUpdateStep(referenceVersionRepository, "roadNameAddress", date);
+
+                    if (date.isEqual(from)) {
+                        flowBuilder.start(workerStep);
+                    } else {
+                        flowBuilder.next(workerStep);
+                    }
+                    flowBuilder.next(referenceVersionUpdateStep);
+                });
+
+        return flowBuilder.build();
+    }
+
+    /**
      * 도로명주소 일변동분 반영 step
      * <p>
      *
-     * @param roadNameAddressUpdateItemReader 도로명주소 일변동분 ItemReader
-     * @param roadNameAddressUpdateItemProcessor 도로명주소 일변동분 ItemProcessor
-     * @param roadNameAddressUpdateItemWriter 도로명주소 일변동분 ItemWriter
      * @return 도로명주소 일변동분 반영 step
      */
-    @Bean
     public Step roadNameAddressUpdateStep(
-            MultiResourceItemReader<RoadNameAddressItem> roadNameAddressUpdateItemReader,
+            String targetFilePath,
             ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressUpdateItemProcessor,
             ItemWriter<RoadNameAddress> roadNameAddressUpdateItemWriter
     ) {
+        RoadNameAddressItemReader itemReader = new RoadNameAddressItemReader(targetFilePath);
         return new StepBuilder("roadNameAddressUpdateStep", jobRepository)
                 .<RoadNameAddressItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
-                .reader(roadNameAddressUpdateItemReader)
+                .reader(itemReader)
                 .processor(roadNameAddressUpdateItemProcessor)
                 .writer(roadNameAddressUpdateItemWriter)
+                .stream(itemReader)
                 .build();
     }
 
     /**
-     * 도로명주소 최신화 배치 도로명주소 MultiResourceItemReqader
-     * @param targetDirectory 주소 연계 API 결과 파일 다운로드 대상 디렉터리
-     * @return 도로명주소 최신화 배치 도로명주소 MultiResourceItemReqader
+     * 기준정보버전 업데이트 step
+     *
+     * @param referenceVersionRepository 기준정보버전 repository bean
+     * @param referenceVersionName       업데이트 대상명
+     * @param value                      업데이트 값 - effective_date
+     * @return 기준정보버전 업데이트 step
      */
-    @Bean
-    @StepScope
-    public MultiResourceItemReader<RoadNameAddressItem> roadNameAddressUpdateItemReader(
-            @Value("#{jobParameters['target-directory']}") String targetDirectory
-    ) {
-        MultiResourceItemReader<RoadNameAddressItem> itemReader = new MultiResourceItemReader<>();
-
-        List<File> files = new ArrayList<>();
-
-        File dir = new File(targetDirectory);
-        File[] dirsPerDate = Arrays.stream(Objects.requireNonNull(dir.listFiles())).sorted(Comparator.comparing(File::getName)).toArray(File[]::new);
-        for (File dirPerDate : Objects.requireNonNull(dirsPerDate)) {
-            files.addAll(
-                    Arrays.asList(
-                            Objects.requireNonNull(dirPerDate.listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_MST.TXT")))
-                    )
-            );
-        }
-
-        itemReader.setResources(
-                files.stream()
-                        .map(FileSystemResource::new)
-                        .toArray(Resource[]::new)
-        );
-        itemReader.setDelegate(new RoadNameAddressUpdateItemReader());
-        return itemReader;
+    public Step referenceVersionUpdateStep(
+            ReferenceVersionRepository referenceVersionRepository, String referenceVersionName, LocalDate value) {
+        return new StepBuilder("roadNameAddressReferenceVersionUpdateStep", jobRepository)
+                .tasklet((contribution, chunkContext) -> {
+                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(value, referenceVersionName);
+                    return RepeatStatus.FINISHED;
+                }, transactionManager)
+                .build();
     }
 
     /**
      * 도로명주소 최신화 배치 도로명주소 ItemWriter
+     *
      * @return 도로명주소 최신화 배치 도로명주소 ItemWriter
      */
     @Bean
     @StepScope
     public ItemWriter<RoadNameAddress> roadNameAddressUpdateItemWriter() {
-        return (chunk) -> {};
+        return (chunk) -> {
+        };
     }
+
+    /**
+     * 관련지번 update flow
+     *
+     * @param fromDate                        시작 Date
+     * @param toDate                          종료 Date
+     * @param targetDirectory                 주소 연계 API 파일 다운로드 대상 디렉터리
+     * @param landLotAddressItemProcessor    관련지번 ItemProcessor
+     * @param landLotAddressUpdateItemWriter 관련지번 update ItemWriter
+     * @return 관련지번 update flow
+     */
+    @Bean
+    public Flow landLotAddressUpdateFlow(
+            @Value("#{jobExecutionContext['fromDate']}") String fromDate,
+            @Value("#{jobExecutionContext['toDate']}") String toDate,
+            @Value("#{jobParameters['target-directory']}") String targetDirectory,
+            ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor,
+            ItemWriter<LandLotAddress> landLotAddressUpdateItemWriter,
+            ReferenceVersionRepository referenceVersionRepository
+    ) {
+        FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("landLotAddressUpdateFlow");
+
+        LocalDate from = LocalDate.parse(fromDate, DOWNLOADED_FILE_DTF);
+        LocalDate to = LocalDate.parse(toDate, DOWNLOADED_FILE_DTF);
+
+        from.datesUntil(to.plusDays(1))
+                .forEach(date -> {
+                    File targetFile = Arrays.stream(
+                                    Objects.requireNonNull(Paths.get(targetDirectory).resolve(date.format(DOWNLOADED_FILE_DTF)).toFile()
+                                            .listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_LNBR.TXT")))).findFirst()
+                            .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
+
+                    Step workerStep = landLotAddressUpdateStep(targetFile.getAbsolutePath(), landLotAddressItemProcessor, landLotAddressUpdateItemWriter);
+                    Step referenceVersionUpdateStep = referenceVersionUpdateStep(referenceVersionRepository, "roadNameAddress", date);
+
+                    if (date.isEqual(from)) {
+                        flowBuilder.start(workerStep);
+                    } else {
+                        flowBuilder.next(workerStep);
+                    }
+                    flowBuilder.next(referenceVersionUpdateStep);
+                });
+
+        return flowBuilder.build();
+    }
+
 
     /**
      * 관련지번 일변동분 반영 step
      * <p>
      *
-     * @param landLotAddressUpdateItemReader 관련지번 일변동분 ItemReader
-     * @param landLotAddressUpdateItemWriter       관련지번 일변동분 ItemWriter
+     * @param targetFilePath 관련지번 일변동분 대상 파일 경로
+     * @param landLotAddressUpdateItemWriter 관련지번 일변동분 ItemWriter
      * @return 관련지번 일변동분 반영 step
      */
-    @Bean
     public Step landLotAddressUpdateStep(
-            MultiResourceItemReader<LandLotAddressItem> landLotAddressUpdateItemReader,
+            String targetFilePath,
             ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressUpdateItemProcessor,
             ItemWriter<LandLotAddress> landLotAddressUpdateItemWriter
     ) {
+        LandLotAddressItemReader itemReader = new LandLotAddressItemReader(targetFilePath);
         return new StepBuilder("landLotAddressUpdateStep", jobRepository)
                 .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
-                .reader(landLotAddressUpdateItemReader)
+                .reader(itemReader)
                 .processor(landLotAddressUpdateItemProcessor)
                 .writer(landLotAddressUpdateItemWriter)
-                .stream(landLotAddressUpdateItemReader)
+                .stream(itemReader)
                 .build();
     }
 
     /**
-     * 도로명주소 최신화 배치 관련지번 MultiResourceItemReqader
-     * @param targetDirectory 주소 연계 API 결과 파일 다운로드 대상 디렉터리
-     * @return 도로명주소 최신화 배치 관련지번 MultiResourceItemReqader
-     */
-    @Bean
-    @StepScope
-    public MultiResourceItemReader<LandLotAddressItem> landLotAddressUpdateItemReader(
-            @Value("#{jobParameters['target-directory']}") String targetDirectory
-    ) {
-        MultiResourceItemReader<LandLotAddressItem> itemReader = new MultiResourceItemReader<>();
-
-        List<File> files = new ArrayList<>();
-
-        File dir = new File(targetDirectory);
-        File[] dirsPerDate = Arrays.stream(Objects.requireNonNull(dir.listFiles())).sorted(Comparator.comparing(File::getName)).toArray(File[]::new);
-        for (File dirPerDate : Objects.requireNonNull(dirsPerDate)) {
-            files.addAll(
-                    Arrays.asList(
-                            Objects.requireNonNull(dirPerDate.listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_LNBR.TXT")))
-                    )
-            );
-        }
-
-        itemReader.setResources(
-                files.stream()
-                        .map(FileSystemResource::new)
-                        .toArray(Resource[]::new)
-        );
-        itemReader.setDelegate(new LandLotAddressUpdateItemReader());
-        return itemReader;
-    }
-
-    /**
-     * 도로명주소 변동분 반영 배치 관련지번 ItemWriter
-     * @return 도로명주소 변동분 반영 배치 관련지번 ItemWriter
-     */
-    @Bean
-    @StepScope
-    public ItemWriter<LandLotAddress> landLotAddressUpdateItemWriter() {
-        return (chunk) -> {};
-    }
-
-
-    /**
      * 임시 파일 삭제 Step
+     *
      * @param tempFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
      * @return 임시 파일 삭제 Step
      */
@@ -369,6 +407,7 @@ public class RoadNameAddressUpdateJobConfig {
 
     /**
      * 임시 파일 삭제 Tasklet
+     *
      * @param targetDirectory 주소 연계 API를 통해 변동분 파일을 다운로드 받을 대상 디렉터리 -> job 마지막 step에서 삭제처리한다.
      * @return 임시 파일 삭제 Tasklet
      */
