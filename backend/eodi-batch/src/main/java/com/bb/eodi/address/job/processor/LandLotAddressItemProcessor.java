@@ -2,7 +2,9 @@ package com.bb.eodi.address.job.processor;
 
 import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -10,6 +12,8 @@ import org.springframework.util.StringUtils;
  *
  * @return 지번주소 ItemProcessor
  */
+@Component
+@StepScope
 public class LandLotAddressItemProcessor implements ItemProcessor<LandLotAddressItem, LandLotAddress> {
 
 
