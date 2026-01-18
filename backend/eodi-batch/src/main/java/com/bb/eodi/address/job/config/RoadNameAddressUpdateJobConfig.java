@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -235,6 +236,7 @@ public class RoadNameAddressUpdateJobConfig {
      * @return 도로명주소 update flow
      */
     @Bean
+    @JobScope
     public Flow roadNameAddressUpdateFlow(
             @Value("#{jobExecutionContext['fromDate']}") String fromDate,
             @Value("#{jobExecutionContext['toDate']}") String toDate,
@@ -319,6 +321,7 @@ public class RoadNameAddressUpdateJobConfig {
      * @return 관련지번 update flow
      */
     @Bean
+    @JobScope
     public Flow landLotAddressUpdateFlow(
             @Value("#{jobExecutionContext['fromDate']}") String fromDate,
             @Value("#{jobExecutionContext['toDate']}") String toDate,
