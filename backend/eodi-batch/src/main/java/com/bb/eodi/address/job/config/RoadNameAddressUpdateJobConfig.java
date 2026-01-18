@@ -66,9 +66,6 @@ public class RoadNameAddressUpdateJobConfig {
      * 도로명주소 일변동 적용 최신화 배치 Job
      * - 매일 수행 예정
      * - 이미 반영된 경우 skip 처리
-     * TODO
-     *  (전처리) API 요청 이후 대상일자 디렉터리 내 zip 파일들 unzip tasklet
-     *  (후처리) 관련지번 일변동분 반영 후 targetDirectory 삭제
      *
      * @param addressLinkageApiCallStep 주소연계 API 호출 Step (변동분 파일 다운로드)
      * @param roadNameAddressUpdateStep 도로명주소 일변동분 반영 step
@@ -280,8 +277,6 @@ public class RoadNameAddressUpdateJobConfig {
 
     /**
      * 도로명주소 최신화 배치 도로명주소 ItemWriter
-     * TODO
-     *  - 도로명주소 Item stream writer 구현
      * @return 도로명주소 최신화 배치 도로명주소 ItemWriter
      */
     @Bean
@@ -348,8 +343,6 @@ public class RoadNameAddressUpdateJobConfig {
 
     /**
      * 도로명주소 변동분 반영 배치 관련지번 ItemWriter
-     * TODO
-     *  - 관련지번 Item stream writer 구현
      * @return 도로명주소 변동분 반영 배치 관련지번 ItemWriter
      */
     @Bean
@@ -360,9 +353,9 @@ public class RoadNameAddressUpdateJobConfig {
 
 
     /**
-     * 임시 파일 삭제 Tasklet
+     * 임시 파일 삭제 Step
      * @param tempFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
-     * @return 임시 파일 삭제 Tasklet
+     * @return 임시 파일 삭제 Step
      */
     @Bean
     public Step tempFileDeleteStep(
@@ -374,6 +367,11 @@ public class RoadNameAddressUpdateJobConfig {
     }
 
 
+    /**
+     * 임시 파일 삭제 Tasklet
+     * @param targetDirectory 주소 연계 API를 통해 변동분 파일을 다운로드 받을 대상 디렉터리 -> job 마지막 step에서 삭제처리한다.
+     * @return 임시 파일 삭제 Tasklet
+     */
     @Bean
     @StepScope
     public Tasklet tempFileDeleteTasklet(@Value("#{jobParameters['target-directory']}") String targetDirectory) {
