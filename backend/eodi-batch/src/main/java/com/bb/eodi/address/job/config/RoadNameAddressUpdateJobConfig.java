@@ -10,18 +10,22 @@ import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.reader.LandLotAddressUpdateItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressUpdateItemReader;
+import com.bb.eodi.common.utils.FileCleaner;
 import com.bb.eodi.core.EodiBatchProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -76,13 +80,15 @@ public class RoadNameAddressUpdateJobConfig {
             Step addressLinkageApiCallStep,
             Step addressLinkageFileUnzipStep,
             Step roadNameAddressUpdateStep,
-            Step landLotAddressUpdateStep
+            Step landLotAddressUpdateStep,
+            Step tempFileDeleteStep
     ) {
         return new JobBuilder("roadNameAddressUpdateJob", jobRepository)
                 .start(addressLinkageApiCallStep)
                 .next(addressLinkageFileUnzipStep)
                 .next(roadNameAddressUpdateStep)
                 .next(landLotAddressUpdateStep)
+                .next(tempFileDeleteStep)
                 .build();
     }
 
@@ -221,17 +227,20 @@ public class RoadNameAddressUpdateJobConfig {
      * <p>
      *
      * @param roadNameAddressUpdateItemReader 도로명주소 일변동분 ItemReader
+     * @param roadNameAddressUpdateItemProcessor 도로명주소 일변동분 ItemProcessor
      * @param roadNameAddressUpdateItemWriter 도로명주소 일변동분 ItemWriter
      * @return 도로명주소 일변동분 반영 step
      */
     @Bean
     public Step roadNameAddressUpdateStep(
             MultiResourceItemReader<RoadNameAddressItem> roadNameAddressUpdateItemReader,
+            ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressUpdateItemProcessor,
             ItemWriter<RoadNameAddress> roadNameAddressUpdateItemWriter
     ) {
         return new StepBuilder("roadNameAddressUpdateStep", jobRepository)
                 .<RoadNameAddressItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(roadNameAddressUpdateItemReader)
+                .processor(roadNameAddressUpdateItemProcessor)
                 .writer(roadNameAddressUpdateItemWriter)
                 .build();
     }
@@ -292,11 +301,13 @@ public class RoadNameAddressUpdateJobConfig {
     @Bean
     public Step landLotAddressUpdateStep(
             MultiResourceItemReader<LandLotAddressItem> landLotAddressUpdateItemReader,
+            ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressUpdateItemProcessor,
             ItemWriter<LandLotAddress> landLotAddressUpdateItemWriter
     ) {
         return new StepBuilder("landLotAddressUpdateStep", jobRepository)
                 .<LandLotAddressItem, LandLotAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(landLotAddressUpdateItemReader)
+                .processor(landLotAddressUpdateItemProcessor)
                 .writer(landLotAddressUpdateItemWriter)
                 .stream(landLotAddressUpdateItemReader)
                 .build();
@@ -347,4 +358,28 @@ public class RoadNameAddressUpdateJobConfig {
         return (chunk) -> {};
     }
 
+
+    /**
+     * 임시 파일 삭제 Tasklet
+     * @param tempFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
+     * @return 임시 파일 삭제 Tasklet
+     */
+    @Bean
+    public Step tempFileDeleteStep(
+            Tasklet tempFileDeleteTasklet
+    ) {
+        return new StepBuilder("tempFileDeleteStep", jobRepository)
+                .tasklet(tempFileDeleteTasklet, transactionManager)
+                .build();
+    }
+
+
+    @Bean
+    @StepScope
+    public Tasklet tempFileDeleteTasklet(@Value("#{jobParameters['target-directory']}") String targetDirectory) {
+        return (contribution, chunkContext) -> {
+            FileCleaner.deleteAll(Path.of(targetDirectory));
+            return RepeatStatus.FINISHED;
+        };
+    }
 }
