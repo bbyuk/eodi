@@ -254,7 +254,11 @@ public class RoadNameAddressJdbcRepository {
                         building_name = ?,
                         sigungu_building_name = ?,
                         remark = ?
-                WHERE   id = ?
+                WHERE   manage_no = ?
+                AND     road_name_code = ?
+                AND     is_underground = ?
+                AND     building_main_no = ?
+                AND     building_sub_no = ?
                 """;
 
         jdbcTemplate.batchUpdate(
@@ -263,21 +267,26 @@ public class RoadNameAddressJdbcRepository {
                     ps.setObject(2, entity.getSidoName(), VARCHAR);
                     ps.setObject(3, entity.getSigunguName(), VARCHAR);
                     ps.setObject(4, entity.getUmdName(), VARCHAR);
-                    ps.setObject(5, entity.getIsMountain(), VARCHAR);
-                    ps.setObject(6, entity.getLandLotMainNo(), INTEGER);
-                    ps.setObject(7, entity.getLandLotSubNo(), INTEGER);
-                    ps.setObject(8, entity.getRoadNameCode(), VARCHAR);
-                    ps.setObject(9, entity.getAdmDongCode(), VARCHAR);
-                    ps.setObject(10, entity.getAdmDongName(), VARCHAR);
-                    ps.setObject(11, entity.getBasicDistrictNo(), VARCHAR);
-                    ps.setObject(12, entity.getBeforeRoadNameAddress(), VARCHAR);
-                    ps.setObject(13, entity.getEffectStartDate(), VARCHAR);
-                    ps.setObject(14, entity.getIsMulti(), VARCHAR);
-                    ps.setObject(15, entity.getUpdateReasonCode(), VARCHAR);
-                    ps.setObject(16, entity.getBuildingName(), VARCHAR);
-                    ps.setObject(17, entity.getSigunguBuildingName(), VARCHAR);
-                    ps.setObject(18, entity.getRemark(), VARCHAR);
-                    ps.setObject(19, entity.getId(), BIGINT);
+                    ps.setObject(5, entity.getRiName(), VARCHAR);
+                    ps.setObject(6, entity.getIsMountain(), VARCHAR);
+                    ps.setObject(7, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(8, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(9, entity.getRoadNameCode(), VARCHAR);
+                    ps.setObject(10, entity.getAdmDongCode(), VARCHAR);
+                    ps.setObject(11, entity.getAdmDongName(), VARCHAR);
+                    ps.setObject(12, entity.getBasicDistrictNo(), VARCHAR);
+                    ps.setObject(13, entity.getBeforeRoadNameAddress(), VARCHAR);
+                    ps.setObject(14, entity.getEffectStartDate(), VARCHAR);
+                    ps.setObject(15, entity.getIsMulti(), VARCHAR);
+                    ps.setObject(16, entity.getUpdateReasonCode(), VARCHAR);
+                    ps.setObject(17, entity.getBuildingName(), VARCHAR);
+                    ps.setObject(18, entity.getSigunguBuildingName(), VARCHAR);
+                    ps.setObject(19, entity.getRemark(), VARCHAR);
+                    ps.setObject(20, entity.getManageNo(), VARCHAR);
+                    ps.setObject(21, entity.getRoadNameCode(), VARCHAR);
+                    ps.setObject(22, entity.getIsUnderground(), VARCHAR);
+                    ps.setObject(23, entity.getBuildingMainNo(), INTEGER);
+                    ps.setObject(24, entity.getBuildingSubNo(), INTEGER);
                 }
         );
     }
@@ -293,11 +302,19 @@ public class RoadNameAddressJdbcRepository {
         String sql = """
                 DELETE
                 FROM    road_name_address
-                WHERE   id = ?
+                WHERE   manage_no = ?
+                AND     road_name_code = ?
+                AND     is_underground = ?
+                AND     building_main_no = ?
+                AND     building_sub_no = ?
                 """;
         jdbcTemplate.batchUpdate(
                 sql, items, batchSize, (ps, entity) -> {
-                     ps.setObject(1, entity.getId(), BIGINT);
+                     ps.setObject(1, entity.getManageNo(), VARCHAR);
+                     ps.setObject(2, entity.getRoadNameCode(), VARCHAR);
+                     ps.setObject(3, entity.getIsUnderground(), VARCHAR);
+                     ps.setObject(4, entity.getBuildingMainNo(), INTEGER);
+                     ps.setObject(5, entity.getBuildingSubNo(), INTEGER);
                 });
     }
 }
