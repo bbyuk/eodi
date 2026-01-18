@@ -6,19 +6,21 @@ import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 /**
  * 기준정보 버전 Repository 구현체
  */
 @Slf4j
-@Component
+@Repository
 @RequiredArgsConstructor
 public class ReferenceVersionRepositoryImpl implements ReferenceVersionRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final ReferenceVersionJpaRepository referenceVersionJpaRepository;
 
     /**
      * 기준대상명으로 기준정보버전 조회
@@ -34,5 +36,10 @@ public class ReferenceVersionRepositoryImpl implements ReferenceVersionRepositor
                 queryFactory.selectFrom(referenceVersion)
                         .where(referenceVersion.targetName.eq(targetName))
                         .fetchOne());
+    }
+
+    @Override
+    public void updateEffectiveDateByReferenceVersionName(LocalDate value, String referenceVersionName) {
+        referenceVersionJpaRepository.updateEffectiveDateByReferenceVersionName(value, referenceVersionName);
     }
 }
