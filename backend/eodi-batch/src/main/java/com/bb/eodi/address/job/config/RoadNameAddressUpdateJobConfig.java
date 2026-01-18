@@ -309,18 +309,6 @@ public class RoadNameAddressUpdateJobConfig {
     }
 
     /**
-     * 도로명주소 최신화 배치 도로명주소 ItemWriter
-     *
-     * @return 도로명주소 최신화 배치 도로명주소 ItemWriter
-     */
-    @Bean
-    @StepScope
-    public ItemWriter<RoadNameAddress> roadNameAddressUpdateItemWriter() {
-        return (chunk) -> {
-        };
-    }
-
-    /**
      * 관련지번 update flow
      *
      * @param fromDate                        시작 Date
