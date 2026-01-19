@@ -7,6 +7,7 @@ import com.bb.eodi.address.domain.service.AddressLinkagePeriod;
 import com.bb.eodi.address.domain.service.AddressLinkageResult;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
+import com.bb.eodi.address.job.listener.AddressUpdateStepExecutionListener;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.common.utils.FileCleaner;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -309,6 +311,14 @@ public class RoadNameAddressUpdateJobConfig {
                 .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
 
         return new RoadNameAddressItemReader(targetFile.getAbsolutePath());
+    }
+
+    @Bean
+    @StepScope
+    public StepExecutionListener roadNameAddressUpdateStepExecutionListener(
+            ReferenceVersionRepository referenceVersionRepository
+    ) {
+        return new AddressUpdateStepExecutionListener("roadNameAddress", referenceVersionRepository);
     }
 
     @Bean
