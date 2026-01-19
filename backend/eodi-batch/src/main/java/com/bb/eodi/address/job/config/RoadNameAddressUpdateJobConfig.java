@@ -59,7 +59,6 @@ public class RoadNameAddressUpdateJobConfig {
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
-    private static final int CONCURRENCY_LIMIT = 6;
 
 
     /**
