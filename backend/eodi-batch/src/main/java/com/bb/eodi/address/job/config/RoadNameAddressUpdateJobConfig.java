@@ -7,7 +7,6 @@ import com.bb.eodi.address.domain.service.AddressLinkagePeriod;
 import com.bb.eodi.address.domain.service.AddressLinkageResult;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
-import com.bb.eodi.address.job.listener.AddressUpdateStepExecutionListener;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.common.utils.FileCleaner;
@@ -18,11 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecutionListener;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.partition.support.Partitioner;
+import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.job.flow.FlowExecutionStatus;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -34,7 +34,6 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.*;
@@ -44,8 +43,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -70,28 +67,36 @@ public class RoadNameAddressUpdateJobConfig {
      * - 매일 수행 예정
      * - 이미 반영된 경우 skip 처리
      *
-     * @param addressLinkageApiCallStep 주소연계 API 호출 Step (변동분 파일 다운로드)
-     * @param addressLinkageFileUnzipStep 주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
-     * @param roadNameAddressUpdateMasterStep 도로명주소 일변동분 반영 master step
-     * @param landLotAddressUpdateMasterStep  관련지번 일변동분 반영 master step
-     * @param tempFileDeleteStep 주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
+     * @param addressLinkageApiCallStep       주소연계 API 호출 Step (변동분 파일 다운로드)
+     * @param addressLinkageFileUnzipStep     주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
+     * @param addressUpdateFlow               일단위 주소 최신화 flow
+     * @param tempFileDeleteStep              주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
      * @return 도로명주소 일변동 적용 일배치 Job
      */
     @Bean
     public Job roadNameAddressUpdateJob(
             Step addressLinkageApiCallStep,
             Step addressLinkageFileUnzipStep,
-            Step roadNameAddressUpdateMasterStep,
-            Step landLotAddressUpdateMasterStep,
+            Flow addressUpdateFlow,
             Step tempFileDeleteStep
     ) {
-
-        return new JobBuilder("roadNameAddressUpdateJob", jobRepository)
+        Flow mainFlow = new FlowBuilder<Flow>("addressUpdateMainFlow")
                 .start(addressLinkageApiCallStep)
                 .next(addressLinkageFileUnzipStep)
-                .next(roadNameAddressUpdateMasterStep)
-                .next(landLotAddressUpdateMasterStep)
-                .next(tempFileDeleteStep)
+
+                // Step → Flow
+                .from(addressLinkageFileUnzipStep)
+                .on("*").to(addressUpdateFlow)
+
+                // Flow → Step
+                .from(addressUpdateFlow)
+                .on("*").to(tempFileDeleteStep)
+
+                .end();
+
+        return new JobBuilder("addressUpdateJob", jobRepository)
+                .start(mainFlow)
+                .end()
                 .build();
     }
 
@@ -143,6 +148,8 @@ public class RoadNameAddressUpdateJobConfig {
 
             jobCtx.put("fromDate", targetPeriod.from());
             jobCtx.put("toDate", targetPeriod.to());
+
+            jobCtx.put("targetDate", targetPeriod.from());
 
             return RepeatStatus.FINISHED;
         };
@@ -225,62 +232,39 @@ public class RoadNameAddressUpdateJobConfig {
 
 
     /**
-     * 도로명주소 최신화 배치 master step
-     *
-     * gridSize = 1, SyncExecutor를 사용해 일자별로 순차처리를 한다.
-     *
-     * @param roadNameAddressUpdatePartitioner 도로명주소 연계 처리 최신화 배치 일자별 partitioner
-     * @param roadNameAddressUpdateWorkerStep 도로명주소 연계 처리 최신화 배치 worker step
-     * @return 도로명주소 최신화 배치 master step
+     * 주소 일단위 최신화 flow
+     * @param roadNameAddressUpdateStep     도로명주소 update step
+     * @param landLotAddressUpdateStep      관련지번 update step
+     * @param referenceVersionUpdateStep    기준정보버전 update step
+     * @param targetDateDecider             대상일자 execution decider
+     * @return 주소 일단위 최신화 flow
      */
     @Bean
-    public Step roadNameAddressUpdateMasterStep(
-            Partitioner roadNameAddressUpdatePartitioner,
-            Step roadNameAddressUpdateWorkerStep
+    public Flow addressUpdateFlow(
+            Step roadNameAddressUpdateStep,
+            Step landLotAddressUpdateStep,
+            Step referenceVersionUpdateStep,
+            JobExecutionDecider targetDateDecider
     ) {
-        return new StepBuilder("roadNameAddressUpdateMasterStep", jobRepository)
-                .partitioner("roadNameAddressUpdateWorkerStep", roadNameAddressUpdatePartitioner)
-                .step(roadNameAddressUpdateWorkerStep)
-                .taskExecutor(new SyncTaskExecutor())
-                .gridSize(1)
+        return new FlowBuilder<Flow>("addressUpdateFlow")
+                .start(roadNameAddressUpdateStep)
+                .next(landLotAddressUpdateStep)
+                .next(referenceVersionUpdateStep)
+                .next(targetDateDecider)
+                .on("CONTINUE").to(roadNameAddressUpdateStep)
+                .from(targetDateDecider)
+                .on(FlowExecutionStatus.COMPLETED.getName()).end()
                 .build();
     }
 
     /**
-     * 도로명주소 최신화 배치 일자별 partitioner
-     * @param fromDate 시작 date
-     * @param toDate 종료 date
-     * @param targetDirectory 파일 연계 API 임시 파일 다운로드 경로
-     * @return 도로명주소 최신화 배치 일자별 partitioner
-     */
-    @Bean
-    @JobScope
-    public Partitioner roadNameAddressUpdatePartitioner(
-            @Value("#{jobExecutionContext['fromDate']}") LocalDate fromDate,
-            @Value("#{jobExecutionContext['toDate']}") LocalDate toDate
-    ) {
-        return gridSize -> {
-            Map<String, ExecutionContext> partition = new LinkedHashMap<>();
-            fromDate.datesUntil(toDate.plusDays(1))
-                    .forEach(date -> {
-                        ExecutionContext context = new ExecutionContext();
-                        context.put("targetDate", date);
-                        partition.put("partition-" + date.format(dtf), context);
-                    });
-
-            return partition;
-        };
-    }
-
-
-    /**
-     * 도로명주소 일변동분 반영 worker step
+     * 도로명주소 일변동분 반영 step
      * <p>
      *
-     * @return 도로명주소 일변동분 반영 worker step
+     * @return 도로명주소 일변동분 반영 step
      */
     @Bean
-    public Step roadNameAddressUpdateWorkerStep(
+    public Step roadNameAddressUpdateStep(
             ItemStreamReader<RoadNameAddressItem> roadNameAddressUpdateItemReader,
             ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressUpdateItemProcessor,
             ItemWriter<RoadNameAddress> roadNameAddressUpdateItemWriter
@@ -296,7 +280,8 @@ public class RoadNameAddressUpdateJobConfig {
 
     /**
      * 도로명주소 최신화 배치 ItemReader
-     * @param filePath 대상 파일 경로
+     *
+     * @param targetDate 대상일자
      * @return 도로명주소 최신화 배치 ItemReader
      */
     @Bean
@@ -313,65 +298,17 @@ public class RoadNameAddressUpdateJobConfig {
         return new RoadNameAddressItemReader(targetFile.getAbsolutePath());
     }
 
-    @Bean
-    @StepScope
-    public StepExecutionListener roadNameAddressUpdateStepExecutionListener(
-            ReferenceVersionRepository referenceVersionRepository
-    ) {
-        return new AddressUpdateStepExecutionListener("roadNameAddress", referenceVersionRepository);
-    }
-
-    @Bean
-    public Step landLotAddressUpdateMasterStep(
-            Partitioner landLotAddressUpdatePartitioner,
-            Step landLotAddressUpdateWorkerStep
-    ) {
-        return new StepBuilder("landLotAddressUpdateMasterStep", jobRepository)
-                .partitioner("landLotAddressUpdateWorkerStep", landLotAddressUpdatePartitioner)
-                .step(landLotAddressUpdateWorkerStep)
-                .taskExecutor(new SyncTaskExecutor())
-                .gridSize(1)
-                .build();
-    }
-
-
-    /**
-     * 도로명주소 최신화 배치 관련지번 일자별 partitioner
-     * @param fromDate 시작 date
-     * @param toDate 종료 date
-     * @param targetDirectory 파일 연계 API 임시 파일 다운로드 경로
-     * @return 도로명주소 최신화 배치 관련지번 일자별 partitioner
-     */
-    @Bean
-    @JobScope
-    public Partitioner landLotAddressUpdatePartitioner(
-            @Value("#{jobExecutionContext['fromDate']}") LocalDate fromDate,
-            @Value("#{jobExecutionContext['toDate']}") LocalDate toDate
-    ) {
-        return gridSize -> {
-            Map<String, ExecutionContext> partition = new LinkedHashMap<>();
-            fromDate.datesUntil(toDate.plusDays(1))
-                    .forEach(date -> {
-                        ExecutionContext context = new ExecutionContext();
-                        context.put("targetDate", date);
-                        partition.put("partition-" + date.format(dtf), context);
-                    });
-
-            return partition;
-        };
-    }
-
     /**
      * 관련지번 일변동분 반영 step
      * <p>
      *
-     * @param landLotAddressUpdateItemReader 관련지번 일변동분 ItemReader
+     * @param landLotAddressUpdateItemReader    관련지번 일변동분 ItemReader
      * @param landLotAddressUpdateItemProcessor 관련지번 일변동분 ItemProcessor
-     * @param landLotAddressUpdateItemWriter 관련지번 일변동분 ItemWriter
+     * @param landLotAddressUpdateItemWriter    관련지번 일변동분 ItemWriter
      * @return 관련지번 일변동분 반영 step
      */
     @Bean
-    public Step landLotAddressUpdateWorkerStep(
+    public Step landLotAddressUpdateStep(
             ItemStreamReader<LandLotAddressItem> landLotAddressUpdateItemReader,
             ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressUpdateItemProcessor,
             ItemWriter<LandLotAddress> landLotAddressUpdateItemWriter
@@ -387,7 +324,8 @@ public class RoadNameAddressUpdateJobConfig {
 
     /**
      * 도로명주소 연계 최신화 배치 관련지번 ItemReader
-     * @param filePath 대상 file 경로
+     *
+     * @param targetDate 대상 date
      * @return 도로명주소 연계 최신화 배치 관련지번 ItemReader
      */
     @Bean
@@ -402,6 +340,32 @@ public class RoadNameAddressUpdateJobConfig {
                 .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
 
         return new LandLotAddressItemReader(targetFile.getAbsolutePath());
+    }
+
+    /**
+     * 기준정보버전 업데이트 step
+     *
+     * @param referenceVersionRepository 기준정보버전 repository bean
+     * @param targetDate                 업데이트 값 - effective_date
+     * @return 기준정보버전 업데이트 step
+     */
+    @Bean
+    public Step referenceVersionUpdateStep(
+            ReferenceVersionRepository referenceVersionRepository) {
+        return new StepBuilder("roadNameAddressReferenceVersionUpdateStep", jobRepository)
+                .tasklet((contribution, chunkContext) -> {
+                    ExecutionContext jobCtx =
+                            contribution.getStepExecution()
+                                    .getJobExecution()
+                                    .getExecutionContext();
+
+                    LocalDate targetDate = (LocalDate) jobCtx.get("targetDate");
+                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(targetDate, "address");
+                    jobCtx.put("targetDate", targetDate.plusDays(1));
+
+                    return RepeatStatus.FINISHED;
+                }, transactionManager)
+                .build();
     }
 
     /**
@@ -433,25 +397,6 @@ public class RoadNameAddressUpdateJobConfig {
             FileCleaner.deleteAll(Path.of(targetDirectory));
             return RepeatStatus.FINISHED;
         };
-    }
-
-
-    /**
-     * 기준정보버전 업데이트 step
-     *
-     * @param referenceVersionRepository 기준정보버전 repository bean
-     * @param referenceVersionName       업데이트 대상명
-     * @param value                      업데이트 값 - effective_date
-     * @return 기준정보버전 업데이트 step
-     */
-    public Step referenceVersionUpdateStep(
-            ReferenceVersionRepository referenceVersionRepository, String referenceVersionName, LocalDate value) {
-        return new StepBuilder("roadNameAddressReferenceVersionUpdateStep", jobRepository)
-                .tasklet((contribution, chunkContext) -> {
-                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(value, referenceVersionName);
-                    return RepeatStatus.FINISHED;
-                }, transactionManager)
-                .build();
     }
 
 }
