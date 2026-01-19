@@ -244,7 +244,7 @@ public class RoadNameAddressJdbcRepository {
                         land_lot_main_no = ?,
                         land_lot_sub_no = ?,
                         road_name = ?,
-                        adm_donc_code = ?,
+                        adm_dong_code = ?,
                         adm_dong_name = ?,
                         basic_district_no = ?,
                         before_road_name_address = ?,
