@@ -55,7 +55,8 @@ api:
         phase: dev
         path: 1741000/StanReginCd/getStanReginCdList
         expiration: 2027-09-05
-
+  juso:
+    key: ${JUSO_LINKAGE_API_KEY:default}
 # 로깅
 logging:
   level:

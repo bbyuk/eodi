@@ -87,4 +87,75 @@ public class LandLotAddressJdbcRepository {
                 }
         );
     }
+
+    /**
+     * 관련지번 주소를 batch update한다.
+     *
+     * @param entities  batch update 대상 entities
+     * @param batchSize batch size
+     */
+    public void updateBatch(List<? extends LandLotAddress> entities, int batchSize) {
+        String sql = """
+                UPDATE  land_lot_address
+                SET     sido_name = ?,
+                        sigungu_name = ?,
+                        umd_name = ?,
+                        ri_name = ?,
+                        is_underground = ?,
+                        building_main_no = ?,
+                        building_sub_no = ?,
+                        update_reason_code = ?
+                WHERE   manage_no = ?,
+                AND     legal_dong_code = ?,
+                AND     is_mountain = ?,
+                AND     land_lot_main_no = ?,
+                AND     land_lot_sub_no = ?,
+                AND     road_name_code = ?
+                """;
+        jdbcTemplate.batchUpdate(
+                sql, entities, batchSize, (ps, entity) -> {
+                    ps.setObject(1, entity.getSidoName(), VARCHAR);
+                    ps.setObject(2, entity.getSigunguName(), VARCHAR);
+                    ps.setObject(3, entity.getUmdName(), VARCHAR);
+                    ps.setObject(4, entity.getRiName(), VARCHAR);
+                    ps.setObject(5, entity.getIsUnderground(), VARCHAR);
+                    ps.setObject(6, entity.getBuildingMainNo(), INTEGER);
+                    ps.setObject(7, entity.getBuildingSubNo(), INTEGER);
+                    ps.setObject(8, entity.getUpdateReasonCode(), VARCHAR);
+                    ps.setObject(9, entity.getManageNo(), VARCHAR);
+                    ps.setObject(10, entity.getLegalDongCode(), VARCHAR);
+                    ps.setObject(11, entity.getIsMountain(), VARCHAR);
+                    ps.setObject(12, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(13, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(14, entity.getRoadNameCode(), VARCHAR);
+                }
+        );
+    }
+
+    /**
+     * 관련지번 주소를 batch delete한다.
+     *
+     * @param entities  batch delete 대상 entities
+     * @param batchSize bathc size
+     */
+    public void deleteBatch(List<LandLotAddress> entities, int batchSize) {
+        String sql = """
+                DELETE 
+                FROM    land_lot_address
+                WHERE   manage_no = ?
+                AND     legal_dong_code = ?
+                AND     is_mountain = ?
+                AND     land_lot_main_no = ?
+                AND     land_lot_sub_no = ?
+                AND     road_name_code = ?
+                """;
+        jdbcTemplate.batchUpdate(sql, entities, batchSize, (ps, entity) -> {
+            ps.setObject(1, entity.getManageNo(), VARCHAR);
+            ps.setObject(2, entity.getLegalDongCode(), VARCHAR);
+            ps.setObject(3, entity.getIsMountain(), VARCHAR);
+            ps.setObject(4, entity.getLandLotMainNo(), INTEGER);
+            ps.setObject(5, entity.getLandLotSubNo(), INTEGER);
+            ps.setObject(6, entity.getRoadNameCode(), VARCHAR);
+        });
+    }
 }

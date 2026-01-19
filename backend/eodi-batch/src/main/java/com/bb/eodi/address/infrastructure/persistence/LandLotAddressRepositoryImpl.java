@@ -37,4 +37,13 @@ public class LandLotAddressRepositoryImpl implements LandLotAddressRepository {
         landLotAddressJdbcRepository.insertBatch(entities, eodiBatchProperties.batchSize());
     }
 
+    @Override
+    public void updateBatch(List<? extends LandLotAddress> entities) {
+        landLotAddressJdbcRepository.updateBatch(entities, eodiBatchProperties.batchSize());
+    }
+
+    @Override
+    public void deleteBatch(List<LandLotAddress> entities) {
+        landLotAddressJdbcRepository.deleteBatch(entities, eodiBatchProperties.batchSize());
+    }
 }

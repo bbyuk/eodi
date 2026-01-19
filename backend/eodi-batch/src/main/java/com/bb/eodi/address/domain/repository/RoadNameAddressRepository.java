@@ -31,4 +31,18 @@ public interface RoadNameAddressRepository {
      * @return 도로명주소 위치 정보 목록
      */
     List<AddressPosition> findAddressPositions(RoadNameAddressQueryParameter parameter);
+
+    /**
+     * 배치 update를 수행한다.
+     * @param items 배치 update를 수행할 데이터
+     */
+    void updateBatch(Collection<? extends RoadNameAddress> items);
+
+
+    /**
+     * 배치 delete를 수행한다.
+     * @param items 배치 delete를 수행할 데이터
+     */
+    void deleteBatch(Collection<? extends RoadNameAddress> items);
+
 }

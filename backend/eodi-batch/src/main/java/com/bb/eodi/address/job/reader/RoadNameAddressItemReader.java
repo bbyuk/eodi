@@ -23,6 +23,10 @@ public class RoadNameAddressItemReader extends AbstractAddressItemStreamReader<R
 
         if (line == null) return null;
 
+        if (line.length == 1 && line[0].equals("No Data")) {
+            return null;
+        }
+
         try {
             return RoadNameAddressItem.builder()
                     .manageNo(line[0])                    // 도로명주소관리번호

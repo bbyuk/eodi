@@ -149,42 +149,6 @@ public class RoadNameAddressLoadJobConfig {
         return new RoadNameAddressItemReader(filePath);
     }
 
-
-    /**
-     * 도로명주소 ItemProcessor
-     * @return 도로명주소 ItemProcessor
-     */
-    @Bean
-    @StepScope
-    public ItemProcessor<RoadNameAddressItem, RoadNameAddress> roadNameAddressItemProcessor() {
-        return item -> RoadNameAddress.builder()
-                .manageNo(item.getManageNo())
-                .legalDongCode(item.getLegalDongCode())
-                .sidoName(item.getSidoName())
-                .sigunguName(item.getSigunguName())
-                .umdName(item.getUmdName())
-                .riName(item.getRiName())
-                .isMountain(item.getIsMountain())
-                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : 0)
-                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : 0)
-                .roadNameCode(item.getRoadNameCode())
-                .roadName(item.getRoadName())
-                .isUnderground(item.getIsUnderground())
-                .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : 0)
-                .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : 0)
-                .admDongCode(item.getAdmDongCode())
-                .admDongName(item.getAdmDongName())
-                .basicDistrictNo(item.getBasicDistrictNo())
-                .beforeRoadNameAddress(item.getBeforeRoadNameAddress())
-                .effectStartDate(item.getEffectStartDate())
-                .isMulti(item.getIsMulti())
-                .updateReasonCode(item.getUpdateReasonCode())
-                .buildingName(item.getBuildingName())
-                .sigunguBuildingName(item.getSigunguBuildingName())
-                .remark(item.getRemark())
-                .build();
-    }
-
     /**
      * 도로명주소 ItemWriter
      * @return 도로명주소 ItemWriter
@@ -278,32 +242,6 @@ public class RoadNameAddressLoadJobConfig {
     public ItemStreamReader<LandLotAddressItem> landLotAddressItemReader(
             @Value("#{stepExecutionContext['filePath']}") String filePath) {
         return new LandLotAddressItemReader(filePath);
-    }
-
-    /**
-     * 지번주소 ItemProcessor
-     *
-     * @return 지번주소 ItemProcessor
-     */
-    @Bean
-    @StepScope
-    public ItemProcessor<LandLotAddressItem, LandLotAddress> landLotAddressItemProcessor() {
-        return item -> LandLotAddress.builder()
-                .manageNo(item.getManageNo())
-                .legalDongCode(item.getLegalDongCode())
-                .sidoName(item.getSidoName())
-                .sigunguName(item.getSigunguName())
-                .umdName(item.getUmdName())
-                .riName(item.getRiName())
-                .isMountain(item.getIsMountain())
-                .landLotMainNo(StringUtils.hasText(item.getLandLotMainNo()) ? Integer.parseInt(item.getLandLotMainNo()) : 0)
-                .landLotSubNo(StringUtils.hasText(item.getLandLotSubNo()) ? Integer.parseInt(item.getLandLotSubNo()) : 0)
-                .roadNameCode(item.getRoadNameCode())
-                .isUnderground(item.getIsUnderground())
-                .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : 0)
-                .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : 0)
-                .updateReasonCode(item.getUpdateReasonCode())
-                .build();
     }
 
     /**

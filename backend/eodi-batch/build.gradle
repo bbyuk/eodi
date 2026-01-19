@@ -34,12 +34,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	/**
-	 * Caffeine 캐시
-	 */
-	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+	// Caffeine 캐시
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
 	// querydsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -50,11 +49,11 @@ dependencies {
 	// shp 파일 read
 	implementation 'org.geotools:gt-main:34-M0'
 	implementation 'org.geotools:gt-shapefile:34-M0'
-
 	implementation 'org.geotools:gt-referencing:34.0'
 	implementation "org.geotools:gt-epsg-hsql:34.0"
 
-
+	// 주소 데이터 연계 jar
+	implementation files("libs/ADSClient-1.1.jar")
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
