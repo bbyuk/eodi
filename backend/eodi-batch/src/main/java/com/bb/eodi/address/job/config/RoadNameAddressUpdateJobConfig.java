@@ -86,11 +86,11 @@ public class RoadNameAddressUpdateJobConfig {
 
                 // Step → Flow
                 .from(addressLinkageFileUnzipStep)
-                .on("*").to(addressUpdateFlow)
+                .on("COMPLETED").to(addressUpdateFlow)
 
                 // Flow → Step
                 .from(addressUpdateFlow)
-                .on("*").to(tempFileDeleteStep)
+                .on("COMPLETED").to(tempFileDeleteStep)
 
                 .end();
 
@@ -287,7 +287,7 @@ public class RoadNameAddressUpdateJobConfig {
     @Bean
     @StepScope
     public ItemStreamReader<RoadNameAddressItem> roadNameAddressUpdateItemReader(
-            @Value("#{stepExecutionContext['targetDate']}") LocalDate targetDate,
+            @Value("#{jobExecutionContext['targetDate']}") LocalDate targetDate,
             @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         File targetFile = Arrays.stream(
@@ -331,7 +331,7 @@ public class RoadNameAddressUpdateJobConfig {
     @Bean
     @StepScope
     public ItemStreamReader<LandLotAddressItem> landLotAddressUpdateItemReader(
-            @Value("#{stepExecutionContext['targetDate']}") LocalDate targetDate,
+            @Value("#{jobExecutionContext['targetDate']}") LocalDate targetDate,
             @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         File targetFile = Arrays.stream(
@@ -346,7 +346,6 @@ public class RoadNameAddressUpdateJobConfig {
      * 기준정보버전 업데이트 step
      *
      * @param referenceVersionRepository 기준정보버전 repository bean
-     * @param targetDate                 업데이트 값 - effective_date
      * @return 기준정보버전 업데이트 step
      */
     @Bean
@@ -361,7 +360,7 @@ public class RoadNameAddressUpdateJobConfig {
 
                     LocalDate targetDate = (LocalDate) jobCtx.get("targetDate");
                     referenceVersionRepository.updateEffectiveDateByReferenceVersionName(targetDate, "address");
-                    jobCtx.put("targetDate", targetDate.plusDays(1));
+                    jobCtx.put("targetDate", Objects.requireNonNull(targetDate).plusDays(1));
 
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
