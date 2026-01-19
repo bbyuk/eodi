@@ -28,6 +28,10 @@ public class LandLotAddressItemReader extends AbstractAddressItemStreamReader<La
 
         if (line == null) return null;
 
+        if (line.length == 1 && line[0].equals("No Data")) {
+            return null;
+        }
+
         return LandLotAddressItem.builder()
                 .manageNo(line[0])              // 도로명주소관리번호
                 .legalDongCode(line[1])         // 법정동코드
