@@ -255,8 +255,7 @@ public class RoadNameAddressUpdateJobConfig {
     @JobScope
     public Partitioner roadNameAddressUpdatePartitioner(
             @Value("#{jobExecutionContext['fromDate']}") LocalDate fromDate,
-            @Value("#{jobExecutionContext['toDate']}") LocalDate toDate,
-            @Value("#{jobParameters['target-directory']}") String targetDirectory
+            @Value("#{jobExecutionContext['toDate']}") LocalDate toDate
     ) {
         return gridSize -> {
             Map<String, ExecutionContext> partition = new LinkedHashMap<>();
@@ -264,7 +263,6 @@ public class RoadNameAddressUpdateJobConfig {
                     .forEach(date -> {
                         ExecutionContext context = new ExecutionContext();
                         context.put("targetDate", date);
-                        context.put("targetDirectory", targetDirectory);
                         partition.put("partition-" + date.format(dtf), context);
                     });
 
@@ -303,7 +301,7 @@ public class RoadNameAddressUpdateJobConfig {
     @StepScope
     public ItemStreamReader<RoadNameAddressItem> roadNameAddressUpdateItemReader(
             @Value("#{stepExecutionContext['targetDate']}") LocalDate targetDate,
-            @Value("#{stepExecutionContext['targetDirectory']}") String targetDirectory
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         File targetFile = Arrays.stream(
                         Objects.requireNonNull(Paths.get(targetDirectory).resolve(targetDate.format(dtf)).toFile()
@@ -338,8 +336,7 @@ public class RoadNameAddressUpdateJobConfig {
     @JobScope
     public Partitioner landLotAddressUpdatePartitioner(
             @Value("#{jobExecutionContext['fromDate']}") LocalDate fromDate,
-            @Value("#{jobExecutionContext['toDate']}") LocalDate toDate,
-            @Value("#{jobParameters['target-directory']}") String targetDirectory
+            @Value("#{jobExecutionContext['toDate']}") LocalDate toDate
     ) {
         return gridSize -> {
             Map<String, ExecutionContext> partition = new LinkedHashMap<>();
@@ -347,7 +344,6 @@ public class RoadNameAddressUpdateJobConfig {
                     .forEach(date -> {
                         ExecutionContext context = new ExecutionContext();
                         context.put("targetDate", date);
-                        context.put("targetDirectory", targetDirectory);
                         partition.put("partition-" + date.format(dtf), context);
                     });
 
@@ -388,7 +384,7 @@ public class RoadNameAddressUpdateJobConfig {
     @StepScope
     public ItemStreamReader<LandLotAddressItem> landLotAddressUpdateItemReader(
             @Value("#{stepExecutionContext['targetDate']}") LocalDate targetDate,
-            @Value("#{stepExecutionContext['targetDirectory']}") String targetDirectory
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         File targetFile = Arrays.stream(
                         Objects.requireNonNull(Paths.get(targetDirectory).resolve(targetDate.format(dtf)).toFile()
