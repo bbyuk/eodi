@@ -56,9 +56,7 @@ public class RoadNameAddressUpdateJobConfig {
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
     private final PlatformTransactionManager transactionManager;
-
-    private static final DateTimeFormatter API_CALL_PARAMETER_DTF = DateTimeFormatter.ofPattern("yyMMdd");
-    private static final DateTimeFormatter DOWNLOADED_FILE_DTF = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
     private static final int CONCURRENCY_LIMIT = 6;
 
 
@@ -142,8 +140,8 @@ public class RoadNameAddressUpdateJobConfig {
                 throw new JobInterruptedException("주소 DB가 이미 최신 상태입니다.");
             }
 
-            jobCtx.put("fromDate", targetPeriod.from().format(DOWNLOADED_FILE_DTF));
-            jobCtx.put("toDate", targetPeriod.to().format(DOWNLOADED_FILE_DTF));
+            jobCtx.put("fromDate", targetPeriod.from().format(dtf));
+            jobCtx.put("toDate", targetPeriod.to().format(dtf));
 
             return RepeatStatus.FINISHED;
         };
@@ -247,13 +245,13 @@ public class RoadNameAddressUpdateJobConfig {
     ) {
         FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("roadNameAddressUpdateFlow");
 
-        LocalDate from = LocalDate.parse(fromDate, DOWNLOADED_FILE_DTF);
-        LocalDate to = LocalDate.parse(toDate, DOWNLOADED_FILE_DTF);
+        LocalDate from = LocalDate.parse(fromDate, dtf);
+        LocalDate to = LocalDate.parse(toDate, dtf);
 
         from.datesUntil(to.plusDays(1))
                 .forEach(date -> {
                     File targetFile = Arrays.stream(
-                                    Objects.requireNonNull(Paths.get(targetDirectory).resolve(date.format(DOWNLOADED_FILE_DTF)).toFile()
+                                    Objects.requireNonNull(Paths.get(targetDirectory).resolve(date.format(dtf)).toFile()
                                             .listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_MST.TXT")))).findFirst()
                             .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
 
@@ -332,13 +330,13 @@ public class RoadNameAddressUpdateJobConfig {
     ) {
         FlowBuilder<Flow> flowBuilder = new FlowBuilder<>("landLotAddressUpdateFlow");
 
-        LocalDate from = LocalDate.parse(fromDate, DOWNLOADED_FILE_DTF);
-        LocalDate to = LocalDate.parse(toDate, DOWNLOADED_FILE_DTF);
+        LocalDate from = LocalDate.parse(fromDate, dtf);
+        LocalDate to = LocalDate.parse(toDate, dtf);
 
         from.datesUntil(to.plusDays(1))
                 .forEach(date -> {
                     File targetFile = Arrays.stream(
-                                    Objects.requireNonNull(Paths.get(targetDirectory).resolve(date.format(DOWNLOADED_FILE_DTF)).toFile()
+                                    Objects.requireNonNull(Paths.get(targetDirectory).resolve(date.format(dtf)).toFile()
                                             .listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_LNBR.TXT")))).findFirst()
                             .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
 
