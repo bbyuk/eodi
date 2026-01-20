@@ -47,6 +47,8 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.bb.eodi.ops.domain.enums.ReferenceTarget.ADDRESS;
+
 /**
  * 도로명주소 일변동 적용 일배치 job config
  */
@@ -138,7 +140,7 @@ public class RoadNameAddressUpdateJobConfig {
 
             ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
-            AddressLinkagePeriod targetPeriod = addressLinkageApiCallService.findTargetPeriod();
+            AddressLinkagePeriod targetPeriod = addressLinkageApiCallService.findTargetPeriod(ADDRESS.getValue());
             AddressLinkageResult addressLinkageResult = addressLinkageApiCallService.downloadNewFiles(targetDirectory, targetPeriod);
 
             if (AddressLinkageResult.ALREADY_UP_TO_DATE == addressLinkageResult) {

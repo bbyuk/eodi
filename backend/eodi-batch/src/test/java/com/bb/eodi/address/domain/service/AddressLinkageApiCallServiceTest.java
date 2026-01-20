@@ -52,7 +52,7 @@ class AddressLinkageApiCallServiceTest {
 
 
         // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod();
+        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(ReferenceTarget.ADDRESS.value);
 
 
         // then
@@ -65,7 +65,7 @@ class AddressLinkageApiCallServiceTest {
         // given
 
         // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod();
+        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(ReferenceTarget.ADDRESS.getValue());
         String targetDirectory = "C:\\Users\\User\\Desktop\\private\\workspace\\eodi-project\\eodi\\bootstrap\\address\\address_temp";
         AddressLinkageResult addressLinkageResult = service.downloadNewFiles(
                 targetDirectory,

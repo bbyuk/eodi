@@ -68,9 +68,9 @@ public class AddressLinkageApiCallService {
      * @return 주소 최신화 배치 수행 대상기간
      */
     @Transactional(readOnly = true)
-    public AddressLinkagePeriod findTargetPeriod() {
+    public AddressLinkagePeriod findTargetPeriod(String targetName) {
         return new AddressLinkagePeriod(
-                referenceVersionRepository.findByTargetName(ADDRESS.getValue())
+                referenceVersionRepository.findByTargetName(targetName)
                         .orElseThrow(() -> new RuntimeException("주소 기준정보 버전을 찾지 못했습니다."))
                         .getEffectiveDate()
                         .plusDays(1),
