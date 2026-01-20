@@ -39,7 +39,7 @@ class AddressLinkageApiCallServiceTest {
                 .thenReturn(Optional.of(
                         ReferenceVersion.builder()
                                 .targetName(ReferenceTarget.ADDRESS.getValue())
-                                .effectiveDate(LocalDate.of(2025, 11, 30))
+                                .effectiveDate(LocalDate.now().minusDays(2))
                                 .build()
                 ));
     }
@@ -52,7 +52,7 @@ class AddressLinkageApiCallServiceTest {
 
 
         // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(ReferenceTarget.ADDRESS.value);
+        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(ReferenceTarget.ADDRESS.getValue());
 
 
         // then
@@ -75,14 +75,7 @@ class AddressLinkageApiCallServiceTest {
         File dir = new File(targetDirectory);
 
         // then
-        try {
-            Assertions.assertThat(dir.listFiles().length).isEqualTo(46);
-        }
-        finally {
-            Arrays.stream(dir.listFiles())
-                    .map(File::toPath)
-                    .forEach(FileCleaner::deleteAll);
-        }
+        Assertions.assertThat(dir.listFiles().length).isEqualTo(2);
     }
 
 
