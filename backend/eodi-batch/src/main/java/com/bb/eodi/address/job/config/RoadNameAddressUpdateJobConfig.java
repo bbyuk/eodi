@@ -280,32 +280,15 @@ public class RoadNameAddressUpdateJobConfig {
     /**
      * 임시 파일 삭제 Step
      *
-     * @param tempFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
+     * @param addressLinkageFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
      * @return 임시 파일 삭제 Step
      */
     @Bean
     public Step tempFileDeleteStep(
-            Tasklet tempFileDeleteTasklet
+            Tasklet addressLinkageFileDeleteTasklet
     ) {
         return new StepBuilder("tempFileDeleteStep", jobRepository)
-                .tasklet(tempFileDeleteTasklet, transactionManager)
+                .tasklet(addressLinkageFileDeleteTasklet, transactionManager)
                 .build();
     }
-
-
-    /**
-     * 임시 파일 삭제 Tasklet
-     *
-     * @param targetDirectory 주소 연계 API를 통해 변동분 파일을 다운로드 받을 대상 디렉터리 -> job 마지막 step에서 삭제처리한다.
-     * @return 임시 파일 삭제 Tasklet
-     */
-    @Bean
-    @StepScope
-    public Tasklet tempFileDeleteTasklet(@Value("#{jobParameters['target-directory']}") String targetDirectory) {
-        return (contribution, chunkContext) -> {
-            FileCleaner.deleteAll(Path.of(targetDirectory));
-            return RepeatStatus.FINISHED;
-        };
-    }
-
 }
