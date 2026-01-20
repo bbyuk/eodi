@@ -12,7 +12,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
 
-import static com.bb.eodi.ops.domain.enums.ReferenceTarget.ADDRESS;
+import static com.bb.eodi.address.domain.service.AddressLinkageTarget.*;
+import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR;
+
 
 /**
  * 주소 연계 API 요청 담당 서비스
@@ -33,8 +35,9 @@ public class AddressLinkageApiCallService {
      */
     @Transactional(readOnly = true)
     public AddressLinkageResult downloadNewFiles(String targetDirectory, AddressLinkagePeriod period) {
-        ReferenceVersion referenceVersion = referenceVersionRepository.findByTargetName(ADDRESS.getValue())
-                .orElseThrow(() -> new RuntimeException(ADDRESS.getValue() + " 기준정보 버전 정보를 찾지 못했습니다."));
+        String referenceVersionName = ROAD_NAME_ADDRESS_KOR.getReferenceVersionName();
+        ReferenceVersion referenceVersion = referenceVersionRepository.findByTargetName(referenceVersionName)
+                .orElseThrow(() -> new RuntimeException(referenceVersionName + " 기준정보 버전 정보를 찾지 못했습니다."));
 
         if (!period.to().isAfter(referenceVersion.getEffectiveDate())) {
             return AddressLinkageResult.ALREADY_UP_TO_DATE;
@@ -56,8 +59,10 @@ public class AddressLinkageApiCallService {
      */
     @Transactional(readOnly = true)
     public AddressLinkageResult downloadEntranceLinkageFiles(String targetDirectory, AddressLinkagePeriod period) {
-        ReferenceVersion referenceVersion = referenceVersionRepository.findByTargetName(ADDRESS.getValue())
-                .orElseThrow(() -> new RuntimeException(ADDRESS.getValue() + " 기준정보 버전 정보를 찾지 못했습니다."));
+        String referenceVersionName = ADDRESS_ENTRANCE.getReferenceVersionName();
+
+        ReferenceVersion referenceVersion = referenceVersionRepository.findByTargetName(referenceVersionName)
+                .orElseThrow(() -> new RuntimeException(referenceVersionName + " 기준정보 버전 정보를 찾지 못했습니다."));
 
         if (!period.to().isAfter(referenceVersion.getEffectiveDate())) {
             return AddressLinkageResult.ALREADY_UP_TO_DATE;
