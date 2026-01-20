@@ -1,23 +1,39 @@
 package com.bb.eodi.address.job.config;
 
+import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
+import com.bb.eodi.address.domain.service.AddressLinkageTarget;
+import com.bb.eodi.address.job.dto.AddressPositionItem;
+import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.tasklet.AddressLinkageApiCallTasklet;
 import com.bb.eodi.address.job.tasklet.AddressLinkageFileUnzipTasklet;
 import com.bb.eodi.core.EodiBatchProperties;
+import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.FlowExecutionStatus;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemStreamReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+import java.util.concurrent.Flow;
 
 import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ADDRESS_ENTRANCE;
 
@@ -90,5 +106,79 @@ public class AddressPositionUpdateJobConfig {
                 .build();
     }
 
+    /**
+     * 주소 출입구 정보 연계 데이터로 주소 좌표 정보 update flow
+     *
+     * @param addressPositionUpdateStep                 주소 좌표 정보 update step
+     * @param addressEntranceReferenceVersionUpdateStep 주소 좌표 기준정보 버전 update step
+     * @param targetDateDecider                         대상일자 execution decider
+     * @return 주소 위치 정보 일단위 최신화 flow
+     */
+    @Bean
+    public Flow addressPositionUpdateFlow(
+            Step addressPositionUpdateStep,
+            Step addressEntranceReferenceVersionUpdateStep,
+            JobExecutionDecider targetDateDecider
+    ) {
+        return new FlowBuilder<Flow>("addressPositionUpdateFlow")
+                .start(addressPositionUpdateStep)
+                .next(addressEntranceReferenceVersionUpdateStep)
+                .next(targetDateDecider)
+                .on("CONTINUE").to(addressPositionUpdateStep)
+                .from(targetDateDecider)
+                .on(FlowExecutionStatus.COMPLETED.getName()).end()
+                .build();
+    }
+
+    /**
+     * 주소 위치 정보 일변동분 반영 Step
+     *
+     * @param addressPositionUpdateItemReader    주소 위치 정보 update ItemReader
+     * @param addressPositionUpdateItemProcessor 주소 위치 정보 mapping ItemProcessor
+     * @param addressPositionUpdateItemWriter    주소 위치 정보 update ItemWriter
+     * @return 주소 위치 정보 일변동분 반영 Step
+     */
+    @Bean
+    public Step addressPositionUpdateStep(
+            ItemStreamReader<AddressPositionItem> addressPositionUpdateItemReader,
+            ItemProcessor<AddressPositionItem, RoadNameAddress> addressPositionUpdateItemProcessor,
+            ItemWriter<RoadNameAddress> addressPositionUpdateItemWriter
+    ) {
+        return new StepBuilder("addressPositionUpdateStep", jobRepository)
+                .<AddressPositionItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
+                .reader(addressPositionUpdateItemReader)
+                .processor(addressPositionUpdateItemProcessor)
+                .writer(addressPositionUpdateItemWriter)
+                .stream(addressPositionUpdateItemReader)
+                .build();
+    }
+
+    /**
+     * 기준정보버전 업데이트 step
+     *
+     * @param referenceVersionRepository 기준정보버전 repository bean
+     * @return 기준정보버전 업데이트 step
+     */
+    @Bean
+    public Step addressEntranceReferenceVersionUpdateStep(
+            ReferenceVersionRepository referenceVersionRepository) {
+        return new StepBuilder("addressEntranceReferenceVersionUpdateStep", jobRepository)
+                .tasklet((contribution, chunkContext) -> {
+                    ExecutionContext jobCtx =
+                            contribution.getStepExecution()
+                                    .getJobExecution()
+                                    .getExecutionContext();
+
+                    LocalDate targetDate = (LocalDate) jobCtx.get("targetDate");
+                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(
+                            targetDate,
+                            ADDRESS_ENTRANCE.getReferenceVersionName()
+                    );
+                    jobCtx.put("targetDate", Objects.requireNonNull(targetDate).plusDays(1));
+
+                    return RepeatStatus.FINISHED;
+                }, transactionManager)
+                .build();
+    }
 
 }
