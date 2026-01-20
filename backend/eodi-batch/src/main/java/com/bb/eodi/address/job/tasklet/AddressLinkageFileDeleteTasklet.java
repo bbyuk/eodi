@@ -30,6 +30,5 @@ public class AddressLinkageFileDeleteTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         FileCleaner.deleteAll(Path.of(targetDirectory));
         return RepeatStatus.FINISHED;
-        return RepeatStatus.FINISHED;
     }
 }
