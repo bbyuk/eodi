@@ -3,6 +3,7 @@ package com.bb.eodi.address.job.config;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
 import com.bb.eodi.address.job.dto.AddressPositionItem;
+import com.bb.eodi.address.job.reader.AddressPositionAllItemReader;
 import com.bb.eodi.address.job.tasklet.AddressLinkageApiCallTasklet;
 import com.bb.eodi.address.job.tasklet.AddressLinkageFileUnzipTasklet;
 import com.bb.eodi.core.EodiBatchProperties;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
@@ -30,8 +32,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ADDRESS_ENTRANCE;
@@ -166,6 +171,20 @@ public class AddressPositionUpdateJobConfig {
                 .writer(addressPositionUpdateItemWriter)
                 .stream(addressPositionUpdateItemReader)
                 .build();
+    }
+
+    @Bean
+    @StepScope
+    public ItemStreamReader<AddressPositionItem> addressPositionUpdateItemReader(
+            @Value("#{jobParameters['target-directory']}") String targetDirectory,
+            @Value("#{jobExecutionContext['targetDate']}") LocalDate targetDate
+    ) {
+        File targetFile = Arrays.stream(
+                        Objects.requireNonNull(Paths.get(targetDirectory).resolve(targetDate.format(dtf)).toFile()
+                                .listFiles(file -> file.getName().endsWith("TH_SGCO_RNADR_POSITION.TXT")))).findFirst()
+                .orElseThrow(() -> new RuntimeException("파일을 찾지 못했습니다."));
+
+        return new AddressPositionAllItemReader(targetFile.getAbsolutePath());
     }
 
     /**

@@ -22,9 +22,9 @@ public class TargetDateDecider implements JobExecutionDecider {
         LocalDate targetDate = (LocalDate) ctx.get("targetDate");
         LocalDate toDate     = (LocalDate) ctx.get("toDate");
 
-        if (!toDate.isAfter(targetDate)) {
-            return new FlowExecutionStatus("CONTINUE");
+        if (targetDate.isAfter(toDate)) {
+            return FlowExecutionStatus.COMPLETED;
         }
-        return FlowExecutionStatus.COMPLETED;
+        return new FlowExecutionStatus("CONTINUE");
     }
 }
