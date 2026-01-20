@@ -107,8 +107,7 @@ public class AddressLinkageApiCallService {
                 referenceVersionRepository.findByTargetName(targetName)
                         .orElseThrow(() -> new RuntimeException("주소 기준정보 버전을 찾지 못했습니다."))
                         .getEffectiveDate()
-                        .plusDays(1),
-                LocalDate.now()
+                        .plusDays(1)
         );
     }
 
