@@ -2,9 +2,7 @@ package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
-import com.bb.eodi.address.domain.service.AddressLinkageTarget;
 import com.bb.eodi.address.job.dto.AddressPositionItem;
-import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.tasklet.AddressLinkageApiCallTasklet;
 import com.bb.eodi.address.job.tasklet.AddressLinkageFileUnzipTasklet;
 import com.bb.eodi.core.EodiBatchProperties;
@@ -16,10 +14,12 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
@@ -33,7 +33,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.concurrent.Flow;
 
 import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ADDRESS_ENTRANCE;
 
@@ -54,17 +53,33 @@ public class AddressPositionUpdateJobConfig {
     /**
      * 주소 위치정보 update Job Config
      *
-     * @param addressEntranceLinkageApiCallStep
+     * @param addressEntranceLinkageApiCallStep     주소 출입구 연계 API 요청 Step
+     * @param addressEntranceLinkageFileUnzipStep   주소 출입구 연계 API 다운로드 파일 압축 해제 Step
+     * @param addressPositionUpdateFlow             주소 위치 정보 Update flow
+     * @param addressLinkageFileDeleteStep          주소 출입구 연계 API 다운로드 파일 삭제 Step
+     *
      * @return
      */
     @Bean
     public Job addressPositionUpdateJob(
             Step addressEntranceLinkageApiCallStep,
-            Step addressEntranceLinkageFileUnzipStep
+            Step addressEntranceLinkageFileUnzipStep,
+            Flow addressPositionUpdateFlow,
+            Step addressLinkageFileDeleteStep
     ) {
-        return new JobBuilder("addressPositionUpdateJob", jobRepository)
+        Flow mainFlow = new FlowBuilder<Flow>("addressPositionUpdateMainFlow")
                 .start(addressEntranceLinkageApiCallStep)
                 .next(addressEntranceLinkageFileUnzipStep)
+                .from(addressEntranceLinkageFileUnzipStep)
+                .on("COMPLETED").to(addressPositionUpdateFlow)
+                .from(addressPositionUpdateFlow)
+                .on("COMPLETED").to(addressLinkageFileDeleteStep)
+                .end();
+
+
+        return new JobBuilder("addressPositionUpdateJob", jobRepository)
+                .start(mainFlow)
+                .end()
                 .build();
     }
 
@@ -180,5 +195,18 @@ public class AddressPositionUpdateJobConfig {
                 }, transactionManager)
                 .build();
     }
+
+    /**
+     * 주소 연계 File 삭제 Step
+     * @param addressLinkageFileDeleteTasklet 주소 연계 파일 삭제 Tasklet
+     * @return 주소 연계 File 삭제 Step
+     */
+    @Bean
+    public Step addressLinkageFileDeleteStep(Tasklet addressLinkageFileDeleteTasklet) {
+        return new StepBuilder("addressLinkageFileDeleteStep", jobRepository)
+                .tasklet(addressLinkageFileDeleteTasklet, transactionManager)
+                .build();
+    }
+
 
 }
