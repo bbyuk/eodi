@@ -119,7 +119,7 @@ public class RoadNameAddressPositionMappingJobConfig {
      * 도로명주소 주소 위치정보 매핑 병렬처리 worker step
      * @param addressPositionAllItemReader 주소위치정보 전체분 ItemReader
      * @param addressPositionMappingItemProcessor 도로명주소 주소 위치정보 매핑 ItemProcessor
-     * @param addressPositionItemWriter 도로명주소 주소 위치정보 매핑 ItemWriter
+     * @param addressPositionAllItemReader 도로명주소 주소 위치정보 매핑 ItemWriter
      * @return 주소위치정보 전체분 병렬 적재 worker step
      */
     @Bean
