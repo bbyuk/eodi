@@ -118,20 +118,20 @@ public class RoadNameAddressPositionMappingJobConfig {
     /**
      * 도로명주소 주소 위치정보 매핑 병렬처리 worker step
      * @param addressPositionAllItemReader 주소위치정보 전체분 ItemReader
-     * @param roadNameAddressPositionMappingItemProcessor 도로명주소 주소 위치정보 매핑 ItemProcessor
-     * @param roadNameAddressPositionMappingItemWriter 도로명주소 주소 위치정보 매핑 ItemWriter
+     * @param addressPositionMappingItemProcessor 도로명주소 주소 위치정보 매핑 ItemProcessor
+     * @param addressPositionItemWriter 도로명주소 주소 위치정보 매핑 ItemWriter
      * @return 주소위치정보 전체분 병렬 적재 worker step
      */
     @Bean
     public Step roadNameAddressPositionMappingWorkerStep(
             ItemStreamReader<AddressPositionItem> addressPositionAllItemReader,
-            ItemProcessor<AddressPositionItem, RoadNameAddress> roadNameAddressPositionMappingItemProcessor,
+            ItemProcessor<AddressPositionItem, RoadNameAddress> addressPositionMappingItemProcessor,
             ItemWriter<RoadNameAddress> addressPositionItemWriter
     ) {
         return new StepBuilder("addressPositionLoadWorkerStep", jobRepository)
                 .<AddressPositionItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(addressPositionAllItemReader)
-                .processor(roadNameAddressPositionMappingItemProcessor)
+                .processor(addressPositionMappingItemProcessor)
                 .writer(addressPositionItemWriter)
                 .stream(addressPositionAllItemReader)
                 .build();
@@ -148,43 +148,6 @@ public class RoadNameAddressPositionMappingJobConfig {
             @Value("#{stepExecutionContext['filePath']}") String filePath
     ) {
         return new AddressPositionAllItemReader(filePath);
-    }
-
-    /**
-     * 도로명주소 주소 위치정보 매핑 ItemProcessor
-     * @return 도로명주소 주소 위치정보 매핑 ItemProcessor
-     */
-    @Bean
-    @StepScope
-    public ItemProcessor<AddressPositionItem, RoadNameAddress> roadNameAddressPositionMappingItemProcessor() {
-        Function<String, BigDecimal> parseBigDecimalWithNull = (str) -> !StringUtils.hasText(str) ? null : new BigDecimal(str);
-
-        return item -> {
-            if (!StringUtils.hasText(item.getXPos()) || !StringUtils.hasText(item.getYPos())) {
-                return null;
-            }
-
-            BigDecimal[] wgs84 = GeoToolsBigDecimalConverter.toWgs84(
-                    parseBigDecimalWithNull.apply(item.getXPos()),
-                    parseBigDecimalWithNull.apply(item.getYPos())
-            );
-
-            LegalDongInfoDto legalDongInfoDto = legalDongCacheRepository.findLegalDongInfoByCode(item.getLegalDongCode())
-                    .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
-
-            List<String> selectTargetLegalDongCodes = legalDongInfoDto.findSubtreeNodes().stream().map(LegalDongInfoDto::getCode).collect(Collectors.toList());
-            selectTargetLegalDongCodes.add(item.getLegalDongCode());
-
-            return RoadNameAddress.builder()
-                    .manageNo(item.getManageNo())
-                    .roadNameCode(item.getRoadNameCode())
-                    .isUnderground(item.getIsUnderground())
-                    .buildingMainNo(Integer.parseInt(item.getBuildingMainNo()))
-                    .buildingSubNo(Integer.parseInt(item.getBuildingSubNo()))
-                    .xPos(wgs84[0])
-                    .yPos(wgs84[1])
-                    .build();
-        };
     }
 
     /**
