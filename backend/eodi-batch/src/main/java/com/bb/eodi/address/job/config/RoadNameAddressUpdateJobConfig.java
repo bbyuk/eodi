@@ -129,7 +129,7 @@ public class RoadNameAddressUpdateJobConfig {
     @Bean
     @JobScope
     public Step addressLinkageFileUnzipStep(
-            @Value("##{jobParameters['target-directory']}") String targetDirectory
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         return new StepBuilder("addressLinkageFileUnzipStep", jobRepository)
                 .tasklet(new AddressLinkageFileUnzipTasklet(targetDirectory), transactionManager)

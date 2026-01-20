@@ -83,7 +83,7 @@ public class AddressPositionUpdateJobConfig {
     @Bean
     @JobScope
     public Step addressEntranceLinkageFileUnzipStep(
-            @Value("##{jobParameters['target-directory']}") String targetDirectory
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
     ) {
         return new StepBuilder("addressLinkageFileUnzipStep", jobRepository)
                 .tasklet(new AddressLinkageFileUnzipTasklet(targetDirectory), transactionManager)
