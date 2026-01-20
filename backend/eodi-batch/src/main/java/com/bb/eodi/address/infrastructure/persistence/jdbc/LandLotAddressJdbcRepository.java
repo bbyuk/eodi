@@ -105,11 +105,11 @@ public class LandLotAddressJdbcRepository {
                         building_main_no = ?,
                         building_sub_no = ?,
                         update_reason_code = ?
-                WHERE   manage_no = ?,
-                AND     legal_dong_code = ?,
-                AND     is_mountain = ?,
-                AND     land_lot_main_no = ?,
-                AND     land_lot_sub_no = ?,
+                WHERE   manage_no = ?
+                AND     legal_dong_code = ?
+                AND     is_mountain = ?
+                AND     land_lot_main_no = ?
+                AND     land_lot_sub_no = ?
                 AND     road_name_code = ?
                 """;
         jdbcTemplate.batchUpdate(

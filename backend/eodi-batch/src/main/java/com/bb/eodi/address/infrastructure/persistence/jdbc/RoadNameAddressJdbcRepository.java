@@ -271,7 +271,7 @@ public class RoadNameAddressJdbcRepository {
                     ps.setObject(6, entity.getIsMountain(), VARCHAR);
                     ps.setObject(7, entity.getLandLotMainNo(), INTEGER);
                     ps.setObject(8, entity.getLandLotSubNo(), INTEGER);
-                    ps.setObject(9, entity.getRoadNameCode(), VARCHAR);
+                    ps.setObject(9, entity.getRoadName(), VARCHAR);
                     ps.setObject(10, entity.getAdmDongCode(), VARCHAR);
                     ps.setObject(11, entity.getAdmDongName(), VARCHAR);
                     ps.setObject(12, entity.getBasicDistrictNo(), VARCHAR);
