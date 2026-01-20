@@ -3,6 +3,7 @@ package com.bb.eodi.address.job.config;
 import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
+import com.bb.eodi.address.domain.service.AddressLinkageTarget;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
@@ -101,9 +102,9 @@ public class RoadNameAddressUpdateJobConfig {
 
     /**
      * 주소 연계 API 호출 Step
-     * 
+     *
      * @param addressLinkageApiCallService 주소 연계 API 요청 서비스 컴포넌트
-     * @param targetDirectory 연계 파일 다운로드 대상 디렉터리
+     * @param targetDirectory              연계 파일 다운로드 대상 디렉터리
      * @return 주소 연계 API 호출 Step
      */
     @Bean
@@ -266,7 +267,9 @@ public class RoadNameAddressUpdateJobConfig {
                                     .getExecutionContext();
 
                     LocalDate targetDate = (LocalDate) jobCtx.get("targetDate");
-                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(targetDate, "address");
+                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(
+                            targetDate,
+                            ROAD_NAME_ADDRESS_KOR.getReferenceVersionName());
                     jobCtx.put("targetDate", Objects.requireNonNull(targetDate).plusDays(1));
 
                     return RepeatStatus.FINISHED;
