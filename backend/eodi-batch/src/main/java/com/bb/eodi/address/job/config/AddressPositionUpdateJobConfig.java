@@ -2,6 +2,7 @@ package com.bb.eodi.address.job.config;
 
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
 import com.bb.eodi.address.job.tasklet.AddressLinkageApiCallTasklet;
+import com.bb.eodi.address.job.tasklet.AddressLinkageFileUnzipTasklet;
 import com.bb.eodi.core.EodiBatchProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +43,12 @@ public class AddressPositionUpdateJobConfig {
      */
     @Bean
     public Job addressPositionUpdateJob(
-            Step addressEntranceLinkageApiCallStep
+            Step addressEntranceLinkageApiCallStep,
+            Step addressEntranceLinkageFileUnzipStep
     ) {
         return new JobBuilder("addressPositionUpdateJob", jobRepository)
                 .start(addressEntranceLinkageApiCallStep)
+                .next(addressEntranceLinkageFileUnzipStep)
                 .build();
     }
 
@@ -68,6 +71,22 @@ public class AddressPositionUpdateJobConfig {
                         addressLinkageApiCallService,
                         targetDirectory
                 ), transactionManager)
+                .build();
+    }
+
+    /**
+     * 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 step
+     *
+     * @param targetDirectory 재귀적으로 전체 unzip할 대상 디렉터리 - jobParameter
+     * @return 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 step
+     */
+    @Bean
+    @JobScope
+    public Step addressEntranceLinkageFileUnzipStep(
+            @Value("##{jobParameters['target-directory']}") String targetDirectory
+    ) {
+        return new StepBuilder("addressLinkageFileUnzipStep", jobRepository)
+                .tasklet(new AddressLinkageFileUnzipTasklet(targetDirectory), transactionManager)
                 .build();
     }
 
