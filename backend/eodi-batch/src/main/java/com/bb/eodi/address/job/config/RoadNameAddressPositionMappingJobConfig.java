@@ -126,13 +126,13 @@ public class RoadNameAddressPositionMappingJobConfig {
     public Step roadNameAddressPositionMappingWorkerStep(
             ItemStreamReader<AddressPositionItem> addressPositionAllItemReader,
             ItemProcessor<AddressPositionItem, RoadNameAddress> addressPositionMappingItemProcessor,
-            ItemWriter<RoadNameAddress> addressPositionItemWriter
+            ItemWriter<RoadNameAddress> addressPositionUpdateItemWriter
     ) {
         return new StepBuilder("addressPositionLoadWorkerStep", jobRepository)
                 .<AddressPositionItem, RoadNameAddress>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(addressPositionAllItemReader)
                 .processor(addressPositionMappingItemProcessor)
-                .writer(addressPositionItemWriter)
+                .writer(addressPositionUpdateItemWriter)
                 .stream(addressPositionAllItemReader)
                 .build();
     }
@@ -148,15 +148,5 @@ public class RoadNameAddressPositionMappingJobConfig {
             @Value("#{stepExecutionContext['filePath']}") String filePath
     ) {
         return new AddressPositionAllItemReader(filePath);
-    }
-
-    /**
-     * 주소위치정보 ItemWriter
-     * @return 주소위치정보 ItemWriter
-     */
-    @Bean
-    @StepScope
-    public ItemWriter<RoadNameAddress> addressPositionItemWriter() {
-        return chunk -> roadNameAddressRepository.updatePosition(chunk.getItems());
     }
 }
