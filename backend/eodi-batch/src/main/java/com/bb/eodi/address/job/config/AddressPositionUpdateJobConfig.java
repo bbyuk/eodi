@@ -140,11 +140,15 @@ public class AddressPositionUpdateJobConfig {
             Step addressEntranceReferenceVersionUpdateStep,
             JobExecutionDecider targetDateDecider
     ) {
-        return new FlowBuilder<Flow>("addressPositionUpdateFlow")
+        Flow loopFlow = new FlowBuilder<Flow>("addressPositionLoopFlow")
                 .start(addressPositionUpdateStep)
                 .next(addressEntranceReferenceVersionUpdateStep)
+                .build();
+
+        return new FlowBuilder<Flow>("addressPositionUpdateFlow")
+                .start(loopFlow)
                 .next(targetDateDecider)
-                .on("CONTINUE").to(addressPositionUpdateStep)
+                .on("CONTINUE").to(loopFlow)
                 .from(targetDateDecider)
                 .on(FlowExecutionStatus.COMPLETED.getName()).end()
                 .build();
