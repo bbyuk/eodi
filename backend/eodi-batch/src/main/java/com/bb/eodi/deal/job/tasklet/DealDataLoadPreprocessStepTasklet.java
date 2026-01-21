@@ -29,7 +29,12 @@ public class DealDataLoadPreprocessStepTasklet implements Tasklet {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
         ReferenceVersion dealUpdateVersion = referenceVersionRepository.findByTargetName(referenceVersionTargetName)
-                .orElseThrow(() -> new RuntimeException(referenceVersionTargetName + " 기준정보 데이터를 찾지 못했습니다."));
+                .orElseGet(() -> {
+                    // 3개월 이전 첫 날로 변경
+                    LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3).withDayOfMonth(1);
+                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(threeMonthsAgo, referenceVersionTargetName);
+                    return referenceVersionRepository.findByTargetName(referenceVersionTargetName).orElseThrow(() -> new RuntimeException("문제가 발생했습니다."));
+                });
 
 
         if (!dealUpdateVersion.getEffectiveDate().isBefore(LocalDate.now())) {
