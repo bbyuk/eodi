@@ -3,20 +3,21 @@ package com.bb.eodi.address.job.config;
 import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
-import com.bb.eodi.address.domain.service.AddressLinkagePeriod;
-import com.bb.eodi.address.domain.service.AddressLinkageResult;
+import com.bb.eodi.address.domain.service.AddressLinkageTarget;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
+import com.bb.eodi.address.job.tasklet.AddressLinkageApiCallTasklet;
+import com.bb.eodi.address.job.tasklet.AddressLinkageFileUnzipTasklet;
 import com.bb.eodi.common.utils.FileCleaner;
 import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -36,16 +37,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+
+import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR;
+
 
 /**
  * 도로명주소 일변동 적용 일배치 job config
@@ -66,10 +67,10 @@ public class RoadNameAddressUpdateJobConfig {
      * - 매일 수행 예정
      * - 이미 반영된 경우 skip 처리
      *
-     * @param addressLinkageApiCallStep       주소연계 API 호출 Step (변동분 파일 다운로드)
-     * @param addressLinkageFileUnzipStep     주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
-     * @param addressUpdateFlow               일단위 주소 최신화 flow
-     * @param tempFileDeleteStep              주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
+     * @param addressLinkageApiCallStep   주소연계 API 호출 Step (변동분 파일 다운로드)
+     * @param addressLinkageFileUnzipStep 주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
+     * @param addressUpdateFlow           일단위 주소 최신화 flow
+     * @param tempFileDeleteStep          주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
      * @return 도로명주소 일변동 적용 일배치 Job
      */
     @Bean
@@ -102,140 +103,48 @@ public class RoadNameAddressUpdateJobConfig {
     /**
      * 주소 연계 API 호출 Step
      *
-     * @param addressLinkageApiCallTasklet 주소 연계 API 호출 Tasklet
+     * @param addressLinkageApiCallService 주소 연계 API 요청 서비스 컴포넌트
+     * @param targetDirectory              연계 파일 다운로드 대상 디렉터리
      * @return 주소 연계 API 호출 Step
      */
     @Bean
-    public Step addressLinkageApiCallStep(Tasklet addressLinkageApiCallTasklet) {
+    @JobScope
+    public Step addressLinkageApiCallStep(
+            AddressLinkageApiCallService addressLinkageApiCallService,
+            @Value("#{jobParameters['target-directory']}") String targetDirectory) {
         return new StepBuilder("addressLinkageApiCallStep", jobRepository)
-                .tasklet(addressLinkageApiCallTasklet, transactionManager)
+                .tasklet(new AddressLinkageApiCallTasklet(
+                        ROAD_NAME_ADDRESS_KOR,
+                        addressLinkageApiCallService,
+                        targetDirectory
+                ), transactionManager)
                 .build();
-    }
-
-
-    /**
-     * 주소 연계 API 요청 Tasklet
-     *
-     * @param targetDirectory 임시파일 다운로드 대상 디렉터리
-     * @return 주소 연계 API 요청 Tasklet
-     */
-    @Bean
-    @StepScope
-    public Tasklet addressLinkageApiCallTasklet(
-            @Value("#{jobParameters['target-directory']}") String targetDirectory,
-            AddressLinkageApiCallService addressLinkageApiCallService
-    ) {
-        return (contribution, chunkContext) -> {
-            // targetDirectory 없으면 mkdir
-            File targetDirectoryObj = new File(targetDirectory);
-            if (!targetDirectoryObj.exists()) {
-                targetDirectoryObj.mkdirs();
-            }
-
-            if (!targetDirectoryObj.isDirectory()) {
-                throw new RuntimeException("Target directory is not a directory: " + targetDirectory);
-            }
-
-            ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
-
-            AddressLinkagePeriod targetPeriod = addressLinkageApiCallService.findTargetPeriod();
-            AddressLinkageResult addressLinkageResult = addressLinkageApiCallService.downloadNewFiles(targetDirectory, targetPeriod);
-
-            if (AddressLinkageResult.ALREADY_UP_TO_DATE == addressLinkageResult) {
-                throw new JobInterruptedException("주소 DB가 이미 최신 상태입니다.");
-            }
-
-            jobCtx.put("fromDate", targetPeriod.from());
-            jobCtx.put("toDate", targetPeriod.to());
-
-            jobCtx.put("targetDate", targetPeriod.from());
-
-            return RepeatStatus.FINISHED;
-        };
     }
 
     /**
      * 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 step
      *
-     * @param addressLinkageFileUnzipTasklet 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 Tasklet
+     * @param targetDirectory 재귀적으로 전체 unzip할 대상 디렉터리 - jobParameter
      * @return 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 step
      */
     @Bean
-    public Step addressLinkageFileUnzipStep(Tasklet addressLinkageFileUnzipTasklet) {
+    @JobScope
+    public Step addressLinkageFileUnzipStep(
+            @Value("#{jobParameters['target-directory']}") String targetDirectory
+    ) {
         return new StepBuilder("addressLinkageFileUnzipStep", jobRepository)
-                .tasklet(addressLinkageFileUnzipTasklet, transactionManager)
+                .tasklet(new AddressLinkageFileUnzipTasklet(targetDirectory), transactionManager)
                 .build();
-    }
-
-    /**
-     * 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 Tasklet
-     *
-     * @param targetDirectory 주소연계 처리 대상 임시 디렉터리
-     * @return 주소 연계 API를 통해 다운로드 받은 파일을 모두 unzip 하는 Tasklet
-     */
-    @Bean
-    @StepScope
-    public Tasklet addressLinkageFileUnzipTasklet(
-            @Value("#{jobParameters['target-directory']}") String targetDirectory) {
-        return (contribution, chunkContext) -> {
-            File dir = new File(targetDirectory);
-            File[] subDirectories = dir.listFiles();
-
-            // 일자별 처리
-            for (File subDirectory : Objects.requireNonNull(subDirectories)) {
-                File[] zipFiles = subDirectory.listFiles();
-
-                Arrays.stream(Objects.requireNonNull(zipFiles))
-                        .forEach(zipFile -> {
-                            // 현재 디렉터리에 풀기
-                            Path targetPath = zipFile.getParentFile().toPath();
-
-                            try (InputStream fis = new FileInputStream(zipFile);
-                                 BufferedInputStream bis = new BufferedInputStream(fis);
-                                 ZipInputStream zis = new ZipInputStream(bis)) {
-
-                                Files.createDirectories(targetPath);
-
-                                ZipEntry entry;
-                                while ((entry = zis.getNextEntry()) != null) {
-
-                                    Path resolvedPath = targetPath.resolve(entry.getName()).normalize();
-
-                                    // Zip Slip 공격 방지 (필수)
-                                    if (!resolvedPath.startsWith(targetPath)) {
-                                        throw new IOException("Invalid ZIP entry: " + entry.getName());
-                                    }
-
-                                    if (entry.isDirectory()) {
-                                        Files.createDirectories(resolvedPath);
-                                    } else {
-                                        Files.createDirectories(resolvedPath.getParent());
-
-                                        try (OutputStream os = Files.newOutputStream(resolvedPath)) {
-                                            zis.transferTo(os);
-                                        }
-                                    }
-
-                                    zis.closeEntry();
-                                }
-
-                            } catch (IOException e) {
-                                throw new RuntimeException("ZIP 압축 해제 실패", e);
-                            }
-                        });
-            }
-
-            return RepeatStatus.FINISHED;
-        };
     }
 
 
     /**
      * 주소 일단위 최신화 flow
-     * @param roadNameAddressUpdateStep     도로명주소 update step
-     * @param landLotAddressUpdateStep      관련지번 update step
-     * @param referenceVersionUpdateStep    기준정보버전 update step
-     * @param targetDateDecider             대상일자 execution decider
+     *
+     * @param roadNameAddressUpdateStep  도로명주소 update step
+     * @param landLotAddressUpdateStep   관련지번 update step
+     * @param referenceVersionUpdateStep 기준정보버전 update step
+     * @param targetDateDecider          대상일자 execution decider
      * @return 주소 일단위 최신화 flow
      */
     @Bean
@@ -358,7 +267,9 @@ public class RoadNameAddressUpdateJobConfig {
                                     .getExecutionContext();
 
                     LocalDate targetDate = (LocalDate) jobCtx.get("targetDate");
-                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(targetDate, "address");
+                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(
+                            targetDate,
+                            ROAD_NAME_ADDRESS_KOR.getReferenceVersionName());
                     jobCtx.put("targetDate", Objects.requireNonNull(targetDate).plusDays(1));
 
                     return RepeatStatus.FINISHED;
@@ -369,32 +280,15 @@ public class RoadNameAddressUpdateJobConfig {
     /**
      * 임시 파일 삭제 Step
      *
-     * @param tempFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
+     * @param addressLinkageFileDeleteTasklet 주소 연계 API를 통해 다운로드받은 임시파일을 삭제한다.
      * @return 임시 파일 삭제 Step
      */
     @Bean
     public Step tempFileDeleteStep(
-            Tasklet tempFileDeleteTasklet
+            Tasklet addressLinkageFileDeleteTasklet
     ) {
         return new StepBuilder("tempFileDeleteStep", jobRepository)
-                .tasklet(tempFileDeleteTasklet, transactionManager)
+                .tasklet(addressLinkageFileDeleteTasklet, transactionManager)
                 .build();
     }
-
-
-    /**
-     * 임시 파일 삭제 Tasklet
-     *
-     * @param targetDirectory 주소 연계 API를 통해 변동분 파일을 다운로드 받을 대상 디렉터리 -> job 마지막 step에서 삭제처리한다.
-     * @return 임시 파일 삭제 Tasklet
-     */
-    @Bean
-    @StepScope
-    public Tasklet tempFileDeleteTasklet(@Value("#{jobParameters['target-directory']}") String targetDirectory) {
-        return (contribution, chunkContext) -> {
-            FileCleaner.deleteAll(Path.of(targetDirectory));
-            return RepeatStatus.FINISHED;
-        };
-    }
-
 }

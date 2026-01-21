@@ -22,6 +22,10 @@ public class AddressPositionAllItemReader extends AbstractAddressItemStreamReade
 
         if (line == null) return null;
 
+        if (line.length == 1 && line[0].equals("No Data")) {
+            return null;
+        }
+
         return AddressPositionItem.builder()
                 .manageNo(line[0])
                 .legalDongCode(line[1])
