@@ -25,8 +25,8 @@ public class LegalDongParentMappingStepItemProcessor implements ItemProcessor<Le
     @Override
     public LegalDong process(LegalDongItem item) throws Exception {
 
-        LegalDong targetLegalDong = legalDongRepository.findByCode(item.getLegalDongCode())
-                .orElseThrow(() -> new RuntimeException("대상 데이터를 찾지 못했습니다."));
+        LegalDong targetLegalDong = legalDongRepository.findAnyByCode(item.getLegalDongCode())
+                .orElseThrow(() -> new RuntimeException("대상 데이터를 찾지 못했습니다. ====== " + item.getLegalDongCode()));
 
         legalDongRepository.findByCode(LegalDongUtils.parseParentCode(item.getLegalDongCode()))
                 .ifPresentOrElse(

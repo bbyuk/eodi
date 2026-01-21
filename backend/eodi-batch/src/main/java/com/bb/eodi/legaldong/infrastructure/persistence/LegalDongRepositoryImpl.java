@@ -3,9 +3,9 @@ package com.bb.eodi.legaldong.infrastructure.persistence;
 import com.bb.eodi.legaldong.domain.dto.LegalDongSummaryDto;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.entity.QLegalDong;
-import com.bb.eodi.legaldong.infrastructure.persistence.jpa.LegalDongJpaRepository;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +26,39 @@ import java.util.Optional;
 public class LegalDongRepositoryImpl implements LegalDongRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final LegalDongJpaRepository legalDongJpaRepository;
     private final JPAQueryFactory queryFactory;
 
     @Override
     public Optional<LegalDong> findByCode(String code) {
-        return legalDongJpaRepository.findByCode(code);
+        QLegalDong ld = QLegalDong.legalDong;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        condition.and(ld.isActive.eq(true));
+        condition.and(code == null ? ld.code.isNull() : ld.code.eq(code));
+
+
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(ld)
+                        .where(condition)
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<LegalDong> findAnyByCode(String code) {
+        QLegalDong ld = QLegalDong.legalDong;
+
+        BooleanBuilder condition = new BooleanBuilder();
+        condition.and(code == null ? ld.code.isNull() : ld.code.eq(code));
+
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(ld)
+                        .where(condition)
+                        .fetchOne()
+        );
     }
 
     @Override
@@ -99,7 +126,16 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
 
     @Override
     public List<LegalDongSummaryDto> findAllSummary() {
-        return legalDongJpaRepository.findAllSummary();
+        QLegalDong ld = QLegalDong.legalDong;
+
+        return queryFactory.select(Projections.constructor(
+                        LegalDongSummaryDto.class,
+                        ld.sidoCode,
+                        ld.sigunguCode
+                ))
+                .from(ld)
+                .where(ld.isActive.eq(true))
+                .fetch();
     }
 
     @Override
@@ -124,8 +160,8 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
 
         return Optional.ofNullable(
                 queryFactory.selectFrom(legalDong)
-                .where(condition)
-                .fetchOne()
+                        .where(condition)
+                        .fetchOne()
         );
     }
 }

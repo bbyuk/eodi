@@ -41,7 +41,11 @@ public class AddressPositionMappingItemProcessor implements ItemProcessor<Addres
         );
 
         LegalDongInfoDto legalDongInfoDto = legalDongCacheRepository.findLegalDongInfoByCode(item.getLegalDongCode())
-                .orElseThrow(() -> new RuntimeException("대상 법정동을 찾지 못했습니다."));
+                .orElse(null);
+
+        if (legalDongInfoDto == null) {
+            return null;
+        }
 
         List<String> selectTargetLegalDongCodes = legalDongInfoDto.findSubtreeNodes().stream().map(LegalDongInfoDto::getCode).collect(Collectors.toList());
         selectTargetLegalDongCodes.add(item.getLegalDongCode());
