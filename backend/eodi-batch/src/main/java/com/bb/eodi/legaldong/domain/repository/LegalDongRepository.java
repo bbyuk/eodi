@@ -12,13 +12,6 @@ import java.util.Optional;
 public interface LegalDongRepository {
 
     /**
-     * ID로 LegalDong entity를 조회한다.
-     * @param id 법정동 ID
-     * @return 법정동
-     */
-    Optional<LegalDong> findById(Long id);
-
-    /**
      * 법정동 코드로 LegalDong entity를 조회한다.
      * @param code 법정동 코드
      * @return 법정동
