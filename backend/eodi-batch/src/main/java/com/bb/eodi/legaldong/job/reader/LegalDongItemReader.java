@@ -1,9 +1,7 @@
 package com.bb.eodi.legaldong.job.reader;
 
 import com.bb.eodi.core.EodiBatchProperties;
-import com.bb.eodi.integration.gov.legaldong.dto.LegalDongApiResponseRow;
 import com.bb.eodi.legaldong.job.dto.LegalDongItem;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.*;
