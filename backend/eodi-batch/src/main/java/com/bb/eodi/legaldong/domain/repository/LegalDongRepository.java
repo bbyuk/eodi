@@ -12,11 +12,18 @@ import java.util.Optional;
 public interface LegalDongRepository {
 
     /**
-     * 법정동 코드로 LegalDong entity를 조회한다.
+     * 법정동 코드로 active LegalDong entity를 조회한다.
      * @param code 법정동 코드
      * @return 법정동
      */
     Optional<LegalDong> findByCode(String code);
+
+    /**
+     * 법정동 코드로 현재 상태에 상관없이 법정동 entity를 조회한다.
+     * @param code 법정동 코드
+     * @return 법정동
+     */
+    Optional<LegalDong> findAnyByCode(String code);
 
     /**
      * 법정동 적재 배치 merge
