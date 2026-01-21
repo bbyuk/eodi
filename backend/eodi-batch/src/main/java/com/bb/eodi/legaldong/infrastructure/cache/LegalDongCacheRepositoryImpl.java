@@ -2,8 +2,9 @@ package com.bb.eodi.legaldong.infrastructure.cache;
 
 import com.bb.eodi.legaldong.domain.dto.LegalDongInfoDto;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
+import com.bb.eodi.legaldong.domain.entity.QLegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongCacheRepository;
-import com.bb.eodi.legaldong.infrastructure.persistence.jpa.LegalDongJpaRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LegalDongCacheRepositoryImpl implements LegalDongCacheRepository {
 
-    private final LegalDongJpaRepository legalDongJpaRepository;
+    private final JPAQueryFactory queryFactory;
+
     private static final Map<Long, LegalDongInfoDto> cache = new HashMap<>();
     private static final Map<String, LegalDongInfoDto> cacheByCode = new HashMap<>();
 
@@ -34,7 +36,11 @@ public class LegalDongCacheRepositoryImpl implements LegalDongCacheRepository {
     public void refreshCache() {
         // 1. clear
         cache.clear();
-        List<LegalDong> legalDongs = legalDongJpaRepository.findAll();
+
+        QLegalDong ld = QLegalDong.legalDong;
+        List<LegalDong> legalDongs = queryFactory.selectFrom(ld)
+                .where(ld.isActive.eq(true))
+                .fetch();
 
         // 2. 캐시에 load
         Map<Long, LegalDongInfoDto> tempTree = legalDongs.stream().map(legalDong -> new LegalDongInfoDto(
