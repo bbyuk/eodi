@@ -27,7 +27,7 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
-        LocalDate lastUpdateDate = (LocalDate) jobCtx.get("lastUpdateDate");
+        LocalDate lastUpdateDate = (LocalDate) jobCtx.get(referenceVersionTargetName + "-lastUpdateDate");
         LocalDate today = LocalDate.now();
 
         if (!lastUpdateDate.isBefore(today)) {
@@ -44,7 +44,7 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
                 currentUpdateDate,
                 referenceVersionTargetName
         );
-        jobCtx.put("lastUpdateDate", currentUpdateDate);
+        jobCtx.put(referenceVersionTargetName + "-lastUpdateDate", currentUpdateDate);
 
         return RepeatStatus.FINISHED;
     }
