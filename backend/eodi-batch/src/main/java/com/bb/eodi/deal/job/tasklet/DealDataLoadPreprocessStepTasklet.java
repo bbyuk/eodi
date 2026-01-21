@@ -12,6 +12,7 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 부동산 매매 데이터 적재 배치 전처리 Step tasklet
@@ -32,7 +33,12 @@ public class DealDataLoadPreprocessStepTasklet implements Tasklet {
                 .orElseGet(() -> {
                     // 3개월 이전 첫 날로 변경
                     LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3).withDayOfMonth(1);
-                    referenceVersionRepository.updateEffectiveDateByReferenceVersionName(threeMonthsAgo, referenceVersionTargetName);
+                    referenceVersionRepository.insert(ReferenceVersion.builder()
+                                    .targetName(referenceVersionTargetName)
+                                    .effectiveDate(threeMonthsAgo)
+                                    .updatedBy("batch")
+                                    .updatedAt(LocalDateTime.now())
+                            .build());
                     return referenceVersionRepository.findByTargetName(referenceVersionTargetName).orElseThrow(() -> new RuntimeException("문제가 발생했습니다."));
                 });
 
