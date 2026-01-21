@@ -128,7 +128,7 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     public List<LegalDongSummaryDto> findAllSummary() {
         QLegalDong ld = QLegalDong.legalDong;
 
-        return queryFactory.select(Projections.constructor(
+        return queryFactory.selectDistinct(Projections.constructor(
                         LegalDongSummaryDto.class,
                         ld.sidoCode,
                         ld.sigunguCode
