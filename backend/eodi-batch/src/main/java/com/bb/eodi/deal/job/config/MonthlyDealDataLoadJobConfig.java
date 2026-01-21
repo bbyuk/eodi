@@ -2,9 +2,13 @@ package com.bb.eodi.deal.job.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.job.flow.FlowExecutionStatus;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,11 +30,27 @@ public class MonthlyDealDataLoadJobConfig {
     @Bean
     public Job monthlyDealDataLoad(
             Flow apiFetchParallelFlow,
-            Flow dataLoadParallelFlow
+            Flow dataLoadParallelFlow,
+            JobExecutionDecider targetYearMonthDecider
     ) {
-        return new JobBuilder("monthlyDealDataLoad", jobRepository)
+
+        Flow mainFlow = new FlowBuilder<SimpleFlow>("monthlyDealDataLoadMainFlow")
                 .start(apiFetchParallelFlow)
                 .next(dataLoadParallelFlow)
+                .next(targetYearMonthDecider)
+
+                .on("CONTINUE")
+                .to(dealDataLoadPreprocessStep)
+
+                .from(targetYearMonthDecider)
+                .on(FlowExecutionStatus.COMPLETED.getName())
+                .end()
+
+                .end();
+
+
+        return new JobBuilder("monthlyDealDataLoad", jobRepository)
+                .start(mainFlow)
                 .end()
                 .build();
     }

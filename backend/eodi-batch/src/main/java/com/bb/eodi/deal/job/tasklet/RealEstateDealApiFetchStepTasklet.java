@@ -37,7 +37,8 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     private final ObjectMapper objectMapper;
     private final int pageSize;
 
-    @Value("#{jobParameters['year-month']}")
+//    @Value("#{jobParameters['year-month']}")
+    @Value("#{jobExecutionContext['yearMonth']}")
     private String dealMonth;
 
     @Override
