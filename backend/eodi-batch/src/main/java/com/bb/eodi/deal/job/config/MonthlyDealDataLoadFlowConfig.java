@@ -152,7 +152,7 @@ public class MonthlyDealDataLoadFlowConfig {
      * @param multiHouseholdHouseSellApiFetchStep 연립/다세대주택 매매 데이터 API 요청 step
      * @param multiHouseholdHouseSellDataLoadStep 연립/다세대주택 매매 데이터 적재 step
      * @param multiHouseholdHouseSellDataLoadPostprocessStep 연립/다세대주택 매매 데이터 적재 후처리 step
-     * @param multiHouseholdHouseSellDataTargetYearMonthDecider 연립/다세대주택 매매 데이터 Flow JobExecutionDecider
+     * @param multiHouseholdHouseSellTargetYearMonthDecider 연립/다세대주택 매매 데이터 Flow JobExecutionDecider
      * @return 연립/다세대주택 매매 데이터 적재 flow
      */
     @Bean
