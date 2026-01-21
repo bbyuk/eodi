@@ -1,7 +1,6 @@
 package com.bb.eodi.legaldong.job.processor;
 
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
-import com.bb.eodi.legaldong.domain.util.LegalDongUtils;
 import com.bb.eodi.legaldong.job.dto.LegalDongItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -17,7 +16,7 @@ import static com.bb.eodi.legaldong.domain.util.LegalDongUtils.*;
 @Slf4j
 @Component
 @StepScope
-public class LegalDongLoadStepItemProcessorV2 implements ItemProcessor<LegalDongItem, LegalDong> {
+public class LegalDongLoadStepItemProcessor implements ItemProcessor<LegalDongItem, LegalDong> {
 
     @Override
     public LegalDong process(LegalDongItem item) throws Exception {

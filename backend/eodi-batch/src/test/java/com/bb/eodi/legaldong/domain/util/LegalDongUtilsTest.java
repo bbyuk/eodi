@@ -1,14 +1,11 @@
 package com.bb.eodi.legaldong.domain.util;
 
-import com.bb.eodi.legaldong.job.processor.LegalDongLoadStepItemProcessorV2;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("small - 법정동 유틸 테스트")
 class LegalDongUtilsTest {
