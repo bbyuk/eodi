@@ -31,7 +31,7 @@ public class LegalDongLoadStepItemProcessor implements ItemProcessor<LegalDongIt
                 .dongCode(parseDongCode(item.getLegalDongCode()))
                 .name(parseLegalDongName(item.getSidoName(), item.getSigunguName(), item.getUmdName(), item.getRiName()))
                 .parentCode(parseParentCode(item.getLegalDongCode()))
-                .legalDongOrder(Integer.parseInt(item.getLegalDongOrder()))
+                .legalDongOrder(StringUtils.hasText(item.getLegalDongOrder()) ? Integer.parseInt(item.getLegalDongOrder()) : 0)
                 .isActive(!StringUtils.hasText(item.getRevocationDate()))
                 .build();
     }
