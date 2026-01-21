@@ -20,6 +20,7 @@ public interface LegalDongJpaRepository extends JpaRepository<LegalDong, Long> {
             select  ld
             from    LegalDong ld
             where   ld.code = :code
+            and     ld.isActive = true
             """)
     Optional<LegalDong> findByCode(@Param("code") String code);
 
@@ -29,6 +30,7 @@ public interface LegalDongJpaRepository extends JpaRepository<LegalDong, Long> {
                             ld.sigunguCode
                     )
             from    LegalDong ld
+            where   ld.isActive = true
             """)
     List<LegalDongSummaryDto> findAllSummary();
 }

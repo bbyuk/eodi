@@ -30,11 +30,6 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<LegalDong> findById(Long id) {
-        return legalDongJpaRepository.findById(id);
-    }
-
-    @Override
     public Optional<LegalDong> findByCode(String code) {
         return legalDongJpaRepository.findByCode(code);
     }
@@ -112,6 +107,8 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
 
         QLegalDong legalDong = QLegalDong.legalDong;
         BooleanBuilder condition = new BooleanBuilder();
+
+        condition.and(legalDong.isActive.isTrue());
 
         if (sidoCode != null) {
             condition.and(legalDong.sidoCode.eq(sidoCode));
