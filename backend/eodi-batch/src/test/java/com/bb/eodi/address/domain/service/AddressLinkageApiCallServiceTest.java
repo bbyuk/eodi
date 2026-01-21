@@ -1,8 +1,6 @@
 package com.bb.eodi.address.domain.service;
 
-import com.bb.eodi.common.utils.FileCleaner;
 import com.bb.eodi.ops.domain.entity.ReferenceVersion;
-import com.bb.eodi.ops.domain.enums.ReferenceTarget;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,8 +35,8 @@ class AddressLinkageApiCallServiceTest {
         when(referenceVersionRepository.findByTargetName(any()))
                 .thenReturn(Optional.of(
                         ReferenceVersion.builder()
-                                .targetName(ReferenceTarget.ADDRESS.getValue())
-                                .effectiveDate(LocalDate.of(2025, 11, 30))
+                                .targetName(AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR.getReferenceVersionName())
+                                .effectiveDate(LocalDate.now().minusDays(2))
                                 .build()
                 ));
     }
@@ -52,7 +49,7 @@ class AddressLinkageApiCallServiceTest {
 
 
         // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod();
+        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR.getReferenceVersionName());
 
 
         // then
@@ -65,7 +62,7 @@ class AddressLinkageApiCallServiceTest {
         // given
 
         // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod();
+        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR.getReferenceVersionName());
         String targetDirectory = "C:\\Users\\User\\Desktop\\private\\workspace\\eodi-project\\eodi\\bootstrap\\address\\address_temp";
         AddressLinkageResult addressLinkageResult = service.downloadNewFiles(
                 targetDirectory,
@@ -75,14 +72,7 @@ class AddressLinkageApiCallServiceTest {
         File dir = new File(targetDirectory);
 
         // then
-        try {
-            Assertions.assertThat(dir.listFiles().length).isEqualTo(46);
-        }
-        finally {
-            Arrays.stream(dir.listFiles())
-                    .map(File::toPath)
-                    .forEach(FileCleaner::deleteAll);
-        }
+        Assertions.assertThat(dir.listFiles().length).isEqualTo(2);
     }
 
 
