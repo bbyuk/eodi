@@ -32,12 +32,16 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     public Optional<LegalDong> findByCode(String code) {
         QLegalDong ld = QLegalDong.legalDong;
 
+        BooleanBuilder condition = new BooleanBuilder();
+
+        condition.and(ld.isActive.eq(true));
+        condition.and(code == null ? ld.code.isNull() : ld.code.eq(code));
+
+
         return Optional.ofNullable(
                 queryFactory
                         .selectFrom(ld)
-                        .where(
-                                ld.code.eq(code)
-                                        .and(ld.isActive.eq(true)))
+                        .where(condition)
                         .fetchOne()
         );
     }
@@ -45,12 +49,14 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
     @Override
     public Optional<LegalDong> findAnyByCode(String code) {
         QLegalDong ld = QLegalDong.legalDong;
+
+        BooleanBuilder condition = new BooleanBuilder();
+        condition.and(code == null ? ld.code.isNull() : ld.code.eq(code));
+
         return Optional.ofNullable(
                 queryFactory
                         .selectFrom(ld)
-                        .where(
-                                ld.code.eq(code)
-                        )
+                        .where(condition)
                         .fetchOne()
         );
     }
