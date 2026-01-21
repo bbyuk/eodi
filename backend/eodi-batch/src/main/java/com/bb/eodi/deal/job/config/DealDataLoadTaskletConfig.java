@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadTaskletConfig {
+public class DealDataLoadTaskletConfig {
 
     private final GovernmentDataApiProperties governmentDataApiProperties;
     private final LegalDongRepository legalDongRepository;

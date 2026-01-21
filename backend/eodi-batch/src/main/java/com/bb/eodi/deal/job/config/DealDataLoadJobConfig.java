@@ -2,12 +2,9 @@ package com.bb.eodi.deal.job.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
-import org.springframework.batch.core.job.flow.FlowExecutionStatus;
-import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +16,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadJobConfig {
+public class DealDataLoadJobConfig {
 
     private final JobRepository jobRepository;
 
@@ -54,7 +51,7 @@ public class MonthlyDealDataLoadJobConfig {
                 .build();
 
 
-        return new JobBuilder("monthlyDealDataLoad", jobRepository)
+        return new JobBuilder("dealDataLoadJob", jobRepository)
                 .start(mainFlow)
                 .end()
                 .build();

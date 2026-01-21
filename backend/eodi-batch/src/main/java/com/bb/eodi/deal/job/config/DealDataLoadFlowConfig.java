@@ -1,8 +1,6 @@
 package com.bb.eodi.deal.job.config;
 
 import com.bb.eodi.core.repository.BatchMetaRepository;
-import com.bb.eodi.deal.job.decider.FlowSkipDecider;
-import com.bb.eodi.core.enums.BatchExecutionStatus;
 import com.bb.eodi.deal.job.decider.TargetYearMonthDecider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
@@ -18,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadFlowConfig {
+public class DealDataLoadFlowConfig {
 
     private final BatchMetaRepository batchMetaRepository;
 

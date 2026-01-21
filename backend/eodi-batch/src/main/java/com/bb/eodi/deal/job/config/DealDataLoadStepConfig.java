@@ -7,7 +7,6 @@ import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.deal.job.listener.TempFileCleanupStepListener;
 import com.bb.eodi.deal.job.tasklet.DealDataLoadPostprocessStepTasklet;
 import com.bb.eodi.deal.job.tasklet.DealDataLoadPreprocessStepTasklet;
-import com.bb.eodi.deal.job.tasklet.RealEstateDealApiFetchStepTasklet;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
@@ -26,7 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadStepConfig {
+public class DealDataLoadStepConfig {
 
     private final EodiBatchProperties eodiBatchProperties;
 

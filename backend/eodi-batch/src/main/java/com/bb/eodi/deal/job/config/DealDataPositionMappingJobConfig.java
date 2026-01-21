@@ -26,7 +26,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataPositionMappingJobConfig {
+public class DealDataPositionMappingJobConfig {
 
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
