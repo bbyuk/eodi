@@ -5,7 +5,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @DisplayName("small - 법정동 유틸 테스트")
 class LegalDongUtilsTest {
@@ -13,19 +16,20 @@ class LegalDongUtilsTest {
     @DisplayName("부모 법정동코드 파싱 로직 테스트")
     void testParseParentCode() throws Exception {
         // given
-        String legalDongCode_1 = "1223100000";
-        String legalDongCode_2 = "1223102100";
-        String legalDongCode_3 = "1200000000";
+        String[] legalDongCodes = {"1223100000", "1223102100", "1200000000", "2671025021"};
 
         // when
-        String parentCode_1 = LegalDongUtils.parseParentCode(legalDongCode_1);
-        String parentCode_2 = LegalDongUtils.parseParentCode(legalDongCode_2);
-        String parentCode_3 = LegalDongUtils.parseParentCode(legalDongCode_3);
+        List<String> result = Arrays.stream(legalDongCodes)
+                .map(LegalDongUtils::parseParentCode)
+                .collect(Collectors.toList());
+
+        List<String> answer = new ArrayList<>(Collections.nCopies(4, null));
+        answer.set(0, "1200000000");
+        answer.set(1,"1223100000");
+        answer.set(3,  "2671025000");
 
         // then
-        Assertions.assertThat(parentCode_1).isEqualTo("1200000000");
-        Assertions.assertThat(parentCode_2).isEqualTo("1223100000");
-        Assertions.assertThat(parentCode_3).isNull();
+        Assertions.assertThat(result).isEqualTo(answer);
     }
 
 
@@ -40,17 +44,17 @@ class LegalDongUtilsTest {
         String[] dongNames = { "양지면", "", "청운동", "" };
         String[] riNames = { "식금리", "", "", "" };
 
-        List<String> actual = List.of(
+        List<String> answer = List.of(
                 "경기도 용인시 처인구 양지면 식금리", "서울특별시 종로구", "서울특별시 종로구 청운동", "서울특별시"
         );
 
         // when
-        List<String> expected = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            expected.add(LegalDongUtils.parseLegalDongName(sidoNames[i], sigunguNames[i], dongNames[i], riNames[i]));
+            result.add(LegalDongUtils.parseLegalDongName(sidoNames[i], sigunguNames[i], dongNames[i], riNames[i]));
         }
 
         // then
-        Assertions.assertThat(expected).isEqualTo(actual);
+        Assertions.assertThat(result).isEqualTo(answer);
     }
 }
