@@ -37,6 +37,10 @@ public class LegalDongUtils {
             cursor -= riCodeLength + dongCodeLength;
             result = legalDongCode.substring(0, cursor) + "0".repeat(totalLength - cursor);
         }
+        else {
+            cursor -= riCodeLength;
+            result = legalDongCode.substring(0, cursor) + "0".repeat(totalLength - cursor);
+        }
 
         return result;
     }
