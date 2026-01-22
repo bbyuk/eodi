@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 도로명 주소 address 도메인 entity
@@ -99,6 +100,13 @@ public class RoadNameAddress {
 
     @Column(name = "y_pos", precision = 15, scale = 6)
     private BigDecimal yPos;
+    // ========= 주소 위치정보 소스
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * 건물명을 update한다.
