@@ -48,7 +48,7 @@ public class MultiUnitDetachedSellDataItemProcessor
                 Integer.parseInt(item.dealYear()),
                 Integer.parseInt(item.dealMonth()),
                 Integer.parseInt(item.dealDay()));
-        if (!lastUpdateDate.isAfter(dealDate)) {
+        if (!lastUpdateDate.isBefore(dealDate)) {
             return null;
         }
 

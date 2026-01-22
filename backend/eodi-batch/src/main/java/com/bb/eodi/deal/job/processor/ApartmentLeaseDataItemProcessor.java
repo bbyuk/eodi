@@ -49,7 +49,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
                 Integer.parseInt(item.dealMonth()),
                 Integer.parseInt(item.dealDay()));
 
-        if (!lastUpdateDate.isAfter(dealDate)) {
+        if (!lastUpdateDate.isBefore(dealDate)) {
             return null;
         }
 
