@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.function.Function;
 
@@ -54,4 +55,19 @@ class ApartmentLeaseDataItemProcessorTest {
 
     }
 
+    @Test
+    void testGrammar() throws Exception {
+        // given
+        LocalDate today = LocalDate.now();
+
+
+        // when
+        String yearMonth = new StringBuilder()
+                .append(today.getYear())
+                .append(String.format("%2s", today.getMonthValue()).replace(' ', '0'))
+                .toString();
+
+        // then
+        Assertions.assertThat(yearMonth).isEqualTo("202601");
+    }
 }

@@ -17,7 +17,7 @@ import java.nio.file.Paths;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadChunkConfig {
+public class DealDataLoadChunkConfig {
 
     private final ObjectMapper objectMapper;
     

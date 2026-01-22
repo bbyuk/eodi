@@ -17,6 +17,11 @@ public interface ReferenceVersionRepository {
      */
     Optional<ReferenceVersion> findByTargetName(String targetName);
 
+    /**
+     * 기준정보 버전을 생성한다.
+     * @param referenceVersion 기준정보 버전
+     */
+    void insert(ReferenceVersion referenceVersion);
 
     /**
      * 기준대상명으로 대상 기준정보버전의 effective_date 값을 업데이트한다.
