@@ -253,7 +253,7 @@ public class DealDataLoadFlowConfig {
      */
     @Bean
     public JobExecutionDecider apartmentLeaseTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_OF_LEASE);
+        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_AP_LEASE);
     }
 
     /**
