@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 기준정보버전 JPA Repository
@@ -21,10 +22,13 @@ public interface ReferenceVersionJpaRepository extends JpaRepository<ReferenceVe
      */
     @Modifying
     @Query("""
-            update ReferenceVersion rv
-            set    rv.effectiveDate = :value
-            where  rv.targetName = :referenceVersionName
+            update  ReferenceVersion rv
+            set     rv.effectiveDate = :value,
+                    rv.updatedAt = :now
+            where   rv.targetName = :referenceVersionName
             """)
     void updateEffectiveDateByReferenceVersionName(
-            @Param("value") LocalDate value, @Param("referenceVersionName") String referenceVersionName);
+            @Param("value") LocalDate value,
+            @Param("referenceVersionName") String referenceVersionName,
+            @Param("now")LocalDateTime now);
 }

@@ -44,14 +44,18 @@ public class LandLotAddressJdbcRepository {
                     building_main_no,
                     building_sub_no,
                 
-                    update_reason_code
+                    update_reason_code,
+                    
+                    created_at,
+                    updated_at
                 )
                 VALUES
                 (
                     ?, ?, ?, ?, ?, ?,
                     ?, ?, ?,
                     ?, ?, ?, ?,
-                    ?
+                    ?,
+                    ?, ?
                 )
                 """;
 
@@ -84,6 +88,10 @@ public class LandLotAddressJdbcRepository {
 
                     // === 이력
                     ps.setObject(i++, entity.getUpdateReasonCode(), VARCHAR);
+
+                    // === audit
+                    ps.setObject(i++, entity.getCreatedAt(), VARCHAR);
+                    ps.setObject(i++, entity.getUpdatedAt(), VARCHAR);
                 }
         );
     }
@@ -104,7 +112,8 @@ public class LandLotAddressJdbcRepository {
                         is_underground = ?,
                         building_main_no = ?,
                         building_sub_no = ?,
-                        update_reason_code = ?
+                        update_reason_code = ?,
+                        updated_at = ?
                 WHERE   manage_no = ?
                 AND     legal_dong_code = ?
                 AND     is_mountain = ?
@@ -114,20 +123,23 @@ public class LandLotAddressJdbcRepository {
                 """;
         jdbcTemplate.batchUpdate(
                 sql, entities, batchSize, (ps, entity) -> {
-                    ps.setObject(1, entity.getSidoName(), VARCHAR);
-                    ps.setObject(2, entity.getSigunguName(), VARCHAR);
-                    ps.setObject(3, entity.getUmdName(), VARCHAR);
-                    ps.setObject(4, entity.getRiName(), VARCHAR);
-                    ps.setObject(5, entity.getIsUnderground(), VARCHAR);
-                    ps.setObject(6, entity.getBuildingMainNo(), INTEGER);
-                    ps.setObject(7, entity.getBuildingSubNo(), INTEGER);
-                    ps.setObject(8, entity.getUpdateReasonCode(), VARCHAR);
-                    ps.setObject(9, entity.getManageNo(), VARCHAR);
-                    ps.setObject(10, entity.getLegalDongCode(), VARCHAR);
-                    ps.setObject(11, entity.getIsMountain(), VARCHAR);
-                    ps.setObject(12, entity.getLandLotMainNo(), INTEGER);
-                    ps.setObject(13, entity.getLandLotSubNo(), INTEGER);
-                    ps.setObject(14, entity.getRoadNameCode(), VARCHAR);
+                    int i = 1;
+
+                    ps.setObject(i++, entity.getSidoName(), VARCHAR);
+                    ps.setObject(i++, entity.getSigunguName(), VARCHAR);
+                    ps.setObject(i++, entity.getUmdName(), VARCHAR);
+                    ps.setObject(i++, entity.getRiName(), VARCHAR);
+                    ps.setObject(i++, entity.getIsUnderground(), VARCHAR);
+                    ps.setObject(i++, entity.getBuildingMainNo(), INTEGER);
+                    ps.setObject(i++, entity.getBuildingSubNo(), INTEGER);
+                    ps.setObject(i++, entity.getUpdateReasonCode(), VARCHAR);
+                    ps.setObject(i++, entity.getUpdatedAt(), VARCHAR);
+                    ps.setObject(i++, entity.getManageNo(), VARCHAR);
+                    ps.setObject(i++, entity.getLegalDongCode(), VARCHAR);
+                    ps.setObject(i++, entity.getIsMountain(), VARCHAR);
+                    ps.setObject(i++, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(i++, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(i++, entity.getRoadNameCode(), VARCHAR);
                 }
         );
     }

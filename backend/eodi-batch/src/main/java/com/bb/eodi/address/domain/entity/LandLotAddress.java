@@ -3,6 +3,8 @@ package com.bb.eodi.address.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * 지번주소 address 도메인 entity
  */
@@ -59,5 +61,11 @@ public class LandLotAddress {
 
     @Column(name = "update_reason_code")
     private String updateReasonCode;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
 }

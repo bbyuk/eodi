@@ -62,7 +62,9 @@ public class RoadNameAddressJdbcRepository {
                     remark,
                 
                     x_pos,
-                    y_pos
+                    y_pos,
+                    created_at,
+                    updated_at
                 )
                 VALUES (
                     ?, ?, ?, ?, ?,
@@ -71,6 +73,7 @@ public class RoadNameAddressJdbcRepository {
                     ?, ?, ?, ?,
                     ?, ?, ?, ?,
                     ?, ?, ?,
+                    ?, ?,
                     ?, ?
                 )
                 """;
@@ -117,6 +120,10 @@ public class RoadNameAddressJdbcRepository {
             // === 좌표
             ps.setObject(i++, entity.getXPos(), DECIMAL);
             ps.setObject(i++, entity.getYPos(), DECIMAL);
+
+            // === audit
+            ps.setObject(i++, entity.getCreatedAt(), TIMESTAMP);
+            ps.setObject(i++, entity.getUpdatedAt(), TIMESTAMP);
         });
 
     }
@@ -143,69 +150,12 @@ public class RoadNameAddressJdbcRepository {
      *
      * @param items batch update 파라미터
      */
-    public void batchUpdatePosition(Collection<? extends AddressPositionMappingParameter> items, int batchSize) {
-        String sql = """
-                UPDATE  road_name_address rna
-                JOIN    land_lot_address lla
-                ON      rna.manage_no = lla.manage_no
-                SET     rna.x_pos = :xPos,
-                        rna.y_pos = :yPos
-                WHERE   lla.legal_dong_code in (:legalDongCodes)
-                AND     rna.road_name_code = :roadNameCode
-                AND     rna.building_main_no = :buildingMainNo
-                AND     rna.building_sub_no = :buildingSubNo
-                AND     rna.is_underground = :isUnderground
-                """;
-        namedParameterJdbcTemplate.batchUpdate(
-                sql,
-                items.stream()
-                        .map(item -> new MapSqlParameterSource()
-                                .addValue("xPos", item.getXPos())
-                                .addValue("yPos", item.getYPos())
-                                .addValue("legalDongCodes", item.getLegalDongCodes())
-                                .addValue("roadNameCode", item.getRoadNameCode())
-                                .addValue("buildingMainNo", item.getBuildingMainNo())
-                                .addValue("buildingSubNo", item.getBuildingSubNo())
-                                .addValue("isUnderground", item.getIsUnderground())
-                        ).toArray(SqlParameterSource[]::new)
-        );
-    }
-
-    public void batchInsertUnmapped(List<AddressPositionMappingParameter> unmappedList, int batchSize) {
-        String sql = """
-                INSERT INTO unmapped
-                (
-                    legal_dong_codes,
-                    road_name_code,
-                    building_main_no,
-                    building_sub_no,
-                    is_underground,
-                    x_pos,
-                    y_pos
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """;
-        jdbcTemplate.batchUpdate(sql, unmappedList, batchSize, (ps, entity) -> {
-            ps.setString(1, String.join(",", entity.getLegalDongCodes()));
-            ps.setObject(2, entity.getRoadNameCode(), VARCHAR);
-            ps.setObject(3, entity.getBuildingMainNo(), INTEGER);
-            ps.setObject(4, entity.getBuildingSubNo(), INTEGER);
-            ps.setObject(5, entity.getIsUnderground(), VARCHAR);
-            ps.setObject(6, entity.getXPos(), DECIMAL);
-            ps.setObject(7, entity.getYPos(), DECIMAL);
-        });
-    }
-
-    /**
-     * 도로명주소 주소위치정보를 배치 업데이트한다.
-     *
-     * @param items batch update 파라미터
-     */
     public void updatePositionBatch(Collection<? extends RoadNameAddress> items, int batchSize) {
         String sql = """
                 UPDATE  road_name_address
                 SET     x_pos = ?,
-                        y_pos = ?
+                        y_pos = ?,
+                        updated_at = ?
                 WHERE   manage_no = ?
                 AND     road_name_code = ? 
                 AND     is_underground = ?
@@ -217,6 +167,7 @@ public class RoadNameAddressJdbcRepository {
             int i = 1;
             ps.setObject(i++, entity.getXPos(), DECIMAL);
             ps.setObject(i++, entity.getYPos(), DECIMAL);
+            ps.setObject(i++, entity.getUpdatedAt(), TIMESTAMP);
 
             ps.setObject(i++, entity.getManageNo(), VARCHAR);
             ps.setObject(i++, entity.getRoadNameCode(), VARCHAR);
@@ -253,7 +204,8 @@ public class RoadNameAddressJdbcRepository {
                         update_reason_code = ?,
                         building_name = ?,
                         sigungu_building_name = ?,
-                        remark = ?
+                        remark = ?,
+                        updated_at = ?
                 WHERE   manage_no = ?
                 AND     road_name_code = ?
                 AND     is_underground = ?
@@ -263,30 +215,33 @@ public class RoadNameAddressJdbcRepository {
 
         jdbcTemplate.batchUpdate(
                 sql, items, batchSize, (ps, entity) -> {
-                    ps.setObject(1, entity.getLegalDongCode(), VARCHAR);
-                    ps.setObject(2, entity.getSidoName(), VARCHAR);
-                    ps.setObject(3, entity.getSigunguName(), VARCHAR);
-                    ps.setObject(4, entity.getUmdName(), VARCHAR);
-                    ps.setObject(5, entity.getRiName(), VARCHAR);
-                    ps.setObject(6, entity.getIsMountain(), VARCHAR);
-                    ps.setObject(7, entity.getLandLotMainNo(), INTEGER);
-                    ps.setObject(8, entity.getLandLotSubNo(), INTEGER);
-                    ps.setObject(9, entity.getRoadName(), VARCHAR);
-                    ps.setObject(10, entity.getAdmDongCode(), VARCHAR);
-                    ps.setObject(11, entity.getAdmDongName(), VARCHAR);
-                    ps.setObject(12, entity.getBasicDistrictNo(), VARCHAR);
-                    ps.setObject(13, entity.getBeforeRoadNameAddress(), VARCHAR);
-                    ps.setObject(14, entity.getEffectStartDate(), VARCHAR);
-                    ps.setObject(15, entity.getIsMulti(), VARCHAR);
-                    ps.setObject(16, entity.getUpdateReasonCode(), VARCHAR);
-                    ps.setObject(17, entity.getBuildingName(), VARCHAR);
-                    ps.setObject(18, entity.getSigunguBuildingName(), VARCHAR);
-                    ps.setObject(19, entity.getRemark(), VARCHAR);
-                    ps.setObject(20, entity.getManageNo(), VARCHAR);
-                    ps.setObject(21, entity.getRoadNameCode(), VARCHAR);
-                    ps.setObject(22, entity.getIsUnderground(), VARCHAR);
-                    ps.setObject(23, entity.getBuildingMainNo(), INTEGER);
-                    ps.setObject(24, entity.getBuildingSubNo(), INTEGER);
+                    int i = 1;
+
+                    ps.setObject(i++, entity.getLegalDongCode(), VARCHAR);
+                    ps.setObject(i++, entity.getSidoName(), VARCHAR);
+                    ps.setObject(i++, entity.getSigunguName(), VARCHAR);
+                    ps.setObject(i++, entity.getUmdName(), VARCHAR);
+                    ps.setObject(i++, entity.getRiName(), VARCHAR);
+                    ps.setObject(i++, entity.getIsMountain(), VARCHAR);
+                    ps.setObject(i++, entity.getLandLotMainNo(), INTEGER);
+                    ps.setObject(i++, entity.getLandLotSubNo(), INTEGER);
+                    ps.setObject(i++, entity.getRoadName(), VARCHAR);
+                    ps.setObject(i++, entity.getAdmDongCode(), VARCHAR);
+                    ps.setObject(i++, entity.getAdmDongName(), VARCHAR);
+                    ps.setObject(i++, entity.getBasicDistrictNo(), VARCHAR);
+                    ps.setObject(i++, entity.getBeforeRoadNameAddress(), VARCHAR);
+                    ps.setObject(i++, entity.getEffectStartDate(), VARCHAR);
+                    ps.setObject(i++, entity.getIsMulti(), VARCHAR);
+                    ps.setObject(i++, entity.getUpdateReasonCode(), VARCHAR);
+                    ps.setObject(i++, entity.getBuildingName(), VARCHAR);
+                    ps.setObject(i++, entity.getSigunguBuildingName(), VARCHAR);
+                    ps.setObject(i++, entity.getRemark(), VARCHAR);
+                    ps.setObject(i++, entity.getUpdatedAt(), TIMESTAMP);
+                    ps.setObject(i++, entity.getManageNo(), VARCHAR);
+                    ps.setObject(i++, entity.getRoadNameCode(), VARCHAR);
+                    ps.setObject(i++, entity.getIsUnderground(), VARCHAR);
+                    ps.setObject(i++, entity.getBuildingMainNo(), INTEGER);
+                    ps.setObject(i++, entity.getBuildingSubNo(), INTEGER);
                 }
         );
     }
