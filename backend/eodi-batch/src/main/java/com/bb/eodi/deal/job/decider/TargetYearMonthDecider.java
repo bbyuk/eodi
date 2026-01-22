@@ -28,9 +28,8 @@ public class TargetYearMonthDecider implements JobExecutionDecider {
         LocalDate today = LocalDate.now();
 
         if (today.isAfter(lastUpdateDate)) {
-            return FlowExecutionStatus.COMPLETED;
+            return new FlowExecutionStatus("CONTINUE");
         }
-
-        return new FlowExecutionStatus("CONTINUE");
+        return FlowExecutionStatus.COMPLETED;
     }
 }
