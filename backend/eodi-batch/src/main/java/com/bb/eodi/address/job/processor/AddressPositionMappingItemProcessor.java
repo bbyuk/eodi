@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class AddressPositionMappingItemProcessor implements ItemProcessor<Addres
                 .buildingSubNo(Integer.parseInt(item.getBuildingSubNo()))
                 .xPos(wgs84[0])
                 .yPos(wgs84[1])
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }
