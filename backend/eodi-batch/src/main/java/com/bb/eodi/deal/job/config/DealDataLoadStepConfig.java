@@ -5,7 +5,9 @@ import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.deal.job.listener.TempFileCleanupStepListener;
-import com.bb.eodi.deal.job.tasklet.RealEstateDealApiFetchStepTasklet;
+import com.bb.eodi.deal.job.tasklet.DealDataLoadPostprocessStepTasklet;
+import com.bb.eodi.deal.job.tasklet.DealDataLoadPreprocessStepTasklet;
+import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
@@ -23,23 +25,37 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadStepConfig {
+public class DealDataLoadStepConfig {
 
     private final EodiBatchProperties eodiBatchProperties;
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
+    private final ReferenceVersionRepository referenceVersionRepository;
+
+
+    private static final String REFERENCE_VERSION_TARGET_NAME_AP_SELL = "apartment-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_AP_PRESALE = "apartment-presale-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MU_SELL = "multi-unit-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MH_SELL = "multi-household-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_OF_SELL = "officetel-sell";
+
+    private static final String REFERENCE_VERSION_TARGET_NAME_AP_LEASE = "apartment-lease";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MU_LEASE = "multi-unit-lease";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MH_LEASE = "multi-household-lease";
+    private static final String REFERENCE_VERSION_TARGET_NAME_OF_LEASE = "officetel-lease";
 
     /**
-     * 월별 부동산 거래 데이터 적재 batch job 전처리 Step
+     * 아파트 매매 데이터 적재 전처리 Step
      *
-     * @param monthlyDealDataLoadPreprocessStepTasklet 월별 부동산 거래 데이터 적재 batch job 전처리 Tasklet
-     * @return 월별 데이터 적재 batch job 전처리 Step
+     * @return 아파트 매매 데이터 적재 전처리 Step
      */
     @Bean
-    public Step monthlyDealDataLoadPreprocessStep(Tasklet monthlyDealDataLoadPreprocessStepTasklet) {
-        return new StepBuilder("monthlyDealDataLoadPreprocessStep", jobRepository)
-                .tasklet(monthlyDealDataLoadPreprocessStepTasklet, transactionManager)
+    public Step apartmentSellDataLoadPreprocessStep() {
+        return new StepBuilder("apartmentSellDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_AP_SELL), transactionManager)
                 .build();
     }
 
@@ -80,6 +96,35 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 아파트 매매 데이터 적재 후처리 step
+     *
+     * @return 아파트 매매 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step apartmentSellDataLoadPostprocessStep() {
+        return new StepBuilder("apartmentSellDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_AP_SELL), transactionManager)
+                .build();
+    }
+
+    /**
+     * 아파트 분양권 매매 데이터 적재 전처리 Step
+     *
+     * @return 아파트 분양권 매매 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step apartmentPresaleRightSellDataLoadPreprocessStep() {
+        return new StepBuilder("apartmentPresaleRightSellDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_AP_PRESALE
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 아파트 분양권 매매 데이터 API 요청 step
      *
      * @param apartmentPresaleRightSellApiFetchStepTasklet 아파트 분양권 매매 데이터 API 요청 step tasklet
@@ -94,9 +139,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 아파트 분양권 매매 데이터 적재 step
+     *
      * @param apartmentPresaleRightSellDataItemItemReader 아파트 분양권 매매 데이터 ItemReader
-     * @param apartmentPresaleRightSellDataItemProcessor 아파트 분양권 매매 데이터 ItemProcessor
-     * @param realEstateSellItemWriter 부동산 매매 데이터 ItemWriter
+     * @param apartmentPresaleRightSellDataItemProcessor  아파트 분양권 매매 데이터 ItemProcessor
+     * @param realEstateSellItemWriter                    부동산 매매 데이터 ItemWriter
      * @return 아파트 분양권 매매 데이터 적재 step
      */
     @Bean
@@ -115,7 +161,37 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 아파트 분양권 실거래가 데이터 적재 후처리 step
+     *
+     * @return 아파트 분양권 실거래가 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step apartmentPresaleRightSellDataLoadPostprocessStep() {
+        return new StepBuilder("apartmentPresaleRightSellDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_AP_PRESALE), transactionManager)
+                .build();
+    }
+
+    /**
+     * 단독/다가구주택 매매 데이터 적재 전처리 step
+     *
+     * @return 단독/다가구주택 매매 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step multiUnitDetachedSellDataLoadPreprocessStep() {
+        return new StepBuilder("multiUnitDetachedSellDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_MU_SELL
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 단독/다가구주택 매매 데이터 API 요청 step
+     *
      * @param multiUnitDetachedSellApiFetchStepTasklet 단독/다가구주택 매매 데이터 API 요청 Step Tasklet
      * @return 단독/다가구주택 매매 데이터 API 요청 step
      */
@@ -128,9 +204,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 단독/다가구주택 매매 데이터 적재 step
-     * @param multiUnitDetachedSellDataItemReader 단독/다가구주택 매매 데이터 chunk ItemReader
+     *
+     * @param multiUnitDetachedSellDataItemReader    단독/다가구주택 매매 데이터 chunk ItemReader
      * @param multiUnitDetachedSellDataItemProcessor 단독/다가구주택 매매 데이터 chunk ItemProcessor
-     * @param realEstateSellItemWriter 부동산 매매 데이터 chunk ItemWriter
+     * @param realEstateSellItemWriter               부동산 매매 데이터 chunk ItemWriter
      * @return 단독/다가구주택 매매 데이터 적재 step
      */
     @Bean
@@ -150,7 +227,36 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 단독/다가구 주택 매매 데이터 적재 후처리 step
+     *
+     * @return 단독/다가구 주택 매매 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step multiUnitDetachedSellDataLoadPostprocessStep() {
+        return new StepBuilder("multiUnitDetachedSellDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository, "multi-unit-sell"), transactionManager)
+                .build();
+    }
+
+    /**
+     * 연립/다세대주택 매매 데이터 적재 전처리 step
+     *
+     * @return 연립/다세대주택 매매 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step multiHouseholdHouseSellDataLoadPreprocessStep() {
+        return new StepBuilder("multiHouseholdHouseSellPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_MH_SELL
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 연립/다세대주택 매매 데이터 API 요청 step
+     *
      * @param multiHouseholdHouseSellApiFetchStepTasklet 연립/다세대주택 매매 데이터 API 요청 step tasklet
      * @return 연립/다세대주택 매매 데이터 API 요청 step
      */
@@ -163,9 +269,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 연립/다세대주택 매매 데이터 적재 step
-     * @param multiHouseholdSellDataItemReader 연립/다세대주택 매매 데이터 적재 chunk step ItemReader
+     *
+     * @param multiHouseholdSellDataItemReader    연립/다세대주택 매매 데이터 적재 chunk step ItemReader
      * @param multiHouseholdSellDataItemProcessor 연립/다세대주택 매매 데이터 적재 chunk step ItemProcessor
-     * @param realEstateSellItemWriter 부동산 매매 데이터 chunk ItemWriter
+     * @param realEstateSellItemWriter            부동산 매매 데이터 chunk ItemWriter
      * @return 연립/다세대주택 매매 데이터 적재 step
      */
     @Bean
@@ -184,7 +291,36 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 연립/다세대주택 매매 데이터 적재 후처리 Step
+     *
+     * @return 연립/다세대주택 매매 데이터 적재 후처리 Step
+     */
+    @Bean
+    public Step multiHouseholdHouseSellDataLoadPostprocessStep() {
+        return new StepBuilder("multiHouseholdHouseSellDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository, REFERENCE_VERSION_TARGET_NAME_MH_SELL), transactionManager)
+                .build();
+    }
+
+
+    /**
+     * 오피스텔 매매 실거래가 데이터 적재 전처리 step
+     * @return 오피스텔 매매 실거래가 데이어 적재 전처리 step
+     */
+    @Bean
+    public Step officetelSellDataLoadPreprocessStep() {
+        return new StepBuilder("officetelSellDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_OF_SELL
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 오피스텔 매매 실거레가 데이터 API 요청 step
+     *
      * @param officetelSellApiFetchStepTasklet 오피스텔 매매 실거레가 데이터 API 요청 step tasklet
      * @return 오피스텔 매매 실거레가 데이터 API 요청 step
      */
@@ -197,9 +333,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 오피스텔 매매 실거래가 데이터 적재 step
-     * @param officetelSellDataItemReader 오피스텔 매매 실거래가 데이터 적재 step chunk ItemReader
+     *
+     * @param officetelSellDataItemReader    오피스텔 매매 실거래가 데이터 적재 step chunk ItemReader
      * @param officetelSellDataItemProcessor 오피스텔 매매 실거래가 데이터 적재 step chunk ItemProcessor
-     * @param realEstateSellItemWriter 부동산 매매 실거래가 데이터 chunk ItemWriter
+     * @param realEstateSellItemWriter       부동산 매매 실거래가 데이터 chunk ItemWriter
      * @return
      */
     @Bean
@@ -218,7 +355,37 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 오피스텔 매매 실거래가 데이터 적재 후처리 step
+     *
+     * @return 오피스텔 매매 실거래가 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step officetelSellDataLoadPostprocessStep() {
+        return new StepBuilder("officetelSellDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_OF_SELL
+                ), transactionManager)
+                .build();
+    }
+
+    /**
+     * 아파트 임대차 실거래가 데이터 적재 전처리 step
+     * @return 아파트 임대차 실거래가 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step apartmentLeaseDataLoadPreprocessStep() {
+        return new StepBuilder("apartmentLeaseDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_AP_LEASE
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 아파트 임대차 실거래가 API 요청 step
+     *
      * @param apartmentLeaseApiFetchStepTasklet 아파트 임대차 실거래가 API 요청 step tasklet
      * @return 아파트 임대차 실거래가 API 요청 step
      */
@@ -231,9 +398,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 아파트 임대차 실거래가 데이터 적재 step
-     * @param apartmentLeaseDataItemReader 아파트 임대차 데이터 chunk step ItemReader
+     *
+     * @param apartmentLeaseDataItemReader    아파트 임대차 데이터 chunk step ItemReader
      * @param apartmentLeaseDataItemProcessor 아파트 임대차 데이터 chunk step ItemProcessor
-     * @param realEstateLeaseItemWriter 아파트 임대차 데이터 chunk step ItemProcessor
+     * @param realEstateLeaseItemWriter       아파트 임대차 데이터 chunk step ItemProcessor
      * @return 아파트 임대차 실거래가 데이터 적재 step
      */
     @Bean
@@ -252,7 +420,35 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 아파트 임대차 실거래가 데이터 적재 후처리 step
+     *
+     * @return 아파트 임대차 실거래가 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step apartmentLeaseDataLoadPostprocessStep() {
+        return new StepBuilder("apartmentLeaseDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository, REFERENCE_VERSION_TARGET_NAME_AP_LEASE), transactionManager)
+                .build();
+    }
+
+    /**
+     * 단독/다가구주택 임대차 실거래가 데이터 적재 전처리 step
+     * @return 단독/다가구주택 임대차 실거래가 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step multiUnitDetachedLeaseDataLoadPreprocessStep() {
+        return new StepBuilder("multiUnitDetachedLeaseDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_MU_LEASE
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 단독/다가구주택 전월세 실거래가 데이터 API 요청 step
+     *
      * @param multiUnitDetachedLeaseApiFetchStepTasklet 단독/다가구주택 전월세 실거래가 데이터 API 요청 step tasklet
      * @return 단독/다가구주택 전월세 실거래가 데이터 API 요청 step
      */
@@ -265,9 +461,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 단독/다가구주택 전월세 실거래가 데이터 적재 step
-     * @param multiUnitDetachedLeaseDataItemReader 단독/다가구주택 전월세 실거래가 데이터 적재 step chunk ItemReader
+     *
+     * @param multiUnitDetachedLeaseDataItemReader    단독/다가구주택 전월세 실거래가 데이터 적재 step chunk ItemReader
      * @param multiUnitDetachedLeaseDataItemProcessor 단독/다가구주택 전월세 실거래가 데이터 적재 step chunk ItemProcessor
-     * @param realEstateLeaseItemWriter 부동산 전월세 실거래가 데이터 적재 step chunk ItemWriter
+     * @param realEstateLeaseItemWriter               부동산 전월세 실거래가 데이터 적재 step chunk ItemWriter
      * @return 단독/다가구주택 전월세 실거래가 데이터 적재 step
      */
     @Bean
@@ -286,7 +483,37 @@ public class MonthlyDealDataLoadStepConfig {
     }
 
     /**
+     * 단독/다가구 주택 임대차 실거래가 데이터 적재 후처리 step
+     *
+     * @return 단독/다가구 주택 임대차 실거래가 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step multiUnitDetachedLeaseDataLoadPostprocessStep() {
+        return new StepBuilder("multiUnitDetachedLeaseDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_MU_LEASE
+                ), transactionManager)
+                .build();
+    }
+
+    /**
+     * 연립/다세대주택 임대차 실거래가 데이터 적재 전처리 step
+     * @return 연립/다세대주택 임대차 실거래가 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step multiHouseholdHouseLeaseDataLoadPreprocessStep() {
+        return new StepBuilder("multiHouseholdHouseLeaseDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_MH_LEASE
+                ), transactionManager)
+                .build();
+    }
+
+    /**
      * 연립/다세대주택 전월세 실거래가 데이터 API 요청 step
+     *
      * @param multiHouseholdHouseLeaseApiFetchStepTasklet 연립/다세대주택 전월세 실거래가 데이터 API 요청 step tasklet
      * @return 연립/다세대주택 전월세 실거래가 데이터 API 요청 step
      */
@@ -299,9 +526,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 연립/다세대주택 전월세 실거래가 데이터 적재 step
-     * @param multiHouseholdHouseLeaseDataItemReader 연립/다세대주택 전월세 실거래가 데이터 적재 chunk ItemReader
+     *
+     * @param multiHouseholdHouseLeaseDataItemReader    연립/다세대주택 전월세 실거래가 데이터 적재 chunk ItemReader
      * @param multiHouseholdHouseLeaseDataItemProcessor 연립/다세대주택 전월세 실거래가 데이터 적재 chunk ItemProcessor
-     * @param realEstateLeaseItemWriter 부동산 전월세 실거래가 데이터 적재 chunk ItemWriter
+     * @param realEstateLeaseItemWriter                 부동산 전월세 실거래가 데이터 적재 chunk ItemWriter
      * @return 연립/다세대주택 전월세 실거래가 데이터 적재 step
      */
     @Bean
@@ -319,9 +547,38 @@ public class MonthlyDealDataLoadStepConfig {
                 .build();
     }
 
+    /**
+     * 연립/다세대주택 임대차 실거래가 데이터 적재 후처리 step
+     *
+     * @return 연립/다세대주택 임대차 실거래가 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step multiHouseholdHouseLeaseDataLoadPostprocessStep() {
+        return new StepBuilder("multiHouseholdHouseLeaseDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_MH_LEASE
+                ), transactionManager)
+                .build();
+    }
+
+    /**
+     * 오피스텔 임대차 실거래가 데이터 적재 전처리 step
+     * @return 오피스텔 임대차 실거래가 데이터 적재 전처리 step
+     */
+    @Bean
+    public Step officetelLeaseDataLoadPreprocessStep() {
+        return new StepBuilder("officetelLeaseDataLoadPreprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPreprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_OF_LEASE
+                ), transactionManager)
+                .build();
+    }
 
     /**
      * 오피스텔 전월세 실거래가 데이터 API 요청 step
+     *
      * @param officetelLeaseApiFetchStepTasklet 오피스텔 전월세 실거래가 데이터 API 요청 step tasklet
      * @return 오피스텔 전월세 실거래가 데이터 API 요청 step
      */
@@ -334,9 +591,10 @@ public class MonthlyDealDataLoadStepConfig {
 
     /**
      * 오피스텔 전월세 실거래가 데이터 적재 step
-     * @param officetelLeaseDataItemReader 오피스텔 전월세 실거래가 데이터 적재 step chunk ItemReader
+     *
+     * @param officetelLeaseDataItemReader    오피스텔 전월세 실거래가 데이터 적재 step chunk ItemReader
      * @param officetelLeaseDataItemProcessor 오피스텔 전월세 실거래가 데이터 적재 step chunk ItemProcessor
-     * @param realEstateLeaseItemWriter 부동산 전월세 실거래가 데이터 적재 step chunk ItemWriter
+     * @param realEstateLeaseItemWriter       부동산 전월세 실거래가 데이터 적재 step chunk ItemWriter
      * @return 오피스텔 전월세 실거래가 데이터 적재 step
      */
     @Bean
@@ -350,6 +608,21 @@ public class MonthlyDealDataLoadStepConfig {
                 .reader(officetelLeaseDataItemReader)
                 .processor(officetelLeaseDataItemProcessor)
                 .writer(realEstateLeaseItemWriter)
+                .build();
+    }
+
+    /**
+     * 오피스텔 임대차 실거래가 데이터 적재 후처리 step
+     *
+     * @return 오피스텔 임대차 실거래가 데이터 적재 후처리 step
+     */
+    @Bean
+    public Step officetelLeaseDataLoadPostprocessStep() {
+        return new StepBuilder("officetelLeaseDataLoadPostprocessStep", jobRepository)
+                .tasklet(new DealDataLoadPostprocessStepTasklet(
+                        referenceVersionRepository,
+                        REFERENCE_VERSION_TARGET_NAME_OF_LEASE
+                ), transactionManager)
                 .build();
     }
 

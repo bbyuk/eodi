@@ -36,13 +36,14 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     private final DealDataApiClient dealDataApiClient;
     private final ObjectMapper objectMapper;
     private final int pageSize;
-
-    @Value("#{jobParameters['year-month']}")
-    private String dealMonth;
+    private final String referenceVersionTargetName;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
+
+        String dealMonth = (String) jobCtx.get(referenceVersionTargetName + "-yearMonth");
+
 
         // 이전에 생성되어 있는 파일이 있는지 확인 후 API 요청 스킵여부 결정
         if (jobCtx.containsKey(MonthlyDealDataLoadJobKey.tempFile(targetClass))) {
@@ -54,7 +55,6 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
                 log.warn("JobExecutionContext에는 경로가 있으나 실제 파일 없음. 새로 생성");
             }
         }
-
 
 
         // API 요청 대상 법정동 목록 조회

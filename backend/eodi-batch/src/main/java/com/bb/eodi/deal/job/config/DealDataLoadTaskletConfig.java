@@ -1,9 +1,9 @@
 package com.bb.eodi.deal.job.config;
 
-import com.bb.eodi.integration.gov.deal.DealDataApiClient;
-import com.bb.eodi.integration.gov.config.GovernmentDataApiProperties;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.deal.job.tasklet.RealEstateDealApiFetchStepTasklet;
+import com.bb.eodi.integration.gov.config.GovernmentDataApiProperties;
+import com.bb.eodi.integration.gov.deal.DealDataApiClient;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +17,24 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyDealDataLoadTaskletConfig {
+public class DealDataLoadTaskletConfig {
 
     private final GovernmentDataApiProperties governmentDataApiProperties;
     private final LegalDongRepository legalDongRepository;
     private final DealDataApiClient dealDataApiClient;
     private final ObjectMapper objectMapper;
+
+    private static final String REFERENCE_VERSION_TARGET_NAME_AP_SELL = "apartment-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_AP_PRESALE = "apartment-presale-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MU_SELL = "multi-unit-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MH_SELL = "multi-household-sell";
+    private static final String REFERENCE_VERSION_TARGET_NAME_OF_SELL = "officetel-sell";
+
+    private static final String REFERENCE_VERSION_TARGET_NAME_AP_LEASE = "apartment-lease";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MU_LEASE = "multi-unit-lease";
+    private static final String REFERENCE_VERSION_TARGET_NAME_MH_LEASE = "multi-household-lease";
+    private static final String REFERENCE_VERSION_TARGET_NAME_OF_LEASE = "officetel-lease";
+
 
     /**
      * 아파트 매매 데이터 API 요청 step tasklet
@@ -37,7 +49,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_AP_SELL
         );
     }
 
@@ -54,7 +67,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_AP_PRESALE
         );
     }
 
@@ -71,7 +85,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_MU_SELL
         );
     }
 
@@ -89,7 +104,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_MH_SELL
         );
     }
 
@@ -106,7 +122,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_OF_SELL
         );
     }
 
@@ -123,7 +140,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_AP_LEASE
         );
     }
 
@@ -140,7 +158,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_MU_LEASE
         );
     }
 
@@ -157,7 +176,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_MH_LEASE
         );
     }
 
@@ -173,7 +193,8 @@ public class MonthlyDealDataLoadTaskletConfig {
                 legalDongRepository,
                 dealDataApiClient,
                 objectMapper,
-                governmentDataApiProperties.pageSize()
+                governmentDataApiProperties.pageSize(),
+                REFERENCE_VERSION_TARGET_NAME_OF_LEASE
         );
     }
 }

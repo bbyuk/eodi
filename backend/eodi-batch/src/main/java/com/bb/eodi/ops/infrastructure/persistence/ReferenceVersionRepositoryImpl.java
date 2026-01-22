@@ -39,6 +39,11 @@ public class ReferenceVersionRepositoryImpl implements ReferenceVersionRepositor
     }
 
     @Override
+    public void insert(ReferenceVersion referenceVersion) {
+        referenceVersionJpaRepository.save(referenceVersion);
+    }
+
+    @Override
     public void updateEffectiveDateByReferenceVersionName(LocalDate value, String referenceVersionName) {
         referenceVersionJpaRepository.updateEffectiveDateByReferenceVersionName(value, referenceVersionName);
     }
