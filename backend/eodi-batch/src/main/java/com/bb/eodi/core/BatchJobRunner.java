@@ -11,6 +11,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -33,6 +35,12 @@ public class BatchJobRunner implements ApplicationRunner {
         log.debug("BatchRunner run ====== jobName : {}", jobName);
 
         JobParametersBuilder jobParameterBuilder = new JobParametersBuilder();
+
+        // daily job인 경우 파라미터에 run-date 추가
+        if (eodiBatchProperties.dailyJobs().contains(jobName)) {
+            jobParameterBuilder.addLocalDate("run-date", LocalDate.now());
+        }
+
         for (String optionName : args.getOptionNames()) {
             if (eodiBatchProperties.forceNewInstanceParameter().equals(optionName)) {
                 jobParameterBuilder.addLong("run.id", System.currentTimeMillis());
