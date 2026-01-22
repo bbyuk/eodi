@@ -7,6 +7,8 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+
 /**
  * 지번주소 ItemProcessor
  *
@@ -19,6 +21,8 @@ public class LandLotAddressItemProcessor implements ItemProcessor<LandLotAddress
 
     @Override
     public LandLotAddress process(LandLotAddressItem item) throws Exception {
+        LocalDateTime now = LocalDateTime.now();
+
         return LandLotAddress.builder()
                 .manageNo(item.getManageNo())
                 .legalDongCode(item.getLegalDongCode())
@@ -34,6 +38,12 @@ public class LandLotAddressItemProcessor implements ItemProcessor<LandLotAddress
                 .buildingMainNo(StringUtils.hasText(item.getBuildingMainNo()) ? Integer.parseInt(item.getBuildingMainNo()) : 0)
                 .buildingSubNo(StringUtils.hasText(item.getBuildingSubNo()) ? Integer.parseInt(item.getBuildingSubNo()) : 0)
                 .updateReasonCode(item.getUpdateReasonCode())
+                .createdAt(
+                        !StringUtils.hasText(item.getUpdateReasonCode())
+                                || "31".equals(item.getUpdateReasonCode())
+                                ? now
+                                : null)
+                .updatedAt(now)
                 .build();
     }
 }

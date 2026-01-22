@@ -7,8 +7,11 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+
 /**
  * 도로명주소 ItemProcessor
+ *
  * @return 도로명주소 ItemProcessor
  */
 @Component
@@ -17,6 +20,7 @@ public class RoadNameAddressItemProcessor implements ItemProcessor<RoadNameAddre
 
     @Override
     public RoadNameAddress process(RoadNameAddressItem item) throws Exception {
+        LocalDateTime now = LocalDateTime.now();
         return RoadNameAddress.builder()
                 .manageNo(item.getManageNo())
                 .legalDongCode(item.getLegalDongCode())
@@ -42,6 +46,12 @@ public class RoadNameAddressItemProcessor implements ItemProcessor<RoadNameAddre
                 .buildingName(item.getBuildingName())
                 .sigunguBuildingName(item.getSigunguBuildingName())
                 .remark(item.getRemark())
+                .createdAt(
+                        !StringUtils.hasText(item.getUpdateReasonCode())
+                                || "31".equals(item.getUpdateReasonCode())
+                                ? now
+                                : null)
+                .updatedAt(now)
                 .build();
     }
 }
