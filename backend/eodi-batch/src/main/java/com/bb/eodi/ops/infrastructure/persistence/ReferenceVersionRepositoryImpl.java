@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -40,6 +41,9 @@ public class ReferenceVersionRepositoryImpl implements ReferenceVersionRepositor
 
     @Override
     public void updateEffectiveDateByReferenceVersionName(LocalDate value, String referenceVersionName) {
-        referenceVersionJpaRepository.updateEffectiveDateByReferenceVersionName(value, referenceVersionName);
+        referenceVersionJpaRepository.updateEffectiveDateByReferenceVersionName(
+                value,
+                referenceVersionName,
+                LocalDateTime.now());
     }
 }
