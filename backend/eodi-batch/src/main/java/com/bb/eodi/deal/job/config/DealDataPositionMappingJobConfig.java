@@ -60,7 +60,7 @@ public class DealDataPositionMappingJobConfig {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setConcurrencyLimit(2);
 
-        return new JobBuilder("monthlyDealDataPositionMappingJob", jobRepository)
+        return new JobBuilder("dealDataPositionMappingJob", jobRepository)
                 .start(monthlyRealEstateSellDataPositionMappingFlow)
                 .split(executor)
                 .add(monthlyRealEstateLeaseDataPositionMappingFlow)
