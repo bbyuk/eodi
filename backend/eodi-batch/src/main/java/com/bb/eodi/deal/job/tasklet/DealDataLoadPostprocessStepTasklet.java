@@ -3,6 +3,7 @@ package com.bb.eodi.deal.job.tasklet;
 
 import com.bb.eodi.deal.domain.type.DealType;
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.job.config.DealJobContextKey;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import java.util.Set;
 
 import static com.bb.eodi.deal.domain.utils.FormattingUtils.*;
 import static com.bb.eodi.deal.job.config.DealJobContextKey.LAST_UPDATED_DATE;
-import static com.bb.eodi.deal.job.config.DealJobContextKey.UPDATED_YEAR_MONTH;
 
 /**
  * 부동산 매매 데이터 적재 배치 후처리 step tasklet
@@ -37,7 +37,9 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
         String referenceVersionTargetName = toReferenceVersionTargetName(housingType, dealType);
 
-        Set<String> updatedYearMonth = (Set<String>) jobCtx.get(UPDATED_YEAR_MONTH.name());
+        Set<String> updatedYearMonth = (Set<String>) jobCtx.get(dealType == DealType.SELL
+                ? DealJobContextKey.UPDATED_SELL_YEAR_MONTH.name()
+                : DealJobContextKey.UPDATED_LEASE_YEAR_MONTH.name());
 
         String jobExecutionContextKey = toJobExecutionContextKey(referenceVersionTargetName, LAST_UPDATED_DATE);
 
@@ -62,7 +64,7 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
         jobCtx.put(jobExecutionContextKey, currentUpdateDate);
 
         String yearMonth = toYearMonth(currentUpdateDate);
-        updatedYearMonth.add(referenceVersionTargetName + "-" + yearMonth);
+        updatedYearMonth.add(dealType.name() + "-" + yearMonth);
 
         return RepeatStatus.FINISHED;
     }

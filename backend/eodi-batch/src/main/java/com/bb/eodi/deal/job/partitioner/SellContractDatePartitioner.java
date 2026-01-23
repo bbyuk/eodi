@@ -9,18 +9,26 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * 월별 실거래 데이터 위치정보 매핑 병렬 partitioner
+ * 월별 매매 실거래 데이터 위치정보 매핑 병렬 partitioner
  */
 @StepScope
 @Component
-public class ContractDatePartitioner implements Partitioner {
+public class SellContractDatePartitioner implements Partitioner {
     private final LocalDate start;
     private final LocalDate end;
 
-    public ContractDatePartitioner(@Value("#{jobParameters['year-month']}") String yearMonth) {
+    public SellContractDatePartitioner(
+            @Value("#{jobExecutionContext['TARGET_LEASE_YEAR_MONTH']}")
+            List<String> targetYearMonths,
+            @Value("#{jobExecutionContext['TARGET_LEASE_YEAR_MONTH_IDX']}")
+            int targetIndex
+    ) {
+        String yearMonth = targetYearMonths.get(targetIndex);
+
         this.start = LocalDate.of(
                 Integer.parseInt(yearMonth.substring(0, 4)),
                 Integer.parseInt(yearMonth.substring(4, 6)),

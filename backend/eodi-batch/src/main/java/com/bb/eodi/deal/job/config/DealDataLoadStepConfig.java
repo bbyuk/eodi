@@ -27,6 +27,8 @@ import java.util.Map;
 import static com.bb.eodi.deal.domain.type.DealType.LEASE;
 import static com.bb.eodi.deal.domain.type.DealType.SELL;
 import static com.bb.eodi.deal.domain.type.HousingType.*;
+import static com.bb.eodi.deal.job.config.DealJobContextKey.UPDATED_LEASE_YEAR_MONTH;
+import static com.bb.eodi.deal.job.config.DealJobContextKey.UPDATED_SELL_YEAR_MONTH;
 
 /**
  * 월별 부동산 실거래가 데이터 적재 배치 Step 설정
@@ -52,7 +54,8 @@ public class DealDataLoadStepConfig {
                 .tasklet(((contribution, chunkContext) -> {
                     Map<String, Object> jobCtx = chunkContext.getStepContext().getJobExecutionContext();
 
-                    jobCtx.putIfAbsent("updated-year-month", new HashSet<String>());
+                    jobCtx.putIfAbsent(UPDATED_SELL_YEAR_MONTH.name(), new HashSet<String>());
+                    jobCtx.putIfAbsent(UPDATED_LEASE_YEAR_MONTH.name(), new HashSet<String>());
 
                     return RepeatStatus.FINISHED;
                 }), transactionManager)

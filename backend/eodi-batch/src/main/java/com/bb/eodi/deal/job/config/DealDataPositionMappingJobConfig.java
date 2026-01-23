@@ -4,16 +4,16 @@ import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
-import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.job.flow.FlowExecutionStatus;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -23,8 +23,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+
+import static com.bb.eodi.deal.job.config.DealJobContextKey.*;
 
 
 /**
@@ -54,31 +57,32 @@ public class DealDataPositionMappingJobConfig {
     /**
      * 월별 부동산 실거래가 데이터 좌표 매핑 Flow
      *
-     * @param monthlyRealEstateSellDataPositionMappingFlow  월별 부동산 매매데이터 좌표 매핑 flow
-     * @param monthlyRealEstateLeaseDataPositionMappingFlow 월별 부동산 임대차데이터 좌표 매핑 flow
+     * @param realEstateSellDataPositionMappingFlow  월별 부동산 매매데이터 좌표 매핑 flow
+     * @param realEstateLeaseDataPositionMappingFlow 월별 부동산 임대차데이터 좌표 매핑 flow
      * @return 월별 부동산 실거래가 데이터 좌료 매핑 job
      */
     @Bean
-    public Flow monthlyDealDataPositionMappingParallelFlow(
+    public Flow dealDataPositionMappingFlow(
             Step dealDataPositionMappingFlowPreprocessStep,
-            Flow monthlyRealEstateSellDataPositionMappingFlow,
-            Flow monthlyRealEstateLeaseDataPositionMappingFlow
+            Flow realEstateSellDataPositionMappingFlow,
+            Flow realEstateLeaseDataPositionMappingFlow
     ) {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setConcurrencyLimit(2);
 
-        return new FlowBuilder<SimpleFlow>("monthlyDealDataPositionMappingParallelFlow")
+        return new FlowBuilder<SimpleFlow>("dealDataPositionMappingFlow")
                 .start(dealDataPositionMappingFlowPreprocessStep)
                 .split(executor)
                 .add(
-                        monthlyRealEstateSellDataPositionMappingFlow,
-                        monthlyRealEstateLeaseDataPositionMappingFlow
+                        realEstateSellDataPositionMappingFlow,
+                        realEstateSellDataPositionMappingFlow
                 )
                 .end();
     }
 
     /**
      * 부동산 실거래가 데이터 위치정보 매핑 flow 전처리 step
+     *
      * @return
      */
     @Bean
@@ -87,83 +91,107 @@ public class DealDataPositionMappingJobConfig {
                 .tasklet(((contribution, chunkContext) -> {
                     Map<String, Object> jobCtx = chunkContext.getStepContext().getJobExecutionContext();
 
-                    Set<String> updatedYearMonths = (Set<String>) jobCtx.get("updated-year-month");
+                    Set<String> updatedSellYearMonth = (Set<String>) jobCtx.get(UPDATED_SELL_YEAR_MONTH.name());
+                    Set<String> updatedLeaseYearMonth = (Set<String>) jobCtx.get(UPDATED_LEASE_YEAR_MONTH.name());
 
+                    jobCtx.put(TARGET_SELL_YEAR_MONTH.name(), new ArrayList(updatedSellYearMonth));
+                    jobCtx.put(TARGET_SELL_YEAR_MONTH_IDX.name(), 0);
+
+                    jobCtx.put(TARGET_LEASE_YEAR_MONTH.name(), new ArrayList(updatedLeaseYearMonth));
+                    jobCtx.put(TARGET_LEASE_YEAR_MONTH_IDX.name(), 0);
 
                     return RepeatStatus.FINISHED;
-                }),transactionManager)
+                }), transactionManager)
                 .build();
     }
 
     /**
-     * 월별 부동산 매매 데이터 좌표 매핑 flow
+     * 부동산 매매 데이터 좌표 매핑 flow
      *
      * @param monthlyRealEstateSellDataPositionMappingItemReader 월별 부동산 매매데이터 좌표 매핑 ItemReader
      * @param realEstateSellDataPositionMappingItemProcessor     부동산 매매데이터 좌표 매핑 ItemProcessor
      * @param realEstateSellItemUpdateWriter                     월별 부동산 매매데이터 좌표 매핑 ItemWriter
-     * @param contractDatePartitioner                            계약일 기준 step 병렬 partitioner
+     * @param sellContractDatePartitioner                        계약일 기준 step 병렬 partitioner
      * @return 월별 부동산 매매 데이터 좌표 매핑 flow
      */
     @Bean
-    public Flow monthlyRealEstateSellDataPositionMappingFlow(
+    public Flow realEstateSellDataPositionMappingFlow(
             ItemReader<RealEstateSell> monthlyRealEstateSellDataPositionMappingItemReader,
             ItemProcessor<RealEstateSell, RealEstateSell> realEstateSellDataPositionMappingItemProcessor,
             ItemWriter<RealEstateSell> realEstateSellItemUpdateWriter,
-            Partitioner contractDatePartitioner
+            Partitioner sellContractDatePartitioner,
+            JobExecutionDecider sellPositionMappingFlowDecider
     ) {
         SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
         taskExecutor.setConcurrencyLimit(LIMIT_CONCURRENCY_LIMIT);
 
-        TaskletStep workerStep = new StepBuilder("monthlyRealEstateSellDataPositionMappingWorkerStep", jobRepository)
+        Step workerStep = new StepBuilder("realEstateSellDataPositionMappingWorkerStep", jobRepository)
                 .<RealEstateSell, RealEstateSell>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(monthlyRealEstateSellDataPositionMappingItemReader)
                 .processor(realEstateSellDataPositionMappingItemProcessor)
                 .writer(realEstateSellItemUpdateWriter)
                 .build();
 
-        return new FlowBuilder<Flow>("monthlyRealEstateSellDataPositionMappingFlow")
-                .start(new StepBuilder("monthlyRealEstateSellDataPositionMappingMasterStep", jobRepository)
-                        .partitioner("monthlyRealEstateSellDataPositionMappingWorkerStep", contractDatePartitioner)
-                        .step(workerStep)
-                        .gridSize(LIMIT_CONCURRENCY_LIMIT)
-                        .taskExecutor(taskExecutor)
-                        .build())
+        Step masterStep = new StepBuilder("realEstateSellDataPositionMappingMasterStep", jobRepository)
+                .partitioner("monthlyRealEstateSellDataPositionMappingWorkerStep", sellContractDatePartitioner)
+                .step(workerStep)
+                .gridSize(LIMIT_CONCURRENCY_LIMIT)
+                .taskExecutor(taskExecutor)
+                .build();
+
+        return new FlowBuilder<Flow>("realEstateSellDataPositionMappingFlow")
+                .start(sellPositionMappingFlowDecider)
+                .on("CONTINUE").to(masterStep)
+                .from(masterStep)
+                .on("*").to(sellPositionMappingFlowDecider)
+                .from(sellPositionMappingFlowDecider)
+                .on(FlowExecutionStatus.COMPLETED.getName()).end()
                 .build();
     }
 
     /**
-     * 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
+     * 부동산 임대차 실거래가 데이터 좌표 매핑 flow
      *
      * @param monthlyRealEstateLeaseDataPositionMappingItemReader 월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemReader
      * @param realEstateLeaseDataPositionMappingItemProcessor     월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemProcessor
      * @param realEstateLeaseItemUpdateWriter                     월별 부동산 임대차 실거래가 데이터 좌표 매핑 ItemWriter
-     * @param contractDatePartitioner                            계약일 기준 step 병렬 partitioner
+     * @param leaseContractDatePartitioner                        계약일 기준 step 병렬 partitioner
+     * @param leasePositionMappingFlowDecider                     임대차 데이터 위치정보 매핑 FlowDecider
      * @return 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
      */
     @Bean
-    public Flow monthlyRealEstateLeaseDataPositionMappingFlow(
+    @JobScope
+    public Flow realEstateLeaseDataPositionMappingFlow(
             ItemReader<RealEstateLease> monthlyRealEstateLeaseDataPositionMappingItemReader,
             ItemProcessor<RealEstateLease, RealEstateLease> realEstateLeaseDataPositionMappingItemProcessor,
             ItemWriter<RealEstateLease> realEstateLeaseItemUpdateWriter,
-            Partitioner contractDatePartitioner
-    ) {
+            Partitioner leaseContractDatePartitioner,
+            JobExecutionDecider leasePositionMappingFlowDecider) {
         SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
         taskExecutor.setConcurrencyLimit(LIMIT_CONCURRENCY_LIMIT);
 
-        TaskletStep monthlyRealEstateLeaseDataPositionMappingWorkerStep = new StepBuilder("monthlyRealEstateLeaseDataPositionMappingWorkerStep", jobRepository)
+
+        Step workerStep = new StepBuilder("realEstateLeaseDataPositionMappingWorkerStep", jobRepository)
                 .<RealEstateLease, RealEstateLease>chunk(eodiBatchProperties.batchSize(), transactionManager)
                 .reader(monthlyRealEstateLeaseDataPositionMappingItemReader)
                 .processor(realEstateLeaseDataPositionMappingItemProcessor)
                 .writer(realEstateLeaseItemUpdateWriter)
                 .build();
 
-        return new FlowBuilder<Flow>("monthlyRealEstateLeaseDataPositionMappingFlow")
-                .start(new StepBuilder("monthlyRealEstateLeaseDataPositionMappingMasterStep", jobRepository)
-                        .partitioner("monthlyRealEstateLeaseDataPositionMappingWorkerStep", contractDatePartitioner)
-                        .step(monthlyRealEstateLeaseDataPositionMappingWorkerStep)
-                        .gridSize(LIMIT_CONCURRENCY_LIMIT)
-                        .taskExecutor(taskExecutor)
-                        .build())
+        Step masterStep = new StepBuilder("realEstateLeaseDataPositionMappingMasterStep", jobRepository)
+                .partitioner("realEstateLeaseDataPositionMappingWorkerStep", leaseContractDatePartitioner)
+                .step(workerStep)
+                .gridSize(LIMIT_CONCURRENCY_LIMIT)
+                .taskExecutor(taskExecutor)
+                .build();
+
+        return new FlowBuilder<Flow>("realEstateLeaseDataPositionMappingFlow")
+                .start(leasePositionMappingFlowDecider)
+                .on("CONTINUE").to(masterStep)
+                .from(masterStep)
+                .on("*").to(leasePositionMappingFlowDecider)
+                .from(leasePositionMappingFlowDecider)
+                .on(FlowExecutionStatus.COMPLETED.getName()).end()
                 .build();
     }
 

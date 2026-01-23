@@ -1,8 +1,6 @@
 package com.bb.eodi.deal.job.config;
 
 import com.bb.eodi.core.repository.BatchMetaRepository;
-import com.bb.eodi.deal.domain.type.DealType;
-import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.job.decider.TargetYearMonthDecider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
