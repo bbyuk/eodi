@@ -32,7 +32,7 @@ public class MultiHouseholdHouseSellDataItemProcessor
 
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['multi-household-sell-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['MULTI_HOUSEHOLD_HOUSE-SELL-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
 
     private static final String legalDongCodePostfix = "00000";

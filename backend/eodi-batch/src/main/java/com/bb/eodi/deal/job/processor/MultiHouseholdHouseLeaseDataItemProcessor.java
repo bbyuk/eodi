@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 public class MultiHouseholdHouseLeaseDataItemProcessor implements ItemProcessor<MultiHouseholdHouseLeaseDataItem, RealEstateLease> {
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['multi-household-lease-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['MULTI_HOUSEHOLD_HOUSE-LEASE-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
 
     private static final String legalDongCodePostfix = "00000";

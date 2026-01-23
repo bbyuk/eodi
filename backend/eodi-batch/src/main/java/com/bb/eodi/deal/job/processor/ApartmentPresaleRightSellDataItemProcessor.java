@@ -30,7 +30,7 @@ public class ApartmentPresaleRightSellDataItemProcessor
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
 
-    @Value("#{jobExecutionContext['apartment-presale-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['PRESALE_RIGHT-SELL-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
 
     // 해제사유발생일 date 입력 formatter

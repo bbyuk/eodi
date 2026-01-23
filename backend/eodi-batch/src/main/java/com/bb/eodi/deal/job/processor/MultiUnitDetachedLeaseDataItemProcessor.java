@@ -28,7 +28,7 @@ public class MultiUnitDetachedLeaseDataItemProcessor implements ItemProcessor<Mu
 
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['multi-unit-lease-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['MULTI_UNIT_HOUSE-LEASE-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
     private static final String legalDongCodePostfix = "00000";
     private static final String contractTermDelimiter = "~";

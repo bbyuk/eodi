@@ -28,7 +28,7 @@ public class OfficetelSellDataItemProcessor implements ItemProcessor<OfficetelSe
 
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['officetel-sell-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['OFFICETEL-SELL-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
     private static final String legalDongCodePostfix = "00000";
 

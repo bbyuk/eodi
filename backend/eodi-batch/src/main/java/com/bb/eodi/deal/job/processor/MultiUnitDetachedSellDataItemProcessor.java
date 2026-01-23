@@ -31,7 +31,7 @@ public class MultiUnitDetachedSellDataItemProcessor
 
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['multi-unit-sell-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['MULTI_UNIT_HOUSE-SELL-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
     private static final String legalDongCodePostfix = "00000";
 
