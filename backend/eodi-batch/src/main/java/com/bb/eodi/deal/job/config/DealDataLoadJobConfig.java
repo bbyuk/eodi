@@ -2,6 +2,7 @@ package com.bb.eodi.deal.job.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
@@ -22,38 +23,29 @@ public class DealDataLoadJobConfig {
 
     /**
      * 부동산 실거래가 데이터 적재 batch job
+     *
+     * @param dealDataLoadJobPreprocessStep 부동산 실거래가 데이터 적재 Job 전처리 Step
+     * @param dealDataLoadParallelFlow      부동산 실거래가 데이터 병렬 적재 flow
+     * @param dealDataPositionMappingFlow   부동산 실거래가 데이터 위치정보 매핑 flow
      * @return 부동산 거래 데이터 적재 batch job
      */
     @Bean
     public Job dealDataLoad(
-            Flow apartmentSellDataLoadFlow,
-            Flow apartmentPresaleRightSellDataLoadFlow,
-            Flow multiUnitDetachedSellDataLoadFlow,
-            Flow multiHouseholdHouseSellDataLoadFlow,
-            Flow officetelSellDataLoadFlow,
-            Flow apartmentLeaseDataLoadFlow,
-            Flow multiUnitDetachedLeaseDataLoadFlow,
-            Flow multiHouseholdHouseLeaseDataLoadFlow,
-            Flow officetelLeaseDataLoadFlow
+            Step dealDataLoadJobPreprocessStep,
+            Flow dealDataLoadParallelFlow,
+            Flow dealDataPositionMappingFlow
     ) {
-        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
-        executor.setConcurrencyLimit(3);
 
-
-        Flow mainFlow = new FlowBuilder<SimpleFlow>("dealDataLoadParallelFlow")
-                .start(apartmentSellDataLoadFlow)
-                .split(executor)
-                .add(
-                        officetelSellDataLoadFlow,
-                        apartmentLeaseDataLoadFlow,
-                        officetelLeaseDataLoadFlow
-                )
+        SimpleFlow mainFlow = new FlowBuilder<SimpleFlow>("dealDataLoadMainFlow")
+                .start(dealDataLoadJobPreprocessStep)
+                .next(dealDataLoadParallelFlow)
+                .next(dealDataPositionMappingFlow)
                 .build();
-
 
         return new JobBuilder("dealDataLoadJob", jobRepository)
                 .start(mainFlow)
                 .end()
                 .build();
     }
+
 }

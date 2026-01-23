@@ -1,6 +1,9 @@
 package com.bb.eodi.deal.job.tasklet;
 
 
+import com.bb.eodi.deal.domain.type.DealType;
+import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.job.config.DealJobContextKey;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +14,10 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.time.LocalDate;
+import java.util.Set;
+
+import static com.bb.eodi.deal.domain.utils.FormattingUtils.*;
+import static com.bb.eodi.deal.job.config.DealJobContextKey.LAST_UPDATED_DATE;
 
 /**
  * 부동산 매매 데이터 적재 배치 후처리 step tasklet
@@ -21,13 +28,22 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
 
     private final ReferenceVersionRepository referenceVersionRepository;
 
-    private final String referenceVersionTargetName;
+    private final HousingType housingType;
+    private final DealType dealType;
+
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
+        String referenceVersionTargetName = toReferenceVersionTargetName(housingType, dealType);
 
-        LocalDate lastUpdateDate = (LocalDate) jobCtx.get(referenceVersionTargetName + "-lastUpdateDate");
+        Set<String> updatedYearMonth = (Set<String>) jobCtx.get(dealType == DealType.SELL
+                ? DealJobContextKey.UPDATED_SELL_YEAR_MONTH.name()
+                : DealJobContextKey.UPDATED_LEASE_YEAR_MONTH.name());
+
+        String jobExecutionContextKey = toJobExecutionContextKey(referenceVersionTargetName, LAST_UPDATED_DATE);
+
+        LocalDate lastUpdateDate = (LocalDate) jobCtx.get(jobExecutionContextKey);
         LocalDate today = LocalDate.now();
 
         if (!lastUpdateDate.isBefore(today)) {
@@ -36,7 +52,7 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
         }
 
         LocalDate currentUpdateDate = lastUpdateDate.getMonthValue() != today.getMonthValue()
-                ? lastUpdateDate.plusMonths(1).withDayOfMonth(1)    // 월이 다를 경우
+                ? lastUpdateDate.plusMonths(1).withDayOfMonth(1)     // 월이 다를 경우
                 : today;                                                         // 동일한 월
 
 
@@ -44,7 +60,11 @@ public class DealDataLoadPostprocessStepTasklet implements Tasklet {
                 currentUpdateDate,
                 referenceVersionTargetName
         );
-        jobCtx.put(referenceVersionTargetName + "-lastUpdateDate", currentUpdateDate);
+
+        jobCtx.put(jobExecutionContextKey, currentUpdateDate);
+
+        String yearMonth = toYearMonth(currentUpdateDate);
+        updatedYearMonth.add(dealType.name() + "-" + yearMonth);
 
         return RepeatStatus.FINISHED;
     }

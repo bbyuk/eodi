@@ -10,12 +10,10 @@ import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
-import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
@@ -42,12 +40,12 @@ import java.util.Objects;
 import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ADDRESS_ENTRANCE;
 
 /**
- * 주소 위치정보 Update Job Config
+ * 주소 위치정보 Update Flow Config
  */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class AddressPositionUpdateJobConfig {
+public class AddressPositionUpdateFlowConfig {
 
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;
@@ -56,23 +54,20 @@ public class AddressPositionUpdateJobConfig {
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
 
     /**
-     * 주소 위치정보 update Job Config
+     * 주소 위치정보 update flow
      *
-     * @param addressEntranceLinkageApiCallStep     주소 출입구 연계 API 요청 Step
-     * @param addressEntranceLinkageFileUnzipStep   주소 출입구 연계 API 다운로드 파일 압축 해제 Step
-     * @param addressPositionUpdateFlow             주소 위치 정보 Update flow
-     * @param addressLinkageFileDeleteStep          주소 출입구 연계 API 다운로드 파일 삭제 Step
-     *
+     * @param addressEntranceLinkageApiCallStep   주소 출입구 연계 API 요청 Step
+     * @param addressEntranceLinkageFileUnzipStep 주소 출입구 연계 API 다운로드 파일 압축 해제 Step
+     * @param addressPositionUpdateFlow           주소 위치 정보 Update flow
+     * @param addressLinkageFileDeleteStep        주소 출입구 연계 API 다운로드 파일 삭제 Step
      * @return
      */
     @Bean
-    public Job addressPositionUpdateJob(
-            Step addressEntranceLinkageApiCallStep,
-            Step addressEntranceLinkageFileUnzipStep,
-            Flow addressPositionUpdateFlow,
-            Step addressLinkageFileDeleteStep
-    ) {
-        Flow mainFlow = new FlowBuilder<Flow>("addressPositionUpdateMainFlow")
+    public Flow addressPositionUpdateMainFlow(Step addressEntranceLinkageApiCallStep,
+                                          Step addressEntranceLinkageFileUnzipStep,
+                                          Flow addressPositionUpdateFlow,
+                                          Step addressLinkageFileDeleteStep) {
+        return new FlowBuilder<Flow>("addressPositionUpdateMainFlow")
                 .start(addressEntranceLinkageApiCallStep)
                 .next(addressEntranceLinkageFileUnzipStep)
                 .from(addressEntranceLinkageFileUnzipStep)
@@ -80,12 +75,6 @@ public class AddressPositionUpdateJobConfig {
                 .from(addressPositionUpdateFlow)
                 .on("COMPLETED").to(addressLinkageFileDeleteStep)
                 .end();
-
-
-        return new JobBuilder("addressPositionUpdateJob", jobRepository)
-                .start(mainFlow)
-                .end()
-                .build();
     }
 
     /**
@@ -221,6 +210,7 @@ public class AddressPositionUpdateJobConfig {
 
     /**
      * 주소 연계 File 삭제 Step
+     *
      * @param addressLinkageFileDeleteTasklet 주소 연계 파일 삭제 Tasklet
      * @return 주소 연계 File 삭제 Step
      */

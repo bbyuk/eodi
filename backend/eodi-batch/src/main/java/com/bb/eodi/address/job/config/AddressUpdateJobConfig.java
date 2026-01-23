@@ -64,20 +64,39 @@ public class AddressUpdateJobConfig {
      * - 매일 수행 예정
      * - 이미 반영된 경우 skip 처리
      *
-     * @param addressLinkageApiCallStep   주소연계 API 호출 Step (변동분 파일 다운로드)
-     * @param addressLinkageFileUnzipStep 주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
-     * @param addressUpdateFlow           일단위 주소 최신화 flow
-     * @param tempFileDeleteStep          주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
+     * @param addressUpdateMainFlow 주소 업데이트 배치 main flow
+     * @param addressPositionUpdateMainFlow 주소 위치정보 매핑 main flow
      * @return 도로명주소 일변동 적용 일배치 Job
      */
     @Bean
     public Job roadNameAddressUpdateJob(
+            Flow addressUpdateMainFlow,
+            Flow addressPositionUpdateMainFlow
+    ) {
+        return new JobBuilder("addressUpdateJob", jobRepository)
+                .start(addressUpdateMainFlow)
+                .next(addressPositionUpdateMainFlow)
+                .end()
+                .build();
+    }
+
+    /**
+     * 주소 업데이트 배치 main flow
+     *
+     * @param addressLinkageApiCallStep   주소연계 API 호출 Step (변동분 파일 다운로드)
+     * @param addressLinkageFileUnzipStep 주소연계 API 호출 후 다운로드 받은 파일의 압축을 해제한다.
+     * @param addressUpdateFlow           일단위 주소 최신화 flow
+     * @param tempFileDeleteStep          주소연계 API 호출을 통해 다운로드 받은 파일을 전체 삭제한다.
+     * @return
+     */
+    @Bean
+    public Flow addressUpdateMainFlow(
             Step addressLinkageApiCallStep,
             Step addressLinkageFileUnzipStep,
             Flow addressUpdateFlow,
             Step tempFileDeleteStep
     ) {
-        Flow mainFlow = new FlowBuilder<Flow>("addressUpdateMainFlow")
+        return new FlowBuilder<Flow>("addressUpdateMainFlow")
                 .start(addressLinkageApiCallStep)
                 .next(addressLinkageFileUnzipStep)
 
@@ -90,11 +109,6 @@ public class AddressUpdateJobConfig {
                 .on("COMPLETED").to(tempFileDeleteStep)
 
                 .end();
-
-        return new JobBuilder("addressUpdateJob", jobRepository)
-                .start(mainFlow)
-                .end()
-                .build();
     }
 
     /**

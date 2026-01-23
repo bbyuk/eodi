@@ -1,5 +1,9 @@
 package com.bb.eodi.deal.job.tasklet;
 
+import com.bb.eodi.deal.domain.type.DealType;
+import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.domain.utils.FormattingUtils;
+import com.bb.eodi.deal.job.config.DealJobContextKey;
 import com.bb.eodi.ops.domain.entity.ReferenceVersion;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,9 @@ import org.springframework.batch.repeat.RepeatStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.bb.eodi.deal.domain.utils.FormattingUtils.*;
+import static com.bb.eodi.deal.job.config.DealJobContextKey.*;
+
 /**
  * 부동산 매매 데이터 적재 배치 전처리 Step tasklet
  */
@@ -23,11 +30,15 @@ public class DealDataLoadPreprocessStepTasklet implements Tasklet {
 
     private final ReferenceVersionRepository referenceVersionRepository;
 
-    private final String referenceVersionTargetName;
+    private final HousingType housingType;
+
+    private final DealType dealType;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
+
+        String referenceVersionTargetName = toReferenceVersionTargetName(housingType, dealType);
 
         ReferenceVersion dealUpdateVersion = referenceVersionRepository.findByTargetName(referenceVersionTargetName)
                 .orElseGet(() -> {
@@ -51,14 +62,11 @@ public class DealDataLoadPreprocessStepTasklet implements Tasklet {
         }
 
         jobCtx.put("toDate", LocalDate.now());
-        jobCtx.put(referenceVersionTargetName + "-lastUpdateDate", dealUpdateVersion.getEffectiveDate());
+        jobCtx.put(toJobExecutionContextKey(referenceVersionTargetName, LAST_UPDATED_DATE), dealUpdateVersion.getEffectiveDate());
 
-        String yearMonth = new StringBuilder()
-                .append(dealUpdateVersion.getEffectiveDate().getYear())
-                .append(String.format("%2s", dealUpdateVersion.getEffectiveDate().getMonthValue()).replace(' ', '0'))
-                .toString();
+        String yearMonth = toYearMonth(dealUpdateVersion.getEffectiveDate());
 
-        jobCtx.put(referenceVersionTargetName + "-yearMonth", yearMonth);
+        jobCtx.put(toJobExecutionContextKey(referenceVersionTargetName, TARGET_YEAR_MONTH), yearMonth);
 
         return RepeatStatus.FINISHED;
     }

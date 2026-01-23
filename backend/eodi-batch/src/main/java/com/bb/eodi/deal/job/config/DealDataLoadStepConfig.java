@@ -13,12 +13,23 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.HashSet;
+import java.util.Map;
+
+import static com.bb.eodi.deal.domain.type.DealType.LEASE;
+import static com.bb.eodi.deal.domain.type.DealType.SELL;
+import static com.bb.eodi.deal.domain.type.HousingType.*;
+import static com.bb.eodi.deal.job.config.DealJobContextKey.UPDATED_LEASE_YEAR_MONTH;
+import static com.bb.eodi.deal.job.config.DealJobContextKey.UPDATED_SELL_YEAR_MONTH;
 
 /**
  * 월별 부동산 실거래가 데이터 적재 배치 Step 설정
@@ -33,17 +44,27 @@ public class DealDataLoadStepConfig {
     private final PlatformTransactionManager transactionManager;
     private final ReferenceVersionRepository referenceVersionRepository;
 
+    /**
+     * 부동산 실거래가 데이터 적재 Job 전처리 Step
+     *
+     * @return
+     */
+    @Bean
+    public Step dealDataLoadJobPreprocessStep() {
+        return new StepBuilder("dealDataLoadJobPreprocessStep", jobRepository)
+                .tasklet(((contribution, chunkContext) -> {
+                    ExecutionContext jobCtx =
+                            contribution.getStepExecution()
+                                    .getJobExecution()
+                                    .getExecutionContext();
 
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_SELL = "apartment-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_PRESALE = "apartment-presale-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MU_SELL = "multi-unit-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MH_SELL = "multi-household-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_OF_SELL = "officetel-sell";
+                    jobCtx.put(UPDATED_SELL_YEAR_MONTH.name(), new HashSet<String>());
+                    jobCtx.put(UPDATED_LEASE_YEAR_MONTH.name(), new HashSet<String>());
 
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_LEASE = "apartment-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MU_LEASE = "multi-unit-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MH_LEASE = "multi-household-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_OF_LEASE = "officetel-lease";
+                    return RepeatStatus.FINISHED;
+                }), transactionManager)
+                .build();
+    }
 
     /**
      * 아파트 매매 데이터 적재 전처리 Step
@@ -55,7 +76,9 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("apartmentSellDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_AP_SELL), transactionManager)
+                        APT,
+                        SELL
+                ), transactionManager)
                 .build();
     }
 
@@ -105,7 +128,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("apartmentSellDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_AP_SELL), transactionManager)
+                        APT,
+                        SELL), transactionManager)
                 .build();
     }
 
@@ -119,7 +143,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("apartmentPresaleRightSellDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_AP_PRESALE
+                        PRESALE_RIGHT,
+                        SELL
                 ), transactionManager)
                 .build();
     }
@@ -170,7 +195,9 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("apartmentPresaleRightSellDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_AP_PRESALE), transactionManager)
+                        PRESALE_RIGHT,
+                        SELL
+                ), transactionManager)
                 .build();
     }
 
@@ -184,7 +211,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("multiUnitDetachedSellDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_MU_SELL
+                        MULTI_UNIT_HOUSE,
+                        SELL
                 ), transactionManager)
                 .build();
     }
@@ -235,7 +263,10 @@ public class DealDataLoadStepConfig {
     public Step multiUnitDetachedSellDataLoadPostprocessStep() {
         return new StepBuilder("multiUnitDetachedSellDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
-                        referenceVersionRepository, "multi-unit-sell"), transactionManager)
+                        referenceVersionRepository,
+                        MULTI_UNIT_HOUSE,
+                        SELL
+                ), transactionManager)
                 .build();
     }
 
@@ -249,7 +280,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("multiHouseholdHouseSellPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_MH_SELL
+                        MULTI_HOUSEHOLD_HOUSE,
+                        SELL
                 ), transactionManager)
                 .build();
     }
@@ -299,13 +331,17 @@ public class DealDataLoadStepConfig {
     public Step multiHouseholdHouseSellDataLoadPostprocessStep() {
         return new StepBuilder("multiHouseholdHouseSellDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
-                        referenceVersionRepository, REFERENCE_VERSION_TARGET_NAME_MH_SELL), transactionManager)
+                        referenceVersionRepository,
+                        MULTI_HOUSEHOLD_HOUSE,
+                        SELL
+                ), transactionManager)
                 .build();
     }
 
 
     /**
      * 오피스텔 매매 실거래가 데이터 적재 전처리 step
+     *
      * @return 오피스텔 매매 실거래가 데이어 적재 전처리 step
      */
     @Bean
@@ -313,7 +349,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("officetelSellDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_OF_SELL
+                        OFFICETEL,
+                        SELL
                 ), transactionManager)
                 .build();
     }
@@ -364,13 +401,15 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("officetelSellDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_OF_SELL
+                        OFFICETEL,
+                        SELL
                 ), transactionManager)
                 .build();
     }
 
     /**
      * 아파트 임대차 실거래가 데이터 적재 전처리 step
+     *
      * @return 아파트 임대차 실거래가 데이터 적재 전처리 step
      */
     @Bean
@@ -378,7 +417,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("apartmentLeaseDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_AP_LEASE
+                        APT,
+                        LEASE
                 ), transactionManager)
                 .build();
     }
@@ -428,12 +468,16 @@ public class DealDataLoadStepConfig {
     public Step apartmentLeaseDataLoadPostprocessStep() {
         return new StepBuilder("apartmentLeaseDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
-                        referenceVersionRepository, REFERENCE_VERSION_TARGET_NAME_AP_LEASE), transactionManager)
+                        referenceVersionRepository,
+                        APT,
+                        LEASE
+                ), transactionManager)
                 .build();
     }
 
     /**
      * 단독/다가구주택 임대차 실거래가 데이터 적재 전처리 step
+     *
      * @return 단독/다가구주택 임대차 실거래가 데이터 적재 전처리 step
      */
     @Bean
@@ -441,7 +485,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("multiUnitDetachedLeaseDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_MU_LEASE
+                        MULTI_UNIT_HOUSE,
+                        LEASE
                 ), transactionManager)
                 .build();
     }
@@ -492,13 +537,15 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("multiUnitDetachedLeaseDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_MU_LEASE
+                        MULTI_UNIT_HOUSE,
+                        LEASE
                 ), transactionManager)
                 .build();
     }
 
     /**
      * 연립/다세대주택 임대차 실거래가 데이터 적재 전처리 step
+     *
      * @return 연립/다세대주택 임대차 실거래가 데이터 적재 전처리 step
      */
     @Bean
@@ -506,7 +553,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("multiHouseholdHouseLeaseDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_MH_LEASE
+                        MULTI_HOUSEHOLD_HOUSE,
+                        LEASE
                 ), transactionManager)
                 .build();
     }
@@ -557,13 +605,15 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("multiHouseholdHouseLeaseDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_MH_LEASE
+                        MULTI_HOUSEHOLD_HOUSE,
+                        LEASE
                 ), transactionManager)
                 .build();
     }
 
     /**
      * 오피스텔 임대차 실거래가 데이터 적재 전처리 step
+     *
      * @return 오피스텔 임대차 실거래가 데이터 적재 전처리 step
      */
     @Bean
@@ -571,7 +621,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("officetelLeaseDataLoadPreprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPreprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_OF_LEASE
+                        OFFICETEL,
+                        LEASE
                 ), transactionManager)
                 .build();
     }
@@ -621,7 +672,8 @@ public class DealDataLoadStepConfig {
         return new StepBuilder("officetelLeaseDataLoadPostprocessStep", jobRepository)
                 .tasklet(new DealDataLoadPostprocessStepTasklet(
                         referenceVersionRepository,
-                        REFERENCE_VERSION_TARGET_NAME_OF_LEASE
+                        OFFICETEL,
+                        LEASE
                 ), transactionManager)
                 .build();
     }

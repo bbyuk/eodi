@@ -8,8 +8,14 @@ import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+
+import static com.bb.eodi.deal.domain.type.DealType.LEASE;
+import static com.bb.eodi.deal.domain.type.DealType.SELL;
+import static com.bb.eodi.deal.domain.type.HousingType.*;
 
 /**
  * 월별 부동산 실거래가 데이터 적재 배치 flow 설정
@@ -20,24 +26,40 @@ public class DealDataLoadFlowConfig {
 
     private final BatchMetaRepository batchMetaRepository;
 
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_SELL = "apartment-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_PRESALE = "apartment-presale-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MU_SELL = "multi-unit-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MH_SELL = "multi-household-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_OF_SELL = "officetel-sell";
+    @Bean
+    public Flow dealDataLoadParallelFlow(
+            Flow apartmentSellDataLoadFlow,
+            Flow apartmentPresaleRightSellDataLoadFlow,
+            Flow multiUnitDetachedSellDataLoadFlow,
+            Flow multiHouseholdHouseSellDataLoadFlow,
+            Flow officetelSellDataLoadFlow,
+            Flow apartmentLeaseDataLoadFlow,
+            Flow multiUnitDetachedLeaseDataLoadFlow,
+            Flow multiHouseholdHouseLeaseDataLoadFlow,
+            Flow officetelLeaseDataLoadFlow
+    ) {
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        executor.setConcurrencyLimit(3);
 
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_LEASE = "apartment-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MU_LEASE = "multi-unit-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MH_LEASE = "multi-household-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_OF_LEASE = "officetel-lease";
+        return new FlowBuilder<SimpleFlow>("dealDataLoadParallelFlow")
+                .start(apartmentSellDataLoadFlow)
+                .split(executor)
+                .add(
+                        officetelSellDataLoadFlow,
+                        apartmentLeaseDataLoadFlow,
+                        officetelLeaseDataLoadFlow
+                )
+                .build();
+    }
 
     /**
      * 아파트 매매 데이터 적재 flow
-     * @param apartmentSellDataLoadPreprocessStep 아파트 매매 데이터 적재 전처리 step
-     * @param apartmentSellApiFetchStep 아파트 매매 데이터 API 요청 step
-     * @param apartmentSellDataLoadStep 아파트 매매 데이터 적재 step
+     *
+     * @param apartmentSellDataLoadPreprocessStep  아파트 매매 데이터 적재 전처리 step
+     * @param apartmentSellApiFetchStep            아파트 매매 데이터 API 요청 step
+     * @param apartmentSellDataLoadStep            아파트 매매 데이터 적재 step
      * @param apartmentSellDataLoadPostprocessStep 아파트 매매 데이터 적재 후처리 step
-     * @param apartmentSellTargetYearMonthDecider 아파트 매매 데이터 Flow JobExecutionDecider
+     * @param apartmentSellTargetYearMonthDecider  아파트 매매 데이터 Flow JobExecutionDecider
      * @return 아파트 매매 데이터 적재 flow
      */
     @Bean
@@ -61,20 +83,22 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 아파트 매매 데이터 Flow JobExecutionDecider
+     *
      * @return 아파트 매매 데이터 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider apartmentSellTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_AP_SELL);
+        return new TargetYearMonthDecider(APT, SELL);
     }
 
     /**
      * 아파트 분양권 매매 데이터 적재 flow
-     * @param apartmentPresaleRightSellDataLoadPreprocessStep 아파트 분양권 매매 데이터 적재 전처리 step
-     * @param apartmentPresaleRightSellApiFetchStep 아파트 분양권 매매 데이터 API 요청 step
-     * @param apartmentPresaleRightSellDataLoadStep 아파트 분양권 매매 데이터 적재 step
+     *
+     * @param apartmentPresaleRightSellDataLoadPreprocessStep  아파트 분양권 매매 데이터 적재 전처리 step
+     * @param apartmentPresaleRightSellApiFetchStep            아파트 분양권 매매 데이터 API 요청 step
+     * @param apartmentPresaleRightSellDataLoadStep            아파트 분양권 매매 데이터 적재 step
      * @param apartmentPresaleRightSellDataLoadPostprocessStep 아파트 분양권 매매 데이터 적재 후처리 step
-     * @param apartmentPresaleRightSellTargetYearMonthDecider 아파트 분양권 매매 Flow JobExecutionDecider
+     * @param apartmentPresaleRightSellTargetYearMonthDecider  아파트 분양권 매매 Flow JobExecutionDecider
      * @return 아파트 분양권 매매 데이터 적재 flow
      */
     @Bean
@@ -99,20 +123,22 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 아파트 분양권 매매 데이터 Flow JobExecutionDecider
+     *
      * @return 아파트 분양권 매매 데이터 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider apartmentPresaleRightSellTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_AP_PRESALE);
+        return new TargetYearMonthDecider(PRESALE_RIGHT, SELL);
     }
 
     /**
      * 단독/다가구주택 매매 데이터 적재 flow
-     * @param multiUnitDetachedSellDataLoadPreprocessStep 단독/다가구주택 매매 데이터 적재 전처리 step
-     * @param multiUnitDetachedSellApiFetchStep 단독/다가구주택 매매 데이터 API 요청 step
-     * @param multiUnitDetachedSellDataLoadStep 단독/다가구주택 매매 데이터 적재 step
+     *
+     * @param multiUnitDetachedSellDataLoadPreprocessStep  단독/다가구주택 매매 데이터 적재 전처리 step
+     * @param multiUnitDetachedSellApiFetchStep            단독/다가구주택 매매 데이터 API 요청 step
+     * @param multiUnitDetachedSellDataLoadStep            단독/다가구주택 매매 데이터 적재 step
      * @param multiUnitDetachedSellDataLoadPostprocessStep 단독/다가구주택 매매 데이터 적재 후처리 step
-     * @param multiUnitDetachedSellTargetYearMonthDecider 단독/다가구주택 매매 데이터 Flow JobExecutionDecider
+     * @param multiUnitDetachedSellTargetYearMonthDecider  단독/다가구주택 매매 데이터 Flow JobExecutionDecider
      * @return 단독/다가구주택 매매 데이터 적재 flow
      */
     @Bean
@@ -136,21 +162,23 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 단독/다가구주택 매매 데이터 Flow JobExecutionDecider
+     *
      * @return 단독/다가구주택 매매 데이터 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider multiUnitDetachedSellTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_MU_SELL);
+        return new TargetYearMonthDecider(MULTI_UNIT_HOUSE, SELL);
     }
 
 
     /**
      * 연립/다세대주택 매매 데이터 적재 flow
-     * @param multiHouseholdHouseSellDataLoadPreprocessStep 연립/다세대주택 매매 데이터 적재 전처리 step
-     * @param multiHouseholdHouseSellApiFetchStep 연립/다세대주택 매매 데이터 API 요청 step
-     * @param multiHouseholdHouseSellDataLoadStep 연립/다세대주택 매매 데이터 적재 step
+     *
+     * @param multiHouseholdHouseSellDataLoadPreprocessStep  연립/다세대주택 매매 데이터 적재 전처리 step
+     * @param multiHouseholdHouseSellApiFetchStep            연립/다세대주택 매매 데이터 API 요청 step
+     * @param multiHouseholdHouseSellDataLoadStep            연립/다세대주택 매매 데이터 적재 step
      * @param multiHouseholdHouseSellDataLoadPostprocessStep 연립/다세대주택 매매 데이터 적재 후처리 step
-     * @param multiHouseholdHouseSellTargetYearMonthDecider 연립/다세대주택 매매 데이터 Flow JobExecutionDecider
+     * @param multiHouseholdHouseSellTargetYearMonthDecider  연립/다세대주택 매매 데이터 Flow JobExecutionDecider
      * @return 연립/다세대주택 매매 데이터 적재 flow
      */
     @Bean
@@ -174,20 +202,22 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 연립/다세대주택 매매 데이터 Flow JobExecutionDecider
+     *
      * @return 연립/다세대주택 매매 데이터 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider multiHouseholdHouseSellTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_MH_SELL);
+        return new TargetYearMonthDecider(MULTI_HOUSEHOLD_HOUSE, SELL);
     }
 
     /**
      * 오피스텔 매매 실거래가 데이터 적재 배치 job flow
-     * @param officetelSellDataLoadPreprocessStep 오피스텔 매매 실거래가 데이터 적재 전처리 Step
-     * @param officetelSellApiFetchStep 오피스텔 매매 실거래가 데이터 API 요청 step
-     * @param officetelSellDataLoadStep 오피스텔 매매 실거래가 데이터 적재 step
+     *
+     * @param officetelSellDataLoadPreprocessStep  오피스텔 매매 실거래가 데이터 적재 전처리 Step
+     * @param officetelSellApiFetchStep            오피스텔 매매 실거래가 데이터 API 요청 step
+     * @param officetelSellDataLoadStep            오피스텔 매매 실거래가 데이터 적재 step
      * @param officetelSellDataLoadPostprocessStep 오피스텔 매매 실거래가 데이터 적재 후처리 step
-     * @param officetelSellTargetYearMonthDecider 오피스텔 매매 실거래가 데이터 Flow JobExecutionDecider
+     * @param officetelSellTargetYearMonthDecider  오피스텔 매매 실거래가 데이터 Flow JobExecutionDecider
      * @return 오피스텔 매매 실거래가 데이터 적재 배치 job flow
      */
     @Bean
@@ -211,21 +241,23 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 오피스텔 매매 실거래가 데이터 Flow JobExecutionDecider
+     *
      * @return
      */
     @Bean
     public JobExecutionDecider officetelSellTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_OF_SELL);
+        return new TargetYearMonthDecider(OFFICETEL, SELL);
     }
 
 
     /**
      * 아파트 임대차 실거래가 데이터 적재 배치 job flow
-     * @param apartmentLeaseDataLoadPreprocessStep 아파트 임대차 데이터 적재 전처리 step
-     * @param apartmentLeaseApiFetchStep 아파트 임대차 데이터 APi 요청 step
-     * @param apartmentLeaseDataLoadStep 아파트 임대차 데이터 적재 step
+     *
+     * @param apartmentLeaseDataLoadPreprocessStep  아파트 임대차 데이터 적재 전처리 step
+     * @param apartmentLeaseApiFetchStep            아파트 임대차 데이터 APi 요청 step
+     * @param apartmentLeaseDataLoadStep            아파트 임대차 데이터 적재 step
      * @param apartmentLeaseDataLoadPostprocessStep 아파트 임대차 데이터 적재 후처리 step
-     * @param apartmentLeaseTargetYearMonthDecider 아파트 임대차 데이터 적재 Flow JobExecutionDecider
+     * @param apartmentLeaseTargetYearMonthDecider  아파트 임대차 데이터 적재 Flow JobExecutionDecider
      * @return 아파트 임대차 실거래가 데이터 적재 배치 job flow
      */
     @Bean
@@ -249,20 +281,22 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 아파트 임대차 데이터 적재 Flow JobExecutionDecider
+     *
      * @return 아파트 임대차 데이터 적재 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider apartmentLeaseTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_AP_LEASE);
+        return new TargetYearMonthDecider(APT, LEASE);
     }
 
     /**
      * 단독/다가구주택 전월세 실거래가 데이터 적재 배치 job flow
-     * @param multiUnitDetachedLeaseDataLoadPreprocessStep 단독/다가구주택 임대차 실거래 데이터 적재 전처리 step
-     * @param multiUnitDetachedLeaseApiFetchStep 단독/다가구주택 임대차 실거래 데이터 API요청 step
-     * @param multiUnitDetachedLeaseDataLoadStep 단독/다가구주택 전월세 실거랙 데이터 적재 step
+     *
+     * @param multiUnitDetachedLeaseDataLoadPreprocessStep  단독/다가구주택 임대차 실거래 데이터 적재 전처리 step
+     * @param multiUnitDetachedLeaseApiFetchStep            단독/다가구주택 임대차 실거래 데이터 API요청 step
+     * @param multiUnitDetachedLeaseDataLoadStep            단독/다가구주택 전월세 실거랙 데이터 적재 step
      * @param multiUnitDetachedLeaseDataLoadPostprocessStep 단독/다가구주택 임대차 실거래 데이터 적재 후처리 step
-     * @param multiUnitDetachedTargetYearMonthDecider 단독/다가구주택 임대차 실거래가 Flow JobExecutionDecider
+     * @param multiUnitDetachedTargetYearMonthDecider       단독/다가구주택 임대차 실거래가 Flow JobExecutionDecider
      * @return 단독/다가구주택 전월세 실거래가 데이터 적재 배치 job flow
      */
     @Bean
@@ -286,21 +320,23 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 단독/다가구주택 임대차 실거래가 Flow JobExecutionDecider
+     *
      * @return 단독/다가구주택 임대차 실거래가 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider multiUnitDetachedTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_MU_LEASE);
+        return new TargetYearMonthDecider(MULTI_UNIT_HOUSE, LEASE);
     }
 
 
     /**
      * 연립/다세대주택 전월세 실거래가 데이터 적재 flow
-     * @param multiHouseholdHouseLeaseDataLoadPreprocessStep 연립/다세대주택 임대차 실거래가 데이터 적재 전처리 step
-     * @param multiHouseholdHouseLeaseApiFetchStep 연립/다세대주택 임대차 실거래가 데이터 API 요청 step
-     * @param multiHouseholdHouseLeaseDataLoadStep 연립/다세대주택 전월세 실거래가 데이터 적재 step
+     *
+     * @param multiHouseholdHouseLeaseDataLoadPreprocessStep  연립/다세대주택 임대차 실거래가 데이터 적재 전처리 step
+     * @param multiHouseholdHouseLeaseApiFetchStep            연립/다세대주택 임대차 실거래가 데이터 API 요청 step
+     * @param multiHouseholdHouseLeaseDataLoadStep            연립/다세대주택 전월세 실거래가 데이터 적재 step
      * @param multiHouseholdHouseLeaseDataLoadPostprocessStep 연립/다세대주택 임대차 실거래가 데이터 적재 후처리 step
-     * @param multiHouseholdHouseTargetYearMonthDecider 연립/다세대주택 임대차 실거래가 데이터 Flow JobExecutionDecider
+     * @param multiHouseholdHouseTargetYearMonthDecider       연립/다세대주택 임대차 실거래가 데이터 Flow JobExecutionDecider
      * @return 연립/다세대주택 전월세 실거래가 데이터 적재 flow
      */
     @Bean
@@ -325,21 +361,23 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 연립/다세대주택 임대차 실거래가 데이터 Flow JobExecutionDecider
+     *
      * @return 연립/다세대주택 임대차 실거래가 데이터 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider multiHouseholdHouseTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_MH_LEASE);
+        return new TargetYearMonthDecider(MULTI_HOUSEHOLD_HOUSE, LEASE);
     }
 
 
     /**
      * 오피스텔 전월세 실거래가 데이터 적재 flow
-     * @param officetelLeaseDataLoadPreprocessStep 오피스텔 임대차 실거래가 데이터 적재 전처리 step
-     * @param officetelLeaseApiFetchStep 오피스텔 임대차 실거래가 데이터 API 요청 step
-     * @param officetelLeaseDataLoadStep 오피스텔 전월세 실거래가 데이터 적재 step
+     *
+     * @param officetelLeaseDataLoadPreprocessStep  오피스텔 임대차 실거래가 데이터 적재 전처리 step
+     * @param officetelLeaseApiFetchStep            오피스텔 임대차 실거래가 데이터 API 요청 step
+     * @param officetelLeaseDataLoadStep            오피스텔 전월세 실거래가 데이터 적재 step
      * @param officetelLeaseDataLoadPostprocessStep 오피스텔 임대차 실거래가 데이터 적재 후처리 step
-     * @param officetelLeaseTargetYearMonthDecider 오피스텔 임대차 실거래가 데이터 Flow JobExecutionDecider
+     * @param officetelLeaseTargetYearMonthDecider  오피스텔 임대차 실거래가 데이터 Flow JobExecutionDecider
      * @return 오피스텔 전월세 실거래가 데이터 적재 flow
      */
     @Bean
@@ -363,10 +401,11 @@ public class DealDataLoadFlowConfig {
 
     /**
      * 오피스텔 임대차 실거래가 데이터 Flow JobExecutionDecider
+     *
      * @return 오피스텔 임대차 실거래가 데이터 Flow JobExecutionDecider
      */
     @Bean
     public JobExecutionDecider officetelLeaseTargetYearMonthDecider() {
-        return new TargetYearMonthDecider(REFERENCE_VERSION_TARGET_NAME_OF_LEASE);
+        return new TargetYearMonthDecider(OFFICETEL, LEASE);
     }
 }

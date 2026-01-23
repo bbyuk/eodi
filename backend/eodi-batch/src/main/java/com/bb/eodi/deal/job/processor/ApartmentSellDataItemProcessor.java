@@ -28,7 +28,7 @@ public class ApartmentSellDataItemProcessor implements ItemProcessor<ApartmentSe
 
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['apartment-sell-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['APT-SELL-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
 
     private static final String legalDongCodePostfix = "00000";

@@ -1,5 +1,7 @@
 package com.bb.eodi.deal.job.decider;
 
+import com.bb.eodi.deal.domain.type.DealType;
+import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
@@ -15,7 +17,8 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class TargetYearMonthDecider implements JobExecutionDecider {
 
-    private final String referenceVersionTargetName;
+    private final HousingType housingType;
+    private final DealType dealType;
 
     @Override
     public FlowExecutionStatus decide(
@@ -24,7 +27,7 @@ public class TargetYearMonthDecider implements JobExecutionDecider {
     ) {
         ExecutionContext ctx = jobExecution.getExecutionContext();
 
-        LocalDate lastUpdateDate = (LocalDate) ctx.get(referenceVersionTargetName + "-lastUpdateDate");
+        LocalDate lastUpdateDate = (LocalDate) ctx.get(housingType.name() + dealType.name() + "-lastUpdateDate");
         LocalDate today = LocalDate.now();
 
         if (today.isAfter(lastUpdateDate)) {

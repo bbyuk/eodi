@@ -30,7 +30,7 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
 
-    @Value("#{jobExecutionContext['apartment-lease-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['APT-LEASE-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
 
     // 계약기간 필드 delimiter

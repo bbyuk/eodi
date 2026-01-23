@@ -30,7 +30,7 @@ public class OfficetelLeaseDataItemProcessor implements ItemProcessor<OfficetelL
 
     private final LegalDongRepository legalDongRepository;
 
-    @Value("#{jobExecutionContext['officetel-lease-lastUpdateDate']}")
+    @Value("#{jobExecutionContext['OFFICETEL-LEASE-LAST_UPDATED_DATE']}")
     private LocalDate lastUpdateDate;
 
     private static final String legalDongCodePostfix = "00000";
