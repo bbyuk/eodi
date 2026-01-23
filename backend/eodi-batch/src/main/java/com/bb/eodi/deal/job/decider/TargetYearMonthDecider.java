@@ -2,6 +2,7 @@ package com.bb.eodi.deal.job.decider;
 
 import com.bb.eodi.deal.domain.type.DealType;
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.job.config.DealJobContextKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
@@ -27,7 +28,7 @@ public class TargetYearMonthDecider implements JobExecutionDecider {
     ) {
         ExecutionContext ctx = jobExecution.getExecutionContext();
 
-        LocalDate lastUpdateDate = (LocalDate) ctx.get(housingType.name() + dealType.name() + "-lastUpdateDate");
+        LocalDate lastUpdateDate = (LocalDate) ctx.get(housingType.name() + dealType.name() + DealJobContextKey.LAST_UPDATED_DATE.name());
         LocalDate today = LocalDate.now();
 
         if (today.isAfter(lastUpdateDate)) {
