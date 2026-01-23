@@ -5,9 +5,11 @@ import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -15,10 +17,14 @@ import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -46,25 +52,46 @@ public class DealDataPositionMappingJobConfig {
      */
 
     /**
-     * 월별 부동산 실거래가 데이터 좌표 매핑 job
+     * 월별 부동산 실거래가 데이터 좌표 매핑 Flow
      *
      * @param monthlyRealEstateSellDataPositionMappingFlow  월별 부동산 매매데이터 좌표 매핑 flow
      * @param monthlyRealEstateLeaseDataPositionMappingFlow 월별 부동산 임대차데이터 좌표 매핑 flow
      * @return 월별 부동산 실거래가 데이터 좌료 매핑 job
      */
     @Bean
-    public Job monthlyDealDataPositionMappingJob(
+    public Flow monthlyDealDataPositionMappingParallelFlow(
+            Step dealDataPositionMappingFlowPreprocessStep,
             Flow monthlyRealEstateSellDataPositionMappingFlow,
             Flow monthlyRealEstateLeaseDataPositionMappingFlow
     ) {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setConcurrencyLimit(2);
 
-        return new JobBuilder("dealDataPositionMappingJob", jobRepository)
-                .start(monthlyRealEstateSellDataPositionMappingFlow)
+        return new FlowBuilder<SimpleFlow>("monthlyDealDataPositionMappingParallelFlow")
+                .start(dealDataPositionMappingFlowPreprocessStep)
                 .split(executor)
-                .add(monthlyRealEstateLeaseDataPositionMappingFlow)
-                .end()
+                .add(
+                        monthlyRealEstateSellDataPositionMappingFlow,
+                        monthlyRealEstateLeaseDataPositionMappingFlow
+                )
+                .end();
+    }
+
+    /**
+     * 부동산 실거래가 데이터 위치정보 매핑 flow 전처리 step
+     * @return
+     */
+    @Bean
+    public Step dealDataPositionMappingFlowPreprocessStep() {
+        return new StepBuilder("dealDataPositionMappingFlowPreprocessStep", jobRepository)
+                .tasklet(((contribution, chunkContext) -> {
+                    Map<String, Object> jobCtx = chunkContext.getStepContext().getJobExecutionContext();
+
+                    Set<String> updatedYearMonths = (Set<String>) jobCtx.get("updated-year-month");
+
+
+                    return RepeatStatus.FINISHED;
+                }),transactionManager)
                 .build();
     }
 

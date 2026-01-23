@@ -1,6 +1,10 @@
 package com.bb.eodi.deal.job.tasklet;
 
 import com.bb.eodi.deal.domain.eunms.MonthlyDealDataLoadJobKey;
+import com.bb.eodi.deal.domain.type.DealType;
+import com.bb.eodi.deal.domain.type.HousingType;
+import com.bb.eodi.deal.domain.utils.FormattingUtils;
+import com.bb.eodi.deal.job.config.DealJobContextKey;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.integration.gov.deal.DealDataApiClient;
 import com.bb.eodi.integration.gov.deal.dto.DealDataQuery;
@@ -24,6 +28,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.bb.eodi.deal.domain.utils.FormattingUtils.*;
+
 /**
  * 부동산 거래 데이터 API 요청 Tasklet
  */
@@ -36,13 +42,15 @@ public class RealEstateDealApiFetchStepTasklet<T> implements Tasklet {
     private final DealDataApiClient dealDataApiClient;
     private final ObjectMapper objectMapper;
     private final int pageSize;
-    private final String referenceVersionTargetName;
+    private final HousingType housingType;
+    private final DealType dealType;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         ExecutionContext jobCtx = contribution.getStepExecution().getJobExecution().getExecutionContext();
 
-        String dealMonth = (String) jobCtx.get(referenceVersionTargetName + "-yearMonth");
+        String referenceVersionTargetName = toReferenceVersionTargetName(housingType, dealType);
+        String dealMonth = (String) jobCtx.get(toJobExecutionContextKey(referenceVersionTargetName, DealJobContextKey.TARGET_YEAR_MONTH));
 
 
         // 이전에 생성되어 있는 파일이 있는지 확인 후 API 요청 스킵여부 결정

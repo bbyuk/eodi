@@ -1,5 +1,7 @@
 package com.bb.eodi.deal.job.config;
 
+import com.bb.eodi.deal.domain.type.DealType;
+import com.bb.eodi.deal.domain.type.HousingType;
 import com.bb.eodi.deal.job.dto.*;
 import com.bb.eodi.deal.job.tasklet.RealEstateDealApiFetchStepTasklet;
 import com.bb.eodi.integration.gov.config.GovernmentDataApiProperties;
@@ -12,6 +14,9 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.bb.eodi.deal.domain.type.DealType.*;
+import static com.bb.eodi.deal.domain.type.HousingType.*;
+
 /**
  * 월별 부동산 매매데이터 적재 배치 Tasklet bean 설정
  */
@@ -23,18 +28,6 @@ public class DealDataLoadTaskletConfig {
     private final LegalDongRepository legalDongRepository;
     private final DealDataApiClient dealDataApiClient;
     private final ObjectMapper objectMapper;
-
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_SELL = "apartment-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_PRESALE = "apartment-presale-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MU_SELL = "multi-unit-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MH_SELL = "multi-household-sell";
-    private static final String REFERENCE_VERSION_TARGET_NAME_OF_SELL = "officetel-sell";
-
-    private static final String REFERENCE_VERSION_TARGET_NAME_AP_LEASE = "apartment-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MU_LEASE = "multi-unit-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_MH_LEASE = "multi-household-lease";
-    private static final String REFERENCE_VERSION_TARGET_NAME_OF_LEASE = "officetel-lease";
-
 
     /**
      * 아파트 매매 데이터 API 요청 step tasklet
@@ -50,7 +43,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_AP_SELL
+                APT,
+                SELL
         );
     }
 
@@ -68,7 +62,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_AP_PRESALE
+                PRESALE_RIGHT,
+                SELL
         );
     }
 
@@ -86,7 +81,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_MU_SELL
+                MULTI_UNIT_HOUSE,
+                SELL
         );
     }
 
@@ -105,7 +101,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_MH_SELL
+                MULTI_HOUSEHOLD_HOUSE,
+                SELL
         );
     }
 
@@ -123,7 +120,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_OF_SELL
+                OFFICETEL,
+                SELL
         );
     }
 
@@ -141,7 +139,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_AP_LEASE
+                APT,
+                LEASE
         );
     }
 
@@ -159,7 +158,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_MU_LEASE
+                MULTI_UNIT_HOUSE,
+                LEASE
         );
     }
 
@@ -177,7 +177,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_MH_LEASE
+                MULTI_HOUSEHOLD_HOUSE,
+                LEASE
         );
     }
 
@@ -194,7 +195,8 @@ public class DealDataLoadTaskletConfig {
                 dealDataApiClient,
                 objectMapper,
                 governmentDataApiProperties.pageSize(),
-                REFERENCE_VERSION_TARGET_NAME_OF_LEASE
+                OFFICETEL,
+                LEASE
         );
     }
 }
