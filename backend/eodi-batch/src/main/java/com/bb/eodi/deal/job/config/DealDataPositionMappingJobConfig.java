@@ -14,6 +14,7 @@ import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -89,7 +90,10 @@ public class DealDataPositionMappingJobConfig {
     public Step dealDataPositionMappingFlowPreprocessStep() {
         return new StepBuilder("dealDataPositionMappingFlowPreprocessStep", jobRepository)
                 .tasklet(((contribution, chunkContext) -> {
-                    Map<String, Object> jobCtx = chunkContext.getStepContext().getJobExecutionContext();
+                    ExecutionContext jobCtx =
+                            contribution.getStepExecution()
+                                    .getJobExecution()
+                                    .getExecutionContext();
 
                     Set<String> updatedSellYearMonth = (Set<String>) jobCtx.get(UPDATED_SELL_YEAR_MONTH.name());
                     Set<String> updatedLeaseYearMonth = (Set<String>) jobCtx.get(UPDATED_LEASE_YEAR_MONTH.name());

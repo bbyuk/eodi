@@ -13,6 +13,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -52,10 +53,13 @@ public class DealDataLoadStepConfig {
     public Step dealDataLoadJobPreprocessStep() {
         return new StepBuilder("dealDataLoadJobPreprocessStep", jobRepository)
                 .tasklet(((contribution, chunkContext) -> {
-                    Map<String, Object> jobCtx = chunkContext.getStepContext().getJobExecutionContext();
+                    ExecutionContext jobCtx =
+                            contribution.getStepExecution()
+                                    .getJobExecution()
+                                    .getExecutionContext();
 
-                    jobCtx.putIfAbsent(UPDATED_SELL_YEAR_MONTH.name(), new HashSet<String>());
-                    jobCtx.putIfAbsent(UPDATED_LEASE_YEAR_MONTH.name(), new HashSet<String>());
+                    jobCtx.put(UPDATED_SELL_YEAR_MONTH.name(), new HashSet<String>());
+                    jobCtx.put(UPDATED_LEASE_YEAR_MONTH.name(), new HashSet<String>());
 
                     return RepeatStatus.FINISHED;
                 }), transactionManager)
