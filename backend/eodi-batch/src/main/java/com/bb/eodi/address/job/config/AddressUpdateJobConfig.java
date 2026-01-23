@@ -3,14 +3,12 @@ package com.bb.eodi.address.job.config;
 import com.bb.eodi.address.domain.entity.LandLotAddress;
 import com.bb.eodi.address.domain.entity.RoadNameAddress;
 import com.bb.eodi.address.domain.service.AddressLinkageApiCallService;
-import com.bb.eodi.address.domain.service.AddressLinkageTarget;
 import com.bb.eodi.address.job.dto.LandLotAddressItem;
 import com.bb.eodi.address.job.dto.RoadNameAddressItem;
 import com.bb.eodi.address.job.reader.LandLotAddressItemReader;
 import com.bb.eodi.address.job.reader.RoadNameAddressItemReader;
 import com.bb.eodi.address.job.tasklet.AddressLinkageApiCallTasklet;
 import com.bb.eodi.address.job.tasklet.AddressLinkageFileUnzipTasklet;
-import com.bb.eodi.common.utils.FileCleaner;
 import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.ops.domain.repository.ReferenceVersionRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +36,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -54,7 +51,7 @@ import static com.bb.eodi.address.domain.service.AddressLinkageTarget.ROAD_NAME_
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class RoadNameAddressUpdateJobConfig {
+public class AddressUpdateJobConfig {
 
     private final JobRepository jobRepository;
     private final EodiBatchProperties eodiBatchProperties;

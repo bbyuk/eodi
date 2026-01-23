@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,6 +30,9 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
     private final LegalDongRepository legalDongRepository;
     private static final String legalDongCodePostfix = "00000";
 
+    @Value("#{jobExecutionContext['apartment-lease-lastUpdateDate']}")
+    private LocalDate lastUpdateDate;
+
     // 계약기간 필드 delimiter
     private static final String contractTermDelimiter = "~";
     private static final String contractTermYearMonthDelimiter = ".";
@@ -37,6 +41,18 @@ public class ApartmentLeaseDataItemProcessor implements ItemProcessor<ApartmentL
 
     @Override
     public RealEstateLease process(ApartmentLeaseDataItem item) throws Exception {
+        /**
+         * 마지막 업데이트 일자 기준으로 마지막 업데이트 일자 이전날짜까지의 dealDate는 이미 load된 것으로 간주하고 skip
+         */
+        LocalDate dealDate = LocalDate.of(
+                Integer.parseInt(item.dealYear()),
+                Integer.parseInt(item.dealMonth()),
+                Integer.parseInt(item.dealDay()));
+
+        if (!lastUpdateDate.isBefore(dealDate)) {
+            return null;
+        }
+
 
         LegalDong legalDong = legalDongRepository.findByCode(item.sggCd().concat(legalDongCodePostfix))
                 .orElseThrow(() -> new RuntimeException("매칭되는 법정동 코드가 없습니다."));

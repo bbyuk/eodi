@@ -14,6 +14,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -30,6 +31,17 @@ public class RealEstateLeaseDataPositionMappingItemProcessor implements ItemProc
 
     @Override
     public RealEstateLease process(RealEstateLease item) throws Exception {
+        /**
+         * 마지막 업데이트 일자 기준으로 마지막 업데이트 일자 이전날짜까지의 dealDate는 이미 load된 것으로 간주하고 skip
+         */
+//        LocalDate dealDate = LocalDate.of(
+//                Integer.parseInt(item.dealYear()),
+//                Integer.parseInt(item.dealMonth()),
+//                Integer.parseInt(item.dealDay()));
+//        if (!lastUpdateDate.isAfter(dealDate)) {
+//            return null;
+//        }
+
         // 정상 지번이 없을 경우 수기 후보정 처리
         if (!item.hasCorrectLandLot()) {
             return null;

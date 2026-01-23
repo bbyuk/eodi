@@ -35,8 +35,20 @@ eodi:
     job-name-prefix: job.name
     job-parameter-prefix: job.parameter.
     force-new-instance-parameter: new
-    force-new-instance-parameter-key: run.id
     batch-size: 1000
+    daily-jobs:
+      # =========================
+      # Address Batch Jobs (20xx)
+      # =========================
+      - addressUpdateJob               # 20 - 주소 최신화
+      - addressPositionUpdateJob       # 21 - 주소 위치정보 최신화
+
+      # =========================
+      # Deal Batch Jobs (30xx)
+      # =========================
+      - dealDataLoadJob                # 30 - 부동산 실거래가 적재 및 최신화
+      - dealDataPositionMappingJob     # 31 - 부동산 실거래가 위치 정보 매핑
+
     job:
       legal-dong-load:
         temp-file-name: LEGAL_DONG_TEMP_FILE
