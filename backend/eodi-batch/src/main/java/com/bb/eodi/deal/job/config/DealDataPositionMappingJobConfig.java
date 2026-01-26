@@ -76,7 +76,7 @@ public class DealDataPositionMappingJobConfig {
                 .split(executor)
                 .add(
                         realEstateSellDataPositionMappingFlow,
-                        realEstateSellDataPositionMappingFlow
+                        realEstateLeaseDataPositionMappingFlow
                 )
                 .end();
     }
