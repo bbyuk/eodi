@@ -58,8 +58,9 @@ public class DealDataPositionMappingJobConfig {
     /**
      * 월별 부동산 실거래가 데이터 좌표 매핑 Flow
      *
-     * @param realEstateSellDataPositionMappingFlow  월별 부동산 매매데이터 좌표 매핑 flow
-     * @param realEstateLeaseDataPositionMappingFlow 월별 부동산 임대차데이터 좌표 매핑 flow
+     * @param dealDataPositionMappingFlowPreprocessStep 월별 부동산 실거래가 데이터 좌표 매핑 전처리 step
+     * @param realEstateSellDataPositionMappingFlow     월별 부동산 매매데이터 좌표 매핑 flow
+     * @param realEstateLeaseDataPositionMappingFlow    월별 부동산 임대차데이터 좌표 매핑 flow
      * @return 월별 부동산 실거래가 데이터 좌료 매핑 job
      */
     @Bean
@@ -71,13 +72,17 @@ public class DealDataPositionMappingJobConfig {
         SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
         executor.setConcurrencyLimit(2);
 
-        return new FlowBuilder<SimpleFlow>("dealDataPositionMappingFlow")
-                .start(dealDataPositionMappingFlowPreprocessStep)
+        Flow dealDataPositionMappingWorkerFlow = new FlowBuilder<Flow>("dealDataPositionMappingWorkerFlow")
+                .start(realEstateSellDataPositionMappingFlow)
                 .split(executor)
                 .add(
-                        realEstateSellDataPositionMappingFlow,
                         realEstateLeaseDataPositionMappingFlow
                 )
+                .end();
+
+        return new FlowBuilder<SimpleFlow>("dealDataPositionMappingFlow")
+                .start(dealDataPositionMappingFlowPreprocessStep)
+                .next(dealDataPositionMappingWorkerFlow)
                 .end();
     }
 
