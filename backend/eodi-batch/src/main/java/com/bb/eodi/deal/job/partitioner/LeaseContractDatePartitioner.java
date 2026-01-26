@@ -1,5 +1,6 @@
 package com.bb.eodi.deal.job.partitioner;
 
+import com.bb.eodi.deal.domain.type.DealType;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
@@ -22,12 +23,14 @@ public class LeaseContractDatePartitioner implements Partitioner {
     private final LocalDate end;
 
     public LeaseContractDatePartitioner(
-            @Value("#{jobExecutionContext['TARGET_SELL_YEAR_MONTH']}")
+            @Value("#{jobExecutionContext['TARGET_LEASE_YEAR_MONTH']}")
             List<String> targetYearMonths,
-            @Value("#{jobExecutionContext['TARGET_SELL_YEAR_MONTH_IDX']}")
+            @Value("#{jobExecutionContext['TARGET_LEASE_YEAR_MONTH_IDX']}")
             int targetIndex
     ) {
-        String yearMonth = targetYearMonths.get(targetIndex);
+        String yearMonth = targetYearMonths.get(targetIndex)
+                .split("-")[1];
+
         this.start = LocalDate.of(
                 Integer.parseInt(yearMonth.substring(0, 4)),
                 Integer.parseInt(yearMonth.substring(4, 6)),
