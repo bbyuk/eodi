@@ -5,7 +5,6 @@ import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
@@ -25,7 +24,6 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 
 import static com.bb.eodi.deal.job.config.DealJobContextKey.*;
@@ -169,7 +167,6 @@ public class DealDataPositionMappingJobConfig {
      * @return 월별 부동산 임대차 실거래가 데이터 좌표 매핑 flow
      */
     @Bean
-    @JobScope
     public Flow realEstateLeaseDataPositionMappingFlow(
             ItemReader<RealEstateLease> monthlyRealEstateLeaseDataPositionMappingItemReader,
             ItemProcessor<RealEstateLease, RealEstateLease> realEstateLeaseDataPositionMappingItemProcessor,
