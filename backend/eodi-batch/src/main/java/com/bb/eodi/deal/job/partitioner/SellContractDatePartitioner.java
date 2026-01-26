@@ -22,12 +22,13 @@ public class SellContractDatePartitioner implements Partitioner {
     private final LocalDate end;
 
     public SellContractDatePartitioner(
-            @Value("#{jobExecutionContext['TARGET_LEASE_YEAR_MONTH']}")
+            @Value("#{jobExecutionContext['TARGET_SELL_YEAR_MONTH']}")
             List<String> targetYearMonths,
-            @Value("#{jobExecutionContext['TARGET_LEASE_YEAR_MONTH_IDX']}")
+            @Value("#{jobExecutionContext['TARGET_SELL_YEAR_MONTH_IDX']}")
             int targetIndex
     ) {
-        String yearMonth = targetYearMonths.get(targetIndex);
+        String yearMonth = targetYearMonths.get(targetIndex)
+                .split("-")[1];
 
         this.start = LocalDate.of(
                 Integer.parseInt(yearMonth.substring(0, 4)),
