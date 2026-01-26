@@ -3,6 +3,8 @@ package com.bb.eodi.deal.job.config;
 import com.bb.eodi.core.EodiBatchProperties;
 import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
+import com.bb.eodi.deal.job.listener.LeasePositionMappingStepExecutionListener;
+import com.bb.eodi.deal.job.listener.SellPositionMappingStepExecutionListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
@@ -144,6 +146,7 @@ public class DealDataPositionMappingJobConfig {
                 .step(workerStep)
                 .gridSize(LIMIT_CONCURRENCY_LIMIT)
                 .taskExecutor(taskExecutor)
+                .listener(new SellPositionMappingStepExecutionListener())
                 .build();
 
         return new FlowBuilder<Flow>("realEstateSellDataPositionMappingFlow")
@@ -189,6 +192,7 @@ public class DealDataPositionMappingJobConfig {
                 .step(workerStep)
                 .gridSize(LIMIT_CONCURRENCY_LIMIT)
                 .taskExecutor(taskExecutor)
+                .listener(new LeasePositionMappingStepExecutionListener())
                 .build();
 
         return new FlowBuilder<Flow>("realEstateLeaseDataPositionMappingFlow")

@@ -25,7 +25,6 @@ public class SellPositionMappingFlowDecider implements JobExecutionDecider {
         int index = ctx.getInt(TARGET_SELL_YEAR_MONTH_IDX.name());
 
         if (index < targets.size()) {
-            ctx.putInt(TARGET_SELL_YEAR_MONTH_IDX.name(), index + 1);
             return new FlowExecutionStatus("CONTINUE");
         }
 
