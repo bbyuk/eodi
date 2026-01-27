@@ -59,7 +59,6 @@ public class RealEstateRecommendationService {
     private final int minDealCount = 5;
 
 
-
     /**
      * 입력된 파라미터 기반으로 맞춤 지역 목록을 리턴한다.
      * <p>
@@ -114,51 +113,13 @@ public class RealEstateRecommendationService {
         Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(allSellRegions);
         Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegionItems = toRegionItems(allLeaseRegions);
 
-        Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = allSellRegions.stream()
-                .collect(Collectors.groupingBy(Region::getRootId))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    return new RecommendedRegionsResult.RegionGroup(
-                            rootLegalDongInfo.code(),
-                            rootLegalDongInfo.name(),
-                            rootLegalDongInfo.name(),
-                            entry.getValue().size()
-                    );
-                })
-                .collect(Collectors.toMap(
-                        RecommendedRegionsResult.RegionGroup::code,
-                        regionGroup -> regionGroup
-                ));
-
-
-
-        Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups = allLeaseRegions.stream()
-                .collect(Collectors.groupingBy(Region::getRootId))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    return new RecommendedRegionsResult.RegionGroup(
-                            rootLegalDongInfo.code(),
-                            rootLegalDongInfo.name(),
-                            rootLegalDongInfo.name(),
-                            entry.getValue().size()
-                    );
-                })
-                .collect(Collectors.toMap(
-                        RecommendedRegionsResult.RegionGroup::code,
-                        regionGroup -> regionGroup
-                ));
-
-
+        Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = toRegionGroups(sellRegionItems);
+        Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups = toRegionGroups(leaseRegionItems);
 
         /**
          * sellRegions -> code 오름차순 정렬
          * leaseRegions -> code 오름차순 정렬
          */
-
         sellRegionItems.replaceAll((key, value) -> value.stream()
                 .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
                 .collect(Collectors.toList()));
@@ -177,6 +138,7 @@ public class RealEstateRecommendationService {
 
     /**
      * RegionItem Map으로 전환 편의 메서드
+     *
      * @param regions 조회 결과 region list
      * @return Region Item Map
      */
@@ -198,7 +160,7 @@ public class RealEstateRecommendationService {
                             second.code(),
                             second.name(),
                             second.name().replace(root.name(), "").trim(),
-                            minDealCount
+                            e.getValue().size()
                     );
                 })
                 .collect(Collectors.
@@ -209,27 +171,33 @@ public class RealEstateRecommendationService {
 
     /**
      * RegionGroupItem Map으로 전환 편의 메서드
-     * @param regions 조회 결과 region list
+     *
+     * @param regionItems 조회결과 List에서 집계한 Region item map
      * @return RegionGroup Item Map
      */
-    private Map<String, RecommendedRegionsResult.RegionGroup> toRegionGroups(List<Region> regions) {
-        return regions.stream()
-                .collect(Collectors.groupingBy(Region::getRootId))
-                .entrySet()
+    private Map<String, RecommendedRegionsResult.RegionGroup> toRegionGroups(Map<String, List<RecommendedRegionsResult.RegionItem>> regionItems) {
+        return regionItems.entrySet()
                 .stream()
-                .map(e -> {
-                    LegalDongInfo root = legalDongCachePort.findById(e.getKey());
+                .map(entry -> {
+                    LegalDongInfo rootLegalDong = legalDongCachePort.findByCode(entry.getKey());
+
+                    int totalDealCount = entry.getValue().stream()
+                            .mapToInt(RecommendedRegionsResult.RegionItem::count)
+                            .sum();
+
                     return new RecommendedRegionsResult.RegionGroup(
-                            root.code(),
-                            root.name(),
-                            root.name(),
-                            e.getValue().size()
+                            rootLegalDong.code(),
+                            rootLegalDong.name(),
+                            rootLegalDong.name(),
+                            totalDealCount
                     );
                 })
-                .collect(Collectors.toMap(
-                        RecommendedRegionsResult.RegionGroup::code,
-                        Function.identity()
-                ));
+                .collect(
+                        Collectors.toMap(
+                                RecommendedRegionsResult.RegionGroup::code,
+                                Function.identity()
+                        )
+                );
     }
 
 
