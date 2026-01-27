@@ -102,7 +102,7 @@ export const useSearchStore = create((set, get) => ({
    * step3 페이지에서 사용되는 store 상태를 초기로 리셋한다.
    */
   resetStep3: () => {
-    console.log("step3 초기화 완료");
+    // console.log("step3 초기화 완료");
   },
 
   /**
