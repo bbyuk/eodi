@@ -101,14 +101,15 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
             condition.and(realEstateSell.housingType.in(query.getHousingTypes()));
         }
 
-        if (query.getMinDealCount() != null) {
-            condition.and(realEstateSell.count().goe(query.getMinDealCount()));
-        }
-
         return queryFactory.select(realEstateSell.regionId)
                 .from(realEstateSell)
                 .where(condition)
                 .groupBy(realEstateSell.regionId)
+                .having(
+                        query.getMinDealCount() != null
+                                ? realEstateSell.count().goe(query.getMinDealCount())
+                                : null
+                )
                 .fetch()
                 .stream()
                 .map(regionId -> legalDongInfoMapper.toEntity(

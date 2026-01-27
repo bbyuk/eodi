@@ -109,14 +109,15 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
             condition.and(realEstateLease.housingType.in(query.getHousingTypes()));
         }
 
-        if (query.getMinDealCount() != null) {
-            condition.and(realEstateLease.count().goe(query.getMinDealCount()));
-        }
-
         return queryFactory.select(realEstateLease.regionId)
                 .from(realEstateLease)
                 .where(condition)
                 .groupBy(realEstateLease.regionId)
+                .having(
+                        query.getMinDealCount() != null
+                                ? realEstateLease.count().goe(query.getMinDealCount())
+                                : null
+                )
                 .fetch()
                 .stream()
                 .map(regionId -> legalDongInfoMapper.toEntity(
