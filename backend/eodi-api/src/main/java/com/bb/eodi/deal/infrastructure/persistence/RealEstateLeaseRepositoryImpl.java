@@ -109,6 +109,10 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
             condition.and(realEstateLease.housingType.in(query.getHousingTypes()));
         }
 
+        if (query.getMinDealCount() != null) {
+            condition.and(realEstateLease.count().goe(query.getMinDealCount()));
+        }
+
         return queryFactory.select(realEstateLease.regionId)
                 .from(realEstateLease)
                 .where(condition)

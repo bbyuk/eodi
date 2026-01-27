@@ -98,6 +98,7 @@ public class RealEstateRecommendationService {
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
+                .minDealCount(minDealCount)
                 .build();
         RegionQuery leaseRegionQuery = RegionQuery.builder()
                 .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
@@ -105,6 +106,7 @@ public class RealEstateRecommendationService {
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
+                .minDealCount(minDealCount)
                 .build();
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
@@ -149,7 +151,6 @@ public class RealEstateRecommendationService {
                 ))
                 .entrySet()
                 .stream()
-                .filter(e -> e.getValue().size() >= minDealCount)
                 .map(e -> {
                     LegalDongInfo second = legalDongCachePort.findById(e.getKey());
                     LegalDongInfo root = legalDongCachePort.findById(second.rootId());
