@@ -12,6 +12,9 @@ public class FindRegionInputAdapter {
     public FindRecommendedRegionInput toInput(RegionRecommendRequest request) {
         return new FindRecommendedRegionInput(
                 request.cash(),
+                request.hasLoan(),
+                request.monthlyPayment(),
+                request.yearlyIncome(),
                 request.housingTypes()
         );
     }

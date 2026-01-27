@@ -33,11 +33,15 @@ class RealEstateRecommendationServiceMediumTest {
     void testFindRecommendedRegions() throws Exception {
         // given
         Integer cash = 50000;
+        Boolean hasLoan = false;
         List<String> housingTypes = List.of("AP");
 
         // when
         RecommendedRegionsResult recommendedRegions = realEstateRecommendationService.findRecommendedRegions(
-                new FindRecommendedRegionInput(cash, housingTypes));
+                new FindRecommendedRegionInput(cash, null,
+                        null,
+                        null,
+                        housingTypes));
 
         // then
         Assertions.assertThat(recommendedRegions.leaseRegions()).isNotEmpty();

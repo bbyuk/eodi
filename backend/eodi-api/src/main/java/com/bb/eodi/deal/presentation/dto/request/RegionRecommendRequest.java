@@ -16,6 +16,15 @@ public record RegionRecommendRequest(
         @Parameter(description = "보유 현금 (단위: 만 원)", example = "24000")
         Integer cash,
 
+        @Parameter(description = "대출 여부", example = "true")
+        Boolean hasLoan,
+
+        @Parameter(description = "대출 월 상환액 (단위: 만 원)", example = "210")
+        Integer monthlyPayment,
+
+        @Parameter(description = "연 소득 (단위: 만 원)", example = "5000")
+        Integer yearlyIncome,
+
         @Parameter(description = "대상 주택 유형 목록", example = "AP")
         List<String> housingTypes
 ) {
