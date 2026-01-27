@@ -55,6 +55,8 @@ class RealEstateRecommendationServiceMediumTest {
                 List.of(14261L, 14306L),
                 List.of("AP", "OF"),
                 null,
+                null,
+                null,
                 null);
 
         // when
