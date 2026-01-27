@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -45,9 +46,19 @@ public class RealEstateRecommendationService {
 
     private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
 
+    // 매매 가격 gap
     private final int sellPriceGap = 5000;
+
+    // 임대차 보증금 gap
     private final int leaseDepositGap = 1000;
+
+    // 조회 범위
     private final int monthsToView = 3;
+
+    // 지역 추천 조회시 최소 거래 횟수 카운트
+    private final int minDealCount = 5;
+
+
 
     /**
      * 입력된 파라미터 기반으로 맞춤 지역 목록을 리턴한다.
@@ -79,28 +90,29 @@ public class RealEstateRecommendationService {
                 .collect(Collectors.toList());
 
 
-        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(
-                RegionQuery.builder()
-                        .minCash(findRecommendedRegionInput.cash() - sellPriceGap)
-                        .maxCash(findRecommendedRegionInput.cash() + sellPriceGap)
-                        .startDate(startDate)
-                        .endDate(today)
-                        .housingTypes(
-                                housingTypeParameters)
-                        .build()
-        );
+        /**
+         * 조회 조건 query
+         */
+        RegionQuery sellRegionQuery = RegionQuery.builder()
+                .minCash(findRecommendedRegionInput.cash() - sellPriceGap)
+                .maxCash(findRecommendedRegionInput.cash() + sellPriceGap)
+                .startDate(startDate)
+                .endDate(today)
+                .housingTypes(housingTypeParameters)
+                .build();
+        RegionQuery leaseRegionQuery = RegionQuery.builder()
+                .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
+                .maxCash(findRecommendedRegionInput.cash() + leaseDepositGap)
+                .startDate(startDate)
+                .endDate(today)
+                .housingTypes(housingTypeParameters)
+                .build();
 
-        List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(
-                RegionQuery.builder()
-                        .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
-                        .maxCash(findRecommendedRegionInput.cash() + leaseDepositGap)
-                        .startDate(startDate)
-                        .endDate(today)
-                        .housingTypes(
-                                housingTypeParameters
-                        )
-                        .build()
-        );
+        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
+        List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(leaseRegionQuery);
+
+        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(allSellRegions);
+        Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegionItems = toRegionItems(allLeaseRegions);
 
         Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = allSellRegions.stream()
                 .collect(Collectors.groupingBy(Region::getRootId))
@@ -120,24 +132,6 @@ public class RealEstateRecommendationService {
                         regionGroup -> regionGroup
                 ));
 
-        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegions = allSellRegions.stream()
-                .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
-
-                    return new RecommendedRegionsResult.RegionItem(
-                            secondLegalDongInfo.id(),
-                            rootLegalDongInfo.code(),
-                            secondLegalDongInfo.code(),
-                            secondLegalDongInfo.name(),
-                            secondLegalDongInfo.name().replace(rootLegalDongInfo.name(), "").trim(),
-                            entry.getValue().size()
-                    );
-                })
-                .collect(Collectors.groupingBy(RecommendedRegionsResult.RegionItem::groupCode));
 
 
         Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups = allLeaseRegions.stream()
@@ -158,24 +152,6 @@ public class RealEstateRecommendationService {
                         regionGroup -> regionGroup
                 ));
 
-        Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegions = allLeaseRegions.stream()
-                .collect(Collectors.groupingBy(region -> region.isRoot() ? region.getRootId() : region.getSecondId()))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    LegalDongInfo secondLegalDongInfo = legalDongCachePort.findById(entry.getKey());
-                    LegalDongInfo rootLegalDongInfo = legalDongCachePort.findById(secondLegalDongInfo.rootId());
-
-                    return new RecommendedRegionsResult.RegionItem(
-                            secondLegalDongInfo.id(),
-                            rootLegalDongInfo.code(),
-                            secondLegalDongInfo.code(),
-                            secondLegalDongInfo.name(),
-                            secondLegalDongInfo.name().replace(rootLegalDongInfo.name(), "").trim(),
-                            entry.getValue().size()
-                    );
-                })
-                .collect(Collectors.groupingBy(RecommendedRegionsResult.RegionItem::groupCode));
 
 
         /**
@@ -183,20 +159,77 @@ public class RealEstateRecommendationService {
          * leaseRegions -> code 오름차순 정렬
          */
 
-        sellRegions.replaceAll((key, value) -> value.stream()
+        sellRegionItems.replaceAll((key, value) -> value.stream()
                 .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
                 .collect(Collectors.toList()));
 
-        leaseRegions.replaceAll((key, value) -> value.stream()
+        leaseRegionItems.replaceAll((key, value) -> value.stream()
                 .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
                 .collect(Collectors.toList()));
 
         return new RecommendedRegionsResult(
                 sellRegionGroups,
-                sellRegions,
+                sellRegionItems,
                 leaseRegionGroups,
-                leaseRegions
+                leaseRegionItems
         );
+    }
+
+    /**
+     * RegionItem Map으로 전환 편의 메서드
+     * @param regions 조회 결과 region list
+     * @return Region Item Map
+     */
+    private Map<String, List<RecommendedRegionsResult.RegionItem>> toRegionItems(List<Region> regions) {
+        return regions.stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.isRoot() ? r.getRootId() : r.getSecondId()
+                ))
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue().size() >= minDealCount)
+                .map(e -> {
+                    LegalDongInfo second = legalDongCachePort.findById(e.getKey());
+                    LegalDongInfo root = legalDongCachePort.findById(second.rootId());
+
+                    return new RecommendedRegionsResult.RegionItem(
+                            second.id(),
+                            root.code(),
+                            second.code(),
+                            second.name(),
+                            second.name().replace(root.name(), "").trim(),
+                            minDealCount
+                    );
+                })
+                .collect(Collectors.
+                        groupingBy(
+                                RecommendedRegionsResult.RegionItem::groupCode
+                        ));
+    }
+
+    /**
+     * RegionGroupItem Map으로 전환 편의 메서드
+     * @param regions 조회 결과 region list
+     * @return RegionGroup Item Map
+     */
+    private Map<String, RecommendedRegionsResult.RegionGroup> toRegionGroups(List<Region> regions) {
+        return regions.stream()
+                .collect(Collectors.groupingBy(Region::getRootId))
+                .entrySet()
+                .stream()
+                .map(e -> {
+                    LegalDongInfo root = legalDongCachePort.findById(e.getKey());
+                    return new RecommendedRegionsResult.RegionGroup(
+                            root.code(),
+                            root.name(),
+                            root.name(),
+                            e.getValue().size()
+                    );
+                })
+                .collect(Collectors.toMap(
+                        RecommendedRegionsResult.RegionGroup::code,
+                        Function.identity()
+                ));
     }
 
 
