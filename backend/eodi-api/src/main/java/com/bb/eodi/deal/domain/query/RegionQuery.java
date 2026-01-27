@@ -14,9 +14,16 @@ import java.util.List;
 @Data
 @Builder
 public class RegionQuery {
+    // 최소예산
     private Integer minCash;
+    // 최대예산
     private Integer maxCash;
+    // 시작일자
     private LocalDate startDate;
+    // 종료일자
     private LocalDate endDate;
+    // 조회대상 주택유형
     private List<HousingType> housingTypes;
+    // 지역 추천 조회 최소 거래건수
+    private Integer minDealCount;
 }

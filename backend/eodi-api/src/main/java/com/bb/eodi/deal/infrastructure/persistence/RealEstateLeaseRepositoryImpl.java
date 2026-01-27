@@ -113,6 +113,11 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
                 .from(realEstateLease)
                 .where(condition)
                 .groupBy(realEstateLease.regionId)
+                .having(
+                        query.getMinDealCount() != null
+                                ? realEstateLease.count().goe(query.getMinDealCount())
+                                : null
+                )
                 .fetch()
                 .stream()
                 .map(regionId -> legalDongInfoMapper.toEntity(
