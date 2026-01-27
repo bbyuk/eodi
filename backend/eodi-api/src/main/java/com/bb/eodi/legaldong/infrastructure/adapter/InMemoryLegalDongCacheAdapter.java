@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
     private final Map<Long, LegalDongInfo> cache = new ConcurrentHashMap<>();
+    private final Map<String, LegalDongInfo> cacheByCode = new ConcurrentHashMap<>();
+
     private final LegalDongJpaRepository legalDongJpaRepository;
 
     @PostConstruct
@@ -37,6 +39,7 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
     public void refreshCache() {
         // 1. clear
         cache.clear();
+        cacheByCode.clear();
         List<LegalDongJpaEntity> legalDongs = legalDongJpaRepository.findAll();
 
         // 2. 임시 노드 트리에 putAll
@@ -52,6 +55,7 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
                         legalDongInfoNode -> legalDongInfoNode
                 ));
 
+
         // 3. 임시 노드 트리 노드간 connect
         for (LegalDongInfoNode node : tempTree.values()) {
             traverse(tempTree, node);
@@ -61,7 +65,10 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
         tempTree.values().stream()
                 .filter(LegalDongInfoNode::isRoot)
                 .map(LegalDongInfoNodeMapper::toInfo)
-                .forEach(this::loadToCache);
+                .forEach(info -> {
+                    loadToCache(info);
+                    loadToCacheByCode(info);
+                });
     }
 
     private void traverse(Map<Long, LegalDongInfoNode> tree, LegalDongInfoNode currentNode) {
@@ -81,12 +88,23 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
     /**
      * 캐시에 legalDongInfo를 로드한다.
      *
-     * @param legalDongInfo
+     * @param legalDongInfo 법정동정보
      */
     private void loadToCache(LegalDongInfo legalDongInfo) {
         cache.putIfAbsent(legalDongInfo.id(), legalDongInfo);
         legalDongInfo.children().stream()
                 .forEach(this::loadToCache);
+    }
+
+    /**
+     * 코드 캐시에 legalDongInfo를 로드한다.
+     *
+     * @param legalDongInfo 법정동 정보
+     */
+    private void loadToCacheByCode(LegalDongInfo legalDongInfo) {
+        cacheByCode.putIfAbsent(legalDongInfo.code(), legalDongInfo);
+        legalDongInfo.children().stream()
+                .forEach(this::loadToCacheByCode);
     }
 
     @Override
@@ -95,5 +113,14 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
             throw new RuntimeException(id + " not found");
         }
         return cache.get(id);
+    }
+
+    @Override
+    public LegalDongInfo findByCode(String code) {
+        if (!cacheByCode.containsKey(code)) {
+            throw new RuntimeException(code + " not found");
+        }
+
+        return cacheByCode.get(code);
     }
 }
