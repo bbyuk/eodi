@@ -1,6 +1,7 @@
 package com.bb.eodi.legaldong.infrastructure.adapter;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.legaldong.infrastructure.cache.InMemoryLegalDongCache;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.springframework.context.annotation.Import;
 class DealLegalDongCacheAdapterTest {
 
     @Autowired
-    DealLegalDongCacheAdapter legalDongCacheAdapter;
+    InMemoryLegalDongCache legalDongCacheAdapter;
 
     @Test
     @DisplayName("medium - ID를 키로 캐싱한 법정동 정보 refresh 동작 테스트")
