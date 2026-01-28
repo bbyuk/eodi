@@ -4,7 +4,7 @@ import com.bb.eodi.config.QuerydslConfig;
 import com.bb.eodi.finance.domain.entity.RegulatingArea;
 import com.bb.eodi.finance.infrastructure.persistence.RegulatingAreaMapperImpl;
 import com.bb.eodi.finance.infrastructure.persistence.RegulatingAreaRepositoryImpl;
-import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
+import com.bb.eodi.legaldong.infrastructure.adapter.DealLegalDongCacheAdapter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Import({RegulatingAreaRepositoryImpl.class,
         QuerydslConfig.class,
-        InMemoryLegalDongCacheAdapter.class,
+        DealLegalDongCacheAdapter.class,
         RegulatingAreaMapperImpl.class
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

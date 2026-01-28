@@ -10,12 +10,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 @DataJpaTest
-@Import({InMemoryLegalDongCacheAdapter.class})
+@Import({DealLegalDongCacheAdapter.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class InMemoryLegalDongCacheAdapterTest {
+class DealLegalDongCacheAdapterTest {
 
     @Autowired
-    InMemoryLegalDongCacheAdapter legalDongCacheAdapter;
+    DealLegalDongCacheAdapter legalDongCacheAdapter;
 
     @Test
     @DisplayName("medium - ID를 키로 캐싱한 법정동 정보 refresh 동작 테스트")

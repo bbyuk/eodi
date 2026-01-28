@@ -1,12 +1,12 @@
-package com.bb.eodi.legaldong.infrastructure.adapter;
+package com.bb.eodi.legaldong.infrastructure.cache;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.legaldong.application.cache.LegalDongCache;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
 import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * 인메모리 법정동 캐시 어댑터
+ * 인메모리 법정동 캐시
  */
-@Repository
+@Component
 @RequiredArgsConstructor
-public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
+public class InMemoryLegalDongCache implements LegalDongCache {
     private final Map<Long, LegalDongInfo> cache = new ConcurrentHashMap<>();
     private final Map<String, LegalDongInfo> cacheByCode = new ConcurrentHashMap<>();
+    private final Map<String, LegalDongInfo> cacheByName = new ConcurrentHashMap<>();
 
     private final LegalDongJpaRepository legalDongJpaRepository;
 
@@ -36,7 +37,7 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
                 ).collect(Collectors.toList());
     }
 
-    public void refreshCache() {
+    private void refreshCache() {
         // 1. clear
         cache.clear();
         cacheByCode.clear();
@@ -107,7 +108,12 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
                 .forEach(this::loadToCacheByCode);
     }
 
-    @Override
+
+    /**
+     * 캐시에서 법정동 ID로 법정동 정보를 조회한다.
+     * @param id 법정동 ID
+     * @return 법정동 정보
+     */
     public LegalDongInfo findById(Long id) {
         if (!cache.containsKey(id)) {
             throw new RuntimeException(id + " not found");
@@ -115,12 +121,28 @@ public class InMemoryLegalDongCacheAdapter implements LegalDongCachePort {
         return cache.get(id);
     }
 
-    @Override
+    /**
+     * 캐시에서 법정동 코드로 법정동 정보를 조회한다.
+     * @param code 법정동코드
+     * @return 법정동 정보
+     */
     public LegalDongInfo findByCode(String code) {
         if (!cacheByCode.containsKey(code)) {
             throw new RuntimeException(code + " not found");
         }
 
         return cacheByCode.get(code);
+    }
+
+    /**
+     * 캐시에서 법정동 명으로 법정동 정보를 조회한다.
+     * @param name 법정동 명
+     * @return 법정동 정보
+     */
+    public LegalDongInfo findByName(String name) {
+        if (!cacheByName.containsKey(name)) {
+            throw new RuntimeException(name + " not found");
+        }
+        return cacheByName.get(name);
     }
 }

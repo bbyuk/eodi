@@ -1,4 +1,4 @@
-package com.bb.eodi.legaldong.infrastructure.adapter;
+package com.bb.eodi.legaldong.infrastructure.cache;
 
 
 import lombok.Getter;

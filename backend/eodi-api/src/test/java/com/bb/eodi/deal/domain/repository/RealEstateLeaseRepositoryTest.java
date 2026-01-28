@@ -8,7 +8,7 @@ import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateLeaseRepositoryImpl;
-import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
+import com.bb.eodi.legaldong.infrastructure.adapter.DealLegalDongCacheAdapter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import java.util.List;
         RealEstateLeaseRepositoryImpl.class,
         QuerydslConfig.class,
         RealEstateLeaseMapperImpl.class,
-        InMemoryLegalDongCacheAdapter.class,
+        DealLegalDongCacheAdapter.class,
         LegalDongInfoMapperImpl.class
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

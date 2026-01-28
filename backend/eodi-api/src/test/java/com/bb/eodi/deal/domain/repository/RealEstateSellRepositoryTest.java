@@ -8,7 +8,7 @@ import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellRepositoryImpl;
-import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
+import com.bb.eodi.legaldong.infrastructure.adapter.DealLegalDongCacheAdapter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import java.util.List;
 @Import({RealEstateSellRepositoryImpl.class,
         QuerydslConfig.class,
         RealEstateSellMapperImpl.class,
-        InMemoryLegalDongCacheAdapter.class,
+        DealLegalDongCacheAdapter.class,
         LegalDongInfoMapperImpl.class
 
 })
