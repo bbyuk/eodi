@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +33,7 @@ public class RegulatingAreaController {
             description = "대상 지역명을 입력해 부동산 규제지역을 등록한다.")
     public ResponseEntity<RegulatingAreaRegisterResponse> registerRegulatingArea(
             @ParameterObject @Valid
+            @RequestBody
             RegulatingAreaRegisterRequest requestParameter
     ) {
 
