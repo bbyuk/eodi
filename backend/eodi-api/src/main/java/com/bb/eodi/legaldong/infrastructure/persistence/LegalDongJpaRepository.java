@@ -21,6 +21,7 @@ public interface LegalDongJpaRepository extends JpaRepository<LegalDongJpaEntity
             select      ld
             from        LegalDongJpaEntity ld
             where       ld.code = :code
+            and         ld.active = true
             order by    ld.legalDongOrder asc
             """)
     Optional<LegalDongJpaEntity> findByCode(@Param("code") String code);
