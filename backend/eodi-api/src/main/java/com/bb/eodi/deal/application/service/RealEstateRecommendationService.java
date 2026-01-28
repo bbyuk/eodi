@@ -4,6 +4,7 @@ import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
+import com.bb.eodi.deal.application.port.FinancePort;
 import com.bb.eodi.deal.application.port.LegalDongCachePort;
 import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
@@ -40,6 +41,7 @@ public class RealEstateRecommendationService {
     private final RealEstateSellRepository realEstateSellRepository;
     private final RealEstateLeaseRepository realEstateLeaseRepository;
     private final LegalDongCachePort legalDongCachePort;
+    private final FinancePort financePort;
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
@@ -62,8 +64,11 @@ public class RealEstateRecommendationService {
     /**
      * 입력된 파라미터 기반으로 맞춤 지역 목록을 리턴한다.
      * <p>
-     * 1. 보유 현금
-     * 매매는 매매가 기준 +- 5000만원 / 임대차는 보증금 기준 +- 1000
+     * 1. 매매
+     * 매매가 기준 - 5000만원 ~ 보유 현금 + 주택담보대출 가능 금액
+     * 2. 임대차
+     * 보증금 + 전세대출 가능 금액
+     *
      * <p>
      * 최근 3개월 거래내역 확인
      *
@@ -88,13 +93,16 @@ public class RealEstateRecommendationService {
                 .map(HousingType::fromCode)
                 .collect(Collectors.toList());
 
-
         /**
          * 조회 조건 query
          */
         RegionQuery sellRegionQuery = RegionQuery.builder()
                 .minCash(findRecommendedRegionInput.cash() - sellPriceGap)
-                .maxCash(findRecommendedRegionInput.cash() + sellPriceGap)
+                .maxCash(findRecommendedRegionInput.cash() + financePort.calculateAvailableMortgageLoanAmount(
+                                findRecommendedRegionInput.annualIncome(),
+                                findRecommendedRegionInput.monthlyPayment()
+                        )
+                )
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
@@ -102,7 +110,9 @@ public class RealEstateRecommendationService {
                 .build();
         RegionQuery leaseRegionQuery = RegionQuery.builder()
                 .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
-                .maxCash(findRecommendedRegionInput.cash() + leaseDepositGap)
+                .maxCash(findRecommendedRegionInput.cash() + financePort.calculateAvailableDepositLoanAmount(
+                        findRecommendedRegionInput.cash())
+                )
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
