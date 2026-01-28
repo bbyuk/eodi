@@ -1,6 +1,7 @@
 package com.bb.eodi.finance.application.service;
 
 import com.bb.eodi.finance.application.input.RegulatingAreaRegisterInput;
+import com.bb.eodi.finance.application.result.RegulatingAreaRegisterResult;
 import com.bb.eodi.finance.domain.entity.RegulatingArea;
 import com.bb.eodi.finance.domain.repository.RegulatingAreaRepository;
 import org.assertj.core.api.Assertions;
@@ -49,12 +50,10 @@ class RegulatingAreaServiceTest {
         RegulatingAreaRegisterInput input = new RegulatingAreaRegisterInput(targets, LocalDate.now(), LocalDate.of(9999, 12, 31));
 
         // when
-        regulatingAreaService.register(input);
+        RegulatingAreaRegisterResult result = regulatingAreaService.register(input);
 
         // then
-
-        List<RegulatingArea> allRegulatingArea = regulatingAreaRepository.findAll();
-        Assertions.assertThat(allRegulatingArea).isNotEmpty();
+        Assertions.assertThat(result.getCount()).isGreaterThan(0);
     }
 
 }

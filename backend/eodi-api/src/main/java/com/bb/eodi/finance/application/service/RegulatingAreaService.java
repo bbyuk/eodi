@@ -3,6 +3,7 @@ package com.bb.eodi.finance.application.service;
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.finance.application.input.RegulatingAreaRegisterInput;
 import com.bb.eodi.finance.application.port.FinanceLegalDongCachePort;
+import com.bb.eodi.finance.application.result.RegulatingAreaRegisterResult;
 import com.bb.eodi.finance.domain.entity.RegulatingArea;
 import com.bb.eodi.finance.domain.repository.RegulatingAreaRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class RegulatingAreaService {
      * @param input
      */
     @Transactional
-    public void register(RegulatingAreaRegisterInput input) {
+    public RegulatingAreaRegisterResult register(RegulatingAreaRegisterInput input) {
 
         List<LegalDongInfo> regions = input.targetRegionNames().stream()
                 .map(legalDongCachePort::findByName)
@@ -45,6 +46,12 @@ public class RegulatingAreaService {
         }
 
         regulatingAreaRepository.saveAll(targets);
+        int size = regulatingAreaRepository.findAll().size();
+
+        return RegulatingAreaRegisterResult
+                .builder()
+                .count(size)
+                .build();
     }
 
     /**
