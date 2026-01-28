@@ -2,8 +2,8 @@ package com.bb.eodi.legaldong.infrastructure.cache;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.legaldong.application.cache.LegalDongCache;
-import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaEntity;
-import com.bb.eodi.legaldong.infrastructure.persistence.LegalDongJpaRepository;
+import com.bb.eodi.legaldong.domain.entity.LegalDong;
+import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class InMemoryLegalDongCache implements LegalDongCache {
     private final Map<String, LegalDongInfo> cacheByCode = new ConcurrentHashMap<>();
     private final Map<String, LegalDongInfo> cacheByName = new ConcurrentHashMap<>();
 
-    private final LegalDongJpaRepository legalDongJpaRepository;
+    private final LegalDongRepository legalDongRepository;
 
     @PostConstruct
     public void initCache() {
@@ -41,7 +41,7 @@ public class InMemoryLegalDongCache implements LegalDongCache {
         // 1. clear
         cache.clear();
         cacheByCode.clear();
-        List<LegalDongJpaEntity> legalDongs = legalDongJpaRepository.findAll();
+        List<LegalDong> legalDongs = legalDongRepository.findAll();
 
         // 2. 임시 노드 트리에 putAll
         Map<Long, LegalDongInfoNode> tempTree =
