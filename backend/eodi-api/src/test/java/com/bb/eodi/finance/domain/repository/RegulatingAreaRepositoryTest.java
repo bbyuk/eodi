@@ -1,29 +1,18 @@
 package com.bb.eodi.finance.domain.repository;
 
-import com.bb.eodi.config.QuerydslConfig;
 import com.bb.eodi.finance.domain.entity.RegulatingArea;
-import com.bb.eodi.finance.infrastructure.persistence.RegulatingAreaMapperImpl;
-import com.bb.eodi.finance.infrastructure.persistence.RegulatingAreaRepositoryImpl;
-import com.bb.eodi.legaldong.infrastructure.adapter.DealLegalDongCacheAdapter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Import({RegulatingAreaRepositoryImpl.class,
-        QuerydslConfig.class,
-        DealLegalDongCacheAdapter.class,
-        RegulatingAreaMapperImpl.class
-})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+
+@SpringBootTest
 @DisplayName("medium - 규제지역 Repository DB 연동 테스트")
 @Transactional
 class RegulatingAreaRepositoryTest {

@@ -37,7 +37,7 @@ public class InMemoryLegalDongCache implements LegalDongCache {
                 ).collect(Collectors.toList());
     }
 
-    private void refreshCache() {
+    public void refreshCache() {
         // 1. clear
         cache.clear();
         cacheByCode.clear();
@@ -66,10 +66,7 @@ public class InMemoryLegalDongCache implements LegalDongCache {
         tempTree.values().stream()
                 .filter(LegalDongInfoNode::isRoot)
                 .map(LegalDongInfoNodeMapper::toInfo)
-                .forEach(info -> {
-                    loadToCache(info);
-                    loadToCacheByCode(info);
-                });
+                .forEach(this::loadToCache);
     }
 
     private void traverse(Map<Long, LegalDongInfoNode> tree, LegalDongInfoNode currentNode) {
@@ -93,21 +90,12 @@ public class InMemoryLegalDongCache implements LegalDongCache {
      */
     private void loadToCache(LegalDongInfo legalDongInfo) {
         cache.putIfAbsent(legalDongInfo.id(), legalDongInfo);
+        cacheByCode.putIfAbsent(legalDongInfo.code(), legalDongInfo);
+        cacheByName.putIfAbsent(legalDongInfo.name(), legalDongInfo);
+
         legalDongInfo.children().stream()
                 .forEach(this::loadToCache);
     }
-
-    /**
-     * 코드 캐시에 legalDongInfo를 로드한다.
-     *
-     * @param legalDongInfo 법정동 정보
-     */
-    private void loadToCacheByCode(LegalDongInfo legalDongInfo) {
-        cacheByCode.putIfAbsent(legalDongInfo.code(), legalDongInfo);
-        legalDongInfo.children().stream()
-                .forEach(this::loadToCacheByCode);
-    }
-
 
     /**
      * 캐시에서 법정동 ID로 법정동 정보를 조회한다.
