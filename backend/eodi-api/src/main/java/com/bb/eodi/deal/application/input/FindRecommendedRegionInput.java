@@ -17,7 +17,7 @@ public record FindRecommendedRegionInput(
         Integer monthlyPayment,
 
         // 연 소득
-        Integer yearlyIncome,
+        Integer annualIncome,
 
         // 대상 주택 유형 목록
         List<String> housingTypes

@@ -14,7 +14,7 @@ public class FindRegionInputAdapter {
                 request.cash(),
                 request.hasLoan(),
                 request.monthlyPayment(),
-                request.yearlyIncome(),
+                request.annualIncome(),
                 request.housingTypes()
         );
     }

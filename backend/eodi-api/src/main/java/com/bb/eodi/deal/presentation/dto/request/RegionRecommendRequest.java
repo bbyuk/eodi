@@ -23,7 +23,7 @@ public record RegionRecommendRequest(
         Integer monthlyPayment,
 
         @Parameter(description = "연 소득 (단위: 만 원)", example = "5000")
-        Integer yearlyIncome,
+        Integer annualIncome,
 
         @Parameter(description = "대상 주택 유형 목록", example = "AP")
         List<String> housingTypes
