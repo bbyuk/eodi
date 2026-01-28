@@ -1,7 +1,7 @@
 package com.bb.eodi.legaldong.infrastructure.adapter;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.legaldong.application.cache.LegalDongCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class DealLegalDongCacheAdapter implements LegalDongCachePort {
+public class DealLegalDongCacheAdapter implements DealLegalDongCachePort {
 
     private final LegalDongCache cache;
 

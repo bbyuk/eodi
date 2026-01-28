@@ -5,7 +5,7 @@ import com.bb.eodi.deal.application.contract.LegalDongInfo;
 /**
  * 법정동 캐시 조회 포트
  */
-public interface LegalDongCachePort {
+public interface DealLegalDongCachePort {
 
     /**
      * 법정동 ID로 법정동 캐시에서 법정동 정보를 조회한다.

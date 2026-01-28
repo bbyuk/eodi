@@ -5,7 +5,7 @@ import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.FinancePort;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
@@ -40,7 +40,7 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellRepository realEstateSellRepository;
     private final RealEstateLeaseRepository realEstateLeaseRepository;
-    private final LegalDongCachePort legalDongCachePort;
+    private final DealLegalDongCachePort dealLegalDongCachePort;
     private final FinancePort financePort;
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
@@ -162,8 +162,8 @@ public class RealEstateRecommendationService {
                 .entrySet()
                 .stream()
                 .map(e -> {
-                    LegalDongInfo second = legalDongCachePort.findById(e.getKey());
-                    LegalDongInfo root = legalDongCachePort.findById(second.rootId());
+                    LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
+                    LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
 
                     return new RecommendedRegionsResult.RegionItem(
                             second.id(),
@@ -190,7 +190,7 @@ public class RealEstateRecommendationService {
         return regionItems.entrySet()
                 .stream()
                 .map(entry -> {
-                    LegalDongInfo rootLegalDong = legalDongCachePort.findByCode(entry.getKey());
+                    LegalDongInfo rootLegalDong = dealLegalDongCachePort.findByCode(entry.getKey());
 
                     int totalDealCount = entry.getValue().stream()
                             .mapToInt(RecommendedRegionsResult.RegionItem::count)
@@ -249,7 +249,7 @@ public class RealEstateRecommendationService {
 
                     // 법정동 명 concat
                     resultDto.setLegalDongFullName(
-                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
+                            dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
                                     " " +
                                     resultDto.getLegalDongName());
 
@@ -307,7 +307,7 @@ public class RealEstateRecommendationService {
 
                     // 법정동 명 concat
                     resultDto.setLegalDongFullName(
-                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
+                            dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
                                     " " +
                                     resultDto.getLegalDongName());
 

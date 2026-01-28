@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
 import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
@@ -27,7 +27,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
 
     private final JPAQueryFactory queryFactory;
     private final RealEstateSellMapper mapper;
-    private final LegalDongCachePort legalDongCachePort;
+    private final DealLegalDongCachePort dealLegalDongCachePort;
     private final LegalDongInfoMapper legalDongInfoMapper;
 
     @Override
@@ -113,7 +113,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
                 .fetch()
                 .stream()
                 .map(regionId -> legalDongInfoMapper.toEntity(
-                        legalDongCachePort.findById(regionId))
+                        dealLegalDongCachePort.findById(regionId))
                 )
                 .collect(Collectors.toList());
     }
