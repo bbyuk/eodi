@@ -21,4 +21,11 @@ public interface RegulatingAreaRepository {
      * @param entities 규제지역 domain entities
      */
     void saveAll(Collection<? extends RegulatingArea> entities);
+
+    /**
+     * 대상 법정동 ID로 규제지역인지 여부를 조회한다.
+     * @param id 조회대상 법정동ID
+     * @return 규제지역 여부
+     */
+    boolean isRegulatingArea(Long id);
 }

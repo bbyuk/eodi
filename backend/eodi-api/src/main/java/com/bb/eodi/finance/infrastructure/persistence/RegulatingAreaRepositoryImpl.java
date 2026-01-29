@@ -5,6 +5,7 @@ import com.bb.eodi.finance.domain.repository.RegulatingAreaRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -56,5 +57,17 @@ public class RegulatingAreaRepositoryImpl implements RegulatingAreaRepository {
                         em.clear();
                     }
                 });
+    }
+
+    @Override
+    @Cacheable(
+            cacheNames = "regulatingAreas",
+            key = "#id"
+    )
+    public boolean isRegulatingArea(Long id) {
+        QRegulatingAreaJpaEntity regulatingArea = QRegulatingAreaJpaEntity.regulatingAreaJpaEntity;
+        return !queryFactory.selectFrom(regulatingArea)
+                .where(regulatingArea.id.eq(id))
+                .fetch().isEmpty();
     }
 }

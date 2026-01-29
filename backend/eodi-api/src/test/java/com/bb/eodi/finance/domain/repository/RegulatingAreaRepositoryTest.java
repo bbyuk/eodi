@@ -48,12 +48,29 @@ class RegulatingAreaRepositoryTest {
     }
 
     @Test
-    @DisplayName("전체 규제지역 조회 테스트")
-    void testFindAll() throws Exception {
+    @DisplayName("규제지역여부 조회 테스트 - 규제지역 in")
+    void testIsRegulatingArea() throws Exception {
         // given
+        Long id = 146L;
 
         // when
+        boolean regulatingArea = regulatingAreaRepository.isRegulatingArea(id);
 
         // then
+        Assertions.assertThat(regulatingArea).isTrue();
+    }
+
+    @Test
+    @DisplayName("규제지역여부 조회 테스트 - 규제지역 out")
+    void testIsNotRegulatingArea() throws Exception {
+        // given
+        Long id = 0L;
+
+        // when
+        boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(id);
+
+
+        // then
+        Assertions.assertThat(isRegulatingArea).isFalse();
     }
 }
