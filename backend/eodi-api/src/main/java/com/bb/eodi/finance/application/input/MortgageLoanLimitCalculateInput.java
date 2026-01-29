@@ -1,16 +1,40 @@
 package com.bb.eodi.finance.application.input;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * 주택담보대출 한도 계산 Input
  */
 @Data
+@Builder
 public class MortgageLoanLimitCalculateInput {
 
-    // 연소득
-    private int annualIncome;
+    private PersonInfo personInfo;
 
-    // 월상환액
-    private int monthlyPayment;
+    private HouseInfo houseInfo;
+
+    @Data
+    @Builder
+    public static class PersonInfo {
+        // 연소득
+        private int annualIncome;
+
+        // 월상환액
+        private int monthlyPayment;
+
+        // 생애최초 여부
+        private boolean isFirstTimeBuyer = false;
+    }
+
+    @Data
+    @Builder
+    public static class HouseInfo {
+        // 가격
+        private int price;
+
+        // 법정동 id
+        private Long legalDongId;
+    }
+
 }
