@@ -27,7 +27,7 @@ class MortgagePolicy1015Test {
 
     @Test
     @DisplayName("규제지역 - 생애최초 -> LTV 70")
-    void testIsRegulatingAreaAndIsFirstTimeBuyer() throws Exception {
+    void testLTV_when_IsRegulatingAreaAndIsFirstTimeBuyer() throws Exception {
         // given
         given(regulatingAreaRepository.isRegulatingArea(anyLong()))
                 .willReturn(true);
@@ -56,7 +56,7 @@ class MortgagePolicy1015Test {
 
     @Test
     @DisplayName("규제지역 - 생애최초 아님 -> LTV 40")
-    void testIsRegulatingAreaAndIsNotFirstTimeBuyer() throws Exception {
+    void testLTV_when_IsRegulatingAreaAndIsNotFirstTimeBuyer() throws Exception {
         // given
         given(regulatingAreaRepository.isRegulatingArea(anyLong()))
                 .willReturn(true);
@@ -85,7 +85,7 @@ class MortgagePolicy1015Test {
 
     @Test
     @DisplayName("규제지역 아님 -> LTV 70")
-    void testIsNotRegulatingArea() throws Exception {
+    void testLTV_when_IsNotRegulatingArea() throws Exception {
         // given
         given(regulatingAreaRepository.isRegulatingArea(anyLong()))
                 .willReturn(false);
@@ -110,5 +110,81 @@ class MortgagePolicy1015Test {
 
         // then
         Assertions.assertThat(ltv).isEqualTo(70);
+    }
+
+    @Test
+    @DisplayName("규제지역 - 가격대별 주담대 한도 테스트")
+    void testLimitAmount_when_IsRegulatingAreaAndUnder15() throws Exception {
+        // given
+        given(regulatingAreaRepository.isRegulatingArea(anyLong()))
+                .willReturn(true);
+
+        MortgageLoanLimitCalculateInput.PersonInfo personInfo = MortgageLoanLimitCalculateInput.PersonInfo
+                .builder()
+                .isFirstTimeBuyer(false)
+                .build();
+        MortgageLoanLimitCalculateInput.HouseInfo under15 = MortgageLoanLimitCalculateInput.HouseInfo
+                .builder()
+                .legalDongId(1L)
+                .price(70_000)
+                .build();
+        MortgageLoanLimitCalculateInput.HouseInfo equal15 = MortgageLoanLimitCalculateInput.HouseInfo
+                .builder()
+                .legalDongId(1L)
+                .price(150_000)
+                .build();
+        MortgageLoanLimitCalculateInput.HouseInfo under25 = MortgageLoanLimitCalculateInput.HouseInfo
+                .builder()
+                .legalDongId(1L)
+                .price(200_000)
+                .build();
+        MortgageLoanLimitCalculateInput.HouseInfo equal25 = MortgageLoanLimitCalculateInput.HouseInfo
+                .builder()
+                .legalDongId(1L)
+                .price(250_000)
+                .build();
+        MortgageLoanLimitCalculateInput.HouseInfo over25 = MortgageLoanLimitCalculateInput.HouseInfo
+                .builder()
+                .legalDongId(1L)
+                .price(300_000)
+                .build();
+
+        // when
+
+        // then
+        Assertions.assertThat(mortgagePolicy.calculateLimitAmount(
+                MortgageLoanLimitCalculateInput.builder()
+                        .personInfo(personInfo)
+                        .houseInfo(under15)
+                        .build()
+        )).isEqualTo(60_000);
+
+        Assertions.assertThat(mortgagePolicy.calculateLimitAmount(
+                MortgageLoanLimitCalculateInput.builder()
+                        .personInfo(personInfo)
+                        .houseInfo(equal15)
+                        .build()
+        )).isEqualTo(60_000);
+
+        Assertions.assertThat(mortgagePolicy.calculateLimitAmount(
+                MortgageLoanLimitCalculateInput.builder()
+                        .personInfo(personInfo)
+                        .houseInfo(under25)
+                        .build()
+        )).isEqualTo(40_000);
+
+        Assertions.assertThat(mortgagePolicy.calculateLimitAmount(
+                MortgageLoanLimitCalculateInput.builder()
+                        .personInfo(personInfo)
+                        .houseInfo(equal25)
+                        .build()
+        )).isEqualTo(40_000);
+
+        Assertions.assertThat(mortgagePolicy.calculateLimitAmount(
+                MortgageLoanLimitCalculateInput.builder()
+                        .personInfo(personInfo)
+                        .houseInfo(over25)
+                        .build()
+        )).isEqualTo(20_000);
     }
 }
