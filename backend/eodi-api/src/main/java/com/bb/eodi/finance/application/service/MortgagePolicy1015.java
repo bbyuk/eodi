@@ -1,0 +1,51 @@
+package com.bb.eodi.finance.application.service;
+
+import com.bb.eodi.finance.application.input.MortgageLoanLimitCalculateInput;
+import com.bb.eodi.finance.domain.repository.RegulatingAreaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+/**
+ * 2025. 10. 15 부동산대책 대출 규제 정책 구현체
+ */
+@Component
+@RequiredArgsConstructor
+public class MortgagePolicy1015 implements MortgagePolicy {
+
+    private RegulatingAreaRepository regulatingAreaRepository;
+
+    @Override
+    public int calculateLtv(MortgageLoanLimitCalculateInput input) {
+        boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(input.getHouseInfo().getLegalDongId());
+        boolean isFirstTimeBuyer = input.getPersonInfo().isFirstTimeBuyer();
+
+
+        return isRegulatingArea && !isFirstTimeBuyer ? 40 : 70;
+    }
+
+    /**
+     * 규제지역일 경우 대출금 최대 금액 제한
+     * @param input 주택담보대출 한도 계산 입력
+     * @return
+     */
+    @Override
+    public int calculateLimitAmount(MortgageLoanLimitCalculateInput input) {
+        boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(input.getHouseInfo().getLegalDongId());
+
+        if (isRegulatingArea) {
+            int price = input.getHouseInfo().getPrice();
+
+            if (price <= 150_000) {
+                return 60_000;
+            }
+            else if (price <= 250_000) {
+                return 40_000;
+            }
+            else {
+                return 20_000;
+            }
+        }
+
+        return -1;
+    }
+}
