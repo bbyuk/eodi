@@ -22,7 +22,7 @@ public class MortgageLoanCalculatingService {
      * @param input 주택담보대출 한도 계산 입력 파라미터
      * @return 주택담보대출 한도 계산 결과
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public MortgageLoanCalculateResult calculateMortgageLoanLimit(MortgageLoanLimitCalculateInput input) {
         boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(
                 input.getHouseInfo()

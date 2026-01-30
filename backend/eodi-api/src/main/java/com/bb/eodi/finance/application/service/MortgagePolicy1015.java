@@ -4,6 +4,7 @@ import com.bb.eodi.finance.application.input.MortgageLoanLimitCalculateInput;
 import com.bb.eodi.finance.domain.repository.RegulatingAreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 2025. 10. 15 부동산대책 대출 규제 정책 구현체
@@ -15,6 +16,7 @@ public class MortgagePolicy1015 implements MortgagePolicy {
     private RegulatingAreaRepository regulatingAreaRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public int calculateLtv(MortgageLoanLimitCalculateInput input) {
         boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(input.getHouseInfo().getLegalDongId());
         boolean isFirstTimeBuyer = input.getPersonInfo().isFirstTimeBuyer();
@@ -29,6 +31,7 @@ public class MortgagePolicy1015 implements MortgagePolicy {
      * @return
      */
     @Override
+    @Transactional(readOnly = true)
     public int calculateLimitAmount(MortgageLoanLimitCalculateInput input) {
         boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(input.getHouseInfo().getLegalDongId());
 
