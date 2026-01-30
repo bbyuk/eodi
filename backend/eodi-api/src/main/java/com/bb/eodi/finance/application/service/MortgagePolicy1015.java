@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MortgagePolicy1015 implements MortgagePolicy {
 
-    private RegulatingAreaRepository regulatingAreaRepository;
+    private final RegulatingAreaRepository regulatingAreaRepository;
 
     @Override
     @Transactional(readOnly = true)
