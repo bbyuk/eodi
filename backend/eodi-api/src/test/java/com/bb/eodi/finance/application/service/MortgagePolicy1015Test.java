@@ -53,4 +53,62 @@ class MortgagePolicy1015Test {
         // then
         Assertions.assertThat(ltv).isEqualTo(70);
     }
+
+    @Test
+    @DisplayName("규제지역 - 생애최초 아님 -> LTV 40")
+    void testIsRegulatingAreaAndIsNotFirstTimeBuyer() throws Exception {
+        // given
+        given(regulatingAreaRepository.isRegulatingArea(anyLong()))
+                .willReturn(true);
+
+        MortgageLoanLimitCalculateInput input = MortgageLoanLimitCalculateInput.builder()
+                .personInfo(
+                        MortgageLoanLimitCalculateInput.PersonInfo
+                                .builder()
+                                .isFirstTimeBuyer(false)
+                                .build()
+                )
+                .houseInfo(
+                        MortgageLoanLimitCalculateInput.HouseInfo
+                                .builder()
+                                .legalDongId(1L)
+                                .build()
+                )
+                .build();
+
+        // when
+        int ltv = mortgagePolicy.calculateLtv(input);
+
+        // then
+        Assertions.assertThat(ltv).isEqualTo(40);
+    }
+
+    @Test
+    @DisplayName("규제지역 아님 -> LTV 70")
+    void testIsNotRegulatingArea() throws Exception {
+        // given
+        given(regulatingAreaRepository.isRegulatingArea(anyLong()))
+                .willReturn(false);
+
+
+        MortgageLoanLimitCalculateInput input = MortgageLoanLimitCalculateInput.builder()
+                .personInfo(
+                        MortgageLoanLimitCalculateInput.PersonInfo
+                                .builder()
+                                .isFirstTimeBuyer(false)
+                                .build()
+                )
+                .houseInfo(
+                        MortgageLoanLimitCalculateInput.HouseInfo
+                                .builder()
+                                .legalDongId(1L)
+                                .build()
+                )
+                .build();
+        // when
+        int ltv = mortgagePolicy.calculateLtv(input);
+
+        // then
+        Assertions.assertThat(ltv).isEqualTo(70);
+    }
 }
