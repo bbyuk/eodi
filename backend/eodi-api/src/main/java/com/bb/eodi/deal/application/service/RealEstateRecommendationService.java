@@ -1,5 +1,6 @@
 package com.bb.eodi.deal.application.service;
 
+import com.bb.eodi.common.model.Cursor;
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
@@ -13,17 +14,16 @@ import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
+import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
-import com.bb.eodi.deal.domain.read.RegionCandidate;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -248,44 +248,72 @@ public class RealEstateRecommendationService {
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, Pageable pageable) {
-        // TODO 정책 / 대출 관련 로직 추가 필요
-
-        return realEstateSellRepository.findBy(
-                        RealEstateSellQuery.builder()
-                                .maxPrice(input.maxPrice() != null ? input.maxPrice() : input.cash() + sellPriceGap)
-                                .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
-                                .targetRegionIds(input.targetRegionIds())
-                                .targetHousingTypes(
-                                        input.targetHousingTypes()
-                                                .stream()
-                                                .map(HousingType::fromCode)
-                                                .collect(Collectors.toList())
-                                )
-                                .maxNetLeasableArea(input.maxNetLeasableArea())
-                                .minNetLeasableArea(input.minNetLeasableArea())
-                                .build(),
-                        pageable
+    public Cursor<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, Pageable pageable) {
+        RealEstateSellQuery query = RealEstateSellQuery.builder()
+                .maxPrice(input.maxPrice() != null
+                        ? input.maxPrice()
+                        : input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()
+                ))
+                .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
+                .targetRegionIds(input.targetRegionIds())
+                .targetHousingTypes(
+                        input.targetHousingTypes()
+                                .stream()
+                                .map(HousingType::fromCode)
+                                .collect(Collectors.toList())
                 )
-                .map(realEstateSell -> {
-                    RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
+                .maxNetLeasableArea(input.maxNetLeasableArea())
+                .minNetLeasableArea(input.minNetLeasableArea())
+                .build();
 
-                    // 법정동 명 concat
-                    resultDto.setLegalDongFullName(
-                            dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
-                                    " " +
-                                    resultDto.getLegalDongName());
 
-                    // 전용면적 소숫점 밑 2자리로 반올림
-                    resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+        List<RealEstateSellSummaryResult> result = new ArrayList<>();
+        Long lastSellId = null;
 
-                    // 네이버 URL 생성
-                    resultDto.setNaverUrl(
-                            realEstatePlatformUrlGeneratePort.generate(realEstateSell)
-                    );
+        while (result.size() < pageable.getPageSize()) {
+            Slice<RealEstateSell> slice = realEstateSellRepository.findByQueryAfter(query, lastSellId, pageable);
 
-                    return resultDto;
-                });
+            for (RealEstateSell sell : slice.getContent()) {
+
+                long availableLoan = dealFinancePort.calculateAvailableMortgageLoanAmount(
+                                input.annualIncome(),
+                                input.monthlyPayment(),
+                                input.isFirstTimeBuyer(),
+                                sell.getRegionId(),
+                                sell.getPrice());
+
+                if (sell.getPrice() > input.cash() + availableLoan) continue;
+
+                result.add(toSummary(sell));
+                lastSellId = sell.getId();
+
+                if (result.size() == pageable.getPageSize()) break;
+            }
+
+            if (!slice.hasNext()) break;
+        }
+
+        return Cursor.from(result, pageable.getPageSize());
+    }
+
+    private RealEstateSellSummaryResult toSummary(RealEstateSell realEstateSell) {
+        RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
+
+        // 법정동 명 concat
+        resultDto.setLegalDongFullName(
+                dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
+                        " " +
+                        resultDto.getLegalDongName());
+
+        // 전용면적 소숫점 밑 2자리로 반올림
+        resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+        // 네이버 URL 생성
+        resultDto.setNaverUrl(
+                realEstatePlatformUrlGeneratePort.generate(realEstateSell)
+        );
+
+        return resultDto;
     }
 
     /**

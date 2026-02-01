@@ -134,6 +134,65 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     }
 
     @Override
+    public Slice<RealEstateSell> findByQueryAfter(RealEstateSellQuery query, Long lastId, Pageable pageable) {
+        QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (query.getMaxPrice() != null) {
+            condition.and(realEstateSell.price.loe(query.getMaxPrice()));
+        }
+
+        if (query.getMinPrice() != null) {
+            condition.and(realEstateSell.price.goe(query.getMinPrice()));
+        }
+
+        if (query.getMaxNetLeasableArea() != null) {
+            condition.and(realEstateSell.netLeasableArea.loe(query.getMaxNetLeasableArea()));
+        }
+
+        if (query.getMinNetLeasableArea() != null) {
+            condition.and(realEstateSell.netLeasableArea.goe(query.getMinNetLeasableArea()));
+        }
+
+        if (query.getEndYearMonth() != null) {
+            condition.and(realEstateSell.contractDate.loe(query.getEndYearMonth().atEndOfMonth()));
+        }
+
+        if (query.getStartYearMonth() != null) {
+            condition.and(realEstateSell.contractDate.goe(query.getStartYearMonth().atDay(1)));
+        }
+
+        if (query.getTargetRegionIds() != null && !query.getTargetRegionIds().isEmpty()) {
+            condition.and(realEstateSell.regionId.in(query.getTargetRegionIds()));
+        }
+
+        if (query.getTargetHousingTypes() != null && !query.getTargetHousingTypes().isEmpty()) {
+            condition.and(realEstateSell.housingType.in(query.getTargetHousingTypes()));
+        }
+
+        int pageSize = pageable.getPageSize();
+
+        List<RealEstateSell> content = queryFactory
+                .selectFrom(realEstateSell)
+                .where(condition)
+                .orderBy(realEstateSell.id.desc())
+                .limit(pageSize + 1)
+                .fetch()
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+
+        boolean hasNext = content.size() > pageSize;
+
+        if (hasNext) {
+            content.remove(pageSize); // N + 1 제거
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
     public List<Region> findRegionsBy(RegionQuery query) {
         QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
 

@@ -25,6 +25,15 @@ public interface RealEstateSellRepository {
     Page<RealEstateSell> findBy(RealEstateSellQuery query, Pageable pageable);
 
     /**
+     * 부동산 실거래가 데이터 마지막으로 조회된 ID 이후 slice를 조회한다.
+     * @param query 조회 쿼리 파라미터
+     * @param lastId 마지막으로 조회한 ID
+     * @param pageable pageable 객체
+     * @return 부동산 실거래가 데이터 slice
+     */
+    Slice<RealEstateSell> findByQueryAfter(RealEstateSellQuery query, Long lastId, Pageable pageable);
+
+    /**
      * 부동산 실거래가 기준 거래가 발생한 지역 목록을 조회한다.
      * @param query 조회 쿼리 파라미터
      * @return 쿼리 파라미터에 해당하는 부동산 거래 발생 지역 데이터 목록

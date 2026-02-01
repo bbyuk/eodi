@@ -46,6 +46,18 @@ public record RealEstateSellRecommendRequestParameter(
         )
         List<String> targetHousingTypes,
 
+        @Parameter(description = "대출 여부", example = "true")
+        Boolean hasLoan,
+
+        @Parameter(description = "생애 최초 구매 여부", example = "true")
+        Boolean isFirstTimeBuyer,
+
+        @Parameter(description = "대출 월 상환액 (단위: 만 원)", example = "210")
+        Long monthlyPayment,
+
+        @Parameter(description = "연 소득 (단위: 만 원)", example = "5000")
+        Long annualIncome,
+
         /**
          * ============ 필터 조건 ============
          */
