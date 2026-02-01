@@ -13,6 +13,9 @@ public record FindRecommendedRegionInput(
         // 대출 여부
         Boolean hasLoan,
 
+        // 생애최초 구매 여부
+        Boolean isFirstTimeBuyer,
+
         // 대출 월 상환액
         Integer monthlyPayment,
 
