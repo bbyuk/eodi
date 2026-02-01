@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
@@ -16,12 +17,15 @@ import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
+import com.bb.eodi.deal.domain.read.RegionCandidate;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +51,13 @@ public class RealEstateRecommendationService {
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
     private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     // 매매 가격 gap
-    private final int sellPriceGap = 5000;
+    private final long sellPriceGap = 5000L;
 
     // 임대차 보증금 gap
-    private final int leaseDepositGap = 1000;
+    private final long leaseDepositGap = 1000L;
 
     // 조회 범위
     private final int monthsToView = 3;
@@ -72,15 +77,15 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param findRecommendedRegionInput 추천지역조회 application Input
+     * @param input 추천지역조회 application Input
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsResult findRecommendedRegions(FindRecommendedRegionInput findRecommendedRegionInput) {
+    public RecommendedRegionsResult findRecommendedRegions(FindRecommendedRegionInput input) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
-        Set<String> housingTypeSet = new HashSet<>(findRecommendedRegionInput.housingTypes());
+        Set<String> housingTypeSet = new HashSet<>(input.housingTypes());
         if (housingTypeSet.contains(HousingType.APT.code())) {
             // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
             housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
@@ -100,23 +105,48 @@ public class RealEstateRecommendationService {
          *      보유현금 - 매매 price gap ~ 보유현금 + 대출가능한 최대 금액 (기본 LTV만 적용)
          */
         RegionQuery sellRegionQuery = RegionQuery.builder()
-                .minCash(findRecommendedRegionInput.cash() - sellPriceGap)
-                .maxCash(findRecommendedRegionInput.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(findRecommendedRegionInput.cash()))
+                .minCash(input.cash() - sellPriceGap)
+                .maxCash(input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()))
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
                 .minDealCount(minDealCount)
                 .build();
         RegionQuery leaseRegionQuery = RegionQuery.builder()
-                .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
-                .maxCash(findRecommendedRegionInput.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
-                        findRecommendedRegionInput.cash())
+                .minCash(input.cash() - leaseDepositGap)
+                .maxCash(input.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
+                        input.cash())
                 )
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
                 .minDealCount(minDealCount)
                 .build();
+
+
+        int pageSize = 500;
+        int sellPage = 0;
+        int leasePage = 0;
+
+//        List<Region> filteredSellRegions = new ArrayList<>();
+//
+//        while(true) {
+//            Slice<RegionCandidate> sellRegionCandidateSlice =
+//                    realEstateSellRepository.findSliceByRegionQuery(sellRegionQuery, PageRequest.of(sellPage, pageSize));
+//
+//            sellRegionCandidateSlice.forEach(regionCandidate -> {
+//                dealFinancePort.calculateAvailableMortgageLoanAmount(
+//                        input.annualIncome(),
+//                        input.monthlyPayment(),
+//                        input.isFirstTimeBuyer(),
+//                        regionCandidate.regionId(),
+//                        regionCandidate.price()
+//                );
+//
+//            });
+//
+//        }
+
 
         List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(leaseRegionQuery);

@@ -14,12 +14,12 @@ public interface DealFinancePort {
      * @param price                 대상 물건가격
      * @return 주담대 가능 금액 (만 원 단위)
      */
-    int calculateAvailableMortgageLoanAmount(
-            int annualIncomeAmount,
-            int monthlyPaymentAmount,
+    long calculateAvailableMortgageLoanAmount(
+            long annualIncomeAmount,
+            long monthlyPaymentAmount,
             boolean isFirstTimeBuyer,
             long legalDongId,
-            int price
+            long price
     );
 
     /**
@@ -27,7 +27,7 @@ public interface DealFinancePort {
      * @param cash 보유한 현금
      * @return 대출 가능 최대금액
      */
-    int calculateMaximumMortgageLoanAmount(int cash);
+    long calculateMaximumMortgageLoanAmount(long cash);
 
     /**
      * 전세자금대출 가능 금액을 계산한다. (만 원 단위)
@@ -35,5 +35,5 @@ public interface DealFinancePort {
      * @param cash 보유 현금
      * @return 전세자금대출 가능 금액 (만 원 단위)
      */
-    int calculateAvailableDepositLoanAmount(int cash);
+    long calculateAvailableDepositLoanAmount(long cash);
 }

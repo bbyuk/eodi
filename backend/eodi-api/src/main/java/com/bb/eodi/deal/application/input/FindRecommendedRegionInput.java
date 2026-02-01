@@ -8,7 +8,7 @@ import java.util.List;
 public record FindRecommendedRegionInput(
 
         // 보유 예산
-        Integer cash,
+        Long cash,
 
         // 대출 여부
         Boolean hasLoan,
@@ -17,10 +17,10 @@ public record FindRecommendedRegionInput(
         Boolean isFirstTimeBuyer,
 
         // 대출 월 상환액
-        Integer monthlyPayment,
+        Long monthlyPayment,
 
         // 연 소득
-        Integer annualIncome,
+        Long annualIncome,
 
         // 대상 주택 유형 목록
         List<String> housingTypes

@@ -15,9 +15,9 @@ import java.util.List;
 @Builder
 public class RegionQuery {
     // 최소예산
-    private Integer minCash;
+    private Long minCash;
     // 최대예산
-    private Integer maxCash;
+    private Long maxCash;
     // 시작일자
     private LocalDate startDate;
     // 종료일자

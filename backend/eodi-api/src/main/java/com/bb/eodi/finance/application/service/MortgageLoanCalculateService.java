@@ -37,7 +37,7 @@ public class MortgageLoanCalculateService {
 
     }
 
-    public int calculateMaximumMortgageLoanAmount(int cash) {
+    public long calculateMaximumMortgageLoanAmount(long cash) {
         return (cash * mortgagePolicy.getDefaultLtv()) / (100 - mortgagePolicy.getDefaultLtv());
     }
 }

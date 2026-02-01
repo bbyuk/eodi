@@ -25,7 +25,7 @@ public interface MortgagePolicy {
      * @param input 주택담보대출 한도 계산 입력
      * @return 주택담보대출 금액 한도
      */
-    int calculateLimitAmount(MortgageLoanLimitCalculateInput input);
+    long calculateLimitAmount(MortgageLoanLimitCalculateInput input);
 
 
 }

@@ -38,11 +38,11 @@ public class MortgagePolicy1015 implements MortgagePolicy {
      */
     @Override
     @Transactional(readOnly = true)
-    public int calculateLimitAmount(MortgageLoanLimitCalculateInput input) {
+    public long calculateLimitAmount(MortgageLoanLimitCalculateInput input) {
         boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(input.getHouseInfo().getLegalDongId());
 
         if (isRegulatingArea) {
-            int price = input.getHouseInfo().getPrice();
+            long price = input.getHouseInfo().getPrice();
 
             if (price <= 150_000) {
                 return 60_000;

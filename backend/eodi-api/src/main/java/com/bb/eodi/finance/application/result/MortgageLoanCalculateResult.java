@@ -15,7 +15,7 @@ public class MortgageLoanCalculateResult {
     // ltv
     private int ltv;
     // 한도 금액
-    private int limitAmount;
+    private long limitAmount;
 
     public boolean hasLimitAmount() {
         return hasLimitAmount;

@@ -18,10 +18,10 @@ public class MortgageLoanLimitCalculateInput {
     @Builder
     public static class PersonInfo {
         // 연소득
-        private int annualIncome;
+        private long annualIncome;
 
         // 월상환액
-        private int monthlyPayment;
+        private long monthlyPayment;
 
         // 생애최초 여부
         private boolean isFirstTimeBuyer = false;
@@ -31,7 +31,7 @@ public class MortgageLoanLimitCalculateInput {
     @Builder
     public static class HouseInfo {
         // 가격
-        private int price;
+        private long price;
 
         // 법정동 id
         private Long legalDongId;

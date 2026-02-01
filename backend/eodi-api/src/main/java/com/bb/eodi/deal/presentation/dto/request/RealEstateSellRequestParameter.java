@@ -14,9 +14,9 @@ import java.util.List;
  */
 public record RealEstateSellRequestParameter(
         @Parameter(description = "최대 거래가 (단위: 만원)", example = "100000")
-        Integer maxPrice,
+        Long maxPrice,
         @Parameter(description = "최소 거래가 (단위: 만원)", example = "40000")
-        Integer minPrice,
+        Long minPrice,
         @Parameter(description = "최대 전용면적", example = "84")
         Integer maxNetLeasableArea,
         @Parameter(description = "최소 전용면적", example = "39")

@@ -59,8 +59,8 @@ class RealEstateLeaseRepositoryTest {
     void testFindLeaseRegions() throws Exception {
         // given
         RegionQuery query = RegionQuery.builder()
-                .minCash(45000)
-                .maxCash(55000)
+                .minCash(45000L)
+                .maxCash(55000L)
                 .startDate(LocalDate.now().minusMonths(3))
                 .endDate(LocalDate.now())
                 .build();

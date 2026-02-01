@@ -17,12 +17,12 @@ public class DealFinanceAdapter implements DealFinancePort {
     private final MortgageLoanCalculateService mortgageLoanCalculateService;
 
     @Override
-    public int calculateAvailableMortgageLoanAmount(
-            int annualIncomeAmount,
-            int monthlyPaymentAmount,
+    public long calculateAvailableMortgageLoanAmount(
+            long annualIncomeAmount,
+            long monthlyPaymentAmount,
             boolean isFirstTimeBuyer,
             long legalDongId,
-            int price) {
+            long price) {
 
         MortgageLoanLimitCalculateInput.PersonInfo personInfo = MortgageLoanLimitCalculateInput.PersonInfo.builder()
                 .annualIncome(annualIncomeAmount)
@@ -41,19 +41,19 @@ public class DealFinanceAdapter implements DealFinancePort {
 
         MortgageLoanCalculateResult result = mortgageLoanCalculateService.calculateMortgageLoanLimit(input);
 
-        int calculatedLtvLoanAmount = price * result.getLtv() / 100;
+        long calculatedLtvLoanAmount = price * result.getLtv() / 100;
         return result.hasLimitAmount()
                 ? Math.min(result.getLimitAmount(), calculatedLtvLoanAmount)
                 : calculatedLtvLoanAmount;
     }
 
     @Override
-    public int calculateMaximumMortgageLoanAmount(int cash) {
+    public long calculateMaximumMortgageLoanAmount(long cash) {
         return mortgageLoanCalculateService.calculateMaximumMortgageLoanAmount(cash);
     }
 
     @Override
-    public int calculateAvailableDepositLoanAmount(int cash) {
+    public long calculateAvailableDepositLoanAmount(long cash) {
         return 0;
     }
 }

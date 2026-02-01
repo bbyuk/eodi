@@ -43,8 +43,8 @@ class RealEstateSellRepositoryTest {
         // given
 
         RealEstateSellQuery query = RealEstateSellQuery.builder()
-                .minPrice(50000)
-                .maxPrice(70000)
+                .minPrice(50000L)
+                .maxPrice(70000L)
                 .build();
 
         ;
@@ -61,8 +61,8 @@ class RealEstateSellRepositoryTest {
     void testFindSellRegionsBy() throws Exception {
         // given
         RegionQuery query = RegionQuery.builder()
-                .minCash(45000)
-                .maxCash(55000)
+                .minCash(45000L)
+                .maxCash(55000L)
                 .startDate(LocalDate.now().minusMonths(3))
                 .endDate(LocalDate.now())
                 .build();
