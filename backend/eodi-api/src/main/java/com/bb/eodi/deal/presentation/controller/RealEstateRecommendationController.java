@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.presentation.controller;
 
 
+import com.bb.eodi.common.model.CursorRequest;
 import com.bb.eodi.common.presentation.response.CursorResponse;
 import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateRecommendationService;
@@ -69,14 +70,14 @@ public class RealEstateRecommendationController {
             @ParameterObject @Valid @ModelAttribute
             RealEstateSellRecommendRequestParameter requestParameter,
             @ParameterObject
-            Pageable pageable
+            CursorRequest cursorRequest
     ) {
         return ResponseEntity.ok(
                 CursorResponse.from(
                         realEstateRecommendationService
                                 .findRecommendedSells(
                                         findRealEstateSellInputAdapter.toInput(requestParameter),
-                                        pageable
+                                        cursorRequest
                                 )
                                 .map(realEstateSellFindResponseMapper::toResponse)
                 )

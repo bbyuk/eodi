@@ -134,10 +134,14 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     }
 
     @Override
-    public Slice<RealEstateSell> findByQueryAfter(RealEstateSellQuery query, Long lastId, Pageable pageable) {
+    public List<RealEstateSell> findByQueryAfter(RealEstateSellQuery query, Long lastId, int pageSize) {
         QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
 
         BooleanBuilder condition = new BooleanBuilder();
+
+        if (lastId != null) {
+            condition.and(realEstateSell.id.lt(lastId)); // 커서 조건
+        }
 
         if (query.getMaxPrice() != null) {
             condition.and(realEstateSell.price.loe(query.getMaxPrice()));
@@ -171,9 +175,8 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
             condition.and(realEstateSell.housingType.in(query.getTargetHousingTypes()));
         }
 
-        int pageSize = pageable.getPageSize();
 
-        List<RealEstateSell> content = queryFactory
+        return queryFactory
                 .selectFrom(realEstateSell)
                 .where(condition)
                 .orderBy(realEstateSell.id.desc())
@@ -182,14 +185,6 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
-
-        boolean hasNext = content.size() > pageSize;
-
-        if (hasNext) {
-            content.remove(pageSize); // N + 1 제거
-        }
-
-        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     @Override

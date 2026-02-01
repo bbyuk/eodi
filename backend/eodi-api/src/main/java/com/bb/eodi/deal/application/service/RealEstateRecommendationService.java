@@ -1,6 +1,7 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.common.model.Cursor;
+import com.bb.eodi.common.model.CursorRequest;
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
@@ -25,7 +26,6 @@ import com.bb.eodi.deal.domain.type.HousingType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -244,11 +244,11 @@ public class RealEstateRecommendationService {
      * 최근 3개월 거래내역 확인
      *
      * @param input    요청 파라미터
-     * @param pageable pageable 파라미터 객체
+     * @param cursorRequest cursor 요청 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Cursor<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, Pageable pageable) {
+    public Cursor<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, CursorRequest cursorRequest) {
         RealEstateSellQuery query = RealEstateSellQuery.builder()
                 .maxPrice(input.maxPrice() != null
                         ? input.maxPrice()
@@ -268,32 +268,52 @@ public class RealEstateRecommendationService {
 
 
         List<RealEstateSellSummaryResult> result = new ArrayList<>();
-        Long lastSellId = null;
 
-        while (result.size() < pageable.getPageSize()) {
-            Slice<RealEstateSell> slice = realEstateSellRepository.findByQueryAfter(query, lastSellId, pageable);
+        boolean hasNext = false;
+        Long nextId = cursorRequest.nextId();
 
-            for (RealEstateSell sell : slice.getContent()) {
+        while (result.size() < cursorRequest.size()) {
 
-                long availableLoan = dealFinancePort.calculateAvailableMortgageLoanAmount(
+            List<RealEstateSell> slice =
+                    realEstateSellRepository.findByQueryAfter(query, nextId, cursorRequest.size());
+
+            if (slice.isEmpty()) break;
+
+            hasNext = slice.size() > cursorRequest.size();
+            int limit = Math.min(slice.size(), cursorRequest.size());
+
+            for (int i = 0; i < limit; i++) {
+                RealEstateSell sell = slice.get(i);
+
+                long availableLoan =
+                        dealFinancePort.calculateAvailableMortgageLoanAmount(
                                 input.annualIncome(),
                                 input.monthlyPayment(),
                                 input.isFirstTimeBuyer(),
                                 sell.getRegionId(),
                                 sell.getPrice());
 
-                if (sell.getPrice() > input.cash() + availableLoan) continue;
+                if (sell.getPrice() <= input.cash() + availableLoan) {
+                    result.add(toSummary(sell));
+                    if (result.size() == cursorRequest.size()) {
+                        nextId = sell.getId();
+                        break;
+                    }
+                }
 
-                result.add(toSummary(sell));
-                lastSellId = sell.getId();
-
-                if (result.size() == pageable.getPageSize()) break;
+                // 정책 통과 여부와 상관없이 커서 이동
+                nextId = sell.getId();
             }
 
-            if (!slice.hasNext()) break;
+            if (!hasNext) break;
         }
 
-        return Cursor.from(result, pageable.getPageSize());
+        return new Cursor<>(
+                result,
+                hasNext ? nextId : null,
+                hasNext,
+                cursorRequest.size()
+        );
     }
 
     private RealEstateSellSummaryResult toSummary(RealEstateSell realEstateSell) {
