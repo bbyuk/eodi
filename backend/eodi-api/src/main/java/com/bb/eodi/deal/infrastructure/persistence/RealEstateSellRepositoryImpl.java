@@ -6,13 +6,13 @@ import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.read.QRegionCandidate;
+import com.bb.eodi.deal.domain.read.RegionCandidate;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -116,5 +116,44 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
                         dealLegalDongCachePort.findById(regionId))
                 )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Slice<RegionCandidate> findSliceByRegionQuery(RegionQuery query, Pageable pageable) {
+        QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
+
+        BooleanBuilder dynamicCondition = new BooleanBuilder();
+
+        if (!query.getHousingTypes().isEmpty()) {
+            dynamicCondition.and(realEstateSell.housingType.in(query.getHousingTypes()));
+        }
+
+        int pageSize = pageable.getPageSize();
+        List<RegionCandidate> content = queryFactory
+                .select(
+                        new QRegionCandidate(
+                                realEstateSell.regionId,
+                                realEstateSell.price,
+                                realEstateSell.housingType,
+                                realEstateSell.contractDate
+                        ))
+                .from(realEstateSell)
+                .where(
+                        realEstateSell.contractDate.between(query.getStartDate(), query.getEndDate())
+                                .and(realEstateSell.price.between(query.getMinCash(), query.getMaxCash()))
+                                .and(realEstateSell.cancelDate.isNull())
+                                .and(dynamicCondition)
+                )
+                .orderBy(realEstateSell.id.asc())
+                .limit(pageSize + 1)
+                .fetch();
+
+        boolean hasNext = content.size() > pageSize;
+
+        if (hasNext) {
+            content.remove(pageSize); // N + 1 제거
+        }
+
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 }
