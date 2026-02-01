@@ -14,6 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MortgagePolicy1015 implements MortgagePolicy {
 
     private final RegulatingAreaRepository regulatingAreaRepository;
+    private static final int DEFAULT_LTV = 70;
+
+    @Override
+    public int getDefaultLtv() {
+        return DEFAULT_LTV;
+    }
 
     @Override
     @Transactional(readOnly = true)

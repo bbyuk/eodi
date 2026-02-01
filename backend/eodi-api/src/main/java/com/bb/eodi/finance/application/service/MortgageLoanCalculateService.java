@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-public class MortgageLoanCalculatingService {
+public class MortgageLoanCalculateService {
 
     private final RegulatingAreaRepository regulatingAreaRepository;
     private final MortgagePolicy mortgagePolicy;
@@ -35,5 +35,9 @@ public class MortgageLoanCalculatingService {
                 .ltv(mortgagePolicy.calculateLtv(input))
                 .build();
 
+    }
+
+    public int calculateMaximumMortgageLoanAmount(int cash) {
+        return (cash * mortgagePolicy.getDefaultLtv()) / (100 - mortgagePolicy.getDefaultLtv());
     }
 }

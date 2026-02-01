@@ -8,6 +8,12 @@ import com.bb.eodi.finance.application.input.MortgageLoanLimitCalculateInput;
 public interface MortgagePolicy {
 
     /**
+     * 기본 LTV를 조회한다.
+     * @return 기본 LTV 한도
+     */
+    int getDefaultLtv();
+
+    /**
      * LTV를 계산한다.
      * @param input 주택담보대출 한도 계산 입력
      * @return LTV 한도 %
