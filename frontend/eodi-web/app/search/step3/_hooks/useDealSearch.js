@@ -17,6 +17,8 @@ export function useDealSearch({ dealType, enabled }) {
   const [info, setInfo] = useState({
     page: 0,
     totalPages: 0,
+    hasNext: false,
+    nextId: null,
     totalCount: 0,
     data: [],
     isLoading: false,
@@ -45,13 +47,14 @@ export function useDealSearch({ dealType, enabled }) {
     const currentFilterParam = newFilterParam ? newFilterParam : filterParam;
 
     // console.log(init && newFilterParam);
-
     api
       .get(apiInfo[dealType].url, {
         ...currentFilterParam,
         cash,
         targetRegionIds: Array.from(apiInfo[dealType].targetRegions).map((region) => region.id),
         targetHousingTypes: Array.from(inquiredHousingTypes),
+        nextId: info.nextId,
+        hasNext: info.hasNext,
         size: pageSize,
         page: init ? 0 : info.page,
       })
@@ -59,6 +62,8 @@ export function useDealSearch({ dealType, enabled }) {
         setInfo((prev) => ({
           ...prev,
           page: res.page + 1,
+          hasNext: res.hasNext,
+          nextId: res.nextId,
           totalPages: res.totalPages,
           totalCount: res.totalElements,
           data: init ? res.content : [...prev.data, ...res.content],
@@ -67,7 +72,7 @@ export function useDealSearch({ dealType, enabled }) {
       .finally(() => setInfo((prev) => ({ ...prev, isLoading: false })));
   };
 
-  const loadMoreRef = useInfiniteScroll(fetchData, info.page < info.totalPages);
+  const loadMoreRef = useInfiniteScroll(fetchData, info.hasNext);
 
   return {
     info,

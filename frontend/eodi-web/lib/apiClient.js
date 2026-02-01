@@ -18,7 +18,8 @@ function toQueryString(params) {
   const parts = [];
 
   Object.entries(params).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
+    if (!value) { /* do nothing */}
+    else if (Array.isArray(value)) {
       value.forEach((v) => parts.push(`${key}=${encodeURIComponent(v)}`));
     } else if (typeof value === "object") {
       throw new Error("GET 파라미터로 객체를 전달할 수 없습니다.");
