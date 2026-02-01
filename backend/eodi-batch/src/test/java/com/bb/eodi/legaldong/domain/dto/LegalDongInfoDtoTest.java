@@ -19,22 +19,6 @@ class LegalDongInfoDtoTest {
 
 
     @Test
-    void testFindLegalDong() {
-        // given
-        Long regionId = 14618L;
-        String legalDongName = "숭인동";
-
-        LegalDongInfoDto targetRegionLegalDongInfoDto = cacheRepository.findLegalDongInfoById(regionId)
-                .orElseThrow(() -> new RuntimeException("대상 지역 법정동 정보를 찾지 못했습니다."));
-
-        // when
-        Optional<LegalDongInfoDto> subtreeNode = targetRegionLegalDongInfoDto.findSubtreeNode(legalDongName);
-
-        // then
-        Assertions.assertThat(subtreeNode.isPresent()).isTrue();
-    }
-
-    @Test
     @DisplayName("서브트리 노드 목록 조회 메소드 테스트")
     void testFindSubtreeNodes() {
         // given

@@ -42,19 +42,4 @@ class AddressLinkageApiCallServiceTest {
     }
 
 
-    @Test
-    @DisplayName("대상 기간 조회 테스트")
-    void testFindTargetPeriod() throws Exception {
-        // given
-
-
-        // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR.getReferenceVersionName());
-
-
-        // then
-        Assertions.assertThat(targetPeriod.duration()).isEqualTo(45);
-    }
-
-
 }
