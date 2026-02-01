@@ -24,6 +24,6 @@ public class Region {
     private Long secondId;
 
     public boolean isRoot() {
-        return secondId == null && id == rootId;
+        return secondId == null && id.equals(rootId);
     }
 }
