@@ -56,24 +56,5 @@ class AddressLinkageApiCallServiceTest {
         Assertions.assertThat(targetPeriod.duration()).isEqualTo(45);
     }
 
-    @Test
-    @DisplayName("연계 API 호출 및 다운로드 테스트")
-    void testLinkageApiCallAndDownload() throws Exception {
-        // given
-
-        // when
-        AddressLinkagePeriod targetPeriod = service.findTargetPeriod(AddressLinkageTarget.ROAD_NAME_ADDRESS_KOR.getReferenceVersionName());
-        String targetDirectory = "C:\\Users\\User\\Desktop\\private\\workspace\\eodi-project\\eodi\\bootstrap\\address\\address_temp";
-        AddressLinkageResult addressLinkageResult = service.downloadNewFiles(
-                targetDirectory,
-                targetPeriod
-        );
-
-        File dir = new File(targetDirectory);
-
-        // then
-        Assertions.assertThat(dir.listFiles().length).isEqualTo(2);
-    }
-
 
 }
