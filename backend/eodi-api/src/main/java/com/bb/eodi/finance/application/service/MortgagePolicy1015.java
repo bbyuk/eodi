@@ -25,7 +25,7 @@ public class MortgagePolicy1015 implements MortgagePolicy {
     @Transactional(readOnly = true)
     public int calculateLtv(MortgageLoanLimitCalculateInput input) {
         boolean isRegulatingArea = regulatingAreaRepository.isRegulatingArea(input.getHouseInfo().getLegalDongId());
-        boolean isFirstTimeBuyer = input.getPersonInfo().isFirstTimeBuyer();
+        boolean isFirstTimeBuyer = input.getPersonInfo().isFirstTimeBuyer() !=  null && input.getPersonInfo().isFirstTimeBuyer();
 
 
         return isRegulatingArea && !isFirstTimeBuyer ? 40 : 70;

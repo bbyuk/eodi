@@ -18,13 +18,17 @@ public class MortgageLoanLimitCalculateInput {
     @Builder
     public static class PersonInfo {
         // 연소득
-        private long annualIncome;
+        private Long annualIncome;
 
         // 월상환액
-        private long monthlyPayment;
+        private Long monthlyPayment;
 
         // 생애최초 여부
-        private boolean isFirstTimeBuyer = false;
+        private Boolean isFirstTimeBuyer = false;
+
+        public Boolean isFirstTimeBuyer() {
+            return isFirstTimeBuyer;
+        }
     }
 
     @Data

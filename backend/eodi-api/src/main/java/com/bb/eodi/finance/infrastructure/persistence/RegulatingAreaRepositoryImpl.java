@@ -3,14 +3,16 @@ package com.bb.eodi.finance.infrastructure.persistence;
 import com.bb.eodi.finance.domain.entity.RegulatingArea;
 import com.bb.eodi.finance.domain.repository.RegulatingAreaRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,15 @@ public class RegulatingAreaRepositoryImpl implements RegulatingAreaRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
     private final RegulatingAreaMapper regulatingAreaMapper;
+
+    private static final Set<Long> cache = ConcurrentHashMap.newKeySet();
+
+    @PostConstruct
+    public void init() {
+        cache.clear();
+        findAll().forEach(regulatingArea -> cache.add(regulatingArea.getLegalDongId()));
+    }
+
 
     @Override
     public List<RegulatingArea> findAll() {
@@ -60,14 +71,7 @@ public class RegulatingAreaRepositoryImpl implements RegulatingAreaRepository {
     }
 
     @Override
-    @Cacheable(
-            cacheNames = "regulatingAreas",
-            key = "#id"
-    )
     public boolean isRegulatingArea(Long id) {
-        QRegulatingAreaJpaEntity regulatingArea = QRegulatingAreaJpaEntity.regulatingAreaJpaEntity;
-        return !queryFactory.selectFrom(regulatingArea)
-                .where(regulatingArea.id.eq(id))
-                .fetch().isEmpty();
+        return cache.contains(id);
     }
 }

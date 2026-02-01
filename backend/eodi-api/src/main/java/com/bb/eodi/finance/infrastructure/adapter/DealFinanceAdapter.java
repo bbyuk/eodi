@@ -18,9 +18,9 @@ public class DealFinanceAdapter implements DealFinancePort {
 
     @Override
     public long calculateAvailableMortgageLoanAmount(
-            long annualIncomeAmount,
-            long monthlyPaymentAmount,
-            boolean isFirstTimeBuyer,
+            Long annualIncomeAmount,
+            Long monthlyPaymentAmount,
+            Boolean isFirstTimeBuyer,
             long legalDongId,
             long price) {
 

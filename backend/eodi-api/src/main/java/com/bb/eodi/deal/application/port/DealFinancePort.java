@@ -15,9 +15,9 @@ public interface DealFinancePort {
      * @return 주담대 가능 금액 (만 원 단위)
      */
     long calculateAvailableMortgageLoanAmount(
-            long annualIncomeAmount,
-            long monthlyPaymentAmount,
-            boolean isFirstTimeBuyer,
+            Long annualIncomeAmount,
+            Long monthlyPaymentAmount,
+            Boolean isFirstTimeBuyer,
             long legalDongId,
             long price
     );

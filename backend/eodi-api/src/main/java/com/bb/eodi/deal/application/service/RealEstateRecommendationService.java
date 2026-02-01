@@ -124,34 +124,28 @@ public class RealEstateRecommendationService {
                 .build();
 
 
-        int pageSize = 500;
-        int sellPage = 0;
-        int leasePage = 0;
+        List<Region> filteredSellRegions = realEstateSellRepository.findAllRegionCandidates()
+                .filter(regionCandidate -> {
+                    long availableMortgageLoanAmount =
+                            dealFinancePort.calculateAvailableMortgageLoanAmount(
+                                    input.annualIncome(),
+                                    input.monthlyPayment(),
+                                    input.isFirstTimeBuyer(),
+                                    regionCandidate.regionId(),
+                                    regionCandidate.price()
+                            );
 
-//        List<Region> filteredSellRegions = new ArrayList<>();
-//
-//        while(true) {
-//            Slice<RegionCandidate> sellRegionCandidateSlice =
-//                    realEstateSellRepository.findSliceByRegionQuery(sellRegionQuery, PageRequest.of(sellPage, pageSize));
-//
-//            sellRegionCandidateSlice.forEach(regionCandidate -> {
-//                dealFinancePort.calculateAvailableMortgageLoanAmount(
-//                        input.annualIncome(),
-//                        input.monthlyPayment(),
-//                        input.isFirstTimeBuyer(),
-//                        regionCandidate.regionId(),
-//                        regionCandidate.price()
-//                );
-//
-//            });
-//
-//        }
+                    return regionCandidate.price() <= input.cash() + availableMortgageLoanAmount;
+                })
+                .map(regionCandidate -> legalDongInfoMapper.toEntity(
+                        dealLegalDongCachePort.findById(regionCandidate.regionId())
+                ))
+                .collect(Collectors.toList());
 
-
-        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
+//        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(leaseRegionQuery);
 
-        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(allSellRegions);
+        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(filteredSellRegions);
         Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegionItems = toRegionItems(allLeaseRegions);
 
         Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = toRegionGroups(sellRegionItems);

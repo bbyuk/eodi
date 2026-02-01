@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * 부동산 매매 실거래가 repository
@@ -39,4 +40,9 @@ public interface RealEstateSellRepository {
      */
     Slice<RegionCandidate> findSliceByRegionQuery(RegionQuery query, Pageable pageable);
 
+    /**
+     * 매일 변경되는 추천지역 후보 목록 전체를 리턴한다.
+     * @return 후보목록 리턴
+     */
+    Stream<RegionCandidate> findAllRegionCandidates();
 }

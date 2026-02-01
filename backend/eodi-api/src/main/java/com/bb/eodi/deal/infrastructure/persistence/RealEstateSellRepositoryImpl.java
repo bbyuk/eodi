@@ -2,25 +2,32 @@ package com.bb.eodi.deal.infrastructure.persistence;
 
 import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
-import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
-import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
+import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.read.QRegionCandidate;
 import com.bb.eodi.deal.domain.read.RegionCandidate;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 부동산 실거래가 데이터 Repository 구현체
  */
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
@@ -29,6 +36,45 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     private final RealEstateSellMapper mapper;
     private final DealLegalDongCachePort dealLegalDongCachePort;
     private final LegalDongInfoMapper legalDongInfoMapper;
+
+    private final List<RegionCandidate> cache = new ArrayList<>();
+
+    @PostConstruct
+    public void init() {
+        refreshRegionCandidate();
+    }
+
+    /**
+     * 매일 오전 10시에 날짜 기준으로 region candidate refresh
+     */
+    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
+    public void refreshRegionCandidate() {
+        /**
+         * 초기 RegionCandidate 메모리 적재
+         */
+        QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
+        BooleanBuilder dynamicCondition = new BooleanBuilder();
+
+        LocalDate today = LocalDate.now();
+        cache.addAll(
+                queryFactory
+                        .select(
+                                new QRegionCandidate(
+                                        realEstateSell.regionId,
+                                        realEstateSell.price,
+                                        realEstateSell.housingType,
+                                        realEstateSell.contractDate
+                                ))
+                        .from(realEstateSell)
+                        .where(
+                                realEstateSell.contractDate.between(today.minusMonths(3), today)
+                                        .and(realEstateSell.cancelDate.isNull())
+                                        .and(dynamicCondition)
+                        )
+                        .fetch()
+        );
+    }
+
 
     @Override
     public Page<RealEstateSell> findBy(RealEstateSellQuery query, Pageable pageable) {
@@ -155,5 +201,10 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
         }
 
         return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
+    public Stream<RegionCandidate> findAllRegionCandidates() {
+        return cache.stream();
     }
 }

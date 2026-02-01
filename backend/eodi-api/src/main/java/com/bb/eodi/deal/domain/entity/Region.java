@@ -26,4 +26,17 @@ public class Region {
     public boolean isRoot() {
         return secondId == null && id.equals(rootId);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Region other)) return false;
+
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : System.identityHashCode(this);
+    }
 }
