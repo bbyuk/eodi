@@ -14,9 +14,9 @@ import java.util.List;
 @Builder
 public class RealEstateSellQuery {
     // 최대 가격
-    private Integer maxPrice;
+    private Long maxPrice;
     // 최소 가격
-    private Integer minPrice;
+    private Long minPrice;
     // 최대 전용 면적
     private Integer maxNetLeasableArea;
     // 최소 전용 면적

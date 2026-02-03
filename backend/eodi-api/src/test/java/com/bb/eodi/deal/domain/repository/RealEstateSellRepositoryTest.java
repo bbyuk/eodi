@@ -8,7 +8,7 @@ import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellMapperImpl;
 import com.bb.eodi.deal.infrastructure.persistence.RealEstateSellRepositoryImpl;
-import com.bb.eodi.legaldong.infrastructure.adapter.InMemoryLegalDongCacheAdapter;
+import com.bb.eodi.legaldong.infrastructure.adapter.DealLegalDongCacheAdapter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import java.util.List;
 @Import({RealEstateSellRepositoryImpl.class,
         QuerydslConfig.class,
         RealEstateSellMapperImpl.class,
-        InMemoryLegalDongCacheAdapter.class,
+        DealLegalDongCacheAdapter.class,
         LegalDongInfoMapperImpl.class
 
 })
@@ -43,8 +43,8 @@ class RealEstateSellRepositoryTest {
         // given
 
         RealEstateSellQuery query = RealEstateSellQuery.builder()
-                .minPrice(50000)
-                .maxPrice(70000)
+                .minPrice(50000L)
+                .maxPrice(70000L)
                 .build();
 
         ;
@@ -61,8 +61,8 @@ class RealEstateSellRepositoryTest {
     void testFindSellRegionsBy() throws Exception {
         // given
         RegionQuery query = RegionQuery.builder()
-                .minCash(45000)
-                .maxCash(55000)
+                .minCash(45000L)
+                .maxCash(55000L)
                 .startDate(LocalDate.now().minusMonths(3))
                 .endDate(LocalDate.now())
                 .build();

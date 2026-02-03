@@ -10,9 +10,9 @@ import java.util.List;
  */
 public record FindRealEstateSellInput(
         // 최대가격
-        Integer maxPrice,
+        Long maxPrice,
         // 최소가격
-        Integer minPrice,
+        Long minPrice,
         // 최대전용면적
         Integer maxNetLeasableArea,
         // 최소전용면적

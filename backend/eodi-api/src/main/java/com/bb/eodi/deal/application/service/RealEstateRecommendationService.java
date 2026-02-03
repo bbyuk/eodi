@@ -1,16 +1,21 @@
 package com.bb.eodi.deal.application.service;
 
+import com.bb.eodi.common.model.Cursor;
+import com.bb.eodi.common.model.CursorRequest;
 import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.port.DealFinancePort;
+import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
+import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
@@ -39,18 +44,20 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellRepository realEstateSellRepository;
     private final RealEstateLeaseRepository realEstateLeaseRepository;
-    private final LegalDongCachePort legalDongCachePort;
+    private final DealLegalDongCachePort dealLegalDongCachePort;
+    private final DealFinancePort dealFinancePort;
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
 
     private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     // 매매 가격 gap
-    private final int sellPriceGap = 5000;
+    private final long sellPriceGap = 5000L;
 
     // 임대차 보증금 gap
-    private final int leaseDepositGap = 1000;
+    private final long leaseDepositGap = 1000L;
 
     // 조회 범위
     private final int monthsToView = 3;
@@ -62,20 +69,23 @@ public class RealEstateRecommendationService {
     /**
      * 입력된 파라미터 기반으로 맞춤 지역 목록을 리턴한다.
      * <p>
-     * 1. 보유 현금
-     * 매매는 매매가 기준 +- 5000만원 / 임대차는 보증금 기준 +- 1000
+     * 1. 매매
+     * 매매가 기준 - 5000만원 ~ 보유 현금 + 주택담보대출 가능 금액
+     * 2. 임대차
+     * 보증금 + 전세대출 가능 금액
+     *
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param findRecommendedRegionInput 추천지역조회 application Input
+     * @param input 추천지역조회 application Input
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsResult findRecommendedRegions(FindRecommendedRegionInput findRecommendedRegionInput) {
+    public RecommendedRegionsResult findRecommendedRegions(FindRecommendedRegionInput input) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
-        Set<String> housingTypeSet = new HashSet<>(findRecommendedRegionInput.housingTypes());
+        Set<String> housingTypeSet = new HashSet<>(input.housingTypes());
         if (housingTypeSet.contains(HousingType.APT.code())) {
             // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
             housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
@@ -88,31 +98,54 @@ public class RealEstateRecommendationService {
                 .map(HousingType::fromCode)
                 .collect(Collectors.toList());
 
-
         /**
          * 조회 조건 query
+         *
+         * 초기 조건
+         *      보유현금 - 매매 price gap ~ 보유현금 + 대출가능한 최대 금액 (기본 LTV만 적용)
          */
         RegionQuery sellRegionQuery = RegionQuery.builder()
-                .minCash(findRecommendedRegionInput.cash() - sellPriceGap)
-                .maxCash(findRecommendedRegionInput.cash() + sellPriceGap)
+                .minCash(input.cash() - sellPriceGap)
+                .maxCash(input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()))
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
                 .minDealCount(minDealCount)
                 .build();
         RegionQuery leaseRegionQuery = RegionQuery.builder()
-                .minCash(findRecommendedRegionInput.cash() - leaseDepositGap)
-                .maxCash(findRecommendedRegionInput.cash() + leaseDepositGap)
+                .minCash(input.cash() - leaseDepositGap)
+                .maxCash(input.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
+                        input.cash())
+                )
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
                 .minDealCount(minDealCount)
                 .build();
 
-        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
+
+        List<Region> filteredSellRegions = realEstateSellRepository.findAllRegionCandidates()
+                .filter(regionCandidate -> {
+                    long availableMortgageLoanAmount =
+                            dealFinancePort.calculateAvailableMortgageLoanAmount(
+                                    input.annualIncome(),
+                                    input.monthlyPayment(),
+                                    input.isFirstTimeBuyer(),
+                                    regionCandidate.regionId(),
+                                    regionCandidate.price()
+                            );
+
+                    return regionCandidate.price() <= input.cash() + availableMortgageLoanAmount;
+                })
+                .map(regionCandidate -> legalDongInfoMapper.toEntity(
+                        dealLegalDongCachePort.findById(regionCandidate.regionId())
+                ))
+                .collect(Collectors.toList());
+
+//        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(leaseRegionQuery);
 
-        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(allSellRegions);
+        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(filteredSellRegions);
         Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegionItems = toRegionItems(allLeaseRegions);
 
         Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = toRegionGroups(sellRegionItems);
@@ -152,8 +185,8 @@ public class RealEstateRecommendationService {
                 .entrySet()
                 .stream()
                 .map(e -> {
-                    LegalDongInfo second = legalDongCachePort.findById(e.getKey());
-                    LegalDongInfo root = legalDongCachePort.findById(second.rootId());
+                    LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
+                    LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
 
                     return new RecommendedRegionsResult.RegionItem(
                             second.id(),
@@ -180,7 +213,7 @@ public class RealEstateRecommendationService {
         return regionItems.entrySet()
                 .stream()
                 .map(entry -> {
-                    LegalDongInfo rootLegalDong = legalDongCachePort.findByCode(entry.getKey());
+                    LegalDongInfo rootLegalDong = dealLegalDongCachePort.findByCode(entry.getKey());
 
                     int totalDealCount = entry.getValue().stream()
                             .mapToInt(RecommendedRegionsResult.RegionItem::count)
@@ -211,48 +244,96 @@ public class RealEstateRecommendationService {
      * 최근 3개월 거래내역 확인
      *
      * @param input    요청 파라미터
-     * @param pageable pageable 파라미터 객체
+     * @param cursorRequest cursor 요청 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, Pageable pageable) {
-        // TODO 정책 / 대출 관련 로직 추가 필요
-
-        return realEstateSellRepository.findBy(
-                        RealEstateSellQuery.builder()
-                                .maxPrice(input.maxPrice() != null ? input.maxPrice() : input.cash() + sellPriceGap)
-                                .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
-                                .targetRegionIds(input.targetRegionIds())
-                                .targetHousingTypes(
-                                        input.targetHousingTypes()
-                                                .stream()
-                                                .map(HousingType::fromCode)
-                                                .collect(Collectors.toList())
-                                )
-                                .maxNetLeasableArea(input.maxNetLeasableArea())
-                                .minNetLeasableArea(input.minNetLeasableArea())
-                                .build(),
-                        pageable
+    public Cursor<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, CursorRequest cursorRequest) {
+        RealEstateSellQuery query = RealEstateSellQuery.builder()
+                .maxPrice(input.maxPrice() != null
+                        ? input.maxPrice()
+                        : input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()
+                ))
+                .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
+                .targetRegionIds(input.targetRegionIds())
+                .targetHousingTypes(
+                        input.targetHousingTypes()
+                                .stream()
+                                .map(HousingType::fromCode)
+                                .collect(Collectors.toList())
                 )
-                .map(realEstateSell -> {
-                    RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
+                .maxNetLeasableArea(input.maxNetLeasableArea())
+                .minNetLeasableArea(input.minNetLeasableArea())
+                .build();
 
-                    // 법정동 명 concat
-                    resultDto.setLegalDongFullName(
-                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
-                                    " " +
-                                    resultDto.getLegalDongName());
 
-                    // 전용면적 소숫점 밑 2자리로 반올림
-                    resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+        List<RealEstateSellSummaryResult> result = new ArrayList<>();
 
-                    // 네이버 URL 생성
-                    resultDto.setNaverUrl(
-                            realEstatePlatformUrlGeneratePort.generate(realEstateSell)
-                    );
+        boolean hasNext = false;
+        Long nextId = cursorRequest.nextId();
 
-                    return resultDto;
-                });
+        while (result.size() < cursorRequest.size()) {
+
+            List<RealEstateSell> slice =
+                    realEstateSellRepository.findByQueryAfter(query, nextId, cursorRequest.size());
+
+            if (slice.isEmpty()) break;
+
+            hasNext = slice.size() > cursorRequest.size();
+            int limit = Math.min(slice.size(), cursorRequest.size());
+
+            for (int i = 0; i < limit; i++) {
+                RealEstateSell sell = slice.get(i);
+
+                long availableLoan =
+                        dealFinancePort.calculateAvailableMortgageLoanAmount(
+                                input.annualIncome(),
+                                input.monthlyPayment(),
+                                input.isFirstTimeBuyer(),
+                                sell.getRegionId(),
+                                sell.getPrice());
+
+                if (sell.getPrice() <= input.cash() + availableLoan) {
+                    result.add(toSummary(sell));
+                    if (result.size() == cursorRequest.size()) {
+                        nextId = sell.getId();
+                        break;
+                    }
+                }
+
+                // 정책 통과 여부와 상관없이 커서 이동
+                nextId = sell.getId();
+            }
+
+            if (!hasNext) break;
+        }
+
+        return new Cursor<>(
+                result,
+                hasNext ? nextId : null,
+                hasNext,
+                cursorRequest.size()
+        );
+    }
+
+    private RealEstateSellSummaryResult toSummary(RealEstateSell realEstateSell) {
+        RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
+
+        // 법정동 명 concat
+        resultDto.setLegalDongFullName(
+                dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
+                        " " +
+                        resultDto.getLegalDongName());
+
+        // 전용면적 소숫점 밑 2자리로 반올림
+        resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+        // 네이버 URL 생성
+        resultDto.setNaverUrl(
+                realEstatePlatformUrlGeneratePort.generate(realEstateSell)
+        );
+
+        return resultDto;
     }
 
     /**
@@ -297,7 +378,7 @@ public class RealEstateRecommendationService {
 
                     // 법정동 명 concat
                     resultDto.setLegalDongFullName(
-                            legalDongCachePort.findById(resultDto.getRegionId()).name() +
+                            dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
                                     " " +
                                     resultDto.getLegalDongName());
 

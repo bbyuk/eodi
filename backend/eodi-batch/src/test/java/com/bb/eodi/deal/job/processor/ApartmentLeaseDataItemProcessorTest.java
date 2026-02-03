@@ -55,19 +55,4 @@ class ApartmentLeaseDataItemProcessorTest {
 
     }
 
-    @Test
-    void testGrammar() throws Exception {
-        // given
-        LocalDate today = LocalDate.now();
-
-
-        // when
-        String yearMonth = new StringBuilder()
-                .append(today.getYear())
-                .append(String.format("%2s", today.getMonthValue()).replace(' ', '0'))
-                .toString();
-
-        // then
-        Assertions.assertThat(yearMonth).isEqualTo("202601");
-    }
 }

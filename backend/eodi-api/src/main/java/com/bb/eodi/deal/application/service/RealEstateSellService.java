@@ -1,7 +1,7 @@
 package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.input.FindRealEstateSellInput;
-import com.bb.eodi.deal.application.port.LegalDongCachePort;
+import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.application.query.assembler.FindRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RealEstateSellService {
 
     private final RealEstateSellRepository realEstateSellRepository;
-    private final LegalDongCachePort legalDongCachePort;
+    private final DealLegalDongCachePort dealLegalDongCachePort;
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
 
     private final FindRealEstateSellQueryAssembler queryAssembler;
@@ -44,7 +44,7 @@ public class RealEstateSellService {
                     RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 
                     // legalDongFullName set -> 지역명 + 동명
-                    resultDto.setLegalDongFullName(legalDongCachePort.findById(resultDto.getRegionId()) + " " + resultDto.getLegalDongName());
+                    resultDto.setLegalDongFullName(dealLegalDongCachePort.findById(resultDto.getRegionId()) + " " + resultDto.getLegalDongName());
                     return resultDto;
                 });
     }
