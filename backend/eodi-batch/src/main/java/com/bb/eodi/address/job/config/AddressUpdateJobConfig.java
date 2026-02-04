@@ -98,8 +98,9 @@ public class AddressUpdateJobConfig {
     ) {
         return new FlowBuilder<Flow>("addressUpdateMainFlow")
                 .start(addressLinkageApiCallStep)
-                .next(addressLinkageFileUnzipStep)
-
+                .on("SKIP").end()
+                .from(addressLinkageApiCallStep)
+                .on("COMPLETED").to(addressLinkageFileUnzipStep)
                 // Step → Flow
                 .from(addressLinkageFileUnzipStep)
                 .on("COMPLETED").to(addressUpdateFlow)
