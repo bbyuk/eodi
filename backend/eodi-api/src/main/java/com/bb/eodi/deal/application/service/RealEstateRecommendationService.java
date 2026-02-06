@@ -19,6 +19,7 @@ import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellRecommendQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
+import com.bb.eodi.deal.domain.read.RegionCandidate;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
@@ -36,6 +37,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 부동산 추천 서비스
@@ -98,7 +100,7 @@ public class RealEstateRecommendationService {
             housingTypeSet.add(HousingType.MULTI_UNIT_HOUSE.code());
         }
 
-        List<Region> filteredSellRegions = realEstateSellRepository.findAllRegionCandidates()
+        Stream<RegionCandidate> regionCandidateStream = realEstateSellRepository.findAllRegionCandidates()
                 .filter(regionCandidate -> {
                     long availableMortgageLoanAmount =
                             dealFinancePort.calculateAvailableMortgageLoanAmount(
@@ -111,18 +113,14 @@ public class RealEstateRecommendationService {
 
                     boolean isBetweenTargetDuration =
                             (regionCandidate.contractDate().isEqual(theDayBeforeThreeMonths) || regionCandidate.contractDate().isAfter(theDayBeforeThreeMonths))
-                            && (regionCandidate.contractDate().isEqual(today) || regionCandidate.contractDate().isBefore(today));
+                                    && (regionCandidate.contractDate().isEqual(today) || regionCandidate.contractDate().isBefore(today));
 
                     return regionCandidate.price() <= input.cash() + availableMortgageLoanAmount
                             && isBetweenTargetDuration;
-                })
-                .map(regionCandidate -> legalDongInfoMapper.toEntity(
-                        dealLegalDongCachePort.findById(regionCandidate.regionId())
-                ))
-                .collect(Collectors.toList());
+                });
 
 
-        Map<String, List<RegionItem>> sellRegionItems = toRegionItems(filteredSellRegions);
+        Map<String, List<RegionItem>> sellRegionItems = toRegionItems(regionCandidateStream);
         Map<String, RegionGroupItem> sellRegionGroups = toRegionGroups(sellRegionItems);
 
         /**
@@ -141,6 +139,7 @@ public class RealEstateRecommendationService {
 
     /**
      * 임대차 추천 지역 조회
+     *
      * @param input 임대차 추천 지역 조회 input
      * @return 임대차 추천 지역 조회 결과
      */
@@ -190,19 +189,37 @@ public class RealEstateRecommendationService {
 
     /**
      * RegionItem Map으로 전환 편의 메서드
-     *
-     * @param regions 조회 결과 region list
-     * @return Region Item Map
+     * @param regions 집계 대상 지역 목록
+     * @return 부모 코드 : 지역 목록 table
      */
     private Map<String, List<RegionItem>> toRegionItems(List<Region> regions) {
-        return regions.stream()
-                .collect(Collectors.groupingBy(
-                        r -> r.isRoot() ? r.getRootId() : r.getSecondId()
-                ))
-                .entrySet()
+        return regions.stream().collect(Collectors.groupingBy(r -> r.isRoot() ? r.getRootId() : r.getSecondId())).entrySet().stream().map(e -> {
+            LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
+            LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
+            return new RegionItem(second.id(), root.code(), second.code(), second.name(), second.name().replace(root.name(), "").trim(), e.getValue().size());
+        }).collect(Collectors.groupingBy(RegionItem::groupCode));
+    }
+
+    /**
+     * RegionItem Map으로 전환 편의 메서드
+     *
+     * @param candidates 조회 결과 region 집계 후보군 stream
+     * @return Region Item Map
+     */
+    private Map<String, List<RegionItem>> toRegionItems(Stream<RegionCandidate> candidates) {
+        Map<Long, Long> regionCountMap =
+                candidates.collect(Collectors.groupingBy(
+                        RegionCandidate::regionId,
+                        Collectors.counting()
+                ));
+
+        return regionCountMap.entrySet()
                 .stream()
-                .map(e -> {
-                    LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
+                .map(entry -> {
+                    Long regionId = entry.getKey();
+                    int count = Integer.parseInt(String.valueOf(entry.getValue()));
+
+                    LegalDongInfo second = dealLegalDongCachePort.findById(regionId);
                     LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
 
                     return new RegionItem(
@@ -211,13 +228,10 @@ public class RealEstateRecommendationService {
                             second.code(),
                             second.name(),
                             second.name().replace(root.name(), "").trim(),
-                            e.getValue().size()
+                            count
                     );
                 })
-                .collect(Collectors.
-                        groupingBy(
-                                RegionItem::groupCode
-                        ));
+                .collect(Collectors.groupingBy(RegionItem::groupCode));
     }
 
     /**
@@ -267,7 +281,7 @@ public class RealEstateRecommendationService {
     @Transactional(readOnly = true)
     public Cursor<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, CursorRequest cursorRequest) {
         LocalDate today = LocalDate.now();
-        LocalDate theDayBeforeThreeMonths= today.minusMonths(monthsToView);
+        LocalDate theDayBeforeThreeMonths = today.minusMonths(monthsToView);
 
         RealEstateSellRecommendQuery query = RealEstateSellRecommendQuery.builder()
                 .maxPrice(input.maxPrice() != null

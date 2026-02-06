@@ -1,12 +1,15 @@
 package com.bb.eodi.deal.application.service;
 
 
+import com.bb.eodi.common.model.Cursor;
+import com.bb.eodi.common.model.CursorRequest;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
+import com.bb.eodi.deal.application.result.RegionItem;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,42 @@ class RealEstateRecommendationServiceMediumTest {
     @Autowired
     RealEstateRecommendationService realEstateRecommendationService;
 
+    @Test
+    @DisplayName("medium - 매매 지역 추천조회 지역별 count와 매매 데이터 추천조회 전체 count 수가 동일한지 확인한다.")
+    void testSellRegionAndDataCount() throws Exception {
+        // given
+        // cash=12121&housingTypes=AP&housingTypes=OF
+        Long cash = 12121L;
+        List<String> housingTypes = List.of("AP", "OF");
+
+        FindRecommendedRegionInput regionInput = new FindRecommendedRegionInput(cash, null, null, null, null, housingTypes);
+        RecommendedRegionsResult regionsResult = realEstateRecommendationService.findRecommendedSellRegions(regionInput);
+        List<RegionItem> regionItems = regionsResult.regions().get("1100000000").subList(0, 5);
+
+        // when
+        FindRecommendedSellInput sellInput = new FindRecommendedSellInput(cash, regionItems.stream().map(RegionItem::id).toList(), housingTypes, null, null, null, null, null, null, null, null);
+        boolean hasNext = true;
+        Long nextId = null;
+        int pageSize = 500;
+
+        int count = 0;
+
+        while(hasNext) {
+            Cursor<RealEstateSellSummaryResult> result = realEstateRecommendationService.findRecommendedSells(sellInput, new CursorRequest(nextId, pageSize));
+            count += result.content().size();
+
+            hasNext = result.hasNext();
+            nextId = result.nextId();
+        }
+
+        // then
+        Assertions
+                .assertThat(regionItems
+                        .stream()
+                        .map(RegionItem::count)
+                        .reduce(0, Integer::sum))
+                .isEqualTo(count);
+    }
 
     @Test
     @DisplayName("medium - 입력된 파라미터 기반으로 추천 매매 지역 목록을 리턴한다.")
