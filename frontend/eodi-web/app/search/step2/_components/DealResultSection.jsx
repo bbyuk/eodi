@@ -1,5 +1,5 @@
-import ResultGrid from "@/app/search/step3/_components/ResultGrid";
-import ResultCard from "@/app/search/step3/_components/ResultCard";
+import ResultGrid from "@/app/search/step2/_components/ResultGrid";
+import ResultCard from "@/app/search/step2/_components/ResultCard";
 
 export default function DealResultSection({ type, info, loadMoreRef }) {
   return (

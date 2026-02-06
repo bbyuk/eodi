@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
-import MultiButtonSelectGrid from "@/app/search/step2/_components/MultiButtonSelectGrid";
+import MultiButtonSelectGrid from "@/app/search/region-select-step/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
 import { redirect } from "next/navigation";
 import { useSearchStore } from "@/app/search/store/searchStore";
@@ -13,7 +13,7 @@ import { api } from "@/lib/apiClient";
 import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeContainer";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
 import { CheckCircle2, CheckSquare } from "lucide-react";
-import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
+import SelectedRegionsCardContents from "@/app/search/region-select-step/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
 import { useToast } from "@/components/ui/container/ToastProvider";
 
