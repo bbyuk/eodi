@@ -57,7 +57,7 @@ class RealEstateRecommendationServiceMediumTest {
 
         FindRecommendedLeaseInput input = new FindRecommendedLeaseInput(
                 22121,
-                List.of(14363L, 14415L, 14584L),
+                List.of(95L, 2L),
                 List.of("AP", "OF"),
                 null,
                 null,
