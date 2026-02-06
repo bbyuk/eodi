@@ -74,20 +74,22 @@ export default function RegionsGrid() {
     });
 
   const findRecommendedRegions = () => {
-    api
-      .get("/real-estate/recommendation/region", {
-        cash: cash,
-        housingTypes: Array.from(selectedHousingTypes),
-      })
-      .then((res) => {
-        setSellRegionGroups(res.sellRegionGroups);
-        setSellRegions(res.sellRegions);
-        setLeaseRegionGroups(res.leaseRegionGroups);
-        setLeaseRegions(res.leaseRegions);
+    const param = {
+      cash: cash,
+      housingTypes: Array.from(selectedHousingTypes),
+    };
 
-        setInquiredHousingTypes(Array.from(selectedHousingTypes));
-        setIsHousingTypeChanged(false);
-      });
+    api.get("/real-estate/recommendation/sell/region", param).then((res) => {
+      setSellRegionGroups(res.regionGroups);
+      setSellRegions(res.regions);
+    });
+    api.get("/real-estate/recommendation/lease/region", param).then((res) => {
+      setLeaseRegionGroups(res.regionGroups);
+      setLeaseRegions(res.regions);
+    });
+
+    setInquiredHousingTypes(Array.from(selectedHousingTypes));
+    setIsHousingTypeChanged(false);
   };
 
   useEffect(() => {
