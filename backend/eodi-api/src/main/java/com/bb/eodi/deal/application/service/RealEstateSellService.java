@@ -2,9 +2,9 @@ package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.deal.application.input.FindRealEstateSellInput;
 import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
-import com.bb.eodi.deal.application.query.assembler.FindRealEstateSellQueryAssembler;
 import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
+import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,21 +25,31 @@ public class RealEstateSellService {
     private final DealLegalDongCachePort dealLegalDongCachePort;
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
 
-    private final FindRealEstateSellQueryAssembler queryAssembler;
 
     /**
      * 부동산 매재 데이터 조회
      *
-     * @param input 부동산 매매 데이터 조회 요청 파라미터
-     * @param pageable         pageable 객체
+     * @param input    부동산 매매 데이터 조회 요청 파라미터
+     * @param pageable pageable 객체
      * @return 부동산 매매 데이터 목록
      */
     @Transactional
     public Page<RealEstateSellSummaryResult> findRealEstateSells(
             FindRealEstateSellInput input,
             Pageable pageable) {
-        return realEstateSellRepository.findBy(
-                        queryAssembler.assemble(input), pageable)
+        RealEstateSellQuery query = RealEstateSellQuery
+                .builder()
+                .maxPrice(input.maxPrice())
+                .minPrice(input.minPrice())
+                .maxNetLeasableArea(input.maxNetLeasableArea())
+                .minNetLeasableArea(input.minNetLeasableArea())
+                .startYearMonth(input.startYearMonth())
+                .endYearMonth(input.endYearMonth())
+                .targetHousingTypes(input.targetHousingTypes())
+                .targetRegionIds(input.targetRegionIds())
+                .build();
+
+        return realEstateSellRepository.findBy(query, pageable)
                 .map(realEstateSell -> {
                     RealEstateSellSummaryResult resultDto = realEstateSellSummaryResultMapper.toResult(realEstateSell);
 
