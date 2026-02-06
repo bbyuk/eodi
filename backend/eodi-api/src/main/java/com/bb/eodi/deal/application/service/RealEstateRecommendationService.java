@@ -19,6 +19,7 @@ import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.query.RealEstateSellRecommendQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
@@ -251,19 +252,24 @@ public class RealEstateRecommendationService {
      * <p>
      * 최근 3개월 거래내역 확인
      *
-     * @param input    요청 파라미터
+     * @param input         요청 파라미터
      * @param cursorRequest cursor 요청 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
     public Cursor<RealEstateSellSummaryResult> findRecommendedSells(FindRecommendedSellInput input, CursorRequest cursorRequest) {
-        RealEstateSellQuery query = RealEstateSellQuery.builder()
+        LocalDate today = LocalDate.now();
+        LocalDate theDayBeforeThreeMonths= today.minusMonths(monthsToView);
+
+        RealEstateSellRecommendQuery query = RealEstateSellRecommendQuery.builder()
                 .maxPrice(input.maxPrice() != null
                         ? input.maxPrice()
                         : input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()
                 ))
                 .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
                 .targetRegionIds(input.targetRegionIds())
+                .startDate(theDayBeforeThreeMonths)
+                .endDate(today)
                 .targetHousingTypes(
                         input.targetHousingTypes()
                                 .stream()
@@ -283,7 +289,7 @@ public class RealEstateRecommendationService {
         while (result.size() < cursorRequest.size()) {
 
             List<RealEstateSell> slice =
-                    realEstateSellRepository.findByQueryAfter(query, nextId, cursorRequest.size());
+                    realEstateSellRepository.findRecommendedSellSlices(query, nextId, cursorRequest.size());
 
             if (slice.isEmpty()) break;
 
@@ -404,16 +410,14 @@ public class RealEstateRecommendationService {
 
     /**
      * 지역 추천 조회 스트리밍처리
-     *
+     * <p>
      * 페이지 조회에 따른 스트리밍 조회
-     *
-     *
      *
      * @param input 지역 추천 조회 application input
      */
     public void findRecommendedRegionsV2(ResponseBodyEmitter emitter, FindRecommendedRegionInput input) {
         LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusMonths(monthsToView);
+        LocalDate theDayBeforeThreeMonths = today.minusMonths(monthsToView);
 
         Set<String> housingTypeSet = new HashSet<>(input.housingTypes());
         if (housingTypeSet.contains(HousingType.APT.code())) {
@@ -428,47 +432,55 @@ public class RealEstateRecommendationService {
                 .map(HousingType::fromCode)
                 .collect(Collectors.toList());
 
-        /**
-         * 조회 조건 query
-         *
-         * 1. 후보군 조회
-         * 2.
-         *
-         * 초기 조건
-         *      보유현금 - 매매 price gap ~ 보유현금 + 대출가능한 최대 금액 (기본 LTV만 적용)
-         */
-        RegionQuery sellRegionQuery = RegionQuery.builder()
-                .minCash(input.cash() - sellPriceGap)
-                .maxCash(input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()))
-                .startDate(startDate)
-                .endDate(today)
-                .housingTypes(housingTypeParameters)
-                .minDealCount(minDealCount)
-                .build();
-        RegionQuery leaseRegionQuery = RegionQuery.builder()
-                .minCash(input.cash() - leaseDepositGap)
-                .maxCash(input.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
-                        input.cash())
-                )
-                .startDate(startDate)
-                .endDate(today)
-                .housingTypes(housingTypeParameters)
-                .minDealCount(minDealCount)
-                .build();
 
-        // 1. 후보 지역 조회
-        // 2. 동일 쿼리 파라미터로 페이지 조회
-        // 3. 피이지 순회 돌면서 정책 반영 후 hit시 streaming 결과에 add
+        // 1. 동일 쿼리 파라미터로 페이지 조회
+        // 2. 페이지 순회 돌면서 정책 반영 후 hit시 streaming 결과에 add
         //      1. region group set contains 체크 후 없을 시 streaming 결과에 add
         //      2. region set contains 체크 후 없을 시 streaming 결과에 add
         //      3. delta count 결과에 add
-        // 4. 스트리밍 emit 후 2번으로
+        // 3. 스트리밍 emit 후 2번으로
+
+        /**
+         * 2. 동일 쿼리 파라미터로 페이지 조회
+         */
+        boolean sellHasNext = true;
+        Long sellNextId = null;
+        int sellPageSize = 100;
+        Set<Long> sellRegionGroupSet = new HashSet<>();
+        Set<Long> sellRegionSet = new HashSet<>();
+        long sellCandidateMaxPrice = input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash());
+        long sellCandidateMinPrice = input.cash() - sellPriceGap;
+
+        while (true) {
+            if (sellHasNext) {
+                break;
+            }
+            RealEstateSellRecommendQuery query = RealEstateSellRecommendQuery.builder()
+                    .maxPrice(sellCandidateMaxPrice)
+                    .minPrice(sellCandidateMinPrice)
+                    .startDate(theDayBeforeThreeMonths)
+                    .endDate(today)
+                    .targetHousingTypes(housingTypeParameters)
+                    .build();
+
+            List<RealEstateSell> sells = realEstateSellRepository.findRecommendedSellSlices(query, sellNextId, sellPageSize);
+
+            //      1. region group set contains 체크 후 없을 시 streaming 결과에 add
 
 
+            //      2. region set contains 체크 후 없을 시 streaming 결과에 add
+            //      3. delta count 결과에 add
+
+            sellHasNext = sells.size() <= sellPageSize;
+            if (sellHasNext) {
+                sellNextId = sells.get(sellPageSize).getId();
+            }
+        }
     }
 
     /**
      * Event 객체를 NDJSON으로 변환한다.
+     *
      * @param event 이벤트 객체
      * @return NDSJON 값
      * @throws JsonProcessingException

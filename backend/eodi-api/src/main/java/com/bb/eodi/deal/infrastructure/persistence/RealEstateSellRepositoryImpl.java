@@ -5,6 +5,7 @@ import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
+import com.bb.eodi.deal.domain.query.RealEstateSellRecommendQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.read.QRegionCandidate;
 import com.bb.eodi.deal.domain.read.RegionCandidate;
@@ -134,7 +135,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     }
 
     @Override
-    public List<RealEstateSell> findByQueryAfter(RealEstateSellQuery query, Long lastId, int pageSize) {
+    public List<RealEstateSell> findRecommendedSellSlices(RealEstateSellRecommendQuery query, Long lastId, int pageSize) {
         QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
 
         BooleanBuilder condition = new BooleanBuilder();
@@ -159,14 +160,6 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
             condition.and(realEstateSell.netLeasableArea.goe(query.getMinNetLeasableArea()));
         }
 
-        if (query.getEndYearMonth() != null) {
-            condition.and(realEstateSell.contractDate.loe(query.getEndYearMonth().atEndOfMonth()));
-        }
-
-        if (query.getStartYearMonth() != null) {
-            condition.and(realEstateSell.contractDate.goe(query.getStartYearMonth().atDay(1)));
-        }
-
         if (query.getTargetRegionIds() != null && !query.getTargetRegionIds().isEmpty()) {
             condition.and(realEstateSell.regionId.in(query.getTargetRegionIds()));
         }
@@ -175,6 +168,8 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
             condition.and(realEstateSell.housingType.in(query.getTargetHousingTypes()));
         }
 
+        condition.and(realEstateSell.contractDate.loe(query.getEndDate()))
+                .and(realEstateSell.contractDate.goe(query.getStartDate()));
 
         return queryFactory
                 .selectFrom(realEstateSell)
@@ -219,42 +214,26 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     }
 
     @Override
-    public Slice<RegionCandidate> findSliceByRegionQuery(RegionQuery query, Pageable pageable) {
-        QRealEstateSellJpaEntity realEstateSell = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
+    public List<Region> findCandidateRegions(RegionQuery query) {
+        QRealEstateSellJpaEntity res = QRealEstateSellJpaEntity.realEstateSellJpaEntity;
 
-        BooleanBuilder dynamicCondition = new BooleanBuilder();
+        BooleanBuilder condition = new BooleanBuilder();
+        condition.and(res.price.between(query.getMinCash(), query.getMaxCash()))
+                .and(res.contractDate.between(query.getStartDate(), query.getEndDate()));
 
         if (!query.getHousingTypes().isEmpty()) {
-            dynamicCondition.and(realEstateSell.housingType.in(query.getHousingTypes()));
+            condition.and(res.housingType.in(query.getHousingTypes()));
         }
 
-        int pageSize = pageable.getPageSize();
-        List<RegionCandidate> content = queryFactory
-                .select(
-                        new QRegionCandidate(
-                                realEstateSell.regionId,
-                                realEstateSell.price,
-                                realEstateSell.housingType,
-                                realEstateSell.contractDate
-                        ))
-                .from(realEstateSell)
-                .where(
-                        realEstateSell.contractDate.between(query.getStartDate(), query.getEndDate())
-                                .and(realEstateSell.price.between(query.getMinCash(), query.getMaxCash()))
-                                .and(realEstateSell.cancelDate.isNull())
-                                .and(dynamicCondition)
-                )
-                .orderBy(realEstateSell.id.asc())
-                .limit(pageSize + 1)
-                .fetch();
-
-        boolean hasNext = content.size() > pageSize;
-
-        if (hasNext) {
-            content.remove(pageSize); // N + 1 제거
-        }
-
-        return new SliceImpl<>(content, pageable, hasNext);
+        return queryFactory.select(res.regionId)
+                .from(res)
+                .where(condition)
+                .fetch()
+                .stream()
+                .map(regionId -> legalDongInfoMapper.toEntity(
+                        dealLegalDongCachePort.findById(regionId)
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
