@@ -9,14 +9,14 @@ import com.bb.eodi.deal.presentation.adapter.FindRealEstateLeaseInputAdapter;
 import com.bb.eodi.deal.presentation.adapter.FindRealEstateSellInputAdapter;
 import com.bb.eodi.deal.presentation.adapter.FindRegionInputAdapter;
 import com.bb.eodi.deal.presentation.dto.request.RealEstateLeaseRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
+import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
 import com.bb.eodi.deal.presentation.dto.response.RealEstateLeaseFindResponse;
+import com.bb.eodi.deal.presentation.dto.response.RealEstateSellFindResponse;
+import com.bb.eodi.deal.presentation.dto.response.RegionFindResponse;
 import com.bb.eodi.deal.presentation.mapper.RealEstateLeaseFindResponseMapper;
 import com.bb.eodi.deal.presentation.mapper.RealEstateSellFindResponseMapper;
 import com.bb.eodi.deal.presentation.mapper.RegionFindResponseMapper;
-import com.bb.eodi.deal.presentation.dto.request.RealEstateSellRecommendRequestParameter;
-import com.bb.eodi.deal.presentation.dto.request.RegionRecommendRequest;
-import com.bb.eodi.deal.presentation.dto.response.RealEstateSellFindResponse;
-import com.bb.eodi.deal.presentation.dto.response.RegionFindResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -51,17 +51,34 @@ public class RealEstateRecommendationController {
 
     private final ThreadPoolTaskExecutor streamingExecutor;
 
-    @GetMapping("region")
-    @Operation(summary = "살펴볼 만한 지역 조회",
-            description = "보유 현금 기준으로 살펴볼 만한 지역 조회")
-    public ResponseEntity<RegionFindResponse> getRecommendedRegions(
+    @GetMapping("sell/region")
+    @Operation(summary = "살펴볼 만한 매매 지역 조회",
+            description = "보유 현금 기준으로 살펴볼 만한 매매 지역 조회")
+    public ResponseEntity<RegionFindResponse> getRecommendedSellRegions(
             @ParameterObject @Valid
             RegionRecommendRequest requestParameter
     ) {
 
         return ResponseEntity.ok(
                 regionFindResponseMapper.toResponse(
-                        realEstateRecommendationService.findRecommendedRegions(
+                        realEstateRecommendationService.findRecommendedSellRegions(
+                                findRegionInputAdapter.toInput(requestParameter)
+                        )
+                )
+        );
+    }
+
+    @GetMapping("lease/region")
+    @Operation(summary = "살펴볼 만한 임대차 지역 조회",
+            description = "보유 현금 기준으로 살펴볼 만한 임대차 지역 조회"
+    )
+    public ResponseEntity<RegionFindResponse> getRecommendedLeaseRegions(
+            @ParameterObject @Valid
+            RegionRecommendRequest requestParameter
+    ) {
+        return ResponseEntity.ok(
+                regionFindResponseMapper.toResponse(
+                        realEstateRecommendationService.findRecommendedLeaseRegions(
                                 findRegionInputAdapter.toInput(requestParameter)
                         )
                 )
@@ -84,8 +101,7 @@ public class RealEstateRecommendationController {
                 );
 
                 emitter.complete();
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 emitter.completeWithError(e);
             }
 

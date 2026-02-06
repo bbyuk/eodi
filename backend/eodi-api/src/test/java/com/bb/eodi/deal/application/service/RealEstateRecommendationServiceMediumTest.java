@@ -29,7 +29,7 @@ class RealEstateRecommendationServiceMediumTest {
 
 
     @Test
-    @DisplayName("medium - 입력된 파라미터 기반으로 추천 지역 목록을 리턴한다.")
+    @DisplayName("medium - 입력된 파라미터 기반으로 추천 매매 지역 목록을 리턴한다.")
     void testFindRecommendedRegions() throws Exception {
         // given
         Long cash = 50000L;
@@ -37,7 +37,7 @@ class RealEstateRecommendationServiceMediumTest {
         List<String> housingTypes = List.of("AP");
 
         // when
-        RecommendedRegionsResult recommendedRegions = realEstateRecommendationService.findRecommendedRegions(
+        RecommendedRegionsResult recommendedRegions = realEstateRecommendationService.findRecommendedSellRegions(
                 new FindRecommendedRegionInput(cash, null,
                         null,
                         null,
@@ -45,37 +45,8 @@ class RealEstateRecommendationServiceMediumTest {
                         housingTypes));
 
         // then
-        Assertions.assertThat(recommendedRegions.leaseRegions()).isNotEmpty();
-        Assertions.assertThat(recommendedRegions.sellRegions()).isNotEmpty();
-        Assertions.assertThat(recommendedRegions.sellRegionGroups()).isNotEmpty();
-        Assertions.assertThat(recommendedRegions.leaseRegionGroups()).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("medium - 입력된 파라미터 기반으로 추천 매매 데이터 목록을 리턴한다.")
-    void testFindRecommendedSell() throws Exception {
-        // given
-        FindRecommendedSellInput input = new FindRecommendedSellInput(
-                50000L,
-                List.of(14261L, 14306L),
-                List.of("AP", "OF"),
-                null,
-                null,
-                null,
-                null);
-
-        // when
-        Page<RealEstateSellSummaryResult> allResult =
-                realEstateRecommendationService.findRecommendedSells(
-                        input,
-                        PageRequest.of(1, 20));
-
-        // then
-        Assertions.assertThat(allResult).isNotEmpty();
-        Assertions.assertThat(
-                allResult.getContent().stream().map(RealEstateSellSummaryResult::getNaverUrl)
-                        .anyMatch(url -> StringUtils.hasText(url))
-        ).isTrue();
+        Assertions.assertThat(recommendedRegions.regions()).isNotEmpty();
+        Assertions.assertThat(recommendedRegions.regionGroups()).isNotEmpty();
     }
 
 

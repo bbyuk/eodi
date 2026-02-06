@@ -10,9 +10,7 @@ import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
 import com.bb.eodi.deal.application.port.DealFinancePort;
 import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
-import com.bb.eodi.deal.application.result.RealEstateLeaseSummaryResult;
-import com.bb.eodi.deal.application.result.RealEstateSellSummaryResult;
-import com.bb.eodi.deal.application.result.RecommendedRegionsResult;
+import com.bb.eodi.deal.application.result.*;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
@@ -48,16 +46,16 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellRepository realEstateSellRepository;
     private final RealEstateLeaseRepository realEstateLeaseRepository;
-    private final DealLegalDongCachePort dealLegalDongCachePort;
-    private final DealFinancePort dealFinancePort;
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
+    private final LegalDongInfoMapper legalDongInfoMapper;
 
     private final ObjectMapper objectMapper;
 
     private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
-    private final LegalDongInfoMapper legalDongInfoMapper;
+    private final DealLegalDongCachePort dealLegalDongCachePort;
+    private final DealFinancePort dealFinancePort;
 
     // 매매 가격 gap
     private final long sellPriceGap = 5000L;
@@ -87,7 +85,67 @@ public class RealEstateRecommendationService {
      * @return 추천 지역 목록
      */
     @Transactional(readOnly = true)
-    public RecommendedRegionsResult findRecommendedRegions(FindRecommendedRegionInput input) {
+    public RecommendedRegionsResult findRecommendedSellRegions(FindRecommendedRegionInput input) {
+        LocalDate today = LocalDate.now();
+        LocalDate theDayBeforeThreeMonths = today.minusMonths(monthsToView);
+
+        Set<String> housingTypeSet = new HashSet<>(input.housingTypes());
+        if (housingTypeSet.contains(HousingType.APT.code())) {
+            // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
+            housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
+            housingTypeSet.add(HousingType.OCCUPY_RIGHT.code());
+        } else if (housingTypeSet.contains(HousingType.DETACHED_HOUSE.code())) {
+            housingTypeSet.add(HousingType.MULTI_UNIT_HOUSE.code());
+        }
+
+        List<Region> filteredSellRegions = realEstateSellRepository.findAllRegionCandidates()
+                .filter(regionCandidate -> {
+                    long availableMortgageLoanAmount =
+                            dealFinancePort.calculateAvailableMortgageLoanAmount(
+                                    input.annualIncome(),
+                                    input.monthlyPayment(),
+                                    input.isFirstTimeBuyer(),
+                                    regionCandidate.regionId(),
+                                    regionCandidate.price()
+                            );
+
+                    boolean isBetweenTargetDuration =
+                            (regionCandidate.contractDate().isEqual(theDayBeforeThreeMonths) || regionCandidate.contractDate().isAfter(theDayBeforeThreeMonths))
+                            && (regionCandidate.contractDate().isEqual(today) || regionCandidate.contractDate().isBefore(today));
+
+                    return regionCandidate.price() <= input.cash() + availableMortgageLoanAmount
+                            && isBetweenTargetDuration;
+                })
+                .map(regionCandidate -> legalDongInfoMapper.toEntity(
+                        dealLegalDongCachePort.findById(regionCandidate.regionId())
+                ))
+                .collect(Collectors.toList());
+
+
+        Map<String, List<RegionItem>> sellRegionItems = toRegionItems(filteredSellRegions);
+        Map<String, RegionGroupItem> sellRegionGroups = toRegionGroups(sellRegionItems);
+
+        /**
+         * sellRegions -> code 오름차순 정렬
+         * leaseRegions -> code 오름차순 정렬
+         */
+        sellRegionItems.replaceAll((key, value) -> value.stream()
+                .sorted(Comparator.comparing(RegionItem::code))
+                .collect(Collectors.toList()));
+
+        return new RecommendedRegionsResult(
+                sellRegionGroups,
+                sellRegionItems
+        );
+    }
+
+    /**
+     * 임대차 추천 지역 조회
+     * @param input 임대차 추천 지역 조회 input
+     * @return 임대차 추천 지역 조회 결과
+     */
+    @Transactional(readOnly = true)
+    public RecommendedRegionsResult findRecommendedLeaseRegions(FindRecommendedRegionInput input) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusMonths(monthsToView);
 
@@ -104,23 +162,6 @@ public class RealEstateRecommendationService {
                 .map(HousingType::fromCode)
                 .collect(Collectors.toList());
 
-        /**
-         * 조회 조건 query
-         *
-         * 1. 후보군 조회
-         * 2.
-         *
-         * 초기 조건
-         *      보유현금 - 매매 price gap ~ 보유현금 + 대출가능한 최대 금액 (기본 LTV만 적용)
-         */
-        RegionQuery sellRegionQuery = RegionQuery.builder()
-                .minCash(input.cash() - sellPriceGap)
-                .maxCash(input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()))
-                .startDate(startDate)
-                .endDate(today)
-                .housingTypes(housingTypeParameters)
-                .minDealCount(minDealCount)
-                .build();
         RegionQuery leaseRegionQuery = RegionQuery.builder()
                 .minCash(input.cash() - leaseDepositGap)
                 .maxCash(input.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
@@ -132,49 +173,16 @@ public class RealEstateRecommendationService {
                 .minDealCount(minDealCount)
                 .build();
 
-
-        List<Region> filteredSellRegions = realEstateSellRepository.findAllRegionCandidates()
-                .filter(regionCandidate -> {
-                    long availableMortgageLoanAmount =
-                            dealFinancePort.calculateAvailableMortgageLoanAmount(
-                                    input.annualIncome(),
-                                    input.monthlyPayment(),
-                                    input.isFirstTimeBuyer(),
-                                    regionCandidate.regionId(),
-                                    regionCandidate.price()
-                            );
-
-                    return regionCandidate.price() <= input.cash() + availableMortgageLoanAmount;
-                })
-                .map(regionCandidate -> legalDongInfoMapper.toEntity(
-                        dealLegalDongCachePort.findById(regionCandidate.regionId())
-                ))
-                .collect(Collectors.toList());
-
-//        List<Region> allSellRegions = realEstateSellRepository.findRegionsBy(sellRegionQuery);
         List<Region> allLeaseRegions = realEstateLeaseRepository.findRegionsBy(leaseRegionQuery);
+        Map<String, List<RegionItem>> leaseRegionItems = toRegionItems(allLeaseRegions);
+        Map<String, RegionGroupItem> leaseRegionGroups = toRegionGroups(leaseRegionItems);
 
-        Map<String, List<RecommendedRegionsResult.RegionItem>> sellRegionItems = toRegionItems(filteredSellRegions);
-        Map<String, List<RecommendedRegionsResult.RegionItem>> leaseRegionItems = toRegionItems(allLeaseRegions);
-
-        Map<String, RecommendedRegionsResult.RegionGroup> sellRegionGroups = toRegionGroups(sellRegionItems);
-        Map<String, RecommendedRegionsResult.RegionGroup> leaseRegionGroups = toRegionGroups(leaseRegionItems);
-
-        /**
-         * sellRegions -> code 오름차순 정렬
-         * leaseRegions -> code 오름차순 정렬
-         */
-        sellRegionItems.replaceAll((key, value) -> value.stream()
-                .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
-                .collect(Collectors.toList()));
 
         leaseRegionItems.replaceAll((key, value) -> value.stream()
-                .sorted(Comparator.comparing(RecommendedRegionsResult.RegionItem::code))
+                .sorted(Comparator.comparing(RegionItem::code))
                 .collect(Collectors.toList()));
 
         return new RecommendedRegionsResult(
-                sellRegionGroups,
-                sellRegionItems,
                 leaseRegionGroups,
                 leaseRegionItems
         );
@@ -186,7 +194,7 @@ public class RealEstateRecommendationService {
      * @param regions 조회 결과 region list
      * @return Region Item Map
      */
-    private Map<String, List<RecommendedRegionsResult.RegionItem>> toRegionItems(List<Region> regions) {
+    private Map<String, List<RegionItem>> toRegionItems(List<Region> regions) {
         return regions.stream()
                 .collect(Collectors.groupingBy(
                         r -> r.isRoot() ? r.getRootId() : r.getSecondId()
@@ -197,7 +205,7 @@ public class RealEstateRecommendationService {
                     LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
                     LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
 
-                    return new RecommendedRegionsResult.RegionItem(
+                    return new RegionItem(
                             second.id(),
                             root.code(),
                             second.code(),
@@ -208,7 +216,7 @@ public class RealEstateRecommendationService {
                 })
                 .collect(Collectors.
                         groupingBy(
-                                RecommendedRegionsResult.RegionItem::groupCode
+                                RegionItem::groupCode
                         ));
     }
 
@@ -218,17 +226,17 @@ public class RealEstateRecommendationService {
      * @param regionItems 조회결과 List에서 집계한 Region item map
      * @return RegionGroup Item Map
      */
-    private Map<String, RecommendedRegionsResult.RegionGroup> toRegionGroups(Map<String, List<RecommendedRegionsResult.RegionItem>> regionItems) {
+    private Map<String, RegionGroupItem> toRegionGroups(Map<String, List<RegionItem>> regionItems) {
         return regionItems.entrySet()
                 .stream()
                 .map(entry -> {
                     LegalDongInfo rootLegalDong = dealLegalDongCachePort.findByCode(entry.getKey());
 
                     int totalDealCount = entry.getValue().stream()
-                            .mapToInt(RecommendedRegionsResult.RegionItem::count)
+                            .mapToInt(RegionItem::count)
                             .sum();
 
-                    return new RecommendedRegionsResult.RegionGroup(
+                    return new RegionGroupItem(
                             rootLegalDong.code(),
                             rootLegalDong.name(),
                             rootLegalDong.name(),
@@ -237,7 +245,7 @@ public class RealEstateRecommendationService {
                 })
                 .collect(
                         Collectors.toMap(
-                                RecommendedRegionsResult.RegionGroup::code,
+                                RegionGroupItem::code,
                                 Function.identity()
                         )
                 );
