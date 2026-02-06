@@ -23,11 +23,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 @Tag(name = "부동산 실거래 데이터 기반 추천 API")
 @RequestMapping("real-estate/recommendation")
@@ -46,6 +49,8 @@ public class RealEstateRecommendationController {
 
     private final RealEstateRecommendationService realEstateRecommendationService;
 
+    private final ThreadPoolTaskExecutor streamingExecutor;
+
     @GetMapping("region")
     @Operation(summary = "살펴볼 만한 지역 조회",
             description = "보유 현금 기준으로 살펴볼 만한 지역 조회")
@@ -62,6 +67,34 @@ public class RealEstateRecommendationController {
                 )
         );
     }
+
+    @GetMapping(value = "v2/region", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    @Operation(summary = "살펴볼 만한 지역 조회 V2", description = "보유 현금 기준으로 살펴볼 만한 지역 조회")
+    public ResponseBodyEmitter getRecommendedRegionsV2(
+            @ParameterObject @Valid
+            RegionRecommendRequest requestParameter
+    ) {
+        ResponseBodyEmitter emitter = new ResponseBodyEmitter(60_000L);
+
+        streamingExecutor.execute(() -> {
+            try {
+                realEstateRecommendationService.findRecommendedRegionsV2(
+                        emitter,
+                        findRegionInputAdapter.toInput(requestParameter)
+                );
+
+                emitter.complete();
+            }
+            catch(Exception e) {
+                emitter.completeWithError(e);
+            }
+
+        });
+
+
+        return emitter;
+    }
+
 
     @GetMapping("sells")
     @Operation(summary = "살펴볼 만한 매매 거래 목록 조회",

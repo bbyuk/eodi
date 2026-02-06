@@ -23,11 +23,14 @@ import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.repository.RealEstateLeaseRepository;
 import com.bb.eodi.deal.domain.repository.RealEstateSellRepository;
 import com.bb.eodi.deal.domain.type.HousingType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -49,6 +52,8 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
+
+    private final ObjectMapper objectMapper;
 
     private final RealEstatePlatformUrlGeneratePort realEstatePlatformUrlGeneratePort;
     private final LegalDongInfoMapper legalDongInfoMapper;
@@ -100,6 +105,9 @@ public class RealEstateRecommendationService {
 
         /**
          * 조회 조건 query
+         *
+         * 1. 후보군 조회
+         * 2.
          *
          * 초기 조건
          *      보유현금 - 매매 price gap ~ 보유현금 + 대출가능한 최대 금액 (기본 LTV만 적용)
@@ -392,5 +400,80 @@ public class RealEstateRecommendationService {
 
                     return resultDto;
                 });
+    }
+
+    /**
+     * 지역 추천 조회 스트리밍처리
+     *
+     * 페이지 조회에 따른 스트리밍 조회
+     *
+     *
+     *
+     * @param input 지역 추천 조회 application input
+     */
+    public void findRecommendedRegionsV2(ResponseBodyEmitter emitter, FindRecommendedRegionInput input) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusMonths(monthsToView);
+
+        Set<String> housingTypeSet = new HashSet<>(input.housingTypes());
+        if (housingTypeSet.contains(HousingType.APT.code())) {
+            // 아파트 선택되었을 경우 분양권/입주권도 함꼐 추가
+            housingTypeSet.add(HousingType.PRESALE_RIGHT.code());
+            housingTypeSet.add(HousingType.OCCUPY_RIGHT.code());
+        } else if (housingTypeSet.contains(HousingType.DETACHED_HOUSE.code())) {
+            housingTypeSet.add(HousingType.MULTI_UNIT_HOUSE.code());
+        }
+
+        List<HousingType> housingTypeParameters = housingTypeSet.stream()
+                .map(HousingType::fromCode)
+                .collect(Collectors.toList());
+
+        /**
+         * 조회 조건 query
+         *
+         * 1. 후보군 조회
+         * 2.
+         *
+         * 초기 조건
+         *      보유현금 - 매매 price gap ~ 보유현금 + 대출가능한 최대 금액 (기본 LTV만 적용)
+         */
+        RegionQuery sellRegionQuery = RegionQuery.builder()
+                .minCash(input.cash() - sellPriceGap)
+                .maxCash(input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()))
+                .startDate(startDate)
+                .endDate(today)
+                .housingTypes(housingTypeParameters)
+                .minDealCount(minDealCount)
+                .build();
+        RegionQuery leaseRegionQuery = RegionQuery.builder()
+                .minCash(input.cash() - leaseDepositGap)
+                .maxCash(input.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
+                        input.cash())
+                )
+                .startDate(startDate)
+                .endDate(today)
+                .housingTypes(housingTypeParameters)
+                .minDealCount(minDealCount)
+                .build();
+
+        // 1. 후보 지역 조회
+        // 2. 동일 쿼리 파라미터로 페이지 조회
+        // 3. 피이지 순회 돌면서 정책 반영 후 hit시 streaming 결과에 add
+        //      1. region group set contains 체크 후 없을 시 streaming 결과에 add
+        //      2. region set contains 체크 후 없을 시 streaming 결과에 add
+        //      3. delta count 결과에 add
+        // 4. 스트리밍 emit 후 2번으로
+
+
+    }
+
+    /**
+     * Event 객체를 NDJSON으로 변환한다.
+     * @param event 이벤트 객체
+     * @return NDSJON 값
+     * @throws JsonProcessingException
+     */
+    private String toNdjson(Object event) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(event) + "\n";
     }
 }
