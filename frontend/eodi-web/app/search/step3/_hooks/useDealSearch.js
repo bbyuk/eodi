@@ -54,7 +54,6 @@ export function useDealSearch({ dealType, enabled }) {
         targetRegionIds: Array.from(apiInfo[dealType].targetRegions).map((region) => region.id),
         targetHousingTypes: Array.from(inquiredHousingTypes),
         nextId: info.nextId,
-        hasNext: info.hasNext,
         size: pageSize,
         page: init ? 0 : info.page,
       })
