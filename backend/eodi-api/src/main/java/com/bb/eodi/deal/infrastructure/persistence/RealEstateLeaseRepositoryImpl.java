@@ -105,7 +105,7 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
         condition.and(realEstateLease.deposit.between(query.getMinCash(), query.getMaxCash()));
         condition.and(realEstateLease.contractDate.between(query.getStartDate(), query.getEndDate()));
 
-        if (!query.getHousingTypes().isEmpty()) {
+        if (query.getHousingTypes() != null && !query.getHousingTypes().isEmpty()) {
             condition.and(realEstateLease.housingType.in(query.getHousingTypes()));
         }
 
