@@ -16,11 +16,11 @@ public interface RegionFindResponseMapper {
 
     RegionFindResponse toResponse(RecommendedRegionsResult recommendedRegionsResult);
 
-    RegionFindResponse.RegionGroup toGroup(RegionGroupItem group);
+    RegionGroupItem toGroup(RegionGroupItem group);
 
-    RegionFindResponse.RegionItem toItem(RegionItem item);
+    RegionItem toItem(RegionItem item);
 
-    List<RegionFindResponse.RegionItem> toItems(
+    List<RegionItem> toItems(
             List<RegionItem> items
     );
 }
