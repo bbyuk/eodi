@@ -5,6 +5,8 @@ import com.bb.eodi.address.domain.service.AddressLinkagePeriod;
 import com.bb.eodi.address.domain.service.AddressLinkageResult;
 import com.bb.eodi.address.domain.service.AddressLinkageTarget;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -50,7 +52,8 @@ public class AddressLinkageApiCallTasklet implements Tasklet {
         }
 
         if (AddressLinkageResult.ALREADY_UP_TO_DATE == addressLinkageResult) {
-            throw new JobInterruptedException("주소 DB가 이미 최신 상태입니다.");
+            contribution.setExitStatus(new ExitStatus("SKIP"));
+            return RepeatStatus.FINISHED;
         }
 
         jobCtx.put("fromDate", targetPeriod.from());
