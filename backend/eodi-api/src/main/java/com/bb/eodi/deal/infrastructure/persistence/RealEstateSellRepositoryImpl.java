@@ -192,7 +192,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
         condition.and(realEstateSell.price.between(query.getMinCash(), query.getMaxCash()));
         condition.and(realEstateSell.contractDate.between(query.getStartDate(), query.getEndDate()));
 
-        if (!query.getHousingTypes().isEmpty()) {
+        if (query.getHousingTypes() != null && !query.getHousingTypes().isEmpty()) {
             condition.and(realEstateSell.housingType.in(query.getHousingTypes()));
         }
 
