@@ -31,8 +31,6 @@ public record RealEstateSellRecommendRequestParameter(
                         )
                 )
         )
-        @NotEmpty(message = "선택된 지역 목록이 없습니다.")
-        @Size(max = 10, message = "최대 5개 지역까지만 선택 가능합니다.")
         List<Long> targetRegionIds,
         @Parameter(
                 description = "조회 대상 주택 유형 목록",

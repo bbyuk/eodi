@@ -69,7 +69,7 @@ public class RealEstateRecommendationService {
     private final int monthsToView = 3;
 
     // 지역 추천 조회시 최소 거래 횟수 카운트
-    private final int minDealCount = 3;
+    private final int minDealCount = 30;
 
 
     /**
