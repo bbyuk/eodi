@@ -1,7 +1,7 @@
-package com.bb.eodi.legaldong.domain.read;
+package com.bb.eodi.legaldong.domain.repository;
 
-import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.query.LegalDongFindQuery;
+import com.bb.eodi.legaldong.domain.read.LegalDongWithParentName;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ public interface LegalDongQueryRepository {
      * @param query 법정동 조회 쿼리
      * @return 쿼리에 해당하는 법정동 목록
      */
-    List<LegalDong> findBy(LegalDongFindQuery query);
+    List<LegalDongWithParentName> findBy(LegalDongFindQuery query);
 }

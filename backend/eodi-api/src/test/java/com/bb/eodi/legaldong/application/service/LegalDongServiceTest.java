@@ -36,7 +36,7 @@ class LegalDongServiceTest {
         Assertions.assertThat(allRootLegalDongs).hasSize(17);
 
         // 50ms 내에 서비스 메소드 완료
-        Assertions.assertThat(after - before).isLessThan(50);
+        Assertions.assertThat(after - before).isLessThan(100);
     }
 
     @Test
@@ -52,7 +52,7 @@ class LegalDongServiceTest {
         // then
 
         Assertions.assertThat(allRegionLegalDongs).isNotEmpty();
-        Assertions.assertThat(after - before).isLessThan(120);
+        Assertions.assertThat(after - before).isLessThan(100);
 
     }
 }

@@ -1,16 +1,17 @@
 package com.bb.eodi.legaldong.infrastructure.persistence;
 
-import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.query.LegalDongFindQuery;
-import com.bb.eodi.legaldong.domain.read.LegalDongQueryRepository;
+import com.bb.eodi.legaldong.domain.read.LegalDongWithParentName;
+import com.bb.eodi.legaldong.domain.read.QLegalDongWithParentName;
+import com.bb.eodi.legaldong.domain.repository.LegalDongQueryRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -24,7 +25,7 @@ public class LegalDongQueryRepositoryImpl implements LegalDongQueryRepository {
     private final LegalDongMapper mapper;
 
     @Override
-    public List<LegalDong> findBy(LegalDongFindQuery query) {
+    public List<LegalDongWithParentName> findBy(LegalDongFindQuery query) {
         QLegalDongJpaEntity ld = QLegalDongJpaEntity.legalDongJpaEntity;
 
         final BooleanBuilder commonCondition = new BooleanBuilder()
@@ -33,32 +34,49 @@ public class LegalDongQueryRepositoryImpl implements LegalDongQueryRepository {
 
 
         return switch (query.scope()) {
-            case SIDO -> queryFactory.selectFrom(ld)
+            case SIDO -> queryFactory.select(new QLegalDongWithParentName(
+                            ld.id,
+                            ld.code,
+                            ld.sidoCode,
+                            ld.sigunguCode,
+                            ld.dongCode,
+                            ld.name,
+                            ld.legalDongOrder,
+                            ld.parentId,
+                            Expressions.nullExpression(String.class),
+                            ld.active
+                    ))
+                    .from(ld)
                     .where(commonCondition
                             .and(ld.parentId.isNull()))
                     .orderBy(commonOrder)
-                    .stream().map(mapper::toDomain)
-                    .collect(Collectors.toList());
+                    .fetch();
             case SIGUNGU -> {
                 QLegalDongJpaEntity parent = new QLegalDongJpaEntity("parent");
 
-                yield queryFactory.select(ld)
-                    .from(ld)
-                    .join(parent)
+                yield queryFactory.select(
+                        new QLegalDongWithParentName(
+                                ld.id,
+                                ld.code,
+                                ld.sidoCode,
+                                ld.sigunguCode,
+                                ld.dongCode,
+                                ld.name,
+                                ld.legalDongOrder,
+                                ld.parentId,
+                                parent.name,
+                                ld.active
+                        ))
+                        .from(ld)
+                        .join(parent)
                         .on(
                                 parent.id.eq(ld.parentId)
                                         .and(parent.code.eq(query.baseLegalDongCode()))
                         )
-                    .where(commonCondition)
-                    .orderBy(commonOrder)
-                    .stream().map(mapper::toDomain)
-                    .collect(Collectors.toList());
+                        .where(commonCondition)
+                        .orderBy(commonOrder)
+                        .fetch();
             }
-            case ALL -> queryFactory.selectFrom(ld)
-                    .where(commonCondition)
-                    .orderBy(commonOrder)
-                    .stream().map(mapper::toDomain)
-                    .collect(Collectors.toList());
         };
     }
 }
