@@ -69,7 +69,7 @@ public class RealEstateRecommendationService {
     private final int monthsToView = 3;
 
     // 지역 추천 조회시 최소 거래 횟수 카운트
-    private final int minDealCount = 3;
+    private final int minDealCount = 30;
 
 
     /**
@@ -196,7 +196,7 @@ public class RealEstateRecommendationService {
         return regions.stream().collect(Collectors.groupingBy(r -> r.isRoot() ? r.getRootId() : r.getSecondId())).entrySet().stream().map(e -> {
             LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
             LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
-            return new RegionItem(second.id(), root.code(), second.code(), second.name(), second.name().replace(root.name(), "").trim(), e.getValue().size());
+            return new RegionItem(second.id(), root.code(), second.code(), second.name(), second.name().replace(root.name(), "").trim());
         }).collect(Collectors.groupingBy(RegionItem::groupCode));
     }
 
@@ -217,7 +217,6 @@ public class RealEstateRecommendationService {
                 .stream()
                 .map(entry -> {
                     Long regionId = entry.getKey();
-                    int count = Integer.parseInt(String.valueOf(entry.getValue()));
 
                     LegalDongInfo second = dealLegalDongCachePort.findById(regionId);
                     LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
@@ -227,8 +226,7 @@ public class RealEstateRecommendationService {
                             root.code(),
                             second.code(),
                             second.name(),
-                            second.name().replace(root.name(), "").trim(),
-                            count
+                            second.name().replace(root.name(), "").trim()
                     );
                 })
                 .collect(Collectors.groupingBy(RegionItem::groupCode));
@@ -246,15 +244,11 @@ public class RealEstateRecommendationService {
                 .map(entry -> {
                     LegalDongInfo rootLegalDong = dealLegalDongCachePort.findByCode(entry.getKey());
 
-                    int totalDealCount = entry.getValue().stream()
-                            .mapToInt(RegionItem::count)
-                            .sum();
 
                     return new RegionGroupItem(
                             rootLegalDong.code(),
                             rootLegalDong.name(),
-                            rootLegalDong.name(),
-                            totalDealCount
+                            rootLegalDong.name()
                     );
                 })
                 .collect(

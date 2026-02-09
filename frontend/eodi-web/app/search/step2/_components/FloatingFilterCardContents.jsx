@@ -3,7 +3,7 @@
 import SliderInput from "@/components/ui/input/SliderInput";
 import { useEffect, useRef } from "react";
 import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
-import FilterInput from "@/app/search/step3/_components/FilterInput";
+import FilterInput from "@/app/search/step2/_components/FilterInput";
 
 export default function FloatingFilterCardContents({ apply, filters }) {
   const initialMapRef = useRef(
