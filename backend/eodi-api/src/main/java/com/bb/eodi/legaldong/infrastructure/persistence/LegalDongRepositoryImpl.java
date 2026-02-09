@@ -1,7 +1,11 @@
 package com.bb.eodi.legaldong.infrastructure.persistence;
 
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
+import com.bb.eodi.legaldong.domain.query.LegalDongFindQuery;
+import com.bb.eodi.legaldong.domain.query.LegalDongScope;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -44,4 +48,6 @@ public class LegalDongRepositoryImpl implements LegalDongRepository {
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+
 }
