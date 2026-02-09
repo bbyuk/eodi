@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.application.service;
 
-import com.bb.eodi.legaldong.application.input.RegionFindInput;
+import com.bb.eodi.legaldong.application.input.RegionLegalDongFindInput;
 import com.bb.eodi.legaldong.application.result.LegalDongFindResult;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("medium - 법정동 조회 DB 통합 테스트")
 @SpringBootTest
@@ -47,7 +45,7 @@ class LegalDongServiceTest {
 
         // when
         long before = System.currentTimeMillis();
-        List<LegalDongFindResult> allRegionLegalDongs = legalDongService.findAllRegionLegalDongs(new RegionFindInput(code));
+        List<LegalDongFindResult> allRegionLegalDongs = legalDongService.findAllRegionLegalDongs(new RegionLegalDongFindInput(code));
         long after = System.currentTimeMillis();
         // then
 

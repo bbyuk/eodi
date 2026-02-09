@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.application.service;
 
-import com.bb.eodi.legaldong.application.input.RegionFindInput;
+import com.bb.eodi.legaldong.application.input.RegionLegalDongFindInput;
 import com.bb.eodi.legaldong.application.result.LegalDongFindResult;
 import com.bb.eodi.legaldong.domain.query.LegalDongFindQuery;
 import com.bb.eodi.legaldong.domain.query.LegalDongScope;
@@ -47,7 +47,7 @@ public class LegalDongService {
      * @return 시군구 목록
      */
     @Transactional(readOnly = true)
-    public List<LegalDongFindResult> findAllRegionLegalDongs(RegionFindInput input) {
+    public List<LegalDongFindResult> findAllRegionLegalDongs(RegionLegalDongFindInput input) {
         return legalDongQueryRepository
                 .findBy(new LegalDongFindQuery(LegalDongScope.SIGUNGU, input.code()))
                 .stream()
