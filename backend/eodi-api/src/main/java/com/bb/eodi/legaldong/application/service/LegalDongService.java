@@ -63,4 +63,5 @@ public class LegalDongService {
                         .build())
                 .collect(Collectors.toList());
     }
+
 }

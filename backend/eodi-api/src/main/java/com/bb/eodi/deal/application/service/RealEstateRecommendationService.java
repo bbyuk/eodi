@@ -2,8 +2,8 @@ package com.bb.eodi.deal.application.service;
 
 import com.bb.eodi.common.model.Cursor;
 import com.bb.eodi.common.model.CursorRequest;
-import com.bb.eodi.deal.application.contract.LegalDongInfo;
-import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.contract.DealLegalDongInfo;
+import com.bb.eodi.deal.application.contract.mapper.DealLegalDongInfoMapper;
 import com.bb.eodi.deal.application.input.FindRecommendedLeaseInput;
 import com.bb.eodi.deal.application.input.FindRecommendedRegionInput;
 import com.bb.eodi.deal.application.input.FindRecommendedSellInput;
@@ -16,7 +16,6 @@ import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMap
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
-import com.bb.eodi.deal.domain.query.RealEstateSellQuery;
 import com.bb.eodi.deal.domain.query.RealEstateSellRecommendQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
 import com.bb.eodi.deal.domain.read.RegionCandidate;
@@ -51,7 +50,7 @@ public class RealEstateRecommendationService {
 
     private final RealEstateSellSummaryResultMapper realEstateSellSummaryResultMapper;
     private final RealEstateLeaseSummaryResultMapper realEstateLeaseSummaryResultMapper;
-    private final LegalDongInfoMapper legalDongInfoMapper;
+    private final DealLegalDongInfoMapper dealLegalDongInfoMapper;
 
     private final ObjectMapper objectMapper;
 
@@ -194,8 +193,8 @@ public class RealEstateRecommendationService {
      */
     private Map<String, List<RegionItem>> toRegionItems(List<Region> regions) {
         return regions.stream().collect(Collectors.groupingBy(r -> r.isRoot() ? r.getRootId() : r.getSecondId())).entrySet().stream().map(e -> {
-            LegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
-            LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
+            DealLegalDongInfo second = dealLegalDongCachePort.findById(e.getKey());
+            DealLegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
             return new RegionItem(second.id(), root.code(), second.code(), second.name(), second.name().replace(root.name(), "").trim());
         }).collect(Collectors.groupingBy(RegionItem::groupCode));
     }
@@ -218,8 +217,8 @@ public class RealEstateRecommendationService {
                 .map(entry -> {
                     Long regionId = entry.getKey();
 
-                    LegalDongInfo second = dealLegalDongCachePort.findById(regionId);
-                    LegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
+                    DealLegalDongInfo second = dealLegalDongCachePort.findById(regionId);
+                    DealLegalDongInfo root = dealLegalDongCachePort.findById(second.rootId());
 
                     return new RegionItem(
                             second.id(),
@@ -242,7 +241,7 @@ public class RealEstateRecommendationService {
         return regionItems.entrySet()
                 .stream()
                 .map(entry -> {
-                    LegalDongInfo rootLegalDong = dealLegalDongCachePort.findByCode(entry.getKey());
+                    DealLegalDongInfo rootLegalDong = dealLegalDongCachePort.findByCode(entry.getKey());
 
 
                     return new RegionGroupItem(

@@ -1,4 +1,4 @@
-package com.bb.eodi.deal.application.contract;
+package com.bb.eodi.legaldong.application.result;
 
 import java.util.Set;
 
