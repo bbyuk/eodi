@@ -16,8 +16,8 @@ import DealResultSection from "@/app/search/step2/_components/DealResultSection"
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
 
 const id = "result";
-const title = "선택한 지역의 실거래 내역을 찾았어요";
-const description = ["최근 3개월간의 실거래 데이터를 기준으로 표시됩니다."];
+const title = "예산 기준으로 실거래 내역을 정리했어요";
+const description = ["입력한 현금과 LTV를 기준으로 최근 3개월 거래를 표시합니다."];
 
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
@@ -66,10 +66,7 @@ export default function DealListPage() {
     setCurrentContext(context[id]);
   }, []);
   useEffect(() => {
-    if (
-      !cash ||
-      cash === 0
-    ) {
+    if (!cash || cash === 0) {
       goFirst();
     }
   }, [cash]);
