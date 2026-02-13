@@ -13,9 +13,13 @@ export default function FloatingContainer({
   cardIcon,
   cardLabel,
   activeCount,
+  position = "right",
 }) {
+  const horizontalClass =
+    position === "left" ? "left-6 md:left-6 sm:left-3" : "right-6 md:right-6 sm:right-3";
+
   return (
-    <div className="fixed right-6 top-[calc(4rem + 12vh)] z-40 md:right-6 sm:right-3">
+    <div className={`fixed top-[calc(4rem + 12vh)] z-40 ${horizontalClass}`}>
       <AnimatePresence mode="wait">
         {isOpen ? (
           <FloatingCard label={cardLabel} icon={cardIcon} close={close}>
