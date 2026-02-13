@@ -8,7 +8,6 @@ import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingF
 import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import GridGroup from "@/app/search/_components/GridGroup";
-import CategoryTab from "@/components/ui/input/CategoryTab";
 import { useSearchContext } from "@/app/search/layout";
 import { useDealTabs } from "@/app/search/step2/_hooks/useDealTabs";
 import { useDealSearch } from "@/app/search/step2/_hooks/useDealSearch";
@@ -16,9 +15,9 @@ import DealResultSection from "@/app/search/step2/_components/DealResultSection"
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
 import { api } from "@/lib/apiClient";
 import Select from "@/components/ui/input/Select";
-import MultiSelect from "@/components/ui/input/MultiSelect";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import CategoryButton from "@/components/ui/input/CategoryButton";
+import ChipSelect from "@/components/ui/input/ChipSelect";
 
 const id = "result";
 const title = "예산 기준으로 실거래 내역을 정리했어요";
@@ -46,7 +45,6 @@ export default function DealListPage() {
     });
   }, []);
 
-  const [selectedSigungu, setSelectedSigungu] = useState([]);
   const [sigungu, setSigungu] = useState([]);
   useEffect(() => {
     api
@@ -57,6 +55,12 @@ export default function DealListPage() {
         setSigungu(res.items);
       });
   }, [selectedSido]);
+  const [selectedRegions, setSelectedRegions] = useState([]);
+  const toggleRegion = (value) => {
+    setSelectedRegions((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
 
   /**
    * ============= region filter ====================
@@ -166,17 +170,15 @@ export default function DealListPage() {
           <Select
             value={selectedSido}
             allOption
+            width="w-[150px]"
             onChange={(value) => setSelectedSido(value)}
             options={sido.map((el) => ({ value: el.code, label: el.displayName }))}
           />
           {selectedSido && selectedSido !== "all" && (
-            <MultiSelect
-              value={selectedSigungu}
-              onApplied={(value) => {
-                setSelectedSigungu(value);
-                // TODO
-                // 실거래가 데이터 조회 API 요청
-              }}
+            <ChipSelect
+              width="w-[150px]"
+              onSelect={toggleRegion}
+              selected={selectedRegions}
               options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
             />
           )}
