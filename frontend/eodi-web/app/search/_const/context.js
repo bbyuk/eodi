@@ -8,7 +8,7 @@ export const context = {
     },
   },
   region: {
-    step: 2,
+    step: null,
     name: "지역 확인",
     prevButton: {
       label: "이전으로",
@@ -18,7 +18,7 @@ export const context = {
     },
   },
   result: {
-    step: 3,
+    step: 2,
     name: "결과",
     prevButton: {
       label: "이전으로",
