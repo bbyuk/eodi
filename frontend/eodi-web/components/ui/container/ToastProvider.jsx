@@ -1,10 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, CheckCircle2, XCircle, Info } from "lucide-react";
 
-const ToastContext = createContext({ showToast: (event, text, type) => {} });
+const ToastContext = createContext({ showToast: () => {} });
 
 export function useToast() {
   return useContext(ToastContext);
@@ -14,51 +15,35 @@ export default function ToastProvider({ children }) {
   const [toast, setToast] = useState({
     id: 0,
     text: "",
-    x: 0,
-    y: 0,
+    type: "info",
     visible: false,
   });
+
   const timeoutRef = useRef(null);
 
-  const showToast = (event, text, type) => {
-    // 기존 타이머 제거
+  const showToast = ({ text, type = "info" }) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
 
-    // 위치 계산 (event 없으면 화면 중앙 근처)
-    let x = window.innerWidth / 2;
-    let y = window.innerHeight / 2;
-
-    if (event?.currentTarget) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      x = rect.left + rect.width / 2;
-      y = rect.top;
-    }
-
-    // 토스트 상태 갱신 + id 증가
     setToast((prev) => ({
-      id: prev.id + 1, // key로 쓸 값
+      id: prev.id + 1,
       text,
       type,
-      x,
-      y,
       visible: true,
     }));
 
-    // 새 타이머 등록
     timeoutRef.current = setTimeout(() => {
       setToast((t) => ({ ...t, visible: false }));
       timeoutRef.current = null;
     }, 1500);
   };
 
-  // 유저 이벤트 발생 시 토스트 닫기
   useEffect(() => {
     if (!toast.visible) return;
 
-    const hideOnUserEvent = () => {
+    const hide = () => {
       setToast((t) => ({ ...t, visible: false }));
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -68,39 +53,37 @@ export default function ToastProvider({ children }) {
 
     const events = ["scroll", "click", "keydown", "touchstart", "wheel"];
 
-    // 등록을 한 프레임 지연시켜 현재 클릭은 무시
     const timer = setTimeout(() => {
-      events.forEach((evt) => window.addEventListener(evt, hideOnUserEvent, { once: true }));
+      events.forEach((evt) => window.addEventListener(evt, hide, { once: true }));
     }, 0);
 
-    // cleanup
     return () => {
       clearTimeout(timer);
-      events.forEach((evt) => window.removeEventListener(evt, hideOnUserEvent));
+      events.forEach((evt) => window.removeEventListener(evt, hide));
     };
   }, [toast.visible]);
 
   const variantStyles = {
     info: {
-      bg: "bg-blue-50/80 dark:bg-blue-900/60",
+      bg: "bg-blue-50/90 dark:bg-blue-900/70",
       text: "text-blue-700 dark:text-blue-100",
       border: "border-blue-300/50",
       icon: <Info size={14} className="text-blue-500" />,
     },
     success: {
-      bg: "bg-green-50/80 dark:bg-green-900/60",
+      bg: "bg-green-50/90 dark:bg-green-900/70",
       text: "text-green-700 dark:text-green-100",
       border: "border-green-300/50",
       icon: <CheckCircle2 size={14} className="text-green-500" />,
     },
     warning: {
-      bg: "bg-amber-50/80 dark:bg-amber-900/60",
+      bg: "bg-amber-50/90 dark:bg-amber-900/70",
       text: "text-amber-800 dark:text-amber-100",
       border: "border-amber-300/50",
       icon: <AlertTriangle size={14} className="text-amber-500" />,
     },
     error: {
-      bg: "bg-red-100/80 dark:bg-red-900/60",
+      bg: "bg-red-100/90 dark:bg-red-900/70",
       text: "text-red-700 dark:text-red-100",
       border: "border-red-300/50",
       icon: <XCircle size={14} className="text-red-500" />,
@@ -113,34 +96,36 @@ export default function ToastProvider({ children }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      <AnimatePresence mode="wait">
-        {toast.visible && (
-          <motion.div
-            key={toast.id} // 클릭마다 바뀌어서 매번 enter 애니메이션
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            transition={{ duration: 0.18 }}
-            style={{
-              position: "fixed",
-              top: toast.y - 10,
-              left: toast.x,
-              transform: "translate(-50%, -100%)",
-              zIndex: 99999,
-            }}
-            className={`
-              px-3 py-1.5 rounded-md text-sm font-medium
+      {typeof window !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {toast.visible && (
+              <motion.div
+                key={toast.id}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="fixed top-6 inset-x-0 z-[99999] flex justify-center pointer-events-none"
+              >
+                <div
+                  className={`
+              pointer-events-auto
+              px-4 py-2 rounded-lg text-sm font-medium
               backdrop-blur-md shadow-lg border
               ${current.bg} ${current.text} ${current.border}
             `}
-          >
-            <div className="flex items-center gap-1">
-              {current.icon}
-              <span>{toast.text}</span>
-            </div>
-          </motion.div>
+                >
+                  <div className="flex items-center gap-2">
+                    {current.icon}
+                    <span>{toast.text}</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </ToastContext.Provider>
   );
 }
