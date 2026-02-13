@@ -30,7 +30,7 @@ public class LegalDongQueryRepositoryImpl implements LegalDongQueryRepository {
 
         final BooleanBuilder commonCondition = new BooleanBuilder()
                 .and(ld.active.isTrue());
-        final OrderSpecifier<Integer> commonOrder = ld.legalDongOrder.asc();
+        final OrderSpecifier<String> commonOrder = ld.code.asc();
 
 
         return switch (query.scope()) {
