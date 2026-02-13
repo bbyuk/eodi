@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
-import { SlidersHorizontal } from "lucide-react";
+import { CheckCircle2, CheckSquare, SlidersHorizontal } from "lucide-react";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
@@ -18,6 +18,7 @@ import Select from "@/components/ui/input/Select";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import CategoryButton from "@/components/ui/input/CategoryButton";
 import ChipSelect from "@/components/ui/input/ChipSelect";
+import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 
 const id = "result";
 const title = "예산 기준으로 실거래 내역을 정리했어요";
@@ -37,6 +38,7 @@ export default function DealListPage() {
    * ============= region filter ====================
    */
 
+  // 시도 선택 select
   const [selectedSido, setSelectedSido] = useState("all");
   const [sido, setSido] = useState([]);
   useEffect(() => {
@@ -45,7 +47,9 @@ export default function DealListPage() {
     });
   }, []);
 
+  // 지역 선택 chip select
   const [sigungu, setSigungu] = useState([]);
+  const [regionTable, setRegionTable] = useState({});
   useEffect(() => {
     api
       .get("/legal-dong/region", {
@@ -53,14 +57,34 @@ export default function DealListPage() {
       })
       .then((res) => {
         setSigungu(res.items);
+        setRegionTable((prev) => ({
+          ...prev,
+          ...Object.fromEntries(res.items.map((i) => [i.code, i])),
+        }));
       });
   }, [selectedSido]);
-  const [selectedRegions, setSelectedRegions] = useState([]);
+  const [selectedRegions, setSelectedRegions] = useState(() => new Set());
   const toggleRegion = (value) => {
-    setSelectedRegions((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-    );
+    setSelectedRegions((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(value)) {
+        next.delete(value);
+      } else {
+        next.add(value);
+      }
+
+      return next;
+    });
   };
+  useEffect(() => {
+    if (selectedRegions.size === 0) {
+      setIsSelectedRegionFloatingCardOpen(false);
+    }
+  }, [selectedRegions]);
+
+  // 선택확인 floating container
+  const [isSelectedRegionFloatingCardOpen, setIsSelectedRegionFloatingCardOpen] = useState(false);
 
   /**
    * ============= region filter ====================
@@ -162,6 +186,25 @@ export default function DealListPage() {
         />
       </FloatingContainer>
 
+      {selectedRegions.size > 0 && (
+        <FloatingContainer
+          isOpen={isSelectedRegionFloatingCardOpen}
+          close={() => setIsSelectedRegionFloatingCardOpen(false)}
+          open={() => setIsSelectedRegionFloatingCardOpen(true)}
+          buttonLabel={`지역 ${selectedRegions.size}개 선택`}
+          buttonIcon={<CheckCircle2 size={16} />}
+          cardLabel={"선택지역"}
+          cardIcon={<CheckSquare size={16} className="text-primary" />}
+          position={"left"}
+        >
+          <SelectedRegionsCardContents
+            table={regionTable}
+            selected={selectedRegions}
+            onSelect={toggleRegion}
+            close={() => setIsSelectedRegionFloatingCardOpen(false)}
+          />
+        </FloatingContainer>
+      )}
       {/* Header */}
       <PageHeader title={title} description={description} />
 

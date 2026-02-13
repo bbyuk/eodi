@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function ChipSelect({
   options = [],
-  selected = [],
+  selected = new Set(),
   onSelect,
   placeholder = "선택",
   width = "w-[120px]",
@@ -44,7 +44,7 @@ export default function ChipSelect({
       {open && (
         <div className="absolute left-0 top-full z-50 mt-2 w-full rounded-xl border bg-white shadow-xl p-2 max-h-[240px] overflow-y-auto space-y-1">
           {options.map((option) => {
-            const active = selected.includes(option.value);
+            const active = selected.has(option.value);
 
             return (
               <button
