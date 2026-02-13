@@ -9,15 +9,11 @@ public record LegalDongFindResponse(
     List<Item> items
 ) {
     public record Item(
-            // 법정동ID
-            Long id,
             // 법정동코드
             String code,
             // 법정동명
             String name,
             // 법정동 표기명
-            String displayName,
-            // 부모 법정동 ID
-            Long parentId
+            String displayName
     ) {};
 }

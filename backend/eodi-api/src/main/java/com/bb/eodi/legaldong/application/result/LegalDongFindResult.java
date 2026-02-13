@@ -9,9 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 public class LegalDongFindResult {
-    private Long id;
     private String code;
     private String name;
     private String displayName;
-    private Long parentId;
 }

@@ -34,7 +34,6 @@ public class LegalDongService {
         return legalDongQueryRepository.findBy(new LegalDongFindQuery(LegalDongScope.SIDO, null))
                 .stream()
                 .map(legalDong -> LegalDongFindResult.builder()
-                        .id(legalDong.id())
                         .code(legalDong.code())
                         .name(legalDong.name())
                         .displayName(legalDong.name())
@@ -52,11 +51,9 @@ public class LegalDongService {
                 .findBy(new LegalDongFindQuery(LegalDongScope.SIGUNGU, input.code()))
                 .stream()
                 .map(legalDong -> LegalDongFindResult.builder()
-                        .id(legalDong.id())
                         .code(legalDong.code())
                         .name(legalDong.name())
                         .displayName(legalDong.name().replace(legalDong.parentName(), "").trim())
-                        .parentId(legalDong.parentId())
                         .build())
                 .collect(Collectors.toList());
     }
