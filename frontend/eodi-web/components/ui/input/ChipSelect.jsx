@@ -50,7 +50,7 @@ export default function ChipSelect({
               <button
                 key={option.value}
                 type="button"
-                onClick={() => onSelect(option.value)}
+                onClick={(e) => onSelect(option.value, e)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition
                   ${active ? "bg-primary/10 text-primary" : "hover:bg-gray-100 text-gray-700"}
                 `}

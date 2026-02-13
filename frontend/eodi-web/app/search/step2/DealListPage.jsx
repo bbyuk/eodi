@@ -19,13 +19,17 @@ import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import CategoryButton from "@/components/ui/input/CategoryButton";
 import ChipSelect from "@/components/ui/input/ChipSelect";
 import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
+import { useToast } from "@/components/ui/container/ToastProvider";
 
 const id = "result";
 const title = "예산 기준으로 실거래 내역을 정리했어요";
 const description = ["입력한 현금과 LTV를 기준으로 최근 3개월 거래를 표시합니다."];
+const MAX_REGION_SELECT_SIZE = 5;
+const limitWarnMessage = `이미 ${MAX_REGION_SELECT_SIZE}개의 지역을 모두 선택했어요.`;
 
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
+  const { showToast } = useToast();
   const { setCurrentContext, cash, selectedSellRegions, selectedLeaseRegions } = useSearchStore();
 
   const tabs = useDealTabs();
@@ -64,14 +68,18 @@ export default function DealListPage() {
       });
   }, [selectedSido]);
   const [selectedRegions, setSelectedRegions] = useState(() => new Set());
-  const toggleRegion = (value) => {
+  const toggleRegion = (value, e) => {
     setSelectedRegions((prev) => {
       const next = new Set(prev);
 
       if (next.has(value)) {
         next.delete(value);
       } else {
-        next.add(value);
+        if (next.size < MAX_REGION_SELECT_SIZE) {
+          next.add(value);
+        } else {
+          showToast({ text: limitWarnMessage, type: "warning" });
+        }
       }
 
       return next;
@@ -220,7 +228,7 @@ export default function DealListPage() {
           {selectedSido && selectedSido !== "all" && (
             <ChipSelect
               width="w-[150px]"
-              onSelect={toggleRegion}
+              onSelect={(value, e) => toggleRegion(value, e)}
               selected={selectedRegions}
               options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
             />
