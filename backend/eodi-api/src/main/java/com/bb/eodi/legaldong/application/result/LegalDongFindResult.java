@@ -13,4 +13,5 @@ public class LegalDongFindResult {
     private String code;
     private String name;
     private String displayName;
+    private Long parentId;
 }

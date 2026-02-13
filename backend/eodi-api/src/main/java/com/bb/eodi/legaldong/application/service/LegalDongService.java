@@ -56,6 +56,7 @@ public class LegalDongService {
                         .code(legalDong.code())
                         .name(legalDong.name())
                         .displayName(legalDong.name().replace(legalDong.parentName(), "").trim())
+                        .parentId(legalDong.parentId())
                         .build())
                 .collect(Collectors.toList());
     }
