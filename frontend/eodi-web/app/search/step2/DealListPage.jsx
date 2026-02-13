@@ -16,6 +16,9 @@ import DealResultSection from "@/app/search/step2/_components/DealResultSection"
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
 import { api } from "@/lib/apiClient";
 import Select from "@/components/ui/input/Select";
+import MultiSelect from "@/components/ui/input/MultiSelect";
+import InnerNavContainer from "@/components/layout/InnerNavContainer";
+import CategoryButton from "@/components/ui/input/CategoryButton";
 
 const id = "result";
 const title = "예산 기준으로 실거래 내역을 정리했어요";
@@ -35,12 +38,15 @@ export default function DealListPage() {
    * ============= region filter ====================
    */
 
+  const [selectedSido, setSelectedSido] = useState("all");
   const [sido, setSido] = useState([]);
   useEffect(() => {
     api.get("/legal-dong/root").then((res) => {
       setSido(res.items);
     });
   }, []);
+
+  const [selectedSigungu, setSelectedSigungu] = useState([]);
 
   /**
    * ============= region filter ====================
@@ -146,8 +152,33 @@ export default function DealListPage() {
       <PageHeader title={title} description={description} />
 
       <GridGroup>
-        <Select options={sido.map((el) => ({ value: el.code, label: el.displayName }))} />
-        <CategoryTab list={tabs} type={"toggle"} value={selectedTab} onSelect={setSelectedTab} />
+        <InnerNavContainer>
+          <Select
+            value={selectedSido}
+            allOption
+            onChange={(value) => setSelectedSido(value)}
+            options={sido.map((el) => ({ value: el.code, label: el.displayName }))}
+          />
+          {selectedSido && selectedSido !== "all" && (
+            <MultiSelect options={[{ value: 1, label: "test" }]} />
+          )}
+        </InnerNavContainer>
+
+        <InnerNavContainer>
+          {tabs.map((data) => {
+            const isActive = selectedTab === data.code;
+            return (
+              <CategoryButton
+                key={data.code}
+                icon={data.icon}
+                onClick={() => setSelectedTab(data.code)}
+                isActive={isActive}
+                label={data.displayName}
+              />
+            );
+          })}
+        </InnerNavContainer>
+
         {selectedTab === "sell" && <DealResultSection {...sell} type={"sell"} />}
         {selectedTab === "lease" && <DealResultSection {...lease} type={"lease"} />}
       </GridGroup>

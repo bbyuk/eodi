@@ -3,11 +3,19 @@
 import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export default function Select({ options, value, onChange, placeholder = "선택하세요" }) {
+export default function Select({
+  options,
+  value,
+  onChange,
+  allOption = false,
+  placeholder = "선택하세요",
+  width = "w-auto",
+}) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const selected = options.find((o) => o.value === value);
+  const mergedOptions = allOption ? [{ value: "all", label: "전체" }, ...options] : options;
+  const selected = mergedOptions.find((o) => o.value === value);
 
   // 바깥 클릭 시 닫힘
   useEffect(() => {
@@ -22,26 +30,29 @@ export default function Select({ options, value, onChange, placeholder = "선택
   }, []);
 
   return (
-    <div ref={containerRef} className="relative inline-block">
+    <div ref={containerRef} className={`relative ${width}`}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm hover:bg-gray-50"
+        className="w-full flex items-center justify-between rounded-full border px-4 py-2 text-sm hover:bg-gray-50 overflow-hidden"
       >
-        <span>{selected ? selected.label : placeholder}</span>
-        <ChevronDown size={16} />
+        <span className="truncate whitespace-nowrap">
+          {selected ? selected.label : placeholder}
+        </span>
+
+        <ChevronDown size={16} className="shrink-0" />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-2 w-[220px] max-h-[300px] overflow-y-auto rounded-xl border bg-white shadow-lg p-2">
-          {options.map((option) => (
+        <div className="absolute left-0 top-full z-20 mt-2 w-full min-w-[180px] max-h-[300px] overflow-y-auto rounded-xl border bg-white shadow-lg p-2">
+          {mergedOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => {
                 onChange(option.value);
                 setOpen(false);
               }}
-              className={`w-full text-left rounded-md px-3 py-2 text-sm
-                ${value === option.value ? "bg-primary/10 text-primary" : "hover:bg-gray-100"}`}
+              className={`w-full text-left whitespace-nowrap rounded-md px-3 py-2 text-sm
+            ${value === option.value ? "bg-primary/10 text-primary" : "hover:bg-gray-100"}`}
             >
               {option.label}
             </button>
