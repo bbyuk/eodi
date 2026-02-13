@@ -47,6 +47,16 @@ export default function DealListPage() {
   }, []);
 
   const [selectedSigungu, setSelectedSigungu] = useState([]);
+  const [sigungu, setSigungu] = useState([]);
+  useEffect(() => {
+    api
+      .get("/legal-dong/region", {
+        code: selectedSido,
+      })
+      .then((res) => {
+        setSigungu(res.items);
+      });
+  }, [selectedSido]);
 
   /**
    * ============= region filter ====================
@@ -160,7 +170,15 @@ export default function DealListPage() {
             options={sido.map((el) => ({ value: el.code, label: el.displayName }))}
           />
           {selectedSido && selectedSido !== "all" && (
-            <MultiSelect options={[{ value: 1, label: "test" }]} />
+            <MultiSelect
+              value={selectedSigungu}
+              onApplied={(value) => {
+                setSelectedSigungu(value);
+                // TODO
+                // 실거래가 데이터 조회 API 요청
+              }}
+              options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
+            />
           )}
         </InnerNavContainer>
 
