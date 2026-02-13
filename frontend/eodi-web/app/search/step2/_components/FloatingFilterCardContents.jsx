@@ -4,6 +4,7 @@ import SliderInput from "@/components/ui/input/SliderInput";
 import { useEffect, useRef } from "react";
 import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
 import FilterInput from "@/app/search/step2/_components/FilterInput";
+import Button from "@/components/ui/input/Button";
 
 export default function FloatingFilterCardContents({ apply, filters }) {
   const initialMapRef = useRef(
@@ -89,12 +90,11 @@ export default function FloatingFilterCardContents({ apply, filters }) {
         }
       })}
 
-      <button
+      <Button
         onClick={() => {
-          if (!isDirty) return;
           appliedRef.current = true;
 
-          filters.forEach(({ key, filter, setFilter }) => {
+          filters.forEach(({ filter, setFilter }) => {
             if (filter.enable && !filter.enableMin && !filter.enableMax) {
               setFilter((prev) => ({ ...prev, enable: false }));
             }
@@ -102,10 +102,11 @@ export default function FloatingFilterCardContents({ apply, filters }) {
 
           apply();
         }}
-        className={`w-full mt-4 py-2 rounded-md font-medium text-sm transition ${isDirty ? "bg-primary text-white hover:bg-primary/90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+        disabled={!isDirty}
+        fullWidth
       >
-        적용하기
-      </button>
+        적용
+      </Button>
     </div>
   );
 }
