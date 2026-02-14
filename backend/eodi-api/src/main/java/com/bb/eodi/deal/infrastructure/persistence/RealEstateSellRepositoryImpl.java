@@ -1,6 +1,6 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
-import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.contract.mapper.DealLegalDongInfoMapper;
 import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
@@ -36,7 +36,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
     private final JPAQueryFactory queryFactory;
     private final RealEstateSellMapper mapper;
     private final DealLegalDongCachePort dealLegalDongCachePort;
-    private final LegalDongInfoMapper legalDongInfoMapper;
+    private final DealLegalDongInfoMapper dealLegalDongInfoMapper;
 
     private final List<RegionCandidate> cache = new ArrayList<>();
 
@@ -207,7 +207,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
                 )
                 .fetch()
                 .stream()
-                .map(regionId -> legalDongInfoMapper.toEntity(
+                .map(regionId -> dealLegalDongInfoMapper.toEntity(
                         dealLegalDongCachePort.findById(regionId))
                 )
                 .collect(Collectors.toList());
@@ -230,7 +230,7 @@ public class RealEstateSellRepositoryImpl implements RealEstateSellRepository {
                 .where(condition)
                 .fetch()
                 .stream()
-                .map(regionId -> legalDongInfoMapper.toEntity(
+                .map(regionId -> dealLegalDongInfoMapper.toEntity(
                         dealLegalDongCachePort.findById(regionId)
                 ))
                 .collect(Collectors.toList());

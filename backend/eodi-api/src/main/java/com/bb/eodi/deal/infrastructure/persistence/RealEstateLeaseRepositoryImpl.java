@@ -1,6 +1,6 @@
 package com.bb.eodi.deal.infrastructure.persistence;
 
-import com.bb.eodi.deal.application.contract.mapper.LegalDongInfoMapper;
+import com.bb.eodi.deal.application.contract.mapper.DealLegalDongInfoMapper;
 import com.bb.eodi.deal.application.port.DealLegalDongCachePort;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
 import com.bb.eodi.deal.domain.query.RegionQuery;
@@ -28,7 +28,7 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
     private final JPAQueryFactory queryFactory;
     private final RealEstateLeaseMapper realEstateLeaseMapper;
     private final DealLegalDongCachePort dealLegalDongCachePort;
-    private final LegalDongInfoMapper legalDongInfoMapper;
+    private final DealLegalDongInfoMapper dealLegalDongInfoMapper;
 
     @Override
     public Page<RealEstateLease> findBy(RealEstateLeaseQuery query, Pageable pageable) {
@@ -120,7 +120,7 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
                 )
                 .fetch()
                 .stream()
-                .map(regionId -> legalDongInfoMapper.toEntity(
+                .map(regionId -> dealLegalDongInfoMapper.toEntity(
                         dealLegalDongCachePort.findById(regionId))
                 )
                 .collect(Collectors.toList());

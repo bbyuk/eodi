@@ -1,3 +1,4 @@
+
 package com.bb.eodi.legaldong.domain.repository;
 
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
@@ -21,4 +22,6 @@ public interface LegalDongRepository {
      * @return 법정동
      */
     List<LegalDong> findAll();
+
+
 }

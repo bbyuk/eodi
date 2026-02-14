@@ -1,6 +1,6 @@
 package com.bb.eodi.finance.application.port;
 
-import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.finance.application.contract.FinanceLegalDongInfo;
 
 public interface FinanceLegalDongCachePort {
     /**
@@ -8,6 +8,6 @@ public interface FinanceLegalDongCachePort {
      * @param name 법정동명
      * @return 법정동 정보
      */
-    LegalDongInfo findByName(String name);
+    FinanceLegalDongInfo findByName(String name);
 
 }

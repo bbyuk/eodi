@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navbar from "@/components/layout/NavBar";
+import ToastProvider from "@/components/ui/container/ToastProvider";
 
 export const metadata = {
   title: "어디살까",
@@ -10,8 +11,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-1 w-full">{children}</main>
+        <ToastProvider>
+          <Navbar />
+          <main className="flex-1 w-full">{children}</main>
+        </ToastProvider>
       </body>
     </html>
   );

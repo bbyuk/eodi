@@ -1,6 +1,6 @@
 package com.bb.eodi.legaldong.application.cache;
 
-import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.legaldong.application.result.LegalDongInfo;
 
 public interface LegalDongCache {
 

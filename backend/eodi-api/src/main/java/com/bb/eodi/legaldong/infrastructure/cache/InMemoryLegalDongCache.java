@@ -1,7 +1,7 @@
 package com.bb.eodi.legaldong.infrastructure.cache;
 
-import com.bb.eodi.deal.application.contract.LegalDongInfo;
 import com.bb.eodi.legaldong.application.cache.LegalDongCache;
+import com.bb.eodi.legaldong.application.result.LegalDongInfo;
 import com.bb.eodi.legaldong.domain.entity.LegalDong;
 import com.bb.eodi.legaldong.domain.repository.LegalDongRepository;
 import jakarta.annotation.PostConstruct;
@@ -93,7 +93,7 @@ public class InMemoryLegalDongCache implements LegalDongCache {
         cacheByCode.putIfAbsent(legalDongInfo.code(), legalDongInfo);
         cacheByName.putIfAbsent(legalDongInfo.name(), legalDongInfo);
 
-        legalDongInfo.children().stream()
+        legalDongInfo.children()
                 .forEach(this::loadToCache);
     }
 

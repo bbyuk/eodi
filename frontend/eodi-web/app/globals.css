@@ -4,11 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  @apply bg-white text-text-primary antialiased scroll-smooth;
+html,
+body {
   @apply font-sans bg-white text-text-primary antialiased scroll-smooth;
   scrollbar-gutter: stable both-edges;
 }
+
 
 ::selection {
   background-color: theme('colors.primary.DEFAULT');

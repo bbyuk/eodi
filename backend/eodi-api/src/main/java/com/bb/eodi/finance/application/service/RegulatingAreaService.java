@@ -1,6 +1,6 @@
 package com.bb.eodi.finance.application.service;
 
-import com.bb.eodi.deal.application.contract.LegalDongInfo;
+import com.bb.eodi.finance.application.contract.FinanceLegalDongInfo;
 import com.bb.eodi.finance.application.input.RegulatingAreaRegisterInput;
 import com.bb.eodi.finance.application.port.FinanceLegalDongCachePort;
 import com.bb.eodi.finance.application.result.RegulatingAreaRegisterResult;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 규제지역 application service
@@ -35,13 +34,13 @@ public class RegulatingAreaService {
     @Transactional
     public RegulatingAreaRegisterResult register(RegulatingAreaRegisterInput input) {
 
-        List<LegalDongInfo> regions = input.targetRegionNames().stream()
+        List<FinanceLegalDongInfo> regions = input.targetRegionNames().stream()
                 .map(legalDongCachePort::findByName)
                 .toList();
 
         List<RegulatingArea> targets = new ArrayList<>();
 
-        for (LegalDongInfo legalDongInfo : regions) {
+        for (FinanceLegalDongInfo legalDongInfo : regions) {
             traverse(input.effectiveStartDate(), input.effectiveEndDate(), legalDongInfo, targets);
         }
 
@@ -62,7 +61,7 @@ public class RegulatingAreaService {
      * @param legalDongInfo      법정동정보 노드
      * @param targets            규제지역 등록 트리
      */
-    private void traverse(LocalDate effectiveStartDate, LocalDate effectiveEndDate, LegalDongInfo legalDongInfo, List<RegulatingArea> targets) {
+    private void traverse(LocalDate effectiveStartDate, LocalDate effectiveEndDate, FinanceLegalDongInfo legalDongInfo, List<RegulatingArea> targets) {
         targets.add(
                 RegulatingArea
                         .builder()
@@ -75,7 +74,7 @@ public class RegulatingAreaService {
             return;
         }
 
-        for (LegalDongInfo child : legalDongInfo.children()) {
+        for (FinanceLegalDongInfo child : legalDongInfo.children()) {
             traverse(effectiveStartDate, effectiveEndDate, child, targets);
         }
     }

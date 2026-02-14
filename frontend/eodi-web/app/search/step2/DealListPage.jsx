@@ -3,24 +3,33 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
-import { SlidersHorizontal } from "lucide-react";
+import { CheckCircle2, CheckSquare, SlidersHorizontal } from "lucide-react";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import GridGroup from "@/app/search/_components/GridGroup";
-import CategoryTab from "@/components/ui/input/CategoryTab";
 import { useSearchContext } from "@/app/search/layout";
 import { useDealTabs } from "@/app/search/step2/_hooks/useDealTabs";
 import { useDealSearch } from "@/app/search/step2/_hooks/useDealSearch";
 import DealResultSection from "@/app/search/step2/_components/DealResultSection";
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
+import { api } from "@/lib/apiClient";
+import Select from "@/components/ui/input/Select";
+import InnerNavContainer from "@/components/layout/InnerNavContainer";
+import CategoryButton from "@/components/ui/input/CategoryButton";
+import ChipSelect from "@/components/ui/input/ChipSelect";
+import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
+import { useToast } from "@/components/ui/container/ToastProvider";
 
 const id = "result";
 const title = "예산 기준으로 실거래 내역을 정리했어요";
 const description = ["입력한 현금과 LTV를 기준으로 최근 3개월 거래를 표시합니다."];
+const MAX_REGION_SELECT_SIZE = 5;
+const limitWarnMessage = `이미 ${MAX_REGION_SELECT_SIZE}개의 지역을 모두 선택했어요.`;
 
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
+  const { showToast } = useToast();
   const { setCurrentContext, cash, selectedSellRegions, selectedLeaseRegions } = useSearchStore();
 
   const tabs = useDealTabs();
@@ -28,6 +37,66 @@ export default function DealListPage() {
 
   const sell = useDealSearch({ dealType: "sell", enabled: selectedTab === "sell" });
   const lease = useDealSearch({ dealType: "lease", enabled: selectedTab === "lease" });
+
+  /**
+   * ============= region filter ====================
+   */
+
+  // 시도 선택 select
+  const [selectedSido, setSelectedSido] = useState("all");
+  const [sido, setSido] = useState([]);
+  useEffect(() => {
+    api.get("/legal-dong/root").then((res) => {
+      setSido(res.items);
+    });
+  }, []);
+
+  // 지역 선택 chip select
+  const [sigungu, setSigungu] = useState([]);
+  const [regionTable, setRegionTable] = useState({});
+  useEffect(() => {
+    api
+      .get("/legal-dong/region", {
+        code: selectedSido,
+      })
+      .then((res) => {
+        setSigungu(res.items);
+        setRegionTable((prev) => ({
+          ...prev,
+          ...Object.fromEntries(res.items.map((i) => [i.code, i])),
+        }));
+      });
+  }, [selectedSido]);
+  const [selectedRegions, setSelectedRegions] = useState(() => new Set());
+  const toggleRegion = (value, e) => {
+    setSelectedRegions((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(value)) {
+        next.delete(value);
+      } else {
+        if (next.size < MAX_REGION_SELECT_SIZE) {
+          next.add(value);
+        } else {
+          showToast({ text: limitWarnMessage, type: "warning" });
+        }
+      }
+
+      return next;
+    });
+  };
+  useEffect(() => {
+    if (selectedRegions.size === 0) {
+      setIsSelectedRegionFloatingCardOpen(false);
+    }
+  }, [selectedRegions]);
+
+  // 선택확인 floating container
+  const [isSelectedRegionFloatingCardOpen, setIsSelectedRegionFloatingCardOpen] = useState(false);
+
+  /**
+   * ============= region filter ====================
+   */
 
   /**
    * ============= Floating Filter ==================
@@ -125,11 +194,62 @@ export default function DealListPage() {
         />
       </FloatingContainer>
 
+      {selectedRegions.size > 0 && (
+        <FloatingContainer
+          isOpen={isSelectedRegionFloatingCardOpen}
+          close={() => setIsSelectedRegionFloatingCardOpen(false)}
+          open={() => setIsSelectedRegionFloatingCardOpen(true)}
+          buttonLabel={`지역 ${selectedRegions.size}개 선택`}
+          buttonIcon={<CheckCircle2 size={16} />}
+          cardLabel={"선택지역"}
+          cardIcon={<CheckSquare size={16} className="text-primary" />}
+          position={"left"}
+        >
+          <SelectedRegionsCardContents
+            table={regionTable}
+            selected={selectedRegions}
+            onSelect={toggleRegion}
+            close={() => setIsSelectedRegionFloatingCardOpen(false)}
+          />
+        </FloatingContainer>
+      )}
       {/* Header */}
       <PageHeader title={title} description={description} />
 
       <GridGroup>
-        <CategoryTab list={tabs} type={"toggle"} value={selectedTab} onSelect={setSelectedTab} />
+        <InnerNavContainer>
+          <Select
+            value={selectedSido}
+            allOption
+            width="w-[150px]"
+            onChange={(value) => setSelectedSido(value)}
+            options={sido.map((el) => ({ value: el.code, label: el.displayName }))}
+          />
+          {selectedSido && selectedSido !== "all" && (
+            <ChipSelect
+              width="w-[150px]"
+              onSelect={(value, e) => toggleRegion(value, e)}
+              selected={selectedRegions}
+              options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
+            />
+          )}
+        </InnerNavContainer>
+
+        <InnerNavContainer>
+          {tabs.map((data) => {
+            const isActive = selectedTab === data.code;
+            return (
+              <CategoryButton
+                key={data.code}
+                icon={data.icon}
+                onClick={() => setSelectedTab(data.code)}
+                isActive={isActive}
+                label={data.displayName}
+              />
+            );
+          })}
+        </InnerNavContainer>
+
         {selectedTab === "sell" && <DealResultSection {...sell} type={"sell"} />}
         {selectedTab === "lease" && <DealResultSection {...lease} type={"lease"} />}
       </GridGroup>
