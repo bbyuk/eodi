@@ -96,21 +96,23 @@ export default function DealListPage() {
   }, [sigunguLoad, selectedRegions]);
 
   const toggleRegion = (value, e) => {
-    setSelectedRegions((prev) => {
-      const next = new Set(prev);
-
-      if (next.has(value)) {
+    if (selectedRegions.has(value)) {
+      setSelectedRegions((prev) => {
+        const next = new Set(prev);
         next.delete(value);
-      } else {
-        if (next.size < MAX_REGION_SELECT_SIZE) {
+        return next;
+      });
+    } else {
+      if (selectedRegions.size < MAX_REGION_SELECT_SIZE) {
+        setSelectedRegions((prev) => {
+          const next = new Set(prev);
           next.add(value);
-        } else {
-          showToast({ text: limitWarnMessage, type: "warning" });
-        }
+          return next;
+        });
+      } else {
+        showToast({ text: limitWarnMessage, type: "warning" });
       }
-
-      return next;
-    });
+    }
   };
 
   /**
@@ -226,7 +228,7 @@ export default function DealListPage() {
           />
           {selectedSido && selectedSido !== "all" && (
             <ChipSelect
-              width="w-[150px]"
+              width="w-[180px]"
               onSelect={(value, e) => toggleRegion(value, e)}
               selected={selectedRegions}
               options={sigungu.map((el) => ({ value: el.id, label: el.displayName }))}
