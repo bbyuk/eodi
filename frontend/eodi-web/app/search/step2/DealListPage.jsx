@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
-import { CheckCircle2, CheckSquare, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
@@ -18,7 +18,6 @@ import Select from "@/components/ui/input/Select";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import CategoryButton from "@/components/ui/input/CategoryButton";
 import ChipSelect from "@/components/ui/input/ChipSelect";
-import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 import { useToast } from "@/components/ui/container/ToastProvider";
 
 const id = "result";
@@ -39,6 +38,14 @@ export default function DealListPage() {
   const lease = useDealSearch({ dealType: "lease", enabled: selectedTab === "lease" });
 
   /**
+   * ============= 편의 메서드 =================
+   */
+  const fetchDeals = () => {
+    selectedTab === "sell" && sell.fetchInit();
+    selectedTab === "lease" && lease.fetchInit();
+  };
+
+  /**
    * ============= region filter ====================
    */
 
@@ -55,6 +62,10 @@ export default function DealListPage() {
   const [sigungu, setSigungu] = useState([]);
   const [regionTable, setRegionTable] = useState({});
   useEffect(() => {
+    // sido 변경시마다 전체 재조회
+
+
+    // sido 변경시마다 sido에 포함된 시군구 조회
     api
       .get("/legal-dong/region", {
         code: selectedSido,
@@ -128,8 +139,7 @@ export default function DealListPage() {
    */
 
   useEffect(() => {
-    selectedTab === "sell" && sell.fetchInit();
-    selectedTab === "lease" && lease.fetchInit();
+    fetchDeals();
   }, [selectedTab]);
   useEffect(() => {
     setCurrentContext(context[id]);
@@ -194,25 +204,6 @@ export default function DealListPage() {
         />
       </FloatingContainer>
 
-      {selectedRegions.size > 0 && (
-        <FloatingContainer
-          isOpen={isSelectedRegionFloatingCardOpen}
-          close={() => setIsSelectedRegionFloatingCardOpen(false)}
-          open={() => setIsSelectedRegionFloatingCardOpen(true)}
-          buttonLabel={`지역 ${selectedRegions.size}개 선택`}
-          buttonIcon={<CheckCircle2 size={16} />}
-          cardLabel={"선택지역"}
-          cardIcon={<CheckSquare size={16} className="text-primary" />}
-          position={"left"}
-        >
-          <SelectedRegionsCardContents
-            table={regionTable}
-            selected={selectedRegions}
-            onSelect={toggleRegion}
-            close={() => setIsSelectedRegionFloatingCardOpen(false)}
-          />
-        </FloatingContainer>
-      )}
       {/* Header */}
       <PageHeader title={title} description={description} />
 
