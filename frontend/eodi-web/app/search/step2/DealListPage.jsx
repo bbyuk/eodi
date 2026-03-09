@@ -60,11 +60,12 @@ export default function DealListPage() {
 
   // 지역 선택 chip select
   const [sigungu, setSigungu] = useState([]);
+  const [sigunguLoad, setSigunguLoad] = useState(false);
   const [regionTable, setRegionTable] = useState({});
   useEffect(() => {
     // sido 변경시 기존 선택된 지역 목록 초기화
+    setSigunguLoad(true);
     setSelectedRegions(() => new Set());
-
     // sido 변경시마다 sido에 포함된 시군구 조회
     api
       .get("/legal-dong/region", {
@@ -72,6 +73,7 @@ export default function DealListPage() {
       })
       .then((res) => {
         setSigungu(res.items);
+        setSigunguLoad(false);
         setRegionTable((prev) => ({
           ...prev,
           ...Object.fromEntries(res.items.map((i) => [i.code, i])),
@@ -80,19 +82,18 @@ export default function DealListPage() {
   }, [selectedSido]);
 
   const [selectedRegions, setSelectedRegions] = useState(() => new Set());
+
   const getSelectedRegions = () => {
-    console.log(sigungu);
     if (selectedRegions.size === 0) {
-      return sigungu.map((elem) => elem.code);
+      return sigungu.map((elem) => elem.id);
     } else {
-      debugger;
       return [...selectedRegions];
     }
   };
 
   useEffect(() => {
-    fetchDeals();
-  }, [selectedRegions]);
+    !sigunguLoad && fetchDeals();
+  }, [sigunguLoad, selectedRegions]);
 
   const toggleRegion = (value, e) => {
     setSelectedRegions((prev) => {
@@ -172,9 +173,9 @@ export default function DealListPage() {
     const filterParam = buildFilterParam(currentFilters);
 
     if (selectedTab === "sell") {
-      sell.fetchWithFilter(getSelectedRegions, filterParam);
+      sell.fetchWithFilter(getSelectedRegions(), filterParam);
     } else if (selectedTab === "lease") {
-      lease.fetchWithFilter(getSelectedRegions, filterParam);
+      lease.fetchWithFilter(getSelectedRegions(), filterParam);
     }
 
     setFilterCount((prev) => ({ ...prev, [selectedTab]: count }));
@@ -228,7 +229,7 @@ export default function DealListPage() {
               width="w-[150px]"
               onSelect={(value, e) => toggleRegion(value, e)}
               selected={selectedRegions}
-              options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
+              options={sigungu.map((el) => ({ value: el.id, label: el.displayName }))}
               placeholder={"전체"}
             />
           )}
