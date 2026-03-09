@@ -29,7 +29,7 @@ const limitWarnMessage = `이미 ${MAX_REGION_SELECT_SIZE}개의 지역을 모�
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
   const { showToast } = useToast();
-  const { setCurrentContext, cash, selectedSellRegions, selectedLeaseRegions } = useSearchStore();
+  const { setCurrentContext, cash } = useSearchStore();
 
   const tabs = useDealTabs();
   const [selectedTab, setSelectedTab] = useState(tabs[0]?.code);
@@ -41,8 +41,8 @@ export default function DealListPage() {
    * ============= 편의 메서드 =================
    */
   const fetchDeals = () => {
-    selectedTab === "sell" && sell.fetchInit();
-    selectedTab === "lease" && lease.fetchInit();
+    selectedTab === "sell" && sell.fetchInit(getSelectedRegions());
+    selectedTab === "lease" && lease.fetchInit(getSelectedRegions());
   };
 
   /**
@@ -62,8 +62,8 @@ export default function DealListPage() {
   const [sigungu, setSigungu] = useState([]);
   const [regionTable, setRegionTable] = useState({});
   useEffect(() => {
-    // sido 변경시마다 전체 재조회
-
+    // sido 변경시 기존 선택된 지역 목록 초기화
+    setSelectedRegions(() => new Set());
 
     // sido 변경시마다 sido에 포함된 시군구 조회
     api
@@ -78,7 +78,22 @@ export default function DealListPage() {
         }));
       });
   }, [selectedSido]);
+
   const [selectedRegions, setSelectedRegions] = useState(() => new Set());
+  const getSelectedRegions = () => {
+    console.log(sigungu);
+    if (selectedRegions.size === 0) {
+      return sigungu.map((elem) => elem.code);
+    } else {
+      debugger;
+      return [...selectedRegions];
+    }
+  };
+
+  useEffect(() => {
+    fetchDeals();
+  }, [selectedRegions]);
+
   const toggleRegion = (value, e) => {
     setSelectedRegions((prev) => {
       const next = new Set(prev);
@@ -96,14 +111,6 @@ export default function DealListPage() {
       return next;
     });
   };
-  useEffect(() => {
-    if (selectedRegions.size === 0) {
-      setIsSelectedRegionFloatingCardOpen(false);
-    }
-  }, [selectedRegions]);
-
-  // 선택확인 floating container
-  const [isSelectedRegionFloatingCardOpen, setIsSelectedRegionFloatingCardOpen] = useState(false);
 
   /**
    * ============= region filter ====================
@@ -165,9 +172,9 @@ export default function DealListPage() {
     const filterParam = buildFilterParam(currentFilters);
 
     if (selectedTab === "sell") {
-      sell.fetchWithFilter(filterParam);
+      sell.fetchWithFilter(getSelectedRegions, filterParam);
     } else if (selectedTab === "lease") {
-      lease.fetchWithFilter(filterParam);
+      lease.fetchWithFilter(getSelectedRegions, filterParam);
     }
 
     setFilterCount((prev) => ({ ...prev, [selectedTab]: count }));
@@ -222,6 +229,7 @@ export default function DealListPage() {
               onSelect={(value, e) => toggleRegion(value, e)}
               selected={selectedRegions}
               options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
+              placeholder={"전체"}
             />
           )}
         </InnerNavContainer>

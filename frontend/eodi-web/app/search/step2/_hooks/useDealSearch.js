@@ -11,8 +11,7 @@ import { useState } from "react";
  */
 export function useDealSearch({ dealType, enabled }) {
   const pageSize = 30;
-  const { cash, inquiredHousingTypes, selectedSellRegions, selectedLeaseRegions } =
-    useSearchStore();
+  const { cash, inquiredHousingTypes } = useSearchStore();
 
   const [info, setInfo] = useState({
     page: 0,
@@ -25,18 +24,16 @@ export function useDealSearch({ dealType, enabled }) {
   });
   const [filterParam, setFilterParam] = useState({});
 
-  const fetchData = (init = false, newFilterParam) => {
+  const fetchData = (init = false, targetRegions, newFilterParam) => {
     if (!enabled || info.isLoading) return;
     setInfo((prev) => ({ ...(init ? { page: 0, data: [] } : prev), isLoading: true }));
 
     const apiInfo = {
       sell: {
         url: "/real-estate/recommendation/sells",
-        targetRegions: selectedSellRegions,
       },
       lease: {
         url: "/real-estate/recommendation/leases",
-        targetRegions: selectedLeaseRegions,
       },
     };
 
@@ -51,7 +48,7 @@ export function useDealSearch({ dealType, enabled }) {
       .get(apiInfo[dealType].url, {
         ...currentFilterParam,
         cash,
-        targetRegionIds: Array.from(apiInfo[dealType].targetRegions).map((region) => region.id),
+        targetRegionIds: targetRegions,
         targetHousingTypes: Array.from(inquiredHousingTypes),
         nextId: info.nextId,
         size: pageSize,
@@ -75,8 +72,8 @@ export function useDealSearch({ dealType, enabled }) {
 
   return {
     info,
-    fetchInit: () => fetchData(true),
-    fetchWithFilter: (filterParam) => fetchData(true, filterParam),
+    fetchInit: (targetRegions) => fetchData(true, targetRegions),
+    fetchWithFilter: (targetRegions, filterParam) => fetchData(true, targetRegions, filterParam),
     loadMoreRef,
   };
 }
