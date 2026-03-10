@@ -44,7 +44,7 @@ export function useDealSearch({ dealType, enabled }) {
     const currentFilterParam = newFilterParam ? newFilterParam : filterParam;
 
     // console.log(init && newFilterParam);
-    api
+    return api
       .get(apiInfo[dealType].url, {
         ...currentFilterParam,
         cash,
