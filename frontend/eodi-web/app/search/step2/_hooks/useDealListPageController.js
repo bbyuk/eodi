@@ -29,20 +29,40 @@ export function useDealListPageController() {
 
   const {
     state: {
+      // ======= 매매 / 임대 tab ======
       selectedTab,
+      // ======= 매매 / 임대 tab ======
+
+      // ======= Floating button 필터 ======
       isFloatingFilterOpen,
       filterCountByDealType,
+      // ======= Floating button 필터 ======
+
+      // ======= 지역 선택 =======
       selectedSido,
       sidoOptions,
       sigunguOptions,
       selectedRegions,
       isSigunguLoading,
+      // ======= 지역 선택 =======
+
+      // ======= 주택유형 선택 =======
+      housingTypeOptions,
+      selectedHousingTypes,
+      // ======= 주택유형 선택 =======
     },
     derived: { currentFilters, currentFilterParam, selectedRegionIds, filterItems },
     actions: {
+      // ======= 매매 / 임대 tab ======
       setSelectedTab,
+      // ======= 매매 / 임대 tab ======
+
+      // ======= Floating button 필터 ======
       setIsFloatingFilterOpen,
       setCurrentTabFilterCount,
+      // ======= Floating button 필터 ======
+
+      // ======= 지역 선택 =======
       setSelectedSido,
       setSidoOptions,
       setSigunguOptions,
@@ -50,27 +70,36 @@ export function useDealListPageController() {
       setIsSigunguLoading,
       updateCurrentFilter,
       getNextSelectedRegions,
+      // ======= 지역 선택 =======
+
+      // ======= 주택유형 선택 =======
+      setHousingTypeOptions,
+      setSelectedHousingTypes,
+      // ======= 주택유형 선택 =======
     },
   } = vm;
 
+  /**
+   * ============ Query ============
+   */
   const sellQuery = useDealSearchQuery({
     dealType: "sell",
     enabled: selectedTab === "sell",
   });
-
   const leaseQuery = useDealSearchQuery({
     dealType: "lease",
     enabled: selectedTab === "lease",
   });
-
   const activeQuery = selectedTab === "sell" ? sellQuery : leaseQuery;
+  /**
+   * ============ Query ============
+   */
 
   const loadSidoOptions = async () => {
     const res = await api.get("/legal-dong/root");
     setSidoOptions(res.items ?? []);
     return res;
   };
-
   const loadSigunguOptions = async (sidoCode) => {
     setIsSigunguLoading(true);
     try {
@@ -130,6 +159,14 @@ export function useDealListPageController() {
     });
   };
 
+  const loadHousingTypeOptions = async () => {
+    console.log("지원 주택유형 목록 조회");
+  };
+
+  const handleSelectHousingType = async (housingTypeCode) => {
+    console.log(housingTypeCode);
+  };
+
   const applyFilters = async () => {
     const enabledCount = Object.values(currentFilters ?? {}).filter(
       (filter) => filter.enable
@@ -153,6 +190,7 @@ export function useDealListPageController() {
 
   useEffect(() => {
     loadSidoOptions();
+    loadHousingTypeOptions();
   }, []);
 
   useEffect(() => {
@@ -206,6 +244,12 @@ export function useDealListPageController() {
       loadMoreRef: activeQuery.loadMoreRef,
       isInitialLoading: activeQuery.info.isFetching,
       isFetchingMore: activeQuery.info.isFetchingMore,
+    },
+
+    housingTypeFilter: {
+      housingTypeOptions,
+      selectedHousingTypes,
+      onSelectHousingType: handleSelectHousingType,
     },
   };
 }
