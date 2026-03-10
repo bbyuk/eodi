@@ -13,34 +13,34 @@ import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingF
 import { useDealListPageController } from "@/app/search/step2/_hooks/useDealListPageController";
 
 export default function DealListPage() {
-  const vm = useDealListPageController();
+  const controller = useDealListPageController();
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
       <FloatingContainer
-        isOpen={vm.floatingFilter.isOpen}
-        open={vm.floatingFilter.open}
-        close={vm.floatingFilter.close}
+        isOpen={controller.floatingFilter.isOpen}
+        open={controller.floatingFilter.open}
+        close={controller.floatingFilter.close}
         buttonLabel="필터"
         buttonIcon={<SlidersHorizontal size={16} />}
         cardLabel="필터"
         cardIcon={<SlidersHorizontal size={16} className="text-primary" />}
-        activeCount={vm.floatingFilter.activeCount}
+        activeCount={controller.floatingFilter.activeCount}
       >
-        <FloatingFilterCardContents {...vm.filterPanel} />
+        <FloatingFilterCardContents {...controller.filterPanel} />
       </FloatingContainer>
 
-      <PageHeader {...vm.page} />
+      <PageHeader {...controller.page} />
 
       <GridGroup>
         <InnerNavContainer>
-          <RegionFilterBar {...vm.regionFilter} />
+          <RegionFilterBar {...controller.regionFilter} />
         </InnerNavContainer>
 
         <InnerNavContainer>
-          <DealTypeTabs {...vm.tabs} />
+          <DealTypeTabs {...controller.tabs} />
         </InnerNavContainer>
 
-        <DealResultSection {...vm.resultSection} />
+        <DealResultSection {...controller.resultSection} />
       </GridGroup>
     </main>
   );
