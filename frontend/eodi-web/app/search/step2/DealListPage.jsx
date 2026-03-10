@@ -11,6 +11,7 @@ import DealTypeTabs from "@/app/search/step2/_components/DealTypeTabs";
 import DealResultSection from "@/app/search/step2/_components/DealResultSection";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { useDealListPageController } from "@/app/search/step2/_hooks/useDealListPageController";
+import HousingTypeFilterBar from "@/app/search/step2/_components/HousingTypeFilterBar";
 
 export default function DealListPage() {
   const controller = useDealListPageController();
@@ -38,6 +39,10 @@ export default function DealListPage() {
 
         <InnerNavContainer>
           <DealTypeTabs {...controller.tabs} />
+        </InnerNavContainer>
+
+        <InnerNavContainer>
+          <HousingTypeFilterBar {...controller.housingTypeFilter} />
         </InnerNavContainer>
 
         <DealResultSection {...controller.resultSection} />

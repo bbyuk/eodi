@@ -30,19 +30,26 @@ export function useDealListPageController() {
   const {
     state: {
       selectedTab,
+
       isFloatingFilterOpen,
       filterCountByDealType,
+
       selectedSido,
       sidoOptions,
       sigunguOptions,
       selectedRegions,
       isSigunguLoading,
+
+      housingTypeOptions,
+      selectedHousingTypes,
     },
     derived: { currentFilters, currentFilterParam, selectedRegionIds, filterItems },
     actions: {
       setSelectedTab,
+
       setIsFloatingFilterOpen,
       setCurrentTabFilterCount,
+
       setSelectedSido,
       setSidoOptions,
       setSigunguOptions,
@@ -50,9 +57,15 @@ export function useDealListPageController() {
       setIsSigunguLoading,
       updateCurrentFilter,
       getNextSelectedRegions,
+
+      setHousingTypeOptions,
+      setSelectedHousingTypes,
     },
   } = vm;
 
+  /**
+   * ============ Query ============
+   */
   const sellQuery = useDealSearchQuery({
     dealType: "sell",
     enabled: selectedTab === "sell",
@@ -64,6 +77,9 @@ export function useDealListPageController() {
   });
 
   const activeQuery = selectedTab === "sell" ? sellQuery : leaseQuery;
+  /**
+   * ============ Query ============
+   */
 
   const loadSidoOptions = async () => {
     const res = await api.get("/legal-dong/root");
@@ -82,11 +98,23 @@ export function useDealListPageController() {
     }
   };
 
+  const buildSearchCriteria = (override = {}) => {
+    const defaultTargetRegionIds =
+      selectedSido === "all"
+        ? []
+        : selectedRegionIds.length > 0
+          ? selectedRegionIds
+          : sigunguOptions.map((item) => item.id);
+
+    return {
+      ...currentFilterParam,
+      targetRegionIds: override.targetRegionIds ?? defaultTargetRegionIds,
+      targetHousingTypes: override.targetHousingTypes ?? Array.from(selectedHousingTypes),
+    };
+  };
+
   const searchCurrent = async (override = {}) => {
-    return activeQuery.search({
-      targetRegions: override.targetRegions ?? selectedRegionIds,
-      filterParam: override.filterParam ?? currentFilterParam,
-    });
+    return activeQuery.search(buildSearchCriteria(override));
   };
 
   const handleChangeSido = async (value) => {
@@ -95,8 +123,9 @@ export function useDealListPageController() {
 
     if (value === "all") {
       setSigunguOptions([]);
+
       await searchCurrent({
-        targetRegions: [],
+        targetRegionIds: [],
       });
       return;
     }
@@ -105,7 +134,7 @@ export function useDealListPageController() {
     const nextRegionIds = (res?.items ?? []).map((item) => item.id);
 
     await searchCurrent({
-      targetRegions: nextRegionIds,
+      targetRegionIds: nextRegionIds,
     });
   };
 
@@ -126,7 +155,29 @@ export function useDealListPageController() {
       next.size === 0 ? sigunguOptions.map((item) => item.id) : Array.from(next);
 
     await searchCurrent({
-      targetRegions: selectedSido === "all" ? [] : nextRegionIds,
+      targetRegionIds: selectedSido === "all" ? [] : nextRegionIds,
+    });
+  };
+
+  const loadHousingTypeOptions = async () => {
+    const res = await api.get("/real-estate/code/housing-type");
+    setHousingTypeOptions(res.items ?? []);
+    return res;
+  };
+
+  const handleSelectHousingType = async (housingTypeCode) => {
+    const next = new Set(selectedHousingTypes);
+
+    if (next.has(housingTypeCode)) {
+      next.delete(housingTypeCode);
+    } else {
+      next.add(housingTypeCode);
+    }
+
+    setSelectedHousingTypes(next);
+
+    await searchCurrent({
+      targetHousingTypes: Array.from(next),
     });
   };
 
@@ -153,6 +204,7 @@ export function useDealListPageController() {
 
   useEffect(() => {
     loadSidoOptions();
+    loadHousingTypeOptions();
   }, []);
 
   useEffect(() => {
@@ -206,6 +258,12 @@ export function useDealListPageController() {
       loadMoreRef: activeQuery.loadMoreRef,
       isInitialLoading: activeQuery.info.isFetching,
       isFetchingMore: activeQuery.info.isFetchingMore,
+    },
+
+    housingTypeFilter: {
+      housingTypeOptions,
+      selectedHousingTypes,
+      onSelectHousingType: handleSelectHousingType,
     },
   };
 }

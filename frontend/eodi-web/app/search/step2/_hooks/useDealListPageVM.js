@@ -24,6 +24,8 @@ export function useDealListPageVM({ createInitialFilters, buildFilterParam }) {
   const [sigunguOptions, setSigunguOptions] = useState([]);
   const [selectedRegions, setSelectedRegions] = useState(new Set());
   const [isSigunguLoading, setIsSigunguLoading] = useState(false);
+  const [housingTypeOptions, setHousingTypeOptions] = useState([]);
+  const [selectedHousingTypes, setSelectedHousingTypes] = useState(new Set());
 
   const currentFilters = useMemo(() => {
     return filtersByDealType[selectedTab];
@@ -100,6 +102,8 @@ export function useDealListPageVM({ createInitialFilters, buildFilterParam }) {
       sigunguOptions,
       selectedRegions,
       isSigunguLoading,
+      housingTypeOptions,
+      selectedHousingTypes,
     },
 
     derived: {
@@ -122,6 +126,8 @@ export function useDealListPageVM({ createInitialFilters, buildFilterParam }) {
       setIsSigunguLoading,
       updateCurrentFilter,
       getNextSelectedRegions,
+      setHousingTypeOptions,
+      setSelectedHousingTypes,
     },
   };
 }
