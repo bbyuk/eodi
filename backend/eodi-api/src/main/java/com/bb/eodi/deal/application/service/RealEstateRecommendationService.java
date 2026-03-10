@@ -188,6 +188,7 @@ public class RealEstateRecommendationService {
 
     /**
      * RegionItem Map으로 전환 편의 메서드
+     *
      * @param regions 집계 대상 지역 목록
      * @return 부모 코드 : 지역 목록 table
      */
@@ -286,7 +287,8 @@ public class RealEstateRecommendationService {
                 .startDate(theDayBeforeThreeMonths)
                 .endDate(today)
                 .targetHousingTypes(
-                        input.targetHousingTypes()
+                        input.targetHousingTypes() == null ? new ArrayList<>()
+                                : input.targetHousingTypes()
                                 .stream()
                                 .map(HousingType::fromCode)
                                 .collect(Collectors.toList())
