@@ -10,10 +10,10 @@ import RegionFilterBar from "@/app/search/step2/_components/RegionFilterBar";
 import DealTypeTabs from "@/app/search/step2/_components/DealTypeTabs";
 import DealResultSection from "@/app/search/step2/_components/DealResultSection";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
-import { useDealListPageVM } from "@/app/search/step2/_hooks/useDealListPageVM";
+import { useDealListPageController } from "@/app/search/step2/_hooks/useDealListPageController";
 
 export default function DealListPage() {
-  const vm = useDealListPageVM();
+  const vm = useDealListPageController();
   return (
     <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
       <FloatingContainer
