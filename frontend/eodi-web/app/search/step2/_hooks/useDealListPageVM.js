@@ -90,27 +90,43 @@ export function useDealListPageVM() {
     await loadSigunguOptions(value);
   };
 
-  const handleToggleRegion = (regionId) => {
-    setSelectedRegions((prev) => {
-      const next = new Set(prev);
+  const getNextSelectedRegions = (prev, regionId, maxSize) => {
+    const next = new Set(prev);
 
-      if (next.has(regionId)) {
-        next.delete(regionId);
-        return next;
-      }
+    if (next.has(regionId)) {
+      next.delete(regionId);
+      return { next, blocked: false };
+    }
 
-      if (next.size >= MAX_REGION_SELECT_SIZE) {
-        showToast?.(
-          null,
-          `지역은 최대 ${MAX_REGION_SELECT_SIZE}개까지 선택할 수 있어요.`,
-          "warning"
-        );
-        return prev;
-      }
+    if (next.size >= maxSize) {
+      return { next: prev, blocked: true };
+    }
 
-      next.add(regionId);
-      return next;
-    });
+    next.add(regionId);
+    return { next, blocked: false };
+  };
+
+  const handleToggleRegion = async (regionId) => {
+    const { next, blocked } = getNextSelectedRegions(
+      selectedRegions,
+      regionId,
+      MAX_REGION_SELECT_SIZE
+    );
+
+    if (blocked) {
+      showToast?.({
+        text: `지역은 최대 ${MAX_REGION_SELECT_SIZE}개까지 선택할 수 있어요.`,
+        type: "warning",
+      });
+      return;
+    }
+
+    setSelectedRegions(next);
+
+    const nextRegionIds =
+      next.size === 0 ? sigunguOptions.map((item) => item.id) : Array.from(next);
+
+    await activeSearch.fetchInit(nextRegionIds);
   };
 
   const updateFilter = (filterKey, updater) => {
