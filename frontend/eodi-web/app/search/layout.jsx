@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useCallback, useContext, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useSearchStore } from "@/app/search/store/searchStore";
 
@@ -58,10 +58,10 @@ export default function SearchLayout({ children }) {
     router.push(`/search/step${currentContext.step - 1}`, { scroll: false });
   };
 
-  const goFirst = () => {
+  const goFirst = useCallback(() => {
     resetDirection();
     router.push("/search/step1", { scroll: false });
-  };
+  }, [resetDirection]);
 
   useEffect(() => {
     return () => {
