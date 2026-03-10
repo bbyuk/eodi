@@ -1,8 +1,19 @@
+"use client";
+
 import ResultGrid from "@/app/search/step2/_components/ResultGrid";
 import ResultCard from "@/app/search/step2/_components/ResultCard";
 
-export default function DealResultSection({ type, info, loadMoreRef }) {
-  const placeholder = () => {
+export default function DealResultSection({
+  type,
+  info,
+  loadMoreRef,
+  isInitialLoading = false,
+  isFetchingMore = false,
+}) {
+  const items = info?.data ?? [];
+  const isEmpty = !isInitialLoading && items.length === 0;
+
+  const renderEmpty = () => {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
         <p className="text-base font-medium">조건에 맞는 거래가 없습니다</p>
@@ -11,8 +22,16 @@ export default function DealResultSection({ type, info, loadMoreRef }) {
     );
   };
 
-  const render = () => {
-    return info.data.map((item) => (
+  const renderLoading = () => {
+    return (
+      <div className="col-span-full flex items-center justify-center py-20 text-gray-400">
+        실거래 데이터를 조회하고 있어요...
+      </div>
+    );
+  };
+
+  const renderItems = () => {
+    return items.map((item) => (
       <ResultCard
         key={item.id}
         data={item}
@@ -30,7 +49,14 @@ export default function DealResultSection({ type, info, loadMoreRef }) {
 
   return (
     <ResultGrid>
-      {info.data.length > 0 ? render() : placeholder()}
+      {isInitialLoading ? renderLoading() : isEmpty ? renderEmpty() : renderItems()}
+
+      {isFetchingMore && (
+        <div className="col-span-full py-4 text-center text-sm text-gray-400">
+          더 불러오는 중...
+        </div>
+      )}
+
       <div ref={loadMoreRef} className="h-6" />
     </ResultGrid>
   );
