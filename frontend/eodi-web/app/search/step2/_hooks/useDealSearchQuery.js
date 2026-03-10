@@ -3,69 +3,51 @@ import { useSearchStore } from "@/app/search/store/searchStore";
 import { api } from "@/lib/apiClient";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
-/**
- * 실거래 데이터 조회 Query hook
- * - API 호출
- * - pagination
- * - infinite scroll
- * - loading 상태
- */
+const PAGE_SIZE = 30;
+
+const initialCriteria = {
+  targetRegionIds: [],
+  targetHousingTypes: [],
+};
+
+const initialInfo = {
+  page: 0,
+  totalPages: 0,
+  hasNext: false,
+  nextId: null,
+  totalCount: 0,
+  data: [],
+  isLoading: false,
+  isFetching: false,
+  isFetchingMore: false,
+};
+
 export function useDealSearchQuery({ dealType, enabled }) {
-  const pageSize = 30;
-  const { cash, inquiredHousingTypes } = useSearchStore();
+  const { cash } = useSearchStore();
 
-  const [info, setInfo] = useState({
-    page: 0,
-    totalPages: 0,
-    hasNext: false,
-    nextId: null,
-    totalCount: 0,
-    data: [],
-    isLoading: false,
-    isFetching: false,
-    isFetchingMore: false,
-  });
-
-  const criteriaRef = useRef({
-    targetRegions: [],
-    filterParam: {},
-  });
+  const [info, setInfo] = useState(initialInfo);
+  const criteriaRef = useRef(initialCriteria);
 
   const apiInfo = useMemo(
     () => ({
-      sell: {
-        url: "/real-estate/recommendation/sells",
-      },
-      lease: {
-        url: "/real-estate/recommendation/leases",
-      },
+      sell: { url: "/real-estate/recommendation/sells" },
+      lease: { url: "/real-estate/recommendation/leases" },
     }),
     []
   );
 
   const fetchData = useCallback(
-    async ({ reset = false, targetRegions, filterParam } = {}) => {
+    async ({ reset = false, criteria } = {}) => {
       if (!enabled) return;
       if (info.isLoading) return;
 
-      const nextCriteria = {
-        targetRegions:
-          targetRegions !== undefined ? targetRegions : (criteriaRef.current.targetRegions ?? []),
-        filterParam:
-          filterParam !== undefined ? filterParam : (criteriaRef.current.filterParam ?? {}),
-      };
-
-      criteriaRef.current = nextCriteria;
+      const currentCriteria = criteria ?? criteriaRef.current;
+      criteriaRef.current = currentCriteria;
 
       setInfo((prev) => ({
         ...(reset
           ? {
-              page: 0,
-              totalPages: 0,
-              hasNext: false,
-              nextId: null,
-              totalCount: 0,
-              data: [],
+              ...initialInfo,
             }
           : prev),
         isLoading: true,
@@ -75,21 +57,19 @@ export function useDealSearchQuery({ dealType, enabled }) {
 
       try {
         const res = await api.get(apiInfo[dealType].url, {
-          ...nextCriteria.filterParam,
+          ...currentCriteria,
           cash,
-          targetRegionIds: nextCriteria.targetRegions,
-          targetHousingTypes: Array.from(inquiredHousingTypes),
           nextId: reset ? null : info.nextId,
-          size: pageSize,
+          size: PAGE_SIZE,
           page: reset ? 0 : info.page,
         });
 
         setInfo((prev) => ({
           ...prev,
           page: (res.page ?? 0) + 1,
+          totalPages: res.totalPages ?? 0,
           hasNext: Boolean(res.hasNext),
           nextId: res.nextId ?? null,
-          totalPages: res.totalPages ?? 0,
           totalCount: res.totalElements ?? 0,
           data: reset ? (res.content ?? []) : [...prev.data, ...(res.content ?? [])],
           isLoading: false,
@@ -108,15 +88,14 @@ export function useDealSearchQuery({ dealType, enabled }) {
         throw error;
       }
     },
-    [apiInfo, cash, dealType, enabled, inquiredHousingTypes, info.isLoading, info.nextId, info.page]
+    [apiInfo, cash, dealType, enabled, info.isLoading, info.nextId, info.page]
   );
 
   const search = useCallback(
-    async ({ targetRegions = [], filterParam = {} } = {}) => {
+    async (criteria = initialCriteria) => {
       return fetchData({
         reset: true,
-        targetRegions,
-        filterParam,
+        criteria,
       });
     },
     [fetchData]

@@ -38,11 +38,11 @@ export default function DealListPage() {
         </InnerNavContainer>
 
         <InnerNavContainer>
-          <HousingTypeFilterBar {...controller.housingTypeFilter} />
+          <DealTypeTabs {...controller.tabs} />
         </InnerNavContainer>
 
         <InnerNavContainer>
-          <DealTypeTabs {...controller.tabs} />
+          <HousingTypeFilterBar {...controller.housingTypeFilter} />
         </InnerNavContainer>
 
         <DealResultSection {...controller.resultSection} />
