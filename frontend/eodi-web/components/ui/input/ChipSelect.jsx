@@ -25,6 +25,23 @@ export default function ChipSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  /**
+   * =========== 편의 메서드 ===========
+   */
+  const formLabel = () => {
+    if (selected.size > 0) {
+      const firstSelectedLabel = options.filter((option) => option.value === [...selected][0])[0]
+        .label;
+
+      if (selected.size > 1) {
+        return `${firstSelectedLabel} 외 ${selected.size - 1} 개 선택`;
+      }
+      return `${firstSelectedLabel}`;
+    } else {
+      return placeholder;
+    }
+  };
+
   return (
     <div ref={containerRef} className={`relative ${width}`}>
       {/* Select 트리거 */}
@@ -33,10 +50,7 @@ export default function ChipSelect({
         onClick={() => setOpen((v) => !v)}
         className="w-full h-10 flex items-center justify-between rounded-full border px-4 text-sm bg-white hover:bg-gray-50"
       >
-        <span className="truncate">
-          {/*{selected.length > 0 ? `${selected.length}개 선택` : placeholder}*/}
-          {placeholder}
-        </span>
+        <span className="truncate">{formLabel()}</span>
         <ChevronDown size={16} className="shrink-0" />
       </button>
 

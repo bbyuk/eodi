@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
-import { CheckCircle2, CheckSquare, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { context } from "@/app/search/_const/context";
 import { useSearchStore } from "@/app/search/store/searchStore";
@@ -18,7 +18,6 @@ import Select from "@/components/ui/input/Select";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import CategoryButton from "@/components/ui/input/CategoryButton";
 import ChipSelect from "@/components/ui/input/ChipSelect";
-import SelectedRegionsCardContents from "@/app/search/step2/_components/SelectedRegionsCardContents";
 import { useToast } from "@/components/ui/container/ToastProvider";
 
 const id = "result";
@@ -30,13 +29,21 @@ const limitWarnMessage = `이미 ${MAX_REGION_SELECT_SIZE}개의 지역을 모�
 export default function DealListPage() {
   const { goFirst } = useSearchContext();
   const { showToast } = useToast();
-  const { setCurrentContext, cash, selectedSellRegions, selectedLeaseRegions } = useSearchStore();
+  const { setCurrentContext, cash } = useSearchStore();
 
   const tabs = useDealTabs();
   const [selectedTab, setSelectedTab] = useState(tabs[0]?.code);
 
   const sell = useDealSearch({ dealType: "sell", enabled: selectedTab === "sell" });
   const lease = useDealSearch({ dealType: "lease", enabled: selectedTab === "lease" });
+
+  /**
+   * ============= 편의 메서드 =================
+   */
+  const fetchDeals = () => {
+    selectedTab === "sell" && sell.fetchInit(getSelectedRegions());
+    selectedTab === "lease" && lease.fetchInit(getSelectedRegions());
+  };
 
   /**
    * ============= region filter ====================
@@ -53,46 +60,60 @@ export default function DealListPage() {
 
   // 지역 선택 chip select
   const [sigungu, setSigungu] = useState([]);
+  const [sigunguLoad, setSigunguLoad] = useState(false);
   const [regionTable, setRegionTable] = useState({});
   useEffect(() => {
+    // sido 변경시 기존 선택된 지역 목록 초기화
+    setSigunguLoad(true);
+    setSelectedRegions(() => new Set());
+    // sido 변경시마다 sido에 포함된 시군구 조회
     api
       .get("/legal-dong/region", {
         code: selectedSido,
       })
       .then((res) => {
         setSigungu(res.items);
+        setSigunguLoad(false);
         setRegionTable((prev) => ({
           ...prev,
           ...Object.fromEntries(res.items.map((i) => [i.code, i])),
         }));
       });
   }, [selectedSido]);
+
   const [selectedRegions, setSelectedRegions] = useState(() => new Set());
-  const toggleRegion = (value, e) => {
-    setSelectedRegions((prev) => {
-      const next = new Set(prev);
 
-      if (next.has(value)) {
-        next.delete(value);
-      } else {
-        if (next.size < MAX_REGION_SELECT_SIZE) {
-          next.add(value);
-        } else {
-          showToast({ text: limitWarnMessage, type: "warning" });
-        }
-      }
-
-      return next;
-    });
-  };
-  useEffect(() => {
+  const getSelectedRegions = () => {
     if (selectedRegions.size === 0) {
-      setIsSelectedRegionFloatingCardOpen(false);
+      return sigungu.map((elem) => elem.id);
+    } else {
+      return [...selectedRegions];
     }
-  }, [selectedRegions]);
+  };
 
-  // 선택확인 floating container
-  const [isSelectedRegionFloatingCardOpen, setIsSelectedRegionFloatingCardOpen] = useState(false);
+  useEffect(() => {
+    !sigunguLoad && fetchDeals();
+  }, [sigunguLoad, selectedRegions]);
+
+  const toggleRegion = (value, e) => {
+    if (selectedRegions.has(value)) {
+      setSelectedRegions((prev) => {
+        const next = new Set(prev);
+        next.delete(value);
+        return next;
+      });
+    } else {
+      if (selectedRegions.size < MAX_REGION_SELECT_SIZE) {
+        setSelectedRegions((prev) => {
+          const next = new Set(prev);
+          next.add(value);
+          return next;
+        });
+      } else {
+        showToast({ text: limitWarnMessage, type: "warning" });
+      }
+    }
+  };
 
   /**
    * ============= region filter ====================
@@ -128,8 +149,7 @@ export default function DealListPage() {
    */
 
   useEffect(() => {
-    selectedTab === "sell" && sell.fetchInit();
-    selectedTab === "lease" && lease.fetchInit();
+    fetchDeals();
   }, [selectedTab]);
   useEffect(() => {
     setCurrentContext(context[id]);
@@ -155,9 +175,9 @@ export default function DealListPage() {
     const filterParam = buildFilterParam(currentFilters);
 
     if (selectedTab === "sell") {
-      sell.fetchWithFilter(filterParam);
+      sell.fetchWithFilter(getSelectedRegions(), filterParam);
     } else if (selectedTab === "lease") {
-      lease.fetchWithFilter(filterParam);
+      lease.fetchWithFilter(getSelectedRegions(), filterParam);
     }
 
     setFilterCount((prev) => ({ ...prev, [selectedTab]: count }));
@@ -194,25 +214,6 @@ export default function DealListPage() {
         />
       </FloatingContainer>
 
-      {selectedRegions.size > 0 && (
-        <FloatingContainer
-          isOpen={isSelectedRegionFloatingCardOpen}
-          close={() => setIsSelectedRegionFloatingCardOpen(false)}
-          open={() => setIsSelectedRegionFloatingCardOpen(true)}
-          buttonLabel={`지역 ${selectedRegions.size}개 선택`}
-          buttonIcon={<CheckCircle2 size={16} />}
-          cardLabel={"선택지역"}
-          cardIcon={<CheckSquare size={16} className="text-primary" />}
-          position={"left"}
-        >
-          <SelectedRegionsCardContents
-            table={regionTable}
-            selected={selectedRegions}
-            onSelect={toggleRegion}
-            close={() => setIsSelectedRegionFloatingCardOpen(false)}
-          />
-        </FloatingContainer>
-      )}
       {/* Header */}
       <PageHeader title={title} description={description} />
 
@@ -227,10 +228,11 @@ export default function DealListPage() {
           />
           {selectedSido && selectedSido !== "all" && (
             <ChipSelect
-              width="w-[150px]"
+              width="w-[180px]"
               onSelect={(value, e) => toggleRegion(value, e)}
               selected={selectedRegions}
-              options={sigungu.map((el) => ({ value: el.code, label: el.displayName }))}
+              options={sigungu.map((el) => ({ value: el.id, label: el.displayName }))}
+              placeholder={"전체"}
             />
           )}
         </InnerNavContainer>

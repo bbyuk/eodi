@@ -51,6 +51,7 @@ public class LegalDongService {
                 .findBy(new LegalDongFindQuery(LegalDongScope.SIGUNGU, input.code()))
                 .stream()
                 .map(legalDong -> LegalDongFindResult.builder()
+                        .id(legalDong.id())
                         .code(legalDong.code())
                         .name(legalDong.name())
                         .displayName(legalDong.name().replace(legalDong.parentName(), "").trim())

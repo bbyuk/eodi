@@ -9,6 +9,8 @@ public record LegalDongFindResponse(
     List<Item> items
 ) {
     public record Item(
+            // 법정동 id
+            Long id,
             // 법정동코드
             String code,
             // 법정동명
