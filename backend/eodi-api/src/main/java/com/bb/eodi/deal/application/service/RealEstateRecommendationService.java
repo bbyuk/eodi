@@ -394,7 +394,9 @@ public class RealEstateRecommendationService {
                                 .maxMonthlyRentFee(input.maxMonthlyRentFee())
                                 .minMonthlyRentFee(input.minMonthlyRentFee())
                                 .targetHousingTypes(
-                                        input.targetHousingTypes()
+                                        input.targetHousingTypes() == null
+                                                ? new ArrayList<>()
+                                                : input.targetHousingTypes()
                                                 .stream()
                                                 .map(HousingType::fromCode)
                                                 .collect(Collectors.toList())
