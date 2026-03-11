@@ -108,6 +108,8 @@ export function useDealListPageController() {
       ...currentFilterParam,
       targetRegionIds: override.targetRegionIds ?? defaultTargetRegionIds,
       targetHousingTypes: override.targetHousingTypes ?? Array.from(selectedHousingTypes),
+      hasLoan: withLoan,
+      isFirstTimeBuyer: isFirstTimeBuyer,
     };
   };
 
