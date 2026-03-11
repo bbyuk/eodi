@@ -1,9 +1,9 @@
 import { Fragment } from "react";
 import InfoTooltip from "@/components/etc/InfoTooltip";
 
-export default function SectionHeader({ title, description, info, children }) {
+export default function SectionHeader({ title, description, info }) {
   return (
-    <div className="mb-6">
+    <div className="mb-4">
       <div className="flex items-center gap-2 mb-1">
         <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
         {info && <InfoTooltip position="bottom" content={info} />}
@@ -21,8 +21,6 @@ export default function SectionHeader({ title, description, info, children }) {
             : description}
         </p>
       )}
-
-      {children}
     </div>
   );
 }
