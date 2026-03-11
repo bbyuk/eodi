@@ -213,7 +213,7 @@ export function useDealListPageController() {
   }, [selectedTab, cash, isSigunguLoading]);
 
   useEffect(() => {
-    if (!includeSell) {
+    if (withLoan && !includeSell) {
       setSelectedTab("lease");
     }
   }, [includeSell]);
