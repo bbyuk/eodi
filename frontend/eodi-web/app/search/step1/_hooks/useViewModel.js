@@ -2,10 +2,14 @@ import { useState } from "react";
 
 export default function useViewModel() {
   const [withLoan, setWithLoan] = useState(false);
+  const [annualIncome, setAnnualIncome] = useState();
+  const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(false);
 
   return {
     state: {
       withLoan,
+      annualIncome,
+      isFirstTimeBuyer,
     },
     derived: {
       pageHeaderTitle: "예산을 입력해주세요",
@@ -13,6 +17,8 @@ export default function useViewModel() {
     },
     actions: {
       setWithLoan,
+      setAnnualIncome,
+      setIsFirstTimeBuyer,
     },
   };
 }

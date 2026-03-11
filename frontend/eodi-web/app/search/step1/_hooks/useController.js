@@ -10,12 +10,13 @@ export function useController() {
   const { goNext } = useSearchContext();
 
   const {
-    state: { withLoan },
+    state: { withLoan, annualIncome, isFirstTimeBuyer },
     derived: { pageHeaderTitle, pageHeaderDescription },
-    actions: { setWithLoan },
+    actions: { setWithLoan, setAnnualIncome, setIsFirstTimeBuyer },
   } = useViewModel();
 
   const handleCashInputEnter = () => {
+    // 엔터키 구현
     goNext();
   };
 
@@ -25,6 +26,24 @@ export function useController() {
 
   const handleChangeWithLoanRadio = (value) => {
     setWithLoan(value);
+    !value && resetLoanForm();
+  };
+
+  const resetLoanForm = () => {
+    setAnnualIncome(undefined);
+  };
+
+  const handleAnnualIncomeChange = (value) => {
+    setAnnualIncome(value);
+  };
+
+  const handleAnnualIncomeEnter = () => {
+    // TODO 엔터 키 구현
+    console.log("연소득 인풋 엔터");
+  };
+
+  const handleIsFirstTimeBuyerRadioChange = (value) => {
+    setIsFirstTimeBuyer(value);
   };
 
   useEffect(() => {
@@ -47,11 +66,21 @@ export function useController() {
       onChange: handleCashInputChange,
     },
     loan: {
-      value: withLoan,
-      onChange: handleChangeWithLoanRadio,
-      options: [
+      withLoan: withLoan,
+      formatter: formatWon,
+      onWithLoanRadioChange: handleChangeWithLoanRadio,
+      withLoanRadioOptions: [
         { label: "네, 함께 볼게요", value: true },
         { label: "아니요, 대출 없이 볼게요", value: false },
+      ],
+      annualIncomeValue: annualIncome,
+      onAnnualIncomeChange: handleAnnualIncomeChange,
+      onAnnualIncomeEnter: handleAnnualIncomeEnter,
+      isFirstTimeBuyer: isFirstTimeBuyer,
+      onIsFirstTimeBuyerRadioChange: handleIsFirstTimeBuyerRadioChange,
+      isFirstTimeBuyerRadioOptions: [
+        { label: "네", value: true },
+        { label: "아니오", value: false },
       ],
     },
   };

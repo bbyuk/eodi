@@ -19,6 +19,7 @@ export default function CapitalInputPage() {
       <PageHeader {...controller.page} />
 
       <div className="space-y-10">
+        {/* 보유 현금 */}
         <section className="space-y-3">
           <SectionHeader
             title={"보유 현금"}
@@ -35,15 +36,46 @@ export default function CapitalInputPage() {
           />
         </section>
 
+        {/* 대출 설정 여부 */}
         <section className="space-y-3">
-          <SectionHeader title={"대출 금액도 함께 계산할까요?"} />
+          <SectionHeader title={"대출을 포함해 예산을 계산할까요?"} />
           <RadioGroup
             name={"include-loan"}
-            value={controller.loan.value}
-            onChange={controller.loan.onChange}
-            options={controller.loan.options}
+            value={controller.loan.withLoan}
+            onChange={controller.loan.onWithLoanRadioChange}
+            options={controller.loan.withLoanRadioOptions}
           />
         </section>
+
+        {/* 대출 설정 상세 */}
+        {controller.loan.withLoan && (
+          <div className="space-y-6 rounded-2xl border border-slate-200 bg-white/70 p-5">
+            <section className="space-y-3">
+              <SectionHeader title={"주택을 소유하신 적이 있나요?"} />
+              <RadioGroup
+                name={"is-firsttime-buyer"}
+                value={controller.loan.isFirstTimeBuyer}
+                onChange={controller.loan.onIsFirstTimeBuyerRadioChange}
+                options={controller.loan.isFirstTimeBuyerRadioOptions}
+              />
+            </section>
+            <section className="space-y-3">
+              <SectionHeader
+                title={"연소득"}
+                description={["대출 가능 금액(DSR)을 계산할 때 사용돼요"]}
+              />
+              <CashInput
+                label={"(만 원 단위)"}
+                placeholder={"예: 5000"}
+                onChange={controller.loan.onAnnualIncomeChange}
+                onEnter={controller.loan.onAnnualIncomeEnter}
+                value={controller.loan.annualIncomeValue}
+                unit={"만 원"}
+                formatter={controller.loan.formatter}
+              />
+            </section>
+          </div>
+        )}
       </div>
     </section>
   );
