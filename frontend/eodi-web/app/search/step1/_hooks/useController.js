@@ -10,9 +10,21 @@ export function useController() {
   const { goNext } = useSearchContext();
 
   const {
-    state: { withLoan, annualIncome, isFirstTimeBuyer, mortgageLoanInterestRate },
+    state: {
+      withLoan,
+      annualIncome,
+      isFirstTimeBuyer,
+      mortgageLoanInterestRate,
+      mortgageLoanPeriod,
+    },
     derived: { pageHeaderTitle, pageHeaderDescription },
-    actions: { setWithLoan, setAnnualIncome, setIsFirstTimeBuyer, setMortgageLoanInterestRate },
+    actions: {
+      setWithLoan,
+      setAnnualIncome,
+      setIsFirstTimeBuyer,
+      setMortgageLoanInterestRate,
+      setMortgageLoanPeriod,
+    },
   } = useViewModel();
 
   const handleCashInputEnter = () => {
@@ -55,6 +67,14 @@ export function useController() {
     console.log("주담대 금리 인풋 엔터");
   };
 
+  const handleMortgageLoanPeriodChange = (value) => {
+    setMortgageLoanPeriod(value);
+  };
+
+  const handleMortgageLoanPeriodEnter = () => {
+    console.log("주담대 기간 인풋 엔터");
+  };
+
   useEffect(() => {
     setCurrentContext(context.cash);
   }, [setCurrentContext]);
@@ -94,6 +114,9 @@ export function useController() {
       mortgageLoanInterestRate: mortgageLoanInterestRate,
       onMortgageLoanInterestRateChange: handleMortgageLoanInterestRateChange,
       onMortgageLoanInterestRateEnter: handleMortgageLoanInterestRateEnter,
+      mortgageLoanPeriod: mortgageLoanPeriod,
+      onMortgageLoanPeriodChange: handleMortgageLoanPeriodChange,
+      onMortgageLoanPeriodEnter: handleMortgageLoanPeriodEnter,
     },
   };
 }

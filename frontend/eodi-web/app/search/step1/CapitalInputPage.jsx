@@ -18,10 +18,10 @@ export default function CapitalInputPage() {
         <section className="space-y-3">
           <SectionHeader
             title={"보유 현금"}
-            description={["대출 금액을 제외한 가용 현금을 입력해주세요."]}
+            description={["대출 금액을 제외한 가용 현금을 입력해주세요"]}
           />
           <NumberInput
-            label={"(만 원 단위)"}
+            label={"(단위: 만 원)"}
             placeholder={"예: 50000"}
             onChange={controller.cash.onChange}
             onEnter={controller.cash.onEnter}
@@ -62,7 +62,7 @@ export default function CapitalInputPage() {
               />
 
               <NumberInput
-                label={"(만 원 단위)"}
+                label={"(단위: 만 원)"}
                 placeholder={"예: 5000"}
                 onChange={controller.loan.onAnnualIncomeChange}
                 onEnter={controller.loan.onAnnualIncomeEnter}
@@ -76,16 +76,33 @@ export default function CapitalInputPage() {
             <section className="space-y-3">
               <SectionHeader
                 title={"주택담보대출 금리"}
-                description={["미입력시 DSR은 계산에서 제외돼요"]}
+                description={["받으실 주택담보대출의 금리를 입력해주세요"]}
               />
               <NumberInput
+                label="(단위: %)"
                 placeholder="예: 4.5"
-                value={controller.loan.mortgageLoanInterestRate}
+                value={controller.loan.mortgageLoanPeriod}
                 onChange={controller.loan.onMortgageLoanInterestRateChange}
                 onEnter={controller.loan.onMortgageLoanInterestRateEnter}
                 unit="%"
                 decimalScale={2}
                 maxValue={100}
+              />
+            </section>
+
+            <section className="space-y-3">
+              <SectionHeader
+                title={"주택담보대출 기간"}
+                description={["받으실 주택담보대출의 기간을 입력해주세요"]}
+              />
+              <NumberInput
+                label="(단위: 년)"
+                placeholder="예: 30"
+                value={controller.loan.mortgageLoanInterestRate}
+                onChange={controller.loan.onMortgageLoanInterestRateChange}
+                onEnter={controller.loan.onMortgageLoanInterestRateEnter}
+                unit="년"
+                maxValue={50}
               />
             </section>
           </div>
