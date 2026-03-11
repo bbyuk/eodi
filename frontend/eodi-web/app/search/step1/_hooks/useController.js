@@ -12,6 +12,7 @@ export function useController() {
   const {
     state: {
       withLoan,
+      includeSell,
       annualIncome,
       isFirstTimeBuyer,
       mortgageLoanInterestRate,
@@ -20,6 +21,7 @@ export function useController() {
     derived: { pageHeaderTitle, pageHeaderDescription },
     actions: {
       setWithLoan,
+      setIncludeSell,
       setAnnualIncome,
       setIsFirstTimeBuyer,
       setMortgageLoanInterestRate,
@@ -42,7 +44,20 @@ export function useController() {
   };
 
   const resetLoanForm = () => {
-    setAnnualIncome(undefined);
+    setIncludeSell(false);
+    resetSellLoanForm();
+  };
+
+  const handleChangeIncludeSellRadio = (value) => {
+    setIncludeSell(value);
+    !value && resetSellLoanForm();
+  };
+
+  const resetSellLoanForm = () => {
+    setIsFirstTimeBuyer(true);
+    setAnnualIncome("");
+    setMortgageLoanInterestRate("");
+    setMortgageLoanPeriod("");
   };
 
   const handleAnnualIncomeChange = (value) => {
@@ -102,14 +117,20 @@ export function useController() {
         { label: "네, 함께 볼게요", value: true },
         { label: "아니요, 대출 없이 볼게요", value: false },
       ],
+      includeSell: includeSell,
+      onIncludeSellRadioChange: handleChangeIncludeSellRadio,
+      includeSellRadioOptions: [
+        { label: "네", value: true },
+        { label: "아니오", value: false },
+      ],
       annualIncomeValue: annualIncome,
       onAnnualIncomeChange: handleAnnualIncomeChange,
       onAnnualIncomeEnter: handleAnnualIncomeEnter,
       isFirstTimeBuyer: isFirstTimeBuyer,
       onIsFirstTimeBuyerRadioChange: handleIsFirstTimeBuyerRadioChange,
       isFirstTimeBuyerRadioOptions: [
-        { label: "네", value: true },
-        { label: "아니오", value: false },
+        { label: "네", value: false },
+        { label: "아니오", value: true },
       ],
       mortgageLoanInterestRate: mortgageLoanInterestRate,
       onMortgageLoanInterestRateChange: handleMortgageLoanInterestRateChange,

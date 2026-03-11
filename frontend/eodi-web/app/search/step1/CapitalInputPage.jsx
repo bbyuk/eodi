@@ -9,6 +9,57 @@ import NumberInput from "@/components/ui/input/NumberInput";
 export default function CapitalInputPage() {
   const controller = useController();
 
+  /**
+   * 이후에 사용할 DSR form 렌더함수
+   * @returns {JSX.Element}
+   */
+  const renderDSRForm = () => {
+    return (
+      <>
+        <section className="space-y-3">
+          <SectionHeader title={"연소득"} />
+          <NumberInput
+            label={"(단위: 만 원)"}
+            placeholder={"예: 5000"}
+            onChange={controller.loan.onAnnualIncomeChange}
+            onEnter={controller.loan.onAnnualIncomeEnter}
+            value={controller.loan.annualIncomeValue}
+            unit={"만 원"}
+            formatter={controller.loan.formatter}
+            maxValue={99999999}
+          />
+        </section>
+
+        <section className="space-y-3">
+          <SectionHeader title={"주택담보대출 금리"} />
+          <NumberInput
+            label="(단위: %)"
+            placeholder="예: 4.5"
+            value={controller.loan.mortgageLoanInterestRate}
+            onChange={controller.loan.onMortgageLoanInterestRateChange}
+            onEnter={controller.loan.onMortgageLoanInterestRateEnter}
+            unit="%"
+            decimalScale={2}
+            maxValue={100}
+          />
+        </section>
+
+        <section className="space-y-3">
+          <SectionHeader title={"주택담보대출 기간"} />
+          <NumberInput
+            label="(단위: 년)"
+            placeholder="예: 30"
+            value={controller.loan.mortgageLoanPeriod}
+            onChange={controller.loan.onMortgageLoanPeriodChange}
+            onEnter={controller.loan.onMortgageLoanPeriodEnter}
+            unit="년"
+            maxValue={50}
+          />
+        </section>
+      </>
+    );
+  };
+
   return (
     <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
       <PageHeader {...controller.page} />
@@ -47,64 +98,28 @@ export default function CapitalInputPage() {
         {controller.loan.withLoan && (
           <div className="space-y-6 rounded-2xl border border-slate-200 bg-white/70 p-5">
             <section className="space-y-3">
-              <SectionHeader title={"주택을 소유하신 적이 있나요?"} />
+              <SectionHeader title={"매매를 고려중이신가요?"} />
               <RadioGroup
-                name={"is-firsttime-buyer"}
-                value={controller.loan.isFirstTimeBuyer}
-                onChange={controller.loan.onIsFirstTimeBuyerRadioChange}
-                options={controller.loan.isFirstTimeBuyerRadioOptions}
-              />
-            </section>
-            <section className="space-y-3">
-              <SectionHeader
-                title={"연소득"}
-                description={["대출 가능 금액(DSR)을 계산할 때 사용돼요"]}
-              />
-
-              <NumberInput
-                label={"(단위: 만 원)"}
-                placeholder={"예: 5000"}
-                onChange={controller.loan.onAnnualIncomeChange}
-                onEnter={controller.loan.onAnnualIncomeEnter}
-                value={controller.loan.annualIncomeValue}
-                unit={"만 원"}
-                formatter={controller.loan.formatter}
-                maxValue={99999999}
+                name={"include-sell"}
+                value={controller.loan.includeSell}
+                onChange={controller.loan.onIncludeSellRadioChange}
+                options={controller.loan.includeSellRadioOptions}
               />
             </section>
 
-            <section className="space-y-3">
-              <SectionHeader
-                title={"주택담보대출 금리"}
-                description={["받으실 주택담보대출의 금리를 입력해주세요"]}
-              />
-              <NumberInput
-                label="(단위: %)"
-                placeholder="예: 4.5"
-                value={controller.loan.mortgageLoanPeriod}
-                onChange={controller.loan.onMortgageLoanInterestRateChange}
-                onEnter={controller.loan.onMortgageLoanInterestRateEnter}
-                unit="%"
-                decimalScale={2}
-                maxValue={100}
-              />
-            </section>
-
-            <section className="space-y-3">
-              <SectionHeader
-                title={"주택담보대출 기간"}
-                description={["받으실 주택담보대출의 기간을 입력해주세요"]}
-              />
-              <NumberInput
-                label="(단위: 년)"
-                placeholder="예: 30"
-                value={controller.loan.mortgageLoanInterestRate}
-                onChange={controller.loan.onMortgageLoanInterestRateChange}
-                onEnter={controller.loan.onMortgageLoanInterestRateEnter}
-                unit="년"
-                maxValue={50}
-              />
-            </section>
+            {controller.loan.includeSell && (
+              <>
+                <section className="space-y-3">
+                  <SectionHeader title={"주택을 소유하신 적이 있나요?"} />
+                  <RadioGroup
+                    name={"is-firsttime-buyer"}
+                    value={controller.loan.isFirstTimeBuyer}
+                    onChange={controller.loan.onIsFirstTimeBuyerRadioChange}
+                    options={controller.loan.isFirstTimeBuyerRadioOptions}
+                  />
+                </section>
+              </>
+            )}
           </div>
         )}
       </div>
