@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 
 export const DEAL_TABS = [
-  { code: "sell", displayName: "매매" },
-  { code: "lease", displayName: "임대차" },
+  { value: "sell", label: "매매" },
+  { value: "lease", label: "임대차" },
 ];
 
 export const MAX_REGION_SELECT_SIZE = 5;
