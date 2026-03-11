@@ -253,12 +253,13 @@ export function useDealListPageController() {
     },
 
     tabs: {
-      tabs: includeSell
-        ? [
-            { value: "sell", label: "매매" },
-            { value: "lease", label: "임대차" },
-          ]
-        : [{ value: "lease", label: "임대차" }],
+      tabs:
+        !withLoan || includeSell
+          ? [
+              { value: "sell", label: "매매" },
+              { value: "lease", label: "임대차" },
+            ]
+          : [{ value: "lease", label: "임대차" }],
       selectedTab,
       onChangeTab: setSelectedTab,
     },
