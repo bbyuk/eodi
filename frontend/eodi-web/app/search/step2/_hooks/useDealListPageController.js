@@ -15,8 +15,6 @@ import {
 import { useDealSearchQuery } from "@/app/search/step2/_hooks/useDealSearchQuery";
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
 
-const PAGE_ID = "result";
-
 export function useDealListPageController() {
   const { goFirst } = useSearchContext();
   const { showToast } = useToast();
@@ -193,7 +191,7 @@ export function useDealListPageController() {
   };
 
   useEffect(() => {
-    setCurrentContext(context[PAGE_ID]);
+    setCurrentContext(context.result);
   }, [setCurrentContext]);
 
   useEffect(() => {
