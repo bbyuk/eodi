@@ -6,27 +6,24 @@ import { formatWon } from "@/app/search/_util/util";
 import { useSearchContext } from "@/app/search/layout";
 
 export function useController() {
-  const { resetStep1, cash, setCash, setCurrentContext, currentContext } = useSearchStore();
+  const {
+    resetStep1,
+    cash,
+    setCash,
+    setCurrentContext,
+    withLoan,
+    setWithLoan,
+    includeSell,
+    setIncludeSell,
+    isFirstTimeBuyer,
+    setIsFirstTimeBuyer,
+  } = useSearchStore();
   const { goNext } = useSearchContext();
 
   const {
-    state: {
-      withLoan,
-      includeSell,
-      annualIncome,
-      isFirstTimeBuyer,
-      mortgageLoanInterestRate,
-      mortgageLoanPeriod,
-    },
+    state: { annualIncome, mortgageLoanInterestRate, mortgageLoanPeriod },
     derived: { pageHeaderTitle, pageHeaderDescription },
-    actions: {
-      setWithLoan,
-      setIncludeSell,
-      setAnnualIncome,
-      setIsFirstTimeBuyer,
-      setMortgageLoanInterestRate,
-      setMortgageLoanPeriod,
-    },
+    actions: { setAnnualIncome, setMortgageLoanInterestRate, setMortgageLoanPeriod },
   } = useViewModel();
 
   const handleCashInputEnter = () => {
