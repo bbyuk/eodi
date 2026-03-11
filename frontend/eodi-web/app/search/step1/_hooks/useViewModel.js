@@ -4,12 +4,14 @@ export default function useViewModel() {
   const [withLoan, setWithLoan] = useState(false);
   const [annualIncome, setAnnualIncome] = useState();
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(false);
+  const [mortgageLoanInterestRate, setMortgageLoanInterestRate] = useState();
 
   return {
     state: {
       withLoan,
       annualIncome,
       isFirstTimeBuyer,
+      mortgageLoanInterestRate,
     },
     derived: {
       pageHeaderTitle: "예산을 입력해주세요",
@@ -19,6 +21,7 @@ export default function useViewModel() {
       setWithLoan,
       setAnnualIncome,
       setIsFirstTimeBuyer,
+      setMortgageLoanInterestRate,
     },
   };
 }

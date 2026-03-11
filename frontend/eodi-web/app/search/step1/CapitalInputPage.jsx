@@ -1,15 +1,10 @@
 "use client";
 
-import CashInput from "@/components/ui/input/CashInput";
 import PageHeader from "@/components/ui/header/PageHeader";
-import { useEffect, useState } from "react";
-import { useSearchStore } from "@/app/search/store/searchStore";
-import { context } from "@/app/search/_const/context";
-import { formatWon } from "@/app/search/_util/util";
-import { useSearchContext } from "@/app/search/layout";
 import { useController } from "@/app/search/step1/_hooks/useController";
 import SectionHeader from "@/components/ui/header/SectionHeader";
 import RadioGroup from "@/components/ui/input/RadioGroup";
+import NumberInput from "@/components/ui/input/NumberInput";
 
 export default function CapitalInputPage() {
   const controller = useController();
@@ -25,7 +20,7 @@ export default function CapitalInputPage() {
             title={"보유 현금"}
             description={["대출 금액을 제외한 가용 현금을 입력해주세요."]}
           />
-          <CashInput
+          <NumberInput
             label={"(만 원 단위)"}
             placeholder={"예: 50000"}
             onChange={controller.cash.onChange}
@@ -33,6 +28,7 @@ export default function CapitalInputPage() {
             value={controller.cash.value}
             unit={"만 원"}
             formatter={controller.cash.formatter}
+            maxValue={99999999}
           />
         </section>
 
@@ -64,7 +60,8 @@ export default function CapitalInputPage() {
                 title={"연소득"}
                 description={["대출 가능 금액(DSR)을 계산할 때 사용돼요"]}
               />
-              <CashInput
+
+              <NumberInput
                 label={"(만 원 단위)"}
                 placeholder={"예: 5000"}
                 onChange={controller.loan.onAnnualIncomeChange}
@@ -72,6 +69,23 @@ export default function CapitalInputPage() {
                 value={controller.loan.annualIncomeValue}
                 unit={"만 원"}
                 formatter={controller.loan.formatter}
+                maxValue={99999999}
+              />
+            </section>
+
+            <section className="space-y-3">
+              <SectionHeader
+                title={"주택담보대출 금리"}
+                description={["미입력시 DSR은 계산에서 제외돼요"]}
+              />
+              <NumberInput
+                placeholder="예: 4.5"
+                value={controller.loan.mortgageLoanInterestRate}
+                onChange={controller.loan.onMortgageLoanInterestRateChange}
+                onEnter={controller.loan.onMortgageLoanInterestRateEnter}
+                unit="%"
+                decimalScale={2}
+                maxValue={100}
               />
             </section>
           </div>

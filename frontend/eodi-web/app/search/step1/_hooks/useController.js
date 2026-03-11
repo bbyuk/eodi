@@ -10,9 +10,9 @@ export function useController() {
   const { goNext } = useSearchContext();
 
   const {
-    state: { withLoan, annualIncome, isFirstTimeBuyer },
+    state: { withLoan, annualIncome, isFirstTimeBuyer, mortgageLoanInterestRate },
     derived: { pageHeaderTitle, pageHeaderDescription },
-    actions: { setWithLoan, setAnnualIncome, setIsFirstTimeBuyer },
+    actions: { setWithLoan, setAnnualIncome, setIsFirstTimeBuyer, setMortgageLoanInterestRate },
   } = useViewModel();
 
   const handleCashInputEnter = () => {
@@ -44,6 +44,15 @@ export function useController() {
 
   const handleIsFirstTimeBuyerRadioChange = (value) => {
     setIsFirstTimeBuyer(value);
+  };
+
+  const handleMortgageLoanInterestRateChange = (value) => {
+    setMortgageLoanInterestRate(value);
+  };
+
+  const handleMortgageLoanInterestRateEnter = () => {
+    // TODO 엔터키 기능 구현
+    console.log("주담대 금리 인풋 엔터");
   };
 
   useEffect(() => {
@@ -82,6 +91,9 @@ export function useController() {
         { label: "네", value: true },
         { label: "아니오", value: false },
       ],
+      mortgageLoanInterestRate: mortgageLoanInterestRate,
+      onMortgageLoanInterestRateChange: handleMortgageLoanInterestRateChange,
+      onMortgageLoanInterestRateEnter: handleMortgageLoanInterestRateEnter,
     },
   };
 }
