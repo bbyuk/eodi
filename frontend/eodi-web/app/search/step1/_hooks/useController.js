@@ -23,6 +23,10 @@ export function useController() {
     setCash(value);
   };
 
+  const handleChangeWithLoanRadio = (value) => {
+    setWithLoan(value);
+  };
+
   useEffect(() => {
     setCurrentContext(context.cash);
   }, [setCurrentContext]);
@@ -41,6 +45,14 @@ export function useController() {
       formatter: formatWon,
       onEnter: handleCashInputEnter,
       onChange: handleCashInputChange,
+    },
+    loan: {
+      value: withLoan,
+      onChange: handleChangeWithLoanRadio,
+      options: [
+        { label: "네, 함께 볼게요", value: true },
+        { label: "아니요, 대출 없이 볼게요", value: false },
+      ],
     },
   };
 }
