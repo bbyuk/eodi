@@ -2,15 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-export const DEAL_TABS = [
-  { code: "sell", displayName: "매매" },
-  { code: "lease", displayName: "임대차" },
-];
-
 export const MAX_REGION_SELECT_SIZE = 5;
 
 export function useDealListPageVM({ createInitialFilters, buildFilterParam }) {
-  const [selectedTab, setSelectedTab] = useState(DEAL_TABS[0]?.code ?? "sell");
+  const [selectedTab, setSelectedTab] = useState("sell");
   const [isFloatingFilterOpen, setIsFloatingFilterOpen] = useState(false);
 
   const [filtersByDealType, setFiltersByDealType] = useState(createInitialFilters());

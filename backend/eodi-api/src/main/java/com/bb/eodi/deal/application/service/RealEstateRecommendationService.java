@@ -280,8 +280,10 @@ public class RealEstateRecommendationService {
         RealEstateSellRecommendQuery query = RealEstateSellRecommendQuery.builder()
                 .maxPrice(input.maxPrice() != null
                         ? input.maxPrice()
-                        : input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash()
-                ))
+                        : input.hasLoan()
+                        ? input.cash() + dealFinancePort.calculateMaximumMortgageLoanAmount(input.cash())
+                        : input.cash()
+                )
                 .minPrice(input.minPrice() != null ? input.minPrice() : input.cash() - sellPriceGap)
                 .targetRegionIds(input.targetRegionIds())
                 .startDate(theDayBeforeThreeMonths)
@@ -316,13 +318,13 @@ public class RealEstateRecommendationService {
             for (int i = 0; i < limit; i++) {
                 RealEstateSell sell = slice.get(i);
 
-                long availableLoan =
+                long availableLoan = input.hasLoan() ?
                         dealFinancePort.calculateAvailableMortgageLoanAmount(
                                 input.annualIncome(),
                                 input.monthlyPayment(),
                                 input.isFirstTimeBuyer(),
                                 sell.getRegionId(),
-                                sell.getPrice());
+                                sell.getPrice()) : 0L;
 
                 if (sell.getPrice() <= input.cash() + availableLoan) {
                     result.add(toSummary(sell));

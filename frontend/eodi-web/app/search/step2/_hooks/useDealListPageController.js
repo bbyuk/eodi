@@ -9,18 +9,16 @@ import { api } from "@/lib/apiClient";
 import { context } from "@/app/search/_const/context";
 import {
   useDealListPageVM,
-  DEAL_TABS,
   MAX_REGION_SELECT_SIZE,
 } from "@/app/search/step2/_hooks/useDealListPageVM";
 import { useDealSearchQuery } from "@/app/search/step2/_hooks/useDealSearchQuery";
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
 
-const PAGE_ID = "result";
-
 export function useDealListPageController() {
   const { goFirst } = useSearchContext();
   const { showToast } = useToast();
-  const { setCurrentContext, currentContext, cash } = useSearchStore();
+  const { setCurrentContext, currentContext, cash, withLoan, isFirstTimeBuyer, includeSell } =
+    useSearchStore();
 
   const vm = useDealListPageVM({
     createInitialFilters,
@@ -110,6 +108,8 @@ export function useDealListPageController() {
       ...currentFilterParam,
       targetRegionIds: override.targetRegionIds ?? defaultTargetRegionIds,
       targetHousingTypes: override.targetHousingTypes ?? Array.from(selectedHousingTypes),
+      hasLoan: withLoan,
+      isFirstTimeBuyer: isFirstTimeBuyer,
     };
   };
 
@@ -193,7 +193,7 @@ export function useDealListPageController() {
   };
 
   useEffect(() => {
-    setCurrentContext(context[PAGE_ID]);
+    setCurrentContext(context.result);
   }, [setCurrentContext]);
 
   useEffect(() => {
@@ -213,6 +213,12 @@ export function useDealListPageController() {
 
     searchCurrent();
   }, [selectedTab, cash, isSigunguLoading]);
+
+  useEffect(() => {
+    if (withLoan && !includeSell) {
+      setSelectedTab("lease");
+    }
+  }, [includeSell]);
 
   return {
     page: {
@@ -247,7 +253,13 @@ export function useDealListPageController() {
     },
 
     tabs: {
-      tabs: DEAL_TABS,
+      tabs:
+        !withLoan || includeSell
+          ? [
+              { value: "sell", label: "매매" },
+              { value: "lease", label: "임대차" },
+            ]
+          : [{ value: "lease", label: "임대차" }],
       selectedTab,
       onChangeTab: setSelectedTab,
     },

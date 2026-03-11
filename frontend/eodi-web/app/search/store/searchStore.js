@@ -8,6 +8,12 @@ export const useSearchStore = create((set, get) => ({
   currentContext: context.cash,
   // 입력된 현금
   cash: "",
+  // 대출 포함 계산 여부
+  withLoan: false,
+  // 주택 매매 여부
+  includeSell: false,
+  // 생애최초주택구매 여부
+  isFirstTimeBuyer: false,
   // 조회된 주택 유형 목록
   inquiredHousingTypes: ["AP", "OF"],
   // 선택된 매매 지역
@@ -28,6 +34,25 @@ export const useSearchStore = create((set, get) => ({
    * @param cash 보유 현금 입력
    */
   setCash: (cash) => set({ cash }),
+
+  /**
+   * 대출 포함 계산 여부 set
+   * @param withLoan 대출 포함 계산 여부
+   */
+  setWithLoan: (withLoan) => set({ withLoan }),
+
+  /**
+   * 매매 여부 set
+   * @param includeSell 매매 여부
+   */
+  setIncludeSell: (includeSell) => set({ includeSell }),
+
+  /**
+   * 생애 최초 주택 구매자 여부 set
+   * @param isFirstTimeBuyer 생애 최초 주택 구매자 여부
+   */
+  setIsFirstTimeBuyer: (isFirstTimeBuyer) => set({ isFirstTimeBuyer }),
+
   /**
    * 애니메이션 방향 변경
    * @param currentDirection 방향

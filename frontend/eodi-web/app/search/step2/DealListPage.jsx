@@ -1,17 +1,17 @@
 "use client";
 
-import PageHeader from "@/components/ui/PageHeader";
+import PageHeader from "@/components/ui/header/PageHeader";
 import GridGroup from "@/app/search/_components/GridGroup";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
 import { SlidersHorizontal } from "lucide-react";
 
 import RegionFilterBar from "@/app/search/step2/_components/RegionFilterBar";
-import DealTypeTabs from "@/app/search/step2/_components/DealTypeTabs";
 import DealResultSection from "@/app/search/step2/_components/DealResultSection";
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { useDealListPageController } from "@/app/search/step2/_hooks/useDealListPageController";
 import HousingTypeFilterBar from "@/app/search/step2/_components/HousingTypeFilterBar";
+import RadioGroup from "@/components/ui/input/RadioGroup";
 
 export default function DealListPage() {
   const controller = useDealListPageController();
@@ -38,7 +38,12 @@ export default function DealListPage() {
         </InnerNavContainer>
 
         <InnerNavContainer>
-          <DealTypeTabs {...controller.tabs} />
+          <RadioGroup
+            name={"deal-tabs"}
+            value={controller.tabs.selectedTab}
+            onChange={controller.tabs.onChangeTab}
+            options={controller.tabs.tabs}
+          />
         </InnerNavContainer>
 
         <InnerNavContainer>

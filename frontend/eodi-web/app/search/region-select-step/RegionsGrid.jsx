@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHeader from "@/components/ui/PageHeader";
+import PageHeader from "@/components/ui/header/PageHeader";
 import CategoryTab from "@/components/ui/input/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/region-select-step/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
