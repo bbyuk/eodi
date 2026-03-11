@@ -1,7 +1,7 @@
 "use client";
 
 import CashInput from "@/components/ui/input/CashInput";
-import PageHeader from "@/components/ui/PageHeader";
+import PageHeader from "@/components/ui/header/PageHeader";
 import { useEffect, useState } from "react";
 import { useSearchStore } from "@/app/search/store/searchStore";
 import { context } from "@/app/search/_const/context";

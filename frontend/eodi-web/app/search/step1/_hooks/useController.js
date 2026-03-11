@@ -9,7 +9,11 @@ export function useController() {
   const { resetStep1, cash, setCash, setCurrentContext, currentContext } = useSearchStore();
   const { goNext } = useSearchContext();
 
-  const vm = useViewModel();
+  const {
+    state: { withLoan },
+    derived: { pageHeaderTitle, pageHeaderDescription },
+    actions: { setWithLoan },
+  } = useViewModel();
 
   const handleCashInputEnter = () => {
     goNext();
@@ -29,8 +33,8 @@ export function useController() {
 
   return {
     page: {
-      title: vm.derived.pageHeaderTitle,
-      description: vm.derived.pageHeaderDescription,
+      title: pageHeaderTitle,
+      description: pageHeaderDescription,
     },
     cash: {
       value: cash,

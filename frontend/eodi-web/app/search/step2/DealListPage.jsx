@@ -1,6 +1,6 @@
 "use client";
 
-import PageHeader from "@/components/ui/PageHeader";
+import PageHeader from "@/components/ui/header/PageHeader";
 import GridGroup from "@/app/search/_components/GridGroup";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
 import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
