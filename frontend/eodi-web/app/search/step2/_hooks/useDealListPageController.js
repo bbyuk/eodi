@@ -9,7 +9,6 @@ import { api } from "@/lib/apiClient";
 import { context } from "@/app/search/_const/context";
 import {
   useDealListPageVM,
-  DEAL_TABS,
   MAX_REGION_SELECT_SIZE,
 } from "@/app/search/step2/_hooks/useDealListPageVM";
 import { useDealSearchQuery } from "@/app/search/step2/_hooks/useDealSearchQuery";
@@ -18,7 +17,8 @@ import { buildFilterParam, createInitialFilters } from "@/app/search/step2/confi
 export function useDealListPageController() {
   const { goFirst } = useSearchContext();
   const { showToast } = useToast();
-  const { setCurrentContext, currentContext, cash } = useSearchStore();
+  const { setCurrentContext, currentContext, cash, withLoan, isFirstTimeBuyer, includeSell } =
+    useSearchStore();
 
   const vm = useDealListPageVM({
     createInitialFilters,
@@ -212,6 +212,12 @@ export function useDealListPageController() {
     searchCurrent();
   }, [selectedTab, cash, isSigunguLoading]);
 
+  useEffect(() => {
+    if (!includeSell) {
+      setSelectedTab("lease");
+    }
+  }, [includeSell]);
+
   return {
     page: {
       title: "예산 기준으로 실거래 내역을 정리했어요",
@@ -245,7 +251,12 @@ export function useDealListPageController() {
     },
 
     tabs: {
-      tabs: DEAL_TABS,
+      tabs: includeSell
+        ? [
+            { value: "sell", label: "매매" },
+            { value: "lease", label: "임대차" },
+          ]
+        : [{ value: "lease", label: "임대차" }],
       selectedTab,
       onChangeTab: setSelectedTab,
     },
