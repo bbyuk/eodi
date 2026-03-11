@@ -9,7 +9,7 @@ import { formatWon } from "@/app/search/_util/util";
 import { useSearchContext } from "@/app/search/layout";
 
 const id = "cash";
-export default function StepCash() {
+export default function InitialInputPage() {
   const title = "예산을 입력해주세요";
   const description = ["입력한 금액으로 매수, 전·월세가 가능한 지역을 바로 찾아드릴게요."];
   const unit = "만 원";
