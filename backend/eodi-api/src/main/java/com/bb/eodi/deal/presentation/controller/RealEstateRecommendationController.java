@@ -112,7 +112,7 @@ public class RealEstateRecommendationController {
     }
 
 
-    @GetMapping("sells")
+    @GetMapping("sell")
     @Operation(summary = "살펴볼 만한 매매 거래 목록 조회",
             description = "보유 현금, 선택한 지역, 선택한 주택 유형을 기준으로 살펴볼 만한 매매 거래 목록 조회")
     public ResponseEntity<CursorResponse<RealEstateSellFindResponse>> getRecommendedRealEstateSells(
@@ -133,7 +133,7 @@ public class RealEstateRecommendationController {
         );
     }
 
-    @GetMapping("leases")
+    @GetMapping("lease")
     @Operation(summary = "살펴볼 만한 임대차 거래 목록 조회",
             description = "보유 현금, 선택한 지역, 선택한 주택 유형을 기준으로 살펴볼 만한 임대차 거래 목록 조회")
     public ResponseEntity<PageResponse<RealEstateLeaseFindResponse>> getRecommendedRealEstateLeases(
@@ -152,4 +152,5 @@ public class RealEstateRecommendationController {
                 )
         );
     }
+
 }
