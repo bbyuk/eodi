@@ -32,6 +32,7 @@ export function useDealSearchQuery({ dealType, enabled }) {
     () => ({
       sell: { url: "/real-estate/recommendation/sell" },
       lease: { url: "/real-estate/recommendation/lease" },
+      metadata: { url: "/real-estate/recommendation/metadata" },
     }),
     []
   );

@@ -9,7 +9,7 @@ export default function DealResultSection({
   loadMoreRef,
   isInitialLoading = false,
   isFetchingMore = false,
-  updatedAt,
+  metadata,
 }) {
   const items = info?.data ?? [];
   const isEmpty = !isInitialLoading && items.length === 0;
@@ -50,7 +50,9 @@ export default function DealResultSection({
 
   return (
     <div className="relative">
-      <div className="absolute right-0 -top-6 text-xs text-gray-400">{updatedAt} 업데이트</div>
+      <div className="absolute right-0 -top-6 text-xs text-gray-400">
+        {metadata?.updateDate} 업데이트
+      </div>
 
       <ResultGrid>
         {isInitialLoading ? renderLoading() : isEmpty ? renderEmpty() : renderItems()}
