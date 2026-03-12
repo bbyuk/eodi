@@ -30,8 +30,9 @@ export function useDealSearchQuery({ dealType, enabled }) {
 
   const apiInfo = useMemo(
     () => ({
-      sell: { url: "/real-estate/recommendation/sells" },
-      lease: { url: "/real-estate/recommendation/leases" },
+      sell: { url: "/real-estate/recommendation/sell" },
+      lease: { url: "/real-estate/recommendation/lease" },
+      metadata: { url: "/real-estate/recommendation/metadata" },
     }),
     []
   );

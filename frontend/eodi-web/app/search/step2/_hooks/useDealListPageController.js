@@ -13,6 +13,7 @@ import {
 } from "@/app/search/step2/_hooks/useDealListPageVM";
 import { useDealSearchQuery } from "@/app/search/step2/_hooks/useDealSearchQuery";
 import { buildFilterParam, createInitialFilters } from "@/app/search/step2/config/dealFilterConfig";
+import { useDealMetadataQuery } from "@/app/search/step2/_hooks/useDealMetadataQuery";
 
 export function useDealListPageController() {
   const { goFirst } = useSearchContext();
@@ -75,6 +76,9 @@ export function useDealListPageController() {
   });
 
   const activeQuery = selectedTab === "sell" ? sellQuery : leaseQuery;
+
+  const metadataQuery = useDealMetadataQuery();
+
   /**
    * ============ Query ============
    */
@@ -205,6 +209,7 @@ export function useDealListPageController() {
   useEffect(() => {
     loadSidoOptions();
     loadHousingTypeOptions();
+    metadataQuery.fetchMetadata();
   }, []);
 
   useEffect(() => {
@@ -270,6 +275,7 @@ export function useDealListPageController() {
       loadMoreRef: activeQuery.loadMoreRef,
       isInitialLoading: activeQuery.info.isFetching,
       isFetchingMore: activeQuery.info.isFetchingMore,
+      metadata: metadataQuery.metadata,
     },
 
     housingTypeFilter: {

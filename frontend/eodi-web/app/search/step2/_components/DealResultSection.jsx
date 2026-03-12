@@ -9,6 +9,7 @@ export default function DealResultSection({
   loadMoreRef,
   isInitialLoading = false,
   isFetchingMore = false,
+  metadata,
 }) {
   const items = info?.data ?? [];
   const isEmpty = !isInitialLoading && items.length === 0;
@@ -17,7 +18,7 @@ export default function DealResultSection({
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
         <p className="text-base font-medium">조건에 맞는 거래가 없습니다</p>
-        <p className="text-sm mt-2">지역이나 예산 조건을 변경해 보세요</p>
+        <p className="mt-2 text-sm">지역이나 예산 조건을 변경해 보세요</p>
       </div>
     );
   };
@@ -48,16 +49,22 @@ export default function DealResultSection({
   };
 
   return (
-    <ResultGrid>
-      {isInitialLoading ? renderLoading() : isEmpty ? renderEmpty() : renderItems()}
+    <div className="relative">
+      <div className="absolute right-0 -top-6 text-xs text-gray-400">
+        {metadata?.updateDate} 업데이트
+      </div>
 
-      {isFetchingMore && (
-        <div className="col-span-full py-4 text-center text-sm text-gray-400">
-          더 불러오는 중...
-        </div>
-      )}
+      <ResultGrid>
+        {isInitialLoading ? renderLoading() : isEmpty ? renderEmpty() : renderItems()}
 
-      <div ref={loadMoreRef} className="h-6" />
-    </ResultGrid>
+        {isFetchingMore && (
+          <div className="col-span-full py-4 text-center text-sm text-gray-400">
+            더 불러오는 중...
+          </div>
+        )}
+
+        <div ref={loadMoreRef} className="h-6" />
+      </ResultGrid>
+    </div>
   );
 }
