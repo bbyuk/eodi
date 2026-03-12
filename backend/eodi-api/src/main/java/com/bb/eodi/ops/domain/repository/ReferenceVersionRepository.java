@@ -3,6 +3,7 @@ package com.bb.eodi.ops.domain.repository;
 import com.bb.eodi.ops.domain.entity.ReferenceVersion;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -10,11 +11,5 @@ import java.util.Optional;
  */
 public interface ReferenceVersionRepository {
 
-    /**
-     * 기준대상명으로 기준정보버전 조회
-     * @param targetName 기준대상명
-     * @return 기준정보버전 Optional
-     */
-    Optional<ReferenceVersion> findByTargetName(String targetName);
-
+    Optional<LocalDate> findLastUpdateDate(List<String> targetNames);
 }

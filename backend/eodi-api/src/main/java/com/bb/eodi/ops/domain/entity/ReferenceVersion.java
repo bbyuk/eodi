@@ -32,4 +32,24 @@ public class ReferenceVersion {
      * 수정자
      */
     private String updatedBy;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public LocalDate getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
 }

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,21 +23,21 @@ public class ReferenceVersionRepositoryImpl implements ReferenceVersionRepositor
     private final ReferenceVersionMapper referenceVersionMapper;
 
     /**
-     * 기준대상명으로 기준정보버전 조회
+     * 대상 목록 중 최신 버전을 조회한다.
      *
-     * @param targetName 기준대상명
-     * @return 기준정보버전 Optional
+     * @param targetNames 대상명 목록
+     * @return
      */
     @Override
-    public Optional<ReferenceVersion> findByTargetName(String targetName) {
+    public Optional<LocalDate> findLastUpdateDate(List<String> targetNames) {
+
         QReferenceVersionJpaEntity referenceVersion = QReferenceVersionJpaEntity.referenceVersionJpaEntity;
 
         return Optional.ofNullable(
-                referenceVersionMapper.toDomain(
-                        queryFactory.selectFrom(referenceVersion)
-                                .where(referenceVersion.targetName.eq(targetName))
-                                .fetchOne()
-                )
+                queryFactory.select(referenceVersion.effectiveDate.min())
+                        .from(referenceVersion)
+                        .where(referenceVersion.targetName.in(targetNames))
+                        .fetchOne()
         );
     }
 }
