@@ -22,6 +22,8 @@ public record FindRecommendedLeaseInput(
         List<Long> targetRegionIds,
         // 대상 주택 유형 목록
         List<String> targetHousingTypes,
+        // 대출 여부
+        Boolean hasLoan,
         // 최대 보증금
         Integer maxDeposit,
         // 최소 보증금

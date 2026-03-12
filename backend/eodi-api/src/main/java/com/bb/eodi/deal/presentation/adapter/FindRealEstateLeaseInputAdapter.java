@@ -42,6 +42,7 @@ public class FindRealEstateLeaseInputAdapter {
                 requestParameter.cash(),
                 requestParameter.targetRegionIds(),
                 requestParameter.targetHousingTypes(),
+                requestParameter.hasLoan(),
                 requestParameter.maxDeposit(),
                 requestParameter.minDeposit(),
                 requestParameter.maxMonthlyRentFee(),
