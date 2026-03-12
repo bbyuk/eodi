@@ -24,7 +24,7 @@ export default function ResultCard({ data, dealType }) {
         </div>
       )}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 truncate">
           {data.targetName ? `${data.targetName}` : ""}
         </h3>
         <p className="text-sm text-gray-500">{data.legalDongFullName}</p>
