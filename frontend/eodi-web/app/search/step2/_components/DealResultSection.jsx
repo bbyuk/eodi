@@ -10,6 +10,7 @@ export default function DealResultSection({
   isInitialLoading = false,
   isFetchingMore = false,
   metadata,
+  onCopyButtonClick,
 }) {
   const items = info?.data ?? [];
   const isEmpty = !isInitialLoading && items.length === 0;
@@ -36,6 +37,7 @@ export default function DealResultSection({
       <ResultCard
         key={item.id}
         data={item}
+        onCopyButtonClick={onCopyButtonClick}
         dealType={
           type === "sell"
             ? { code: "sell", label: "매매" }

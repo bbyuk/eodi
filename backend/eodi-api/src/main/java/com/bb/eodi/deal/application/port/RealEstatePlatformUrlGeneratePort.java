@@ -9,4 +9,5 @@ import com.bb.eodi.deal.domain.entity.RealEstateSell;
 public interface RealEstatePlatformUrlGeneratePort {
     String generate(RealEstateSell realEstateSell);
     String generate(RealEstateLease realEstateLease);
+    String getBaseUrl();
 }

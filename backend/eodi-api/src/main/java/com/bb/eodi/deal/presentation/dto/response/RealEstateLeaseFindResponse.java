@@ -41,6 +41,8 @@ public record RealEstateLeaseFindResponse(
         // 갱신계약청구권 사용
         boolean useRRRight,
         // 네이버 부동산 URL
-        String naverUrl
+        String naverUrl,
+        // 유효한 링크를 보유하고 있는지 여부
+        boolean hasLink
 ) {
 }

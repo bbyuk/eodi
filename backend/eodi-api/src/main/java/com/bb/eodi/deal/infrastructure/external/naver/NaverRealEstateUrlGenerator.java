@@ -48,8 +48,11 @@ public class NaverRealEstateUrlGenerator implements RealEstatePlatformUrlGenerat
         }
 
         sb.append(baseUrl)
-                .append("/").append(realEstateSell.getXPos()).append(":").append(realEstateSell.getYPos()).append(":").append(defaultMapSize)
-                .append("/").append(targetHousingType).append("/").append(tradeType);
+                .append("?").append("ms=").append(realEstateSell.getXPos()).append(",").append(realEstateSell.getYPos()).append(",").append(defaultMapSize).append("&")
+                        .append("a=").append(targetHousingType).append("&")
+                        .append("b=").append(tradeType).append("&")
+                        .append("e=").append("RETAIL");
+
         return sb.toString();
     }
 
@@ -75,8 +78,16 @@ public class NaverRealEstateUrlGenerator implements RealEstatePlatformUrlGenerat
         }
 
         sb.append(baseUrl)
-                .append("/").append(realEstateLease.getXPos()).append(":").append(realEstateLease.getYPos()).append(":").append(defaultMapSize)
-                .append("/").append(targetHousingType).append("/").append(tradeType);
+                .append("?").append("ms=").append(realEstateLease.getXPos()).append(",").append(realEstateLease.getYPos()).append(",").append(defaultMapSize).append("&")
+                .append("a=").append(targetHousingType).append("&")
+                .append("b=").append(tradeType).append("&")
+                .append("e=").append("RETAIL");
+
         return sb.toString();
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return baseUrl;
     }
 }
