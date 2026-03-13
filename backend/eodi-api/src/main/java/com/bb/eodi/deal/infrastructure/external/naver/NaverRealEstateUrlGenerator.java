@@ -85,4 +85,9 @@ public class NaverRealEstateUrlGenerator implements RealEstatePlatformUrlGenerat
 
         return sb.toString();
     }
+
+    @Override
+    public String getBaseUrl() {
+        return baseUrl;
+    }
 }

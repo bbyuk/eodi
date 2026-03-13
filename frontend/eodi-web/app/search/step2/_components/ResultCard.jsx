@@ -15,8 +15,6 @@ export default function ResultCard({ data, dealType, onCopyButtonClick }) {
     return formatWon(0);
   };
 
-  const hasCoord = !!data.naverUrl;
-
   return (
     <article className="relative border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
       {data.dateOfRegistration && (
@@ -50,19 +48,13 @@ export default function ResultCard({ data, dealType, onCopyButtonClick }) {
 
       <div className="mt-4 flex items-center gap-2">
         {/* 메인 버튼 */}
-        <div className={`relative ${!hasCoord ? "group flex-1" : "flex-1"}`}>
-          <Button
-            as="a"
-            href={data.naverUrl || "https://new.land.naver.com/"}
-            target="_blank"
-            rel="noopener noreferrer"
-            fullWidth
-          >
+        <div className={`relative ${!data.hasLink ? "group flex-1" : "flex-1"}`}>
+          <Button as="a" href={data.naverUrl} target="_blank" rel="noopener noreferrer" fullWidth>
             <Search className="w-4 h-4 relative top-[1px]" />
             네이버 부동산 보기
           </Button>
 
-          {!hasCoord && (
+          {!data.hasLink && (
             <div
               className="
           pointer-events-none
@@ -89,7 +81,7 @@ export default function ResultCard({ data, dealType, onCopyButtonClick }) {
         </div>
 
         {/* 복사 버튼 (좌표 없을 때만) */}
-        {!hasCoord && (
+        {!data.hasLink && (
           <div className="relative group shrink-0">
             <button
               type="button"

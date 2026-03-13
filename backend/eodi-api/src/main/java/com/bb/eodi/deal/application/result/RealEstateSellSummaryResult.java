@@ -42,4 +42,6 @@ public class RealEstateSellSummaryResult {
     private Integer floor;
     // 네이버 부동산에서 보기 URL
     private String naverUrl;
+    // 좌표정보가 있어 유효한 링크를 갖고있는지 여부
+    private boolean hasLink;
 }

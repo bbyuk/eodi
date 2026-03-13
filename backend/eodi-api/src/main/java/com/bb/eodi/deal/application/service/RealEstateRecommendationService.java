@@ -361,9 +361,11 @@ public class RealEstateRecommendationService {
         resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
 
         // 네이버 URL 생성
-        resultDto.setNaverUrl(
-                realEstatePlatformUrlGeneratePort.generate(realEstateSell)
-        );
+        String naverUrl = realEstatePlatformUrlGeneratePort.generate(realEstateSell);
+        boolean hasLink = naverUrl != null;
+
+        resultDto.setHasLink(hasLink);
+        resultDto.setNaverUrl(hasLink ? naverUrl : realEstatePlatformUrlGeneratePort.getBaseUrl());
 
         return resultDto;
     }
@@ -378,9 +380,11 @@ public class RealEstateRecommendationService {
         resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
 
         // 네이버 URL 생성
-        resultDto.setNaverUrl(
-                realEstatePlatformUrlGeneratePort.generate(realEstateLease)
-        );
+        String naverUrl = realEstatePlatformUrlGeneratePort.generate(realEstateLease);
+        boolean hasLink = naverUrl != null;
+
+        resultDto.setHasLink(hasLink);
+        resultDto.setNaverUrl(hasLink ? naverUrl : realEstatePlatformUrlGeneratePort.getBaseUrl());
 
         return resultDto;
     }

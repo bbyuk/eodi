@@ -48,4 +48,6 @@ public class RealEstateLeaseSummaryResult {
     private boolean useRRRight;
     // 네이버 부동산 url
     private String naverUrl;
+    // 좌표정보를 갖고 있어 유효한 링크를 보유하고 있는지 여부
+    private boolean hasLink;
 }

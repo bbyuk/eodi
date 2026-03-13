@@ -38,6 +38,8 @@ public record RealEstateSellFindResponse(
         // 층
         Integer floor,
         // 네이버 부동산에서 보기 URL
-        String naverUrl
+        String naverUrl,
+        // 유효한 링크를 보유하고 있는지 여부
+        boolean hasLink
 ) {
 }
