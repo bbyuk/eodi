@@ -66,7 +66,7 @@ jobs:
               "export EODI_API_TAG='"$IMAGE_TAG"'",
               "aws ecr get-login-password --region '"$AWS_REGION"' | docker login --username AWS --password-stdin '"$AWS_ECR_REGISTRY"'",
               "docker compose -f docker-compose.api.yml pull",
-              "docker compose -f docker-compose.api.yml up -d"
+              "docker compose -f docker-compose.api.yml up -d --force-recreate"
             ]' \
             --query 'Command.CommandId' \
             --output text)

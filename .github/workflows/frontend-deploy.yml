@@ -70,7 +70,7 @@ jobs:
               
               "export EODI_WEB_TAG='"$IMAGE_TAG"'",
               "docker compose -f docker-compose.web.yml pull",
-              "docker compose -f docker-compose.web.yml up -d"
+              "docker compose -f docker-compose.web.yml up -d --force-recreate"
             ]' \
             --query 'Command.CommandId' \
             --output text)
