@@ -13,6 +13,7 @@ import com.bb.eodi.deal.application.port.RealEstatePlatformUrlGeneratePort;
 import com.bb.eodi.deal.application.result.*;
 import com.bb.eodi.deal.application.result.mapper.RealEstateLeaseSummaryResultMapper;
 import com.bb.eodi.deal.application.result.mapper.RealEstateSellSummaryResultMapper;
+import com.bb.eodi.deal.domain.entity.RealEstateLease;
 import com.bb.eodi.deal.domain.entity.RealEstateSell;
 import com.bb.eodi.deal.domain.entity.Region;
 import com.bb.eodi.deal.domain.query.RealEstateLeaseQuery;
@@ -162,9 +163,7 @@ public class RealEstateRecommendationService {
 
         RegionQuery leaseRegionQuery = RegionQuery.builder()
                 .minCash(input.cash() - leaseDepositGap)
-                .maxCash(input.cash() + dealFinancePort.calculateAvailableDepositLoanAmount(
-                        input.cash())
-                )
+                .maxCash(input.cash())
                 .startDate(startDate)
                 .endDate(today)
                 .housingTypes(housingTypeParameters)
@@ -369,6 +368,23 @@ public class RealEstateRecommendationService {
         return resultDto;
     }
 
+    private RealEstateLeaseSummaryResult toSummary(RealEstateLease realEstateLease) {
+        RealEstateLeaseSummaryResult resultDto = realEstateLeaseSummaryResultMapper.toResult(realEstateLease);
+
+        resultDto.setLegalDongFullName(dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
+                " " +
+                resultDto.getLegalDongName());
+
+        resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+
+        // 네이버 URL 생성
+        resultDto.setNaverUrl(
+                realEstatePlatformUrlGeneratePort.generate(realEstateLease)
+        );
+
+        return resultDto;
+    }
+
     /**
      * 입력된 파라미터 기반으로 맞춤 임대차 실거래 데이터 목록을 리턴한다.
      * <p>
@@ -381,52 +397,74 @@ public class RealEstateRecommendationService {
      * 최근 3개월 거래내역 확인
      *
      * @param input    부동산 임대차 실거래가 데이터 조회 application input
-     * @param pageable pageable 파라미터 객체
+     * @param cursorRequest cursor 기반 페이징 파라미터 객체
      * @return 추천 매매 데이터 목록
      */
     @Transactional(readOnly = true)
-    public Page<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRecommendedLeaseInput input, Pageable pageable) {
+    public Cursor<RealEstateLeaseSummaryResult> findRecommendedLeases(FindRecommendedLeaseInput input, CursorRequest cursorRequest) {
         // TODO 정책 / 대출 관련 로직 추가 필요
+        LocalDate today = LocalDate.now();
+        LocalDate theDayBeforeThreeMonths = today.minusMonths(monthsToView);
 
-        return realEstateLeaseRepository.findBy(
-                        RealEstateLeaseQuery.builder()
-                                .targetRegionIds(input.targetRegionIds())
-                                .maxDeposit(input.maxDeposit())
-                                .minDeposit(input.minDeposit())
-                                .maxMonthlyRentFee(input.maxMonthlyRentFee())
-                                .minMonthlyRentFee(input.minMonthlyRentFee())
-                                .targetHousingTypes(
-                                        input.targetHousingTypes() == null
-                                                ? new ArrayList<>()
-                                                : input.targetHousingTypes()
-                                                .stream()
-                                                .map(HousingType::fromCode)
-                                                .collect(Collectors.toList())
-                                )
-                                .maxNetLeasableArea(input.maxNetLeasableArea())
-                                .minNetLeasableArea(input.minNetLeasableArea())
-                                .build(),
-                        pageable
+        RealEstateLeaseQuery query = RealEstateLeaseQuery.builder()
+                .targetRegionIds(input.targetRegionIds())
+                .maxDeposit(input.maxDeposit())
+                .minDeposit(input.minDeposit())
+                .maxMonthlyRentFee(input.maxMonthlyRentFee())
+                .minMonthlyRentFee(input.minMonthlyRentFee())
+                .startDate(theDayBeforeThreeMonths)
+                .endDate(today)
+                .targetHousingTypes(
+                        input.targetHousingTypes() == null
+                                ? new ArrayList<>()
+                                : input.targetHousingTypes()
+                                .stream()
+                                .map(HousingType::fromCode)
+                                .collect(Collectors.toList())
                 )
-                .map(realEstateLease -> {
-                    RealEstateLeaseSummaryResult resultDto = realEstateLeaseSummaryResultMapper.toResult(realEstateLease);
+                .maxNetLeasableArea(input.maxNetLeasableArea())
+                .minNetLeasableArea(input.minNetLeasableArea())
+                .build();
 
-                    // 법정동 명 concat
-                    resultDto.setLegalDongFullName(
-                            dealLegalDongCachePort.findById(resultDto.getRegionId()).name() +
-                                    " " +
-                                    resultDto.getLegalDongName());
+        List<RealEstateLeaseSummaryResult> result = new ArrayList<>();
 
-                    // 전용면적 소숫점 밑 2자리로 반올림
-                    resultDto.setNetLeasableArea(resultDto.getNetLeasableArea().setScale(2, RoundingMode.HALF_UP));
+        boolean hasNext = false;
+        Long nextId = cursorRequest.nextId();
 
-                    // 네이버 URL 생성
-                    resultDto.setNaverUrl(
-                            realEstatePlatformUrlGeneratePort.generate(realEstateLease)
-                    );
+        while (result.size() < cursorRequest.size()) {
+            List<RealEstateLease> slice = realEstateLeaseRepository.findRecommendedLeaseSlices(query, nextId, cursorRequest.size());
 
-                    return resultDto;
-                });
+            if (slice.isEmpty()) break;
+
+            hasNext = slice.size() > cursorRequest.size();
+            int limit = Math.min(slice.size(), cursorRequest.size());
+
+            for (int i = 0; i < limit; i++) {
+                RealEstateLease lease = slice.get(i);
+
+                long availableLoan = input.hasLoan() ? dealFinancePort.calculateMaximumLeaseLoanAmount(lease.getDeposit()) : 0L;
+
+                if (lease.getDeposit() <= input.cash() + availableLoan) {
+                    result.add(toSummary(lease));
+                    if (result.size() == cursorRequest.size()) {
+                        nextId = lease.getId();
+                        break;
+                    }
+                }
+
+                // 정책 통과 여부와 상관없이 커서 이동
+                nextId = lease.getId();
+            }
+
+            if (!hasNext) break;
+        }
+
+        return new Cursor<>(
+                result,
+                hasNext ? nextId : null,
+                hasNext,
+                cursorRequest.size()
+        );
     }
 
     /**

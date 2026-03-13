@@ -59,12 +59,12 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
             condition.and(realEstateLease.netLeasableArea.goe(query.getMinNetLeasableArea()));
         }
 
-        if (query.getStartYearMonth() != null) {
-            condition.and(realEstateLease.contractDate.goe(query.getStartYearMonth().atDay(1)));
+        if (query.getStartDate() != null) {
+            condition.and(realEstateLease.contractDate.goe(query.getStartDate()));
         }
 
-        if (query.getEndYearMonth() != null) {
-            condition.and(realEstateLease.contractDate.loe(query.getEndYearMonth().atEndOfMonth()));
+        if (query.getEndDate() != null) {
+            condition.and(realEstateLease.contractDate.loe(query.getEndDate()));
         }
 
         if (query.getTargetHousingTypes() != null && !query.getTargetHousingTypes().isEmpty()) {
@@ -123,6 +123,62 @@ public class RealEstateLeaseRepositoryImpl implements RealEstateLeaseRepository 
                 .map(regionId -> dealLegalDongInfoMapper.toEntity(
                         dealLegalDongCachePort.findById(regionId))
                 )
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RealEstateLease> findRecommendedLeaseSlices(RealEstateLeaseQuery query, Long lastId, int size) {
+        QRealEstateLeaseJpaEntity realEstateLease = QRealEstateLeaseJpaEntity.realEstateLeaseJpaEntity;
+
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (lastId != null) {
+            condition.and(realEstateLease.id.lt(lastId));
+        }
+
+        if (query.getMaxDeposit() != null) {
+            condition.and(realEstateLease.deposit.loe(query.getMaxDeposit()));
+        }
+
+        if (query.getMinDeposit() != null) {
+            condition.and(realEstateLease.deposit.goe(query.getMinDeposit()));
+        }
+
+        if (query.getMaxNetLeasableArea() != null) {
+            condition.and(realEstateLease.netLeasableArea.loe(query.getMaxNetLeasableArea()));
+        }
+
+        if (query.getMinNetLeasableArea() != null) {
+            condition.and(realEstateLease.netLeasableArea.goe(query.getMinNetLeasableArea()));
+        }
+
+        if (query.getTargetRegionIds() != null && !query.getTargetRegionIds().isEmpty()) {
+            condition.and(realEstateLease.regionId.in(query.getTargetRegionIds()));
+        }
+
+        if (query.getTargetHousingTypes() != null && !query.getTargetHousingTypes().isEmpty()) {
+            condition.and(realEstateLease.housingType.in(query.getTargetHousingTypes()));
+        }
+
+        if (query.getMaxMonthlyRentFee() != null) {
+            condition.and(realEstateLease.monthlyRent.loe(query.getMaxMonthlyRentFee()));
+        }
+
+        if (query.getMinMonthlyRentFee() != null) {
+            condition.and(realEstateLease.monthlyRent.goe(query.getMinMonthlyRentFee()));
+        }
+
+        condition.and(realEstateLease.contractDate.loe(query.getEndDate()))
+                .and(realEstateLease.contractDate.goe(query.getStartDate()));
+
+        return queryFactory
+                .selectFrom(realEstateLease)
+                .where(condition)
+                .orderBy(realEstateLease.id.desc())
+                .limit(size + 1)
+                .fetch()
+                .stream()
+                .map(realEstateLeaseMapper::toDomain)
                 .collect(Collectors.toList());
     }
 }

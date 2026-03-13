@@ -30,10 +30,9 @@ public interface DealFinancePort {
     long calculateMaximumMortgageLoanAmount(long cash);
 
     /**
-     * 전세자금대출 가능 금액을 계산한다. (만 원 단위)
-     *
-     * @param cash 보유 현금
-     * @return 전세자금대출 가능 금액 (만 원 단위)
+     * 대상 물건의 가격으로 최대 전세자금 대출 가능 금액을 계산한다.
+     * @param deposit 대상 집 보증금
+     * @return 전세자금 대출 가능 최대 금액 (만 원 단위)
      */
-    long calculateAvailableDepositLoanAmount(long cash);
+    long calculateMaximumLeaseLoanAmount(long deposit);
 }
