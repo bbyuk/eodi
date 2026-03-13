@@ -3,7 +3,6 @@ package com.bb.eodi.deal.presentation.controller;
 
 import com.bb.eodi.common.model.CursorRequest;
 import com.bb.eodi.common.presentation.response.CursorResponse;
-import com.bb.eodi.common.presentation.response.PageResponse;
 import com.bb.eodi.deal.application.service.RealEstateDealMetadataService;
 import com.bb.eodi.deal.application.service.RealEstateRecommendationService;
 import com.bb.eodi.deal.presentation.adapter.FindRealEstateLeaseInputAdapter;
@@ -25,7 +24,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -141,18 +139,18 @@ public class RealEstateRecommendationController {
     @GetMapping("lease")
     @Operation(summary = "살펴볼 만한 임대차 거래 목록 조회",
             description = "보유 현금, 선택한 지역, 선택한 주택 유형을 기준으로 살펴볼 만한 임대차 거래 목록 조회")
-    public ResponseEntity<PageResponse<RealEstateLeaseFindResponse>> getRecommendedRealEstateLeases(
+    public ResponseEntity<CursorResponse<RealEstateLeaseFindResponse>> getRecommendedRealEstateLeases(
             @ParameterObject @Valid
             RealEstateLeaseRecommendRequestParameter requestParameter,
             @ParameterObject
-            Pageable pageable
+            CursorRequest cursorRequest
     ) {
         return ResponseEntity.ok(
-                PageResponse.from(
+                CursorResponse.from(
                         realEstateRecommendationService
                                 .findRecommendedLeases(
                                         findRealEstateLeaseInputAdapter.toInput(requestParameter),
-                                        pageable)
+                                        cursorRequest)
                                 .map(realEstateLeaseFindResponseMapper::toResponse)
                 )
         );

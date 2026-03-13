@@ -3,6 +3,7 @@ package com.bb.eodi.finance.infrastructure.adapter;
 import com.bb.eodi.deal.application.port.DealFinancePort;
 import com.bb.eodi.finance.application.input.MortgageLoanLimitCalculateInput;
 import com.bb.eodi.finance.application.result.MortgageLoanCalculateResult;
+import com.bb.eodi.finance.application.service.LeaseLoanCalculatingService;
 import com.bb.eodi.finance.application.service.MortgageLoanCalculateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 public class DealFinanceAdapter implements DealFinancePort {
 
     private final MortgageLoanCalculateService mortgageLoanCalculateService;
+
+    private final LeaseLoanCalculatingService leaseLoanCalculatingService;
 
     @Override
     public long calculateAvailableMortgageLoanAmount(
@@ -53,7 +56,7 @@ public class DealFinanceAdapter implements DealFinancePort {
     }
 
     @Override
-    public long calculateAvailableDepositLoanAmount(long cash) {
-        return 0;
+    public long calculateMaximumLeaseLoanAmount(long deposit) {
+        return leaseLoanCalculatingService.calculateMaximumLeaseLoanAmount(deposit);
     }
 }
