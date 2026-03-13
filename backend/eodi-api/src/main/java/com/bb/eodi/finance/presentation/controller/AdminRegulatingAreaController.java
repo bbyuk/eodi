@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 규제지역 API 컨트롤러
  */
-@Tag(name = "부동산 규제지역 관련 API")
+@Tag(name = "부동산 규제지역 관련 Admin API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("real-estate/regulating-area")
-public class RegulatingAreaController {
+@RequestMapping("/admin/real-estate/regulating-area")
+public class AdminRegulatingAreaController {
 
     private final RegulatingAreaService regulatingAreaService;
     private final RegulatingAreaRegisterMapper regulatingAreaRegisterMapper;
