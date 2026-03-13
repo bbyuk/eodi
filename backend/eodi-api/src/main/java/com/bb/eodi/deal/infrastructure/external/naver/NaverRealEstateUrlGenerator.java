@@ -48,7 +48,7 @@ public class NaverRealEstateUrlGenerator implements RealEstatePlatformUrlGenerat
         }
 
         sb.append(baseUrl)
-                .append("/").append("ms=").append(realEstateSell.getXPos()).append(",").append(realEstateSell.getYPos()).append(",").append(defaultMapSize).append("&")
+                .append("?").append("ms=").append(realEstateSell.getXPos()).append(",").append(realEstateSell.getYPos()).append(",").append(defaultMapSize).append("&")
                         .append("a=").append(targetHousingType).append("&")
                         .append("b=").append(tradeType).append("&")
                         .append("e=").append("RETAIL");
@@ -78,7 +78,7 @@ public class NaverRealEstateUrlGenerator implements RealEstatePlatformUrlGenerat
         }
 
         sb.append(baseUrl)
-                .append("/").append("ms=").append(realEstateLease.getXPos()).append(",").append(realEstateLease.getYPos()).append(",").append(defaultMapSize).append("&")
+                .append("?").append("ms=").append(realEstateLease.getXPos()).append(",").append(realEstateLease.getYPos()).append(",").append(defaultMapSize).append("&")
                 .append("a=").append(targetHousingType).append("&")
                 .append("b=").append(tradeType).append("&")
                 .append("e=").append("RETAIL");
