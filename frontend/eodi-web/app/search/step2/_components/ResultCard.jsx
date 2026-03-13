@@ -1,9 +1,9 @@
-import { CheckCircle, Search } from "lucide-react";
+import { CheckCircle, Search, Copy } from "lucide-react";
 import { formatWon } from "@/app/search/_util/util";
 import { definedHousingType } from "@/const/code";
 import Button from "@/components/ui/input/Button";
 
-export default function ResultCard({ data, dealType }) {
+export default function ResultCard({ data, dealType, onCopyButtonClick }) {
   const priceLabel = () => {
     if (dealType.code === "sell") {
       return formatWon(data.price);
@@ -15,6 +15,8 @@ export default function ResultCard({ data, dealType }) {
     return formatWon(0);
   };
 
+  const hasCoord = !!data.naverUrl;
+
   return (
     <article className="relative border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
       {data.dateOfRegistration && (
@@ -23,6 +25,7 @@ export default function ResultCard({ data, dealType }) {
           <span>등기</span>
         </div>
       )}
+
       <div>
         <h3 className="text-lg font-semibold text-gray-900 truncate">
           {data.targetName ? `${data.targetName}` : ""}
@@ -45,17 +48,89 @@ export default function ResultCard({ data, dealType }) {
         </div>
       </div>
 
-      <Button
-        as="a"
-        href={data.naverUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        fullWidth
-        className={"mt-4"}
-      >
-        <Search className="w-4 h-4 relative top-[1px]" />
-        네이버 부동산에서 더 보기
-      </Button>
+      <div className="mt-4 flex items-center gap-2">
+        {/* 메인 버튼 */}
+        <div className={`relative ${!hasCoord ? "group flex-1" : "flex-1"}`}>
+          <Button
+            as="a"
+            href={data.naverUrl || "https://new.land.naver.com/"}
+            target="_blank"
+            rel="noopener noreferrer"
+            fullWidth
+          >
+            <Search className="w-4 h-4 relative top-[1px]" />
+            네이버 부동산 보기
+          </Button>
+
+          {!hasCoord && (
+            <div
+              className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-full
+          z-10
+          mt-2
+          hidden
+          -translate-x-1/2
+          whitespace-nowrap
+          rounded-md
+          bg-gray-900
+          px-2 py-1
+          text-xs
+          text-white
+          shadow-md
+          group-hover:block
+        "
+            >
+              위치 정보가 없어 이름 검색으로 확인할 수 있어요
+            </div>
+          )}
+        </div>
+
+        {/* 복사 버튼 (좌표 없을 때만) */}
+        {!hasCoord && (
+          <div className="relative group shrink-0">
+            <button
+              type="button"
+              onClick={() => onCopyButtonClick(data.targetName)}
+              className="
+                h-10 w-10
+                rounded-md
+                border border-gray-200
+                bg-white
+                text-gray-600
+                hover:bg-gray-50
+                flex items-center justify-center
+              "
+            >
+              <Copy className="w-4 h-4" />
+            </button>
+
+            <div
+              className="
+                pointer-events-none
+                absolute
+                right-0
+                top-full
+                z-10
+                mt-2
+                hidden
+                whitespace-nowrap
+                rounded-md
+                bg-gray-900
+                px-2 py-1
+                text-xs
+                text-white
+                shadow-md
+                group-hover:block
+              "
+            >
+              검색어 복사
+            </div>
+          </div>
+        )}
+      </div>
     </article>
   );
 }

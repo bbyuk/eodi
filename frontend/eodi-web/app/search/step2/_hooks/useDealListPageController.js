@@ -196,6 +196,18 @@ export function useDealListPageController() {
     setIsFloatingFilterOpen(false);
   };
 
+  const handleCopyNameButtonClick = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value ?? "");
+      showToast?.({
+        text: `클립보드에 복사되었습니다.`,
+        type: "info",
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     setCurrentContext(context.result);
   }, [setCurrentContext]);
@@ -276,6 +288,7 @@ export function useDealListPageController() {
       isInitialLoading: activeQuery.info.isFetching,
       isFetchingMore: activeQuery.info.isFetchingMore,
       metadata: metadataQuery.metadata,
+      onCopyButtonClick: handleCopyNameButtonClick,
     },
 
     housingTypeFilter: {
