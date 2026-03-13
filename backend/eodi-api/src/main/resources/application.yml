@@ -15,7 +15,7 @@ logging:
 
 external:
   naver:
-    base-url: https://m.land.naver.com/map
+    base-url: https://new.land.naver.com/complexes
     default-map-size: 18
 
 springdoc:
