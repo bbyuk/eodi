@@ -23,3 +23,6 @@ springdoc:
     path: /api-docs      # OpenAPI JSON 문서 경로 (기본: /v3/api-docs)
   swagger-ui:
     path: /swagger-ui    # Swagger UI 경로 (기본: /swagger-ui.html)
+
+security:
+  admin-ip: ${ADMIN_IP:}
