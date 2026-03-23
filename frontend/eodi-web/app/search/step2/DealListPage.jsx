@@ -16,7 +16,7 @@ import RadioGroup from "@/components/ui/input/RadioGroup";
 export default function DealListPage() {
   const controller = useDealListPageController();
   return (
-    <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
+    <main className="relative mx-auto min-h-[80vh] max-w-6xl px-0 py-0">
       <FloatingContainer
         isOpen={controller.floatingFilter.isOpen}
         open={controller.floatingFilter.open}

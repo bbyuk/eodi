@@ -30,7 +30,7 @@ export default function RegionFilterBar({
       <Select
         value={selectedSido}
         allOption
-        width="w-[150px]"
+        width="w-full sm:w-[150px]"
         onChange={onChangeSido}
         options={sidoOptions.map((el) => ({
           value: el.code,
@@ -40,7 +40,7 @@ export default function RegionFilterBar({
 
       {selectedSido !== "all" && (
         <ChipSelect
-          width="w-[180px]"
+          width="w-full sm:w-[180px]"
           onSelect={onToggleRegion}
           selected={selectedRegions}
           options={sigunguOptions.map((el) => ({

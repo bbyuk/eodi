@@ -17,9 +17,7 @@ export default function FloatingButton({
       exit={{ scale: 0.8, opacity: 0 }}
       transition={{ duration: 0.2 }}
       onClick={open}
-      className="flex items-center gap-2 px-4 py-2 rounded-full
-                 bg-primary text-white shadow-lg hover:bg-primary/90
-                 transition text-sm font-medium"
+      className="flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-white shadow-lg transition hover:bg-primary/90"
     >
       {icon}
       <span>

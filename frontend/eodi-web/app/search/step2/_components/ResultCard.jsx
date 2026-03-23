@@ -16,16 +16,16 @@ export default function ResultCard({ data, dealType, onCopyButtonClick }) {
   };
 
   return (
-    <article className="relative border border-gray-200 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
+    <article className="relative flex h-full flex-col justify-between rounded-xl border border-gray-200 bg-white/90 p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:p-5">
       {data.dateOfRegistration && (
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-[11px] font-medium shadow-sm">
+        <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-2.5 py-1 text-[11px] font-medium text-green-700 shadow-sm">
           <CheckCircle className="w-3.5 h-3.5 text-green-600" />
           <span>등기</span>
         </div>
       )}
 
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 truncate">
+        <h3 className="truncate pr-14 text-lg font-semibold text-gray-900">
           {data.targetName ? `${data.targetName}` : ""}
         </h3>
         <p className="text-sm text-gray-500">{data.legalDongFullName}</p>
@@ -46,8 +46,7 @@ export default function ResultCard({ data, dealType, onCopyButtonClick }) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
-        {/* 메인 버튼 */}
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className={`relative ${!data.hasLink ? "group flex-1" : "flex-1"}`}>
           <Button as="a" href={data.naverUrl} target="_blank" rel="noopener noreferrer" fullWidth>
             <Search className="w-4 h-4 relative top-[1px]" />
@@ -80,23 +79,15 @@ export default function ResultCard({ data, dealType, onCopyButtonClick }) {
           )}
         </div>
 
-        {/* 복사 버튼 (좌표 없을 때만) */}
         {!data.hasLink && (
-          <div className="relative group shrink-0">
+          <div className="relative group shrink-0 sm:self-stretch">
             <button
               type="button"
               onClick={() => onCopyButtonClick(data.targetName)}
-              className="
-                h-10 w-10
-                rounded-md
-                border border-gray-200
-                bg-white
-                text-gray-600
-                hover:bg-gray-50
-                flex items-center justify-center
-              "
+              className="flex h-10 w-full items-center justify-center rounded-md border border-gray-200 bg-white px-4 text-gray-600 hover:bg-gray-50 sm:w-10 sm:px-0"
             >
               <Copy className="w-4 h-4" />
+              <span className="ml-2 text-sm font-medium sm:hidden">검색어 복사</span>
             </button>
 
             <div

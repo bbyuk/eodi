@@ -52,7 +52,7 @@ export default function DealResultSection({
 
   return (
     <div className="relative">
-      <div className="absolute right-0 -top-6 text-xs text-gray-400">
+      <div className="mb-3 text-right text-xs text-gray-400 sm:absolute sm:right-0 sm:-top-6 sm:mb-0">
         {metadata?.updateDate} 업데이트
       </div>
 

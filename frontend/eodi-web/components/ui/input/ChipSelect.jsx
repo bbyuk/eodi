@@ -30,8 +30,11 @@ export default function ChipSelect({
    */
   const formLabel = () => {
     if (selected.size > 0) {
-      const firstSelectedLabel = options.filter((option) => option.value === [...selected][0])[0]
-        .label;
+      const firstSelectedLabel = options.find((option) => option.value === [...selected][0])?.label;
+
+      if (!firstSelectedLabel) {
+        return placeholder;
+      }
 
       if (selected.size > 1) {
         return `${firstSelectedLabel} 외 ${selected.size - 1} 개 선택`;
@@ -48,7 +51,7 @@ export default function ChipSelect({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full h-10 flex items-center justify-between rounded-full border px-4 text-sm bg-white hover:bg-gray-50"
+        className="flex h-11 w-full items-center justify-between rounded-full border border-slate-200 bg-white px-4 text-sm text-slate-700 transition hover:bg-gray-50"
       >
         <span className="truncate">{formLabel()}</span>
         <ChevronDown size={16} className="shrink-0" />
@@ -65,7 +68,7 @@ export default function ChipSelect({
                 key={option.value}
                 type="button"
                 onClick={(e) => onSelect(option.value, e)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition
+                className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm transition
                   ${active ? "bg-primary/10 text-primary" : "hover:bg-gray-100 text-gray-700"}
                 `}
               >

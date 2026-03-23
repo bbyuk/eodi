@@ -32,8 +32,9 @@ export default function Select({
   return (
     <div ref={containerRef} className={`relative ${width}`}>
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between rounded-full border px-4 py-2 text-sm hover:bg-gray-50 overflow-hidden"
+        className="flex h-11 w-full items-center justify-between overflow-hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition hover:bg-gray-50"
       >
         <span className="truncate whitespace-nowrap">
           {selected ? selected.label : placeholder}
@@ -47,6 +48,7 @@ export default function Select({
           {mergedOptions.map((option) => (
             <button
               key={option.value}
+              type="button"
               onClick={() => {
                 onChange(option.value);
                 setOpen(false);

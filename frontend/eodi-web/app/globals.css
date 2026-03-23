@@ -8,6 +8,17 @@ html,
 body {
   @apply font-sans bg-white text-text-primary antialiased scroll-smooth;
   scrollbar-gutter: stable both-edges;
+  min-height: 100%;
+}
+
+html {
+  scroll-padding-top: 6rem;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(191, 219, 254, 0.25), transparent 24%),
+    linear-gradient(180deg, #f8fbff 0%, #f8fafc 20%, #ffffff 100%);
 }
 
 
@@ -77,4 +88,13 @@ body {
   cursor: pointer;
 }
 
+.range-thumb::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
 

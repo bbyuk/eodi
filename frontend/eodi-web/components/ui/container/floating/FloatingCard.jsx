@@ -9,8 +9,7 @@ export default function FloatingCard({ close, label, icon, children }) {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 20, opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="w-[350px] rounded-2xl border border-gray-200
-                 bg-white/90 backdrop-blur-md shadow-lg overflow-hidden"
+      className="w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white/95 shadow-lg backdrop-blur-md"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white/70">

@@ -128,7 +128,7 @@ export default function RegionsGrid() {
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
   return (
-    <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
+    <section className="mx-auto w-full max-w-6xl overflow-x-hidden px-0 pb-6">
       <FloatingContainer
         isOpen={isFloatingCardOpen}
         close={() => setIsFloatingCardOpen(false)}
