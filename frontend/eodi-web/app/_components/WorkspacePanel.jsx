@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ActionButton from "@/components/ui/input/ActionButton";
 
 export default function WorkspacePanel({
   title,
@@ -15,12 +16,14 @@ export default function WorkspacePanel({
           {description ? <p className="text-sm leading-6 text-slate-600">{description}</p> : null}
         </div>
         {actionLabel && actionHref ? (
-          <Link
+          <ActionButton
             href={actionHref}
-            className="shrink-0 rounded-full border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+            variant="outline"
+            size="xs"
+            className="shrink-0"
           >
             {actionLabel}
-          </Link>
+          </ActionButton>
         ) : null}
       </div>
 
@@ -28,4 +31,3 @@ export default function WorkspacePanel({
     </section>
   );
 }
-

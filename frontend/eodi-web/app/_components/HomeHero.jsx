@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Search, LayoutTemplate } from "lucide-react";
+import ActionButton from "@/components/ui/input/ActionButton";
+import TextActionLink from "@/components/ui/input/TextActionLink";
 
 export default function HomeHero({ workspaceSummary }) {
   return (
@@ -29,29 +30,30 @@ export default function HomeHero({ workspaceSummary }) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
+            <ActionButton
               href="/field-notes/new"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              variant="dark"
+              size="md"
             >
               새 임장노트 만들기
               <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
+            </ActionButton>
+            <ActionButton
               href="/search"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white/80 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-white"
+              variant="frosted"
+              size="md"
             >
               기록 둘러보기
               <Search className="h-4 w-4" />
-            </Link>
+            </ActionButton>
           </div>
 
-          <Link
+          <TextActionLink
             href="/field-notes/new"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-950"
           >
             템플릿으로 시작하기
             <LayoutTemplate className="h-4 w-4" />
-          </Link>
+          </TextActionLink>
         </motion.div>
 
         <motion.aside

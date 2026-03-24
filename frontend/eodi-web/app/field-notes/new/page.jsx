@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { noteTemplates } from "@/app/_data/workspace";
+import ActionButton from "@/components/ui/input/ActionButton";
 
 export const metadata = {
   title: "새 임장노트 | 어디살까",
@@ -21,18 +21,16 @@ export default function NewFieldNotePage() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
+          <ActionButton type="button" variant="dark" size="md">
             빈 노트로 시작
-          </button>
-          <Link
+          </ActionButton>
+          <ActionButton
             href="/search"
-            className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+            variant="outline"
+            size="md"
           >
             실거래 검색 먼저 연결하기
-          </Link>
+          </ActionButton>
         </div>
       </section>
 
@@ -44,12 +42,9 @@ export default function NewFieldNotePage() {
           >
             <p className="text-base font-semibold text-slate-950">{template.title}</p>
             <p className="mt-3 text-sm leading-6 text-slate-600">{template.description}</p>
-            <button
-              type="button"
-              className="mt-6 inline-flex items-center justify-center rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-            >
+            <ActionButton type="button" variant="outline" size="sm" className="mt-6">
               이 템플릿으로 시작
-            </button>
+            </ActionButton>
           </article>
         ))}
       </section>

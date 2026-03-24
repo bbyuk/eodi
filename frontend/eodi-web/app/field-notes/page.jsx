@@ -1,6 +1,7 @@
 import Link from "next/link";
 import WorkspacePanel from "@/app/_components/WorkspacePanel";
 import { noteTemplates, recentFieldNotes } from "@/app/_data/workspace";
+import ActionButton from "@/components/ui/input/ActionButton";
 
 export const metadata = {
   title: "임장노트 | 어디살까",
@@ -26,18 +27,20 @@ export default function FieldNotesPage() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
+            <ActionButton
               href="/field-notes/new"
-              className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              variant="dark"
+              size="md"
             >
               새 임장노트 만들기
-            </Link>
-            <Link
+            </ActionButton>
+            <ActionButton
               href="/search"
-              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              variant="outline"
+              size="md"
             >
               실거래 검색 연결
-            </Link>
+            </ActionButton>
           </div>
         </div>
       </section>
@@ -87,4 +90,3 @@ export default function FieldNotesPage() {
     </div>
   );
 }
-

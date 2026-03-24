@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { siteNavigation } from "@/app/_data/siteNavigation";
+import ActionButton from "@/components/ui/input/ActionButton";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,12 +49,13 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link
+          <ActionButton
             href={isFieldNotesPage ? "/" : "/field-notes/new"}
-            className="inline-flex items-center rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-white"
+            variant="frosted"
+            size="sm"
           >
             {isFieldNotesPage ? "홈으로" : "새 임장노트"}
-          </Link>
+          </ActionButton>
         </div>
 
         <button
@@ -79,12 +81,16 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <Link
+            <ActionButton
               href={isFieldNotesPage ? "/" : "/field-notes/new"}
-              className="mt-2 rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-slate-800"
+              variant="dark"
+              size="md"
+              rounded="xl"
+              block
+              className="mt-2"
             >
               {isFieldNotesPage ? "홈으로 이동" : "새 임장노트 만들기"}
-            </Link>
+            </ActionButton>
           </div>
         </div>
       )}
