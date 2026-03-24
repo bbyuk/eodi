@@ -30,27 +30,17 @@ export default function HomeHero({ workspaceSummary }) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <ActionButton
-              href="/field-notes/new"
-              variant="dark"
-              size="md"
-            >
-              새 임장노트 만들기
+            <ActionButton href="/field-notes/new" variant="dark" size="md">
+              기록 추가
               <ArrowRight className="h-4 w-4" />
             </ActionButton>
-            <ActionButton
-              href="/search"
-              variant="frosted"
-              size="md"
-            >
+            <ActionButton href="/search" variant="frosted" size="md">
               기록 둘러보기
               <Search className="h-4 w-4" />
             </ActionButton>
           </div>
 
-          <TextActionLink
-            href="/field-notes/new"
-          >
+          <TextActionLink href="/field-notes/new">
             템플릿으로 시작하기
             <LayoutTemplate className="h-4 w-4" />
           </TextActionLink>
