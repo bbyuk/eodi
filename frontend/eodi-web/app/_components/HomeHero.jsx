@@ -17,19 +17,14 @@ export default function HomeHero({ workspaceSummary }) {
           className="space-y-6"
         >
           <div className="space-y-4">
-            <p className="text-sm font-semibold tracking-wide text-blue-700">
-              임장노트를 중심으로 정리하는 홈 작업공간
-            </p>
+            <p className="text-sm font-semibold tracking-wide text-blue-700">임장 기록을 더 쉽게</p>
             <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              찾고,
-              <br className="hidden sm:block" />
-              기록하고,
-              <br className="hidden sm:block" />
-              비교하는 흐름을 한 곳에 모았습니다
+              임장 기록이 쌓일수록
+              <br />
+              선택은 선명해집니다
             </h1>
             <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-              홈에서 최근 임장노트, 관심 지역, 최근 본 실거래, 비교 중인 후보를 바로 이어서
-              확인하고 새 노트를 시작할 수 있게 구성했습니다.
+              다녀온 곳을 기록해두고 비교해보세요
             </p>
           </div>
 
@@ -45,7 +40,7 @@ export default function HomeHero({ workspaceSummary }) {
               href="/search"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white/80 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-white"
             >
-              실거래 검색 연결
+              기록 둘러보기
               <Search className="h-4 w-4" />
             </Link>
           </div>
