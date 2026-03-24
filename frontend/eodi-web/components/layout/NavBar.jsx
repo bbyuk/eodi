@@ -20,7 +20,7 @@ export default function Navbar() {
     setIsMenuOpen(false);
   }, [pathname]);
 
-  const isSearchPage = pathname?.startsWith("/search");
+  const isFieldNotesPage = pathname?.startsWith("/field-notes");
 
   return (
     <header
@@ -49,10 +49,10 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link
-            href={isSearchPage ? "/" : "/search"}
+            href={isFieldNotesPage ? "/" : "/field-notes/new"}
             className="inline-flex items-center rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-white"
           >
-            {isSearchPage ? "홈으로" : "실거래 검색"}
+            {isFieldNotesPage ? "홈으로" : "새 임장노트"}
           </Link>
         </div>
 
@@ -80,10 +80,10 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href={isSearchPage ? "/" : "/search"}
+              href={isFieldNotesPage ? "/" : "/field-notes/new"}
               className="mt-2 rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-slate-800"
             >
-              {isSearchPage ? "홈으로 이동" : "실거래 검색 시작"}
+              {isFieldNotesPage ? "홈으로 이동" : "새 임장노트 만들기"}
             </Link>
           </div>
         </div>
