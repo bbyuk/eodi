@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import SearchField from "@/components/ui/input/SearchField";
 import BottomSheetSelect from "@/components/ui/input/BottomSheetSelect";
-import AutocompleteField from "@/components/ui/input/AutocompleteField";
+import ComplexRecordTab from "./_components/ComplexRecordTab";
+import RegionRecordTab from "./_components/RegionRecordTab";
 
 const REGION_OPTIONS = [
   {
@@ -41,6 +41,8 @@ export default function NewFieldNoteForm() {
   const [selectedRegion, setSelectedRegion] = useState("");
   const [complexQuery, setComplexQuery] = useState("");
   const [selectedComplex, setSelectedComplex] = useState(null);
+  const [floor, setFloor] = useState("");
+  const [askingPrice, setAskingPrice] = useState("");
   const [complexMemo, setComplexMemo] = useState("");
   const [regionMemo, setRegionMemo] = useState("");
 
@@ -94,6 +96,8 @@ export default function NewFieldNoteForm() {
                   setSelectedRegion("");
                   setComplexQuery("");
                   setSelectedComplex(null);
+                  setFloor("");
+                  setAskingPrice("");
                   setRegionMemo("");
                 }}
                 className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
@@ -112,6 +116,8 @@ export default function NewFieldNoteForm() {
                   setComplexQuery("");
                   setSelectedComplex(null);
                   setComplexMemo("");
+                  setFloor("");
+                  setAskingPrice("");
                 }}
                 className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
                   recordType === "region"
@@ -124,88 +130,35 @@ export default function NewFieldNoteForm() {
             </div>
 
             {recordType === "complex" ? (
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-slate-900">단지 검색</label>
-                  <AutocompleteField
-                    value={complexQuery}
-                    onChange={(value) => {
-                      setComplexQuery(value);
-                      setSelectedComplex(null);
-                      setSelectedRegion("");
-                    }}
-                    placeholder="단지명을 검색해보세요"
-                    suggestions={complexSuggestions}
-                    onSelectSuggestion={(suggestion) => {
-                      setComplexQuery(suggestion.name);
-                      setSelectedComplex(suggestion);
-                      setSelectedRegion(suggestion.regionValue);
-                    }}
-                  />
-                </div>
-
-                {selectedComplex ? (
-                  <>
-                    <div className="space-y-3">
-                      <label className="text-sm font-semibold text-slate-900">지역</label>
-                      <SearchField
-                        value={selectedRegionOption?.label ?? ""}
-                        placeholder="자동으로 표시됩니다"
-                        readOnly
-                        disabled
-                      />
-                    </div>
-
-                    <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-slate-900">단지 기록</p>
-                        <p className="text-sm text-slate-600">{selectedComplex.name}</p>
-                      </div>
-
-                      <div className="mt-4 space-y-3">
-                        <label className="text-sm font-semibold text-slate-900">메모</label>
-                        <textarea
-                          value={complexMemo}
-                          onChange={(event) => setComplexMemo(event.target.value)}
-                          placeholder="기억해둘 내용을 적어보세요"
-                          className="min-h-32 w-full rounded-[1.25rem] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-              </div>
+              <ComplexRecordTab
+                complexQuery={complexQuery}
+                onChangeComplexQuery={(value) => {
+                  setComplexQuery(value);
+                  setSelectedComplex(null);
+                  setSelectedRegion("");
+                }}
+                complexSuggestions={complexSuggestions}
+                onSelectComplexSuggestion={(suggestion) => {
+                  setComplexQuery(suggestion.name);
+                  setSelectedComplex(suggestion);
+                  setSelectedRegion(suggestion.regionValue);
+                }}
+                selectedComplex={selectedComplex}
+                selectedRegionLabel={selectedRegionOption?.label ?? ""}
+                floor={floor}
+                onChangeFloor={setFloor}
+                askingPrice={askingPrice}
+                onChangeAskingPrice={setAskingPrice}
+                complexMemo={complexMemo}
+                onChangeComplexMemo={setComplexMemo}
+              />
             ) : (
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-slate-900">지역 검색</label>
-                  <SearchField
-                    value={selectedRegionOption?.label ?? ""}
-                    placeholder="지역명을 검색해보세요"
-                    readOnly
-                    onClick={() => setIsRegionSheetOpen(true)}
-                  />
-                </div>
-
-                {selectedRegionOption ? (
-                  <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-slate-900">지역 메모 폼</p>
-                      <p className="text-sm text-slate-600">{selectedRegionOption.label}</p>
-                    </div>
-
-                    <div className="mt-4 space-y-3">
-                      <label className="text-sm font-semibold text-slate-900">메모</label>
-                      <textarea
-                        value={regionMemo}
-                        onChange={(event) => setRegionMemo(event.target.value)}
-                        placeholder="지역에 대해 남기고 싶은 내용을 적어보세요"
-                        className="min-h-32 w-full rounded-[1.25rem] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                ) : null}
-              </div>
+              <RegionRecordTab
+                selectedRegionLabel={selectedRegionOption?.label ?? ""}
+                onOpenRegionSheet={() => setIsRegionSheetOpen(true)}
+                regionMemo={regionMemo}
+                onChangeRegionMemo={setRegionMemo}
+              />
             )}
           </div>
         </section>
