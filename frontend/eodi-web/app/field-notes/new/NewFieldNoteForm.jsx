@@ -35,15 +35,19 @@ const REGION_OPTIONS = [
   },
 ];
 
+const DEFAULT_SELECTED_REGION = REGION_OPTIONS[0];
+const DEFAULT_SELECTED_COMPLEX = {
+  ...DEFAULT_SELECTED_REGION.complexes[0],
+  regionValue: DEFAULT_SELECTED_REGION.value,
+  regionLabel: DEFAULT_SELECTED_REGION.label,
+};
+
 export default function NewFieldNoteForm() {
   const [recordType, setRecordType] = useState("complex");
   const [isRegionSheetOpen, setIsRegionSheetOpen] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [complexQuery, setComplexQuery] = useState("");
-  const [selectedComplex, setSelectedComplex] = useState(null);
-  const [floor, setFloor] = useState("");
-  const [askingPrice, setAskingPrice] = useState("");
-  const [complexMemo, setComplexMemo] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState(DEFAULT_SELECTED_REGION.value);
+  const [complexQuery, setComplexQuery] = useState(DEFAULT_SELECTED_COMPLEX.name);
+  const [selectedComplex, setSelectedComplex] = useState(DEFAULT_SELECTED_COMPLEX);
   const [regionMemo, setRegionMemo] = useState("");
 
   const selectedRegionOption = useMemo(
@@ -93,11 +97,9 @@ export default function NewFieldNoteForm() {
                 type="button"
                 onClick={() => {
                   setRecordType("complex");
-                  setSelectedRegion("");
-                  setComplexQuery("");
-                  setSelectedComplex(null);
-                  setFloor("");
-                  setAskingPrice("");
+                  setSelectedRegion(DEFAULT_SELECTED_REGION.value);
+                  setComplexQuery(DEFAULT_SELECTED_COMPLEX.name);
+                  setSelectedComplex(DEFAULT_SELECTED_COMPLEX);
                   setRegionMemo("");
                 }}
                 className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
@@ -115,9 +117,6 @@ export default function NewFieldNoteForm() {
                   setSelectedRegion("");
                   setComplexQuery("");
                   setSelectedComplex(null);
-                  setComplexMemo("");
-                  setFloor("");
-                  setAskingPrice("");
                 }}
                 className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
                   recordType === "region"
@@ -144,13 +143,7 @@ export default function NewFieldNoteForm() {
                   setSelectedRegion(suggestion.regionValue);
                 }}
                 selectedComplex={selectedComplex}
-                selectedRegionLabel={selectedRegionOption?.label ?? ""}
-                floor={floor}
-                onChangeFloor={setFloor}
-                askingPrice={askingPrice}
-                onChangeAskingPrice={setAskingPrice}
-                complexMemo={complexMemo}
-                onChangeComplexMemo={setComplexMemo}
+                selectedRegion={selectedRegionOption}
               />
             ) : (
               <RegionRecordTab
