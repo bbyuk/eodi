@@ -8,10 +8,11 @@ import RegionInfo from "./RegionInfo";
 import FloorTypeField from "./FloorTypeField";
 import AskingPriceField from "./AskingPriceField";
 import MemoField from "./MemoField";
-import BasicStatusFields from "./BasicStatusFields";
 import DetailSectionToggle from "./DetailSectionToggle";
 import DetailRecordFields from "./DetailRecordFields";
 import SaveButtonBar from "./SaveButtonBar";
+import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
+import OptionField from "@/app/field-notes/new/_components/OptionField";
 
 const INITIAL_FORM = {
   floorType: null,
@@ -68,6 +69,7 @@ export default function ComplexRecordTab({
     form.floorType === "DIRECT" && !form.floorValue ? "직접 입력 층수를 입력해주세요" : "";
 
   const handleChangeField = (field, value) => {
+    console.log(value);
     setForm((prev) => ({
       ...prev,
       [field]: value,
@@ -120,15 +122,11 @@ export default function ComplexRecordTab({
           <RegionInfo value={selectedRegion?.label ?? selectedComplex.regionLabel} />
 
           <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-slate-900">기본 기록</p>
-              <p className="text-xs font-medium text-slate-500">
-                자주 입력하는 항목부터 빠르게 남겨보세요
-              </p>
-            </div>
+            <FieldTitle main={"기본 기록"} sub={"자주 입력하는 항목부터 빠르게 남겨보세요"} />
 
             <div className="mt-5 space-y-5">
               <AskingPriceField
+                title={{ main: "호가" }}
                 askingPrice={form.askingPrice}
                 onChangeAskingPrice={(value) => handleChangeField("askingPrice", value)}
               />
@@ -138,9 +136,30 @@ export default function ComplexRecordTab({
                 onChangeFloorType={handleChangeFloorType}
                 onChangeFloorValue={(value) => handleChangeField("floorValue", value)}
                 errorMessage={floorErrorMessage}
+                title={{ main: "층수", sub: "옵션을 선택하거나 직접 입력해보세요" }}
               />
 
-              <BasicStatusFields form={form} onChangeField={handleChangeField} />
+              <OptionField
+                options={[
+                  { label: "좋음", value: "GOOD" },
+                  { label: "보통", value: "NORMAL" },
+                  { label: "아쉬움", value: "BAD" },
+                ]}
+                onChange={(value) => handleChangeField("managementStatus", value)}
+                title={{ main: "관리 상태" }}
+                value={form.managementStatus}
+              />
+
+              <OptionField
+                options={[
+                  { label: "조용함", value: "LOW" },
+                  { label: "보통", value: "NORMAL" },
+                  { label: "시끄러움", value: "HIGH" },
+                ]}
+                onChange={(value) => handleChangeField("noiseLevel", value)}
+                title={{ main: "소음" }}
+                value={form.noiseLevel}
+              />
             </div>
           </section>
 

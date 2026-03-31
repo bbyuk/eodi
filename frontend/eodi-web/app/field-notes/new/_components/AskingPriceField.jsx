@@ -2,14 +2,15 @@
 
 import NumberInput from "@/components/ui/input/NumberInput";
 import { formatWon } from "@/app/search/_util/util";
+import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
 
-export default function AskingPriceField({ askingPrice, onChangeAskingPrice }) {
+export default function AskingPriceField({ askingPrice, onChangeAskingPrice, title }) {
   const hasValue = askingPrice !== "";
 
   return (
     <section className="space-y-3">
+      <FieldTitle main={title.main} sub={title.sub} />
       <NumberInput
-        label="호가"
         value={askingPrice}
         onChange={onChangeAskingPrice}
         placeholder="50000"

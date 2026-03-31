@@ -1,13 +1,13 @@
 "use client";
 
 import NumberInput from "@/components/ui/input/NumberInput";
+import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
 
 const FLOOR_OPTIONS = [
   { label: "저층", value: "LOW" },
   { label: "중층", value: "MID" },
   { label: "고층", value: "HIGH" },
   { label: "탑층", value: "TOP" },
-  { label: "반지하", value: "SEMI_BASEMENT" },
   { label: "직접 입력", value: "DIRECT" },
 ];
 
@@ -17,15 +17,13 @@ export default function FloorTypeField({
   onChangeFloorType,
   onChangeFloorValue,
   errorMessage,
+  title,
 }) {
   const isDirect = floorType === "DIRECT";
 
   return (
     <section className="space-y-3">
-      <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-900">층수</label>
-        <p className="text-xs font-medium text-slate-500">옵션을 선택하거나 직접 입력하세요</p>
-      </div>
+      <FieldTitle main={title.main} sub={title.sub} />
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {FLOOR_OPTIONS.map((option) => {
@@ -54,10 +52,12 @@ export default function FloorTypeField({
             label="직접 입력 층수"
             value={floorValue}
             onChange={onChangeFloorValue}
-            placeholder="예: 12"
+            placeholder="12"
             maxValue={999}
           />
-          {errorMessage ? <p className="mt-2 text-xs font-medium text-red-600">{errorMessage}</p> : null}
+          {errorMessage ? (
+            <p className="mt-2 text-xs font-medium text-red-600">{errorMessage}</p>
+          ) : null}
         </div>
       ) : null}
     </section>
