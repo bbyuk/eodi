@@ -24,7 +24,7 @@ export default function FloorTypeField({
     <section className="space-y-3">
       <div className="space-y-1">
         <label className="text-sm font-semibold text-slate-900">층수</label>
-        <p className="text-xs font-medium text-slate-500">빠르게 선택하고 필요하면 직접 입력하세요</p>
+        <p className="text-xs font-medium text-slate-500">옵션을 선택하거나 직접 입력하세요</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -63,4 +63,3 @@ export default function FloorTypeField({
     </section>
   );
 }
-

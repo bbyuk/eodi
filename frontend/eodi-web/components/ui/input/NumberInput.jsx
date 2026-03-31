@@ -102,10 +102,12 @@ export default function NumberInput({
 
   return (
     <section className={`flex flex-col gap-2 ${className}`}>
-      <div className="flex justify-between items-end">
-        <label className="text-sm font-medium text-text-secondary">{label}</label>
-        {formatter && <span className="text-xs text-text-secondary">{formatter(value)}</span>}
-      </div>
+      {(label || formatter) && (
+        <div className="flex justify-between items-end">
+          {label ? <label className="text-sm font-medium text-text-secondary">{label}</label> : <span />}
+          {formatter && <span className="text-xs text-text-secondary">{formatter(value)}</span>}
+        </div>
+      )}
 
       <div className="relative">
         <input
@@ -120,7 +122,7 @@ export default function NumberInput({
           className={`w-full px-4 py-3 border border-border rounded-lg text-right text-text-primary
             placeholder:text-text-secondary focus:ring-2 focus:ring-primary
             focus:border-primary focus:outline-none transition
-            ${unit ? "pr-12" : "pr-4"}`}
+            ${unit ? "pr-16" : "pr-4"}`}
           {...props}
         />
 

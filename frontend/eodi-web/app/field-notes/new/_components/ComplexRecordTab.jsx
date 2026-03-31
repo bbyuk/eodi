@@ -8,6 +8,7 @@ import RegionInfo from "./RegionInfo";
 import FloorTypeField from "./FloorTypeField";
 import AskingPriceField from "./AskingPriceField";
 import MemoField from "./MemoField";
+import BasicStatusFields from "./BasicStatusFields";
 import DetailSectionToggle from "./DetailSectionToggle";
 import DetailRecordFields from "./DetailRecordFields";
 import SaveButtonBar from "./SaveButtonBar";
@@ -20,6 +21,7 @@ const INITIAL_FORM = {
   managementStatus: null,
   noiseLevel: null,
   parkingStatus: null,
+  sunlightStatus: null,
   commercialAreaStatus: null,
   agencyName: "",
 };
@@ -56,6 +58,7 @@ export default function ComplexRecordTab({
       managementStatus: form.managementStatus,
       noiseLevel: form.noiseLevel,
       parkingStatus: form.parkingStatus,
+      sunlightStatus: form.sunlightStatus,
       commercialAreaStatus: form.commercialAreaStatus,
       agencyName: form.agencyName,
     };
@@ -94,7 +97,7 @@ export default function ComplexRecordTab({
   };
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
       <div className="space-y-3">
         <label className="text-sm font-semibold text-slate-900">단지 검색</label>
         <AutocompleteField
@@ -119,10 +122,16 @@ export default function ComplexRecordTab({
           <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
             <div className="space-y-1">
               <p className="text-sm font-semibold text-slate-900">기본 기록</p>
-              <p className="text-xs font-medium text-slate-500">자주 남기는 항목만 먼저 보여줍니다</p>
+              <p className="text-xs font-medium text-slate-500">
+                자주 입력하는 항목부터 빠르게 남겨보세요
+              </p>
             </div>
 
             <div className="mt-5 space-y-5">
+              <AskingPriceField
+                askingPrice={form.askingPrice}
+                onChangeAskingPrice={(value) => handleChangeField("askingPrice", value)}
+              />
               <FloorTypeField
                 floorType={form.floorType}
                 floorValue={form.floorValue}
@@ -130,11 +139,8 @@ export default function ComplexRecordTab({
                 onChangeFloorValue={(value) => handleChangeField("floorValue", value)}
                 errorMessage={floorErrorMessage}
               />
-              <AskingPriceField
-                askingPrice={form.askingPrice}
-                onChangeAskingPrice={(value) => handleChangeField("askingPrice", value)}
-              />
-              <MemoField memo={form.memo} onChangeMemo={(value) => handleChangeField("memo", value)} />
+
+              <BasicStatusFields form={form} onChangeField={handleChangeField} />
             </div>
           </section>
 
@@ -144,7 +150,12 @@ export default function ComplexRecordTab({
           />
 
           {isDetailOpen ? (
-            <DetailRecordFields form={form} onChangeField={handleChangeField} />
+            <DetailRecordFields form={form} onChangeField={handleChangeField}>
+              <MemoField
+                memo={form.memo}
+                onChangeMemo={(value) => handleChangeField("memo", value)}
+              />
+            </DetailRecordFields>
           ) : null}
 
           <SaveButtonBar
