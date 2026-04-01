@@ -13,15 +13,14 @@ export default function DetailRecordFields({ form, onChangeField, children }) {
       </div>
 
       <div className="mt-5 space-y-5">
-        <DetailStatusFields form={form} onChangeField={onChangeField} />
-
         <section className="space-y-3">
-          <label className="text-sm font-semibold text-slate-900">본 부동산명</label>
+          <DetailStatusFields form={form} onChangeField={onChangeField} />
+          <label className="text-sm font-semibold text-slate-900">부동산명</label>
           <input
             type="text"
             value={form.agencyName}
             onChange={(event) => onChangeField("agencyName", event.target.value)}
-            placeholder="예: OO공인중개사"
+            placeholder="공인중개사"
             className="min-h-14 w-full rounded-[1.25rem] border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
         </section>

@@ -1,5 +1,4 @@
 "use client";
-import { useSearchStore } from "@/app/search/store/searchStore";
 
 export default function SelectedRegionsCardContents({ close, table, selected, onSelect }) {
   return (

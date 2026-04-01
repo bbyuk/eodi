@@ -13,6 +13,7 @@ import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRe
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 import OptionField from "@/app/field-notes/new/_components/field/OptionField";
+import DetailStatusFields from "@/app/field-notes/new/_components/field/DetailStatusFields";
 
 const INITIAL_FORM = {
   floorType: null,
@@ -169,12 +170,14 @@ export default function ComplexRecordTab({
           />
 
           {isDetailOpen ? (
-            <DetailRecordFields form={form} onChangeField={handleChangeField}>
-              <MemoField
-                memo={form.memo}
-                onChangeMemo={(value) => handleChangeField("memo", value)}
-              />
-            </DetailRecordFields>
+            <>
+              <DetailRecordFields form={form} onChangeField={handleChangeField}>
+                <MemoField
+                  memo={form.memo}
+                  onChangeMemo={(value) => handleChangeField("memo", value)}
+                />
+              </DetailRecordFields>
+            </>
           ) : null}
 
           <SaveButtonBar

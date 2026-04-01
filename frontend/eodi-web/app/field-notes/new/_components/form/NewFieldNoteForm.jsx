@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 import ComplexRecordTab from "@/app/field-notes/new/_components/tab/ComplexRecordTab";
 import RegionRecordTab from "@/app/field-notes/new/_components/tab/RegionRecordTab";
+import FormHeader from "@/components/layout/FormHeader";
+import FormContainer from "@/components/layout/FormContainer";
 
 const REGION_OPTIONS = [
   {
@@ -84,77 +86,71 @@ export default function NewFieldNoteForm() {
   return (
     <>
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pb-16 pt-24 sm:px-6 sm:pt-28 lg:px-8 lg:pt-32">
-        <section className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            무엇을 기록할까요?
-          </h1>
-        </section>
+        <FormHeader value={"무엇을 기록할까요?"} />
 
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.06)] sm:p-6">
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setRecordType("complex");
-                  setSelectedRegion(DEFAULT_SELECTED_REGION.value);
-                  setComplexQuery(DEFAULT_SELECTED_COMPLEX.name);
-                  setSelectedComplex(DEFAULT_SELECTED_COMPLEX);
-                  setRegionMemo("");
-                }}
-                className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
-                  recordType === "complex"
-                    ? "border-slate-950 bg-slate-950 text-white"
-                    : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
-                }`}
-              >
-                단지 기록
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setRecordType("region");
-                  setSelectedRegion("");
-                  setComplexQuery("");
-                  setSelectedComplex(null);
-                }}
-                className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
-                  recordType === "region"
-                    ? "border-slate-950 bg-slate-950 text-white"
-                    : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
-                }`}
-              >
-                지역 기록
-              </button>
-            </div>
-
-            {recordType === "complex" ? (
-              <ComplexRecordTab
-                complexQuery={complexQuery}
-                onChangeComplexQuery={(value) => {
-                  setComplexQuery(value);
-                  setSelectedComplex(null);
-                  setSelectedRegion("");
-                }}
-                complexSuggestions={complexSuggestions}
-                onSelectComplexSuggestion={(suggestion) => {
-                  setComplexQuery(suggestion.name);
-                  setSelectedComplex(suggestion);
-                  setSelectedRegion(suggestion.regionValue);
-                }}
-                selectedComplex={selectedComplex}
-                selectedRegion={selectedRegionOption}
-              />
-            ) : (
-              <RegionRecordTab
-                selectedRegionLabel={selectedRegionOption?.label ?? ""}
-                onOpenRegionSheet={() => setIsRegionSheetOpen(true)}
-                regionMemo={regionMemo}
-                onChangeRegionMemo={setRegionMemo}
-              />
-            )}
+        <FormContainer>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setRecordType("complex");
+                setSelectedRegion(DEFAULT_SELECTED_REGION.value);
+                setComplexQuery(DEFAULT_SELECTED_COMPLEX.name);
+                setSelectedComplex(DEFAULT_SELECTED_COMPLEX);
+                setRegionMemo("");
+              }}
+              className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
+                recordType === "complex"
+                  ? "border-slate-950 bg-slate-950 text-white"
+                  : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
+              }`}
+            >
+              단지 기록
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRecordType("region");
+                setSelectedRegion("");
+                setComplexQuery("");
+                setSelectedComplex(null);
+              }}
+              className={`rounded-[1.25rem] border px-4 py-4 text-sm font-semibold transition ${
+                recordType === "region"
+                  ? "border-slate-950 bg-slate-950 text-white"
+                  : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
+              }`}
+            >
+              지역 기록
+            </button>
           </div>
-        </section>
+
+          {recordType === "complex" ? (
+            <ComplexRecordTab
+              complexQuery={complexQuery}
+              onChangeComplexQuery={(value) => {
+                setComplexQuery(value);
+                setSelectedComplex(null);
+                setSelectedRegion("");
+              }}
+              complexSuggestions={complexSuggestions}
+              onSelectComplexSuggestion={(suggestion) => {
+                setComplexQuery(suggestion.name);
+                setSelectedComplex(suggestion);
+                setSelectedRegion(suggestion.regionValue);
+              }}
+              selectedComplex={selectedComplex}
+              selectedRegion={selectedRegionOption}
+            />
+          ) : (
+            <RegionRecordTab
+              selectedRegionLabel={selectedRegionOption?.label ?? ""}
+              onOpenRegionSheet={() => setIsRegionSheetOpen(true)}
+              regionMemo={regionMemo}
+              onChangeRegionMemo={setRegionMemo}
+            />
+          )}
+        </FormContainer>
       </div>
 
       <BottomSheetSelect
