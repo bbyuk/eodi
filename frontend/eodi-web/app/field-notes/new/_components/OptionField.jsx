@@ -1,6 +1,7 @@
 "use client";
 
 import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
+import OptionButton from "@/app/field-notes/new/_components/OptionButton";
 
 export default function OptionField({ value, options, onChange, title }) {
   return (
@@ -9,20 +10,14 @@ export default function OptionField({ value, options, onChange, title }) {
       <div className="grid grid-cols-3 gap-2">
         {options.map((option) => {
           const active = value === option.value;
-
+          s;
           return (
-            <button
+            <OptionButton
               key={option.value}
-              type="button"
               onClick={() => onChange(option.value)}
-              className={`rounded-full border px-3 py-3 text-sm font-semibold transition ${
-                active
-                  ? "border-slate-950 bg-slate-950 text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-              }`}
-            >
-              {option.label}
-            </button>
+              active={active}
+              label={option.label}
+            />
           );
         })}
       </div>
