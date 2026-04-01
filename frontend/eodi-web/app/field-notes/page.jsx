@@ -1,7 +1,7 @@
 import Link from "next/link";
 import WorkspacePanel from "@/app/_components/WorkspacePanel";
 import { noteTemplates, recentFieldNotes } from "@/app/_data/workspace";
-import ActionButton from "@/components/ui/input/ActionButton";
+import ActionButton from "@/components/ui/ActionButton";
 
 export const metadata = {
   title: "임장노트 | 어디살까",
@@ -21,24 +21,15 @@ export default function FieldNotesPage() {
               현장에서 본 내용을 바로 남기고 다시 꺼내보는 공간
             </h1>
             <p className="text-sm leading-6 text-slate-600 sm:text-base">
-              최근 노트 확인, 새 노트 생성, 템플릿 선택을 한 화면에서 시작할 수 있도록
-              구성했습니다.
+              최근 노트 확인, 새 노트 생성, 템플릿 선택을 한 화면에서 시작할 수 있도록 구성했습니다.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <ActionButton
-              href="/field-notes/new"
-              variant="dark"
-              size="md"
-            >
+            <ActionButton href="/field-notes/new" variant="dark" size="md">
               새 임장노트 만들기
             </ActionButton>
-            <ActionButton
-              href="/search"
-              variant="outline"
-              size="md"
-            >
+            <ActionButton href="/search" variant="outline" size="md">
               실거래 검색 연결
             </ActionButton>
           </div>

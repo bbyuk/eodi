@@ -1,6 +1,6 @@
 "use client";
 
-import SearchField from "@/components/ui/input/SearchField";
+import SearchField from "@/components/ui/SearchField";
 
 export default function RegionRecordTab({
   selectedRegionLabel,
@@ -41,4 +41,3 @@ export default function RegionRecordTab({
     </div>
   );
 }
-

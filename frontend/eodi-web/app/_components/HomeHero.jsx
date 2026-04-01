@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Search, LayoutTemplate } from "lucide-react";
-import ActionButton from "@/components/ui/input/ActionButton";
-import TextActionLink from "@/components/ui/input/TextActionLink";
+import ActionButton from "@/components/ui/ActionButton";
+import TextActionLink from "@/components/ui/TextActionLink";
 
 export default function HomeHero({ workspaceSummary }) {
   return (

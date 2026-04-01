@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
-import FloatingCard from "@/components/ui/container/floating/FloatingCard";
-import FloatingButton from "@/components/ui/container/floating/FloatingButton";
+import FloatingCard from "@/components/ui/container/FloatingCard";
+import FloatingButton from "@/components/ui/FloatingButton";
 
 export default function FloatingContainer({
   isOpen = false,
@@ -14,13 +14,12 @@ export default function FloatingContainer({
   activeCount,
   position = "right",
 }) {
-  const horizontalClass =
-    position === "left"
-      ? "left-4 sm:left-6"
-      : "right-4 sm:right-6";
+  const horizontalClass = position === "left" ? "left-4 sm:left-6" : "right-4 sm:right-6";
 
   return (
-    <div className={`fixed bottom-24 z-40 sm:bottom-6 md:top-[calc(4rem+8rem)] md:bottom-auto ${horizontalClass}`}>
+    <div
+      className={`fixed bottom-24 z-40 sm:bottom-6 md:top-[calc(4rem+8rem)] md:bottom-auto ${horizontalClass}`}
+    >
       <AnimatePresence mode="wait">
         {isOpen ? (
           <FloatingCard label={cardLabel} icon={cardIcon} close={close}>

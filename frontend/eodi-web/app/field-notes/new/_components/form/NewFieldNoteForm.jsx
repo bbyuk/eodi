@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import BottomSheetSelect from "@/components/ui/input/BottomSheetSelect";
-import ComplexRecordTab from "./_components/ComplexRecordTab";
-import RegionRecordTab from "./_components/RegionRecordTab";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
+import ComplexRecordTab from "@/app/field-notes/new/_components/tab/ComplexRecordTab";
+import RegionRecordTab from "@/app/field-notes/new/_components/tab/RegionRecordTab";
 
 const REGION_OPTIONS = [
   {

@@ -1,10 +1,10 @@
 "use client";
 
-import SliderInput from "@/components/ui/input/SliderInput";
+import SliderInput from "@/components/ui/SliderInput";
 import { useEffect, useRef } from "react";
-import DiscreteSliderInput from "@/components/ui/input/DiscreteSliderInput";
+import DiscreteSliderInput from "@/components/ui/DiscreteSliderInput";
 import FilterInput from "@/app/search/step2/_components/FilterInput";
-import Button from "@/components/ui/input/Button";
+import Button from "@/components/ui/Button";
 
 export default function FloatingFilterCardContents({ apply, filters }) {
   const initialMapRef = useRef(

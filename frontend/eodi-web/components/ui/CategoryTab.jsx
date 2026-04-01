@@ -1,6 +1,6 @@
 "use client";
 
-import CategoryButton from "@/components/ui/input/CategoryButton";
+import CategoryButton from "@/components/ui/CategoryButton";
 
 /**
  * 카테고리 탭 UI 컴포넌트

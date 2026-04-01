@@ -1,7 +1,7 @@
 "use client";
 
-import Select from "@/components/ui/input/Select";
-import ChipSelect from "@/components/ui/input/ChipSelect";
+import Select from "@/components/ui/Select";
+import ChipSelect from "@/components/ui/ChipSelect";
 
 /**
  * RegionFilterBar

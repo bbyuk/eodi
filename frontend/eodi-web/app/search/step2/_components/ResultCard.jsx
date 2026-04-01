@@ -1,7 +1,7 @@
 import { CheckCircle, Search, Copy } from "lucide-react";
 import { formatWon } from "@/app/search/_util/util";
 import { definedHousingType } from "@/const/code";
-import Button from "@/components/ui/input/Button";
+import Button from "@/components/ui/Button";
 
 export default function ResultCard({ data, dealType, onCopyButtonClick }) {
   const priceLabel = () => {

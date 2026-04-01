@@ -1,7 +1,7 @@
 "use client";
 
-import NumberInput from "@/components/ui/input/NumberInput";
-import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
+import NumberInput from "@/components/ui/NumberInput";
+import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 
 const FLOOR_OPTIONS = [
   { label: "저층", value: "LOW" },

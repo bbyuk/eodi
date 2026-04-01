@@ -1,6 +1,6 @@
 "use client";
 
-import ActionButton from "@/components/ui/input/ActionButton";
+import ActionButton from "@/components/ui/ActionButton";
 
 export default function SaveButtonBar({ disabled, helperText, onSave }) {
   return (
@@ -21,4 +21,3 @@ export default function SaveButtonBar({ disabled, helperText, onSave }) {
     </div>
   );
 }
-

@@ -1,7 +1,7 @@
 "use client";
 
-import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
-import OptionButton from "@/app/field-notes/new/_components/OptionButton";
+import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
+import OptionButton from "@/components/ui/OptionButton";
 
 export default function OptionField({ value, options, onChange, title }) {
   return (
@@ -10,7 +10,6 @@ export default function OptionField({ value, options, onChange, title }) {
       <div className="grid grid-cols-3 gap-2">
         {options.map((option) => {
           const active = value === option.value;
-          s;
           return (
             <OptionButton
               key={option.value}

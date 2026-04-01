@@ -1,4 +1,4 @@
-import ToggleButton from "@/components/ui/input/ToggleButton";
+import ToggleButton from "@/components/ui/ToggleButton";
 
 export default function AreaSelector({ options, label, value, onChange }) {
   return (

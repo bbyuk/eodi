@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import AutocompleteField from "@/components/ui/input/AutocompleteField";
+import AutocompleteField from "@/components/ui/AutocompleteField";
 import { useToast } from "@/components/ui/container/ToastProvider";
-import SelectedComplexCard from "./SelectedComplexCard";
-import RegionInfo from "./RegionInfo";
-import FloorTypeField from "./FloorTypeField";
-import AskingPriceField from "./AskingPriceField";
-import MemoField from "./MemoField";
-import DetailSectionToggle from "./DetailSectionToggle";
-import DetailRecordFields from "./DetailRecordFields";
-import SaveButtonBar from "./SaveButtonBar";
-import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
-import OptionField from "@/app/field-notes/new/_components/OptionField";
+import SelectedComplexCard from "@/app/field-notes/new/_components/field/SelectedComplexCard";
+import RegionInfo from "@/app/field-notes/new/_components/field/RegionInfo";
+import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
+import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
+import MemoField from "@/app/field-notes/new/_components/field/MemoField";
+import DetailSectionToggle from "../../../../../components/ui/DetailSectionToggle";
+import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRecordFields";
+import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
+import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
+import OptionField from "@/app/field-notes/new/_components/field/OptionField";
 
 const INITIAL_FORM = {
   floorType: null,

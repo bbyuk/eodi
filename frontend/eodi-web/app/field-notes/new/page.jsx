@@ -1,4 +1,4 @@
-import NewFieldNoteForm from "./NewFieldNoteForm";
+import NewFieldNoteForm from "@/app/field-notes/new/_components/form/NewFieldNoteForm";
 
 export const metadata = {
   title: "새 임장노트 | 어디살까",

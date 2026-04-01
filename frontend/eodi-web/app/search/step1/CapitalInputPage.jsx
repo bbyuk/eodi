@@ -1,10 +1,10 @@
 "use client";
 
-import PageHeader from "@/components/ui/header/PageHeader";
+import PageHeader from "@/components/layout/PageHeader";
 import { useController } from "@/app/search/step1/_hooks/useController";
-import SectionHeader from "@/components/ui/header/SectionHeader";
-import RadioGroup from "@/components/ui/input/RadioGroup";
-import NumberInput from "@/components/ui/input/NumberInput";
+import SectionHeader from "@/components/layout/SectionHeader";
+import RadioGroup from "@/components/ui/RadioGroup";
+import NumberInput from "@/components/ui/NumberInput";
 
 export default function CapitalInputPage() {
   const controller = useController();

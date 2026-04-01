@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { siteNavigation } from "@/app/_data/siteNavigation";
-import ActionButton from "@/components/ui/input/ActionButton";
+import ActionButton from "@/components/ui/ActionButton";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -32,7 +32,10 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-base font-semibold tracking-tight text-text-primary sm:text-lg">
+        <Link
+          href="/"
+          className="text-base font-semibold tracking-tight text-text-primary sm:text-lg"
+        >
           어디살까
         </Link>
 

@@ -1,8 +1,8 @@
 "use client";
 
-import NumberInput from "@/components/ui/input/NumberInput";
+import NumberInput from "@/components/ui/NumberInput";
 import { formatWon } from "@/app/search/_util/util";
-import FieldTitle from "@/app/field-notes/new/_components/FieldTitle";
+import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 
 export default function AskingPriceField({ askingPrice, onChangeAskingPrice, title }) {
   const hasValue = askingPrice !== "";

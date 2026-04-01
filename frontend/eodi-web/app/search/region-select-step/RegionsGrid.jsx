@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHeader from "@/components/ui/header/PageHeader";
-import CategoryTab from "@/components/ui/input/CategoryTab";
+import PageHeader from "@/components/layout/PageHeader";
+import CategoryTab from "@/components/ui/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/region-select-step/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
 import { redirect } from "next/navigation";
@@ -11,7 +11,7 @@ import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
 import { api } from "@/lib/apiClient";
 import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeContainer";
-import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
+import FloatingContainer from "@/components/ui/container/FloatingContainer";
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/region-select-step/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
