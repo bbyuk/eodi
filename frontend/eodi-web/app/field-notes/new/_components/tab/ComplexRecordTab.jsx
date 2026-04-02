@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight, LoaderCircle } from "lucide-react";
 import SearchField from "@/components/ui/SearchField";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import SelectedComplexCard from "@/app/field-notes/new/_components/field/SelectedComplexCard";
@@ -28,13 +28,16 @@ const INITIAL_FORM = {
 };
 
 export default function ComplexRecordTab({
-  complexQuery,
-  onChangeComplexQuery,
-  complexSuggestions,
+  searchQuery,
+  searchResults,
+  isSearching,
+  selectedComplex,
+  autoFilledRegion,
+  selectedRegion,
+  onChangeSearchQuery,
   onSelectComplexSuggestion,
   onResetSelectedComplex,
-  selectedComplex,
-  selectedRegion,
+  onOpenRegionSheet,
 }) {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
@@ -69,11 +72,14 @@ export default function ComplexRecordTab({
   const floorErrorMessage =
     form.floorType === "DIRECT" && !form.floorValue ? "직접 입력 층수를 입력해주세요" : "";
 
-  const hasSearchQuery = complexQuery.trim().length > 0;
+  const hasSearchQuery = searchQuery.trim().length > 0;
   const isSelectionComplete = Boolean(selectedComplex && selectedRegion);
-  const shouldShowSearchResults = hasSearchQuery && !isSelectionComplete;
-  const hasSearchResults = shouldShowSearchResults && complexSuggestions.length > 0;
-  const shouldShowEmptyState = shouldShowSearchResults && complexSuggestions.length === 0;
+  const hasSearchResults = hasSearchQuery && !isSearching && searchResults.length > 0 && !isSelectionComplete;
+  const shouldShowIdleState = !hasSearchQuery && !isSelectionComplete;
+  const shouldShowEmptyState = hasSearchQuery && !isSearching && searchResults.length === 0 && !isSelectionComplete;
+  const hasManualRegionChange = Boolean(
+    autoFilledRegion && selectedRegion && autoFilledRegion.value !== selectedRegion.value
+  );
 
   const handleChangeField = (field, value) => {
     setForm((prev) => ({
@@ -111,70 +117,84 @@ export default function ComplexRecordTab({
           main={"단지 선택"}
           sub={
             isSelectionComplete
-              ? "선택한 단지를 확인한 뒤 바로 기록을 이어가세요"
-              : "기록할 단지명을 검색하고 결과에서 하나를 선택하세요"
+              ? "선택한 단지를 확인하고 바로 기록을 이어가세요"
+              : "단지명을 검색하고 결과 카드 전체를 눌러 선택하세요"
           }
         />
 
-        <SearchField
-          value={complexQuery}
-          onChange={onChangeComplexQuery}
-          placeholder="단지명을 검색해보세요"
-          className={isSelectionComplete ? "border-emerald-200 bg-emerald-50/50" : ""}
-        />
+        {!isSelectionComplete ? (
+          <SearchField
+            value={searchQuery}
+            onChange={onChangeSearchQuery}
+            placeholder="단지명을 입력해 검색하세요"
+          />
+        ) : (
+          <div className="rounded-[1.25rem] border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <p className="text-sm font-semibold text-emerald-800">단지 선택이 완료됐어요</p>
+            <p className="mt-1 text-xs font-medium text-emerald-700/80">
+              자동 입력된 지역을 확인하고 필요한 경우만 변경하세요.
+            </p>
+          </div>
+        )}
 
-        {!hasSearchQuery && !isSelectionComplete ? (
+        {shouldShowIdleState ? (
           <p className="px-1 text-xs font-medium text-slate-500">
-            검색 후 결과 카드 하나를 탭하면 다음 입력 단계가 열립니다.
+            단지명을 입력하면 검색 결과가 바로 아래 카드 리스트로 나타납니다.
           </p>
         ) : null}
       </section>
+
+      {isSearching && !isSelectionComplete ? (
+        <section className="space-y-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <LoaderCircle className="h-4 w-4 animate-spin text-slate-500" />
+            검색 중
+          </div>
+          <div className="space-y-2">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="rounded-[1.25rem] border border-slate-200 bg-white px-4 py-4">
+                <div className="h-4 w-28 animate-pulse rounded bg-slate-200" />
+                <div className="mt-3 h-3 w-full animate-pulse rounded bg-slate-100" />
+                <div className="mt-2 h-3 w-2/3 animate-pulse rounded bg-slate-100" />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {hasSearchResults ? (
         <section className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <p className="text-sm font-semibold text-slate-900">검색 결과</p>
-            <p className="text-xs font-medium text-slate-500">{complexSuggestions.length}개</p>
+            <p className="text-xs font-medium text-slate-500">{searchResults.length}개</p>
           </div>
 
           <div className="space-y-2">
-            {complexSuggestions.map((suggestion) => {
-              const isActive = selectedComplex?.id === suggestion.id;
+            {searchResults.map((suggestion) => {
+              const locationDetail = suggestion.address?.includes(suggestion.regionLabel)
+                ? null
+                : suggestion.regionLabel;
 
               return (
                 <button
                   key={suggestion.id}
                   type="button"
                   onClick={() => onSelectComplexSuggestion?.(suggestion)}
-                  className={`w-full rounded-[1.4rem] border px-4 py-4 text-left transition ${
-                    isActive
-                      ? "border-emerald-300 bg-emerald-50 shadow-[0_12px_30px_rgba(16,185,129,0.12)]"
-                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
-                  }`}
+                  className="group w-full rounded-[1.45rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.99] active:border-slate-400"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-slate-950">{suggestion.name}</p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        {suggestion.address ?? suggestion.meta}
+                      <p className="text-base font-semibold tracking-tight text-slate-950">
+                        {suggestion.name}
                       </p>
-                      <p className="mt-2 text-xs font-medium text-slate-500">
-                        {suggestion.regionLabel}
-                      </p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">{suggestion.address}</p>
+                      {locationDetail ? (
+                        <p className="mt-2 text-xs font-medium text-slate-400">{locationDetail}</p>
+                      ) : null}
                     </div>
 
-                    <div
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${
-                        isActive
-                          ? "border-emerald-200 bg-emerald-100 text-emerald-600"
-                          : "border-slate-200 bg-slate-50 text-slate-400"
-                      }`}
-                    >
-                      {isActive ? (
-                        <CheckCircle2 className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition group-hover:border-slate-300 group-hover:bg-white group-hover:text-slate-600 group-active:border-slate-400">
+                      <ChevronRight className="h-4 w-4" />
                     </div>
                   </div>
                 </button>
@@ -188,7 +208,7 @@ export default function ComplexRecordTab({
         <section className="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-4 py-5">
           <p className="text-sm font-semibold text-slate-900">검색 결과가 없어요</p>
           <p className="mt-1 text-sm leading-6 text-slate-500">
-            단지명 일부만 입력하거나 다른 지역명으로 다시 검색해보세요.
+            단지명 일부만 입력하거나 지역명으로 다시 검색해보세요.
           </p>
         </section>
       ) : null}
@@ -198,9 +218,17 @@ export default function ComplexRecordTab({
           <SelectedComplexCard
             complexName={selectedComplex.name}
             address={selectedComplex.address ?? selectedComplex.meta}
-            regionLabel={selectedRegion.label ?? selectedComplex.regionLabel}
-            helperText="지역은 선택한 단지 기준으로 자동 반영됩니다"
+            regionLabel={selectedRegion.label}
+            helperText={
+              hasManualRegionChange
+                ? "자동 입력된 지역을 수동으로 변경했어요"
+                : "단지 선택과 함께 지역이 자동 입력됐어요"
+            }
+            statusLabel={hasManualRegionChange ? "지역 변경됨" : "선택 완료"}
+            regionTagLabel={hasManualRegionChange ? "수동 변경" : "자동 입력"}
+            actionLabel="단지 다시 선택"
             onAction={onResetSelectedComplex}
+            onChangeRegion={onOpenRegionSheet}
           />
 
           <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
