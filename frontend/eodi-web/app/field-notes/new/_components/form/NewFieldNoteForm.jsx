@@ -108,6 +108,27 @@ function mapComplexToSheetItem(complex) {
   };
 }
 
+function useDebouncedValue(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    if (!value.trim()) {
+      setDebouncedValue("");
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [delay, value]);
+
+  return debouncedValue;
+}
+
 export default function NewFieldNoteForm() {
   const [recordType, setRecordType] = useState("complex");
   const [selectedComplex, setSelectedComplex] = useState(null);
@@ -124,6 +145,8 @@ export default function NewFieldNoteForm() {
   const [isComplexSearching, setIsComplexSearching] = useState(false);
   const [recentRegionValues, setRecentRegionValues] = useState(RECOMMENDED_REGION_VALUES.slice(0, 2));
   const [recentComplexIds, setRecentComplexIds] = useState([]);
+  const debouncedRegionSearchQuery = useDebouncedValue(regionSearchQuery, 260);
+  const debouncedComplexSearchQuery = useDebouncedValue(complexSearchQuery, 260);
 
   const currentRecordType = useMemo(
     () => RECORD_TYPE_OPTIONS.find((option) => option.value === recordType) ?? RECORD_TYPE_OPTIONS[0],
@@ -186,7 +209,7 @@ export default function NewFieldNoteForm() {
   }, [flattenedComplexes, recentComplexIds, recentRegionValues]);
 
   useEffect(() => {
-    const keyword = regionSearchQuery.trim().toLowerCase();
+    const keyword = debouncedRegionSearchQuery.trim().toLowerCase();
 
     if (!keyword) {
       setRegionSearchResults([]);
@@ -203,15 +226,15 @@ export default function NewFieldNoteForm() {
 
       setRegionSearchResults(nextResults);
       setIsRegionSearching(false);
-    }, 220);
+    }, 140);
 
     return () => {
       window.clearTimeout(timer);
     };
-  }, [regionSearchQuery]);
+  }, [debouncedRegionSearchQuery]);
 
   useEffect(() => {
-    const keyword = complexSearchQuery.trim().toLowerCase();
+    const keyword = debouncedComplexSearchQuery.trim().toLowerCase();
 
     if (!keyword) {
       setComplexSearchResults([]);
@@ -233,12 +256,12 @@ export default function NewFieldNoteForm() {
 
       setComplexSearchResults(nextResults);
       setIsComplexSearching(false);
-    }, 240);
+    }, 140);
 
     return () => {
       window.clearTimeout(timer);
     };
-  }, [complexSearchQuery, flattenedComplexes]);
+  }, [debouncedComplexSearchQuery, flattenedComplexes]);
 
   const rememberRegion = (value) => {
     setRecentRegionValues((prev) => [value, ...prev.filter((item) => item !== value)].slice(0, 4));
