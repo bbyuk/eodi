@@ -120,8 +120,8 @@ export default function NumberInput({
             if (e.code === "Enter") onEnter?.();
           }}
           className={`w-full px-4 py-3 border border-border rounded-lg text-right text-text-primary
-            placeholder:text-text-secondary focus:ring-2 focus:ring-primary
-            focus:border-primary focus:outline-none transition
+            placeholder:text-text-secondary focus:ring-2 focus:ring-[var(--input-focus-ring)]
+            focus:border-[var(--input-focus-border)] focus:outline-none transition
             ${unit ? "pr-16" : "pr-4"}`}
           {...props}
         />

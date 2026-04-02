@@ -34,17 +34,27 @@ export default function Select({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-11 w-full items-center justify-between overflow-hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition hover:bg-gray-50"
+        className={`flex h-11 w-full items-center justify-between overflow-hidden rounded-full border px-4 py-2 text-sm transition focus:outline-none focus-visible:ring-4 ${
+          open
+            ? "border-[var(--select-trigger-open-border)] bg-[var(--select-trigger-open-bg)] text-[var(--select-trigger-text)] ring-[var(--select-trigger-focus)]"
+            : "border-[var(--select-trigger-border)] bg-[var(--select-trigger-bg)] text-[var(--select-trigger-text)] hover:border-[var(--select-trigger-hover-border)] hover:bg-[var(--select-trigger-open-bg)] focus-visible:border-[var(--select-trigger-open-border)] focus-visible:ring-[var(--select-trigger-focus)]"
+        }`}
+        aria-expanded={open}
       >
-        <span className="truncate whitespace-nowrap">
+        <span
+          className={`truncate whitespace-nowrap ${selected ? "text-[var(--select-trigger-text)]" : "text-[var(--select-trigger-placeholder)]"}`}
+        >
           {selected ? selected.label : placeholder}
         </span>
 
-        <ChevronDown size={16} className="shrink-0" />
+        <ChevronDown
+          size={16}
+          className={`shrink-0 transition ${open ? "rotate-180 text-slate-600" : "text-slate-400"}`}
+        />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-2 w-full min-w-[180px] max-h-[300px] overflow-y-auto rounded-xl border bg-white shadow-lg p-2">
+        <div className="absolute left-0 top-full z-20 mt-2 w-full min-w-[180px] max-h-[300px] overflow-y-auto rounded-[1.1rem] border border-[var(--select-panel-border)] bg-[var(--select-panel-bg)] p-2 shadow-[var(--select-panel-shadow)] backdrop-blur-sm">
           {mergedOptions.map((option) => (
             <button
               key={option.value}
@@ -53,8 +63,11 @@ export default function Select({
                 onChange(option.value);
                 setOpen(false);
               }}
-              className={`w-full text-left whitespace-nowrap rounded-md px-3 py-2 text-sm
-            ${value === option.value ? "bg-primary/10 text-primary" : "hover:bg-gray-100"}`}
+              className={`w-full whitespace-nowrap rounded-[0.9rem] border px-3 py-2.5 text-left text-sm font-medium transition focus:outline-none ${
+                value === option.value
+                  ? "border-[var(--select-option-selected-border)] bg-[var(--select-option-selected-bg)] text-[var(--select-option-selected-text)]"
+                  : "border-transparent text-[var(--select-option-text)] hover:bg-[var(--select-option-hover-bg)] active:bg-[var(--select-option-active-bg)]"
+              }`}
             >
               {option.label}
             </button>

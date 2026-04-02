@@ -36,8 +36,8 @@ export default function FloorTypeField({
               onClick={() => onChangeFloorType(option.value)}
               className={`rounded-full border px-4 py-3 text-sm font-semibold transition ${
                 active
-                  ? "border-slate-950 bg-slate-950 text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                  ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)] text-[var(--choice-chip-selected-text)] shadow-[var(--choice-chip-selected-shadow)]"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-[var(--choice-chip-hover-border)] hover:bg-[var(--choice-chip-hover-bg)]"
               }`}
             >
               {option.label}

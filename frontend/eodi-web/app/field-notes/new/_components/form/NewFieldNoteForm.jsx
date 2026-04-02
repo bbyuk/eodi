@@ -344,11 +344,8 @@ export default function NewFieldNoteForm() {
           {recordType === "complex" ? (
             <ComplexRecordTab
               selectedComplex={selectedComplex}
-              autoFilledRegion={autoFilledRegion}
               selectedRegion={selectedRegionOption}
               onOpenComplexSheet={handleOpenComplexSheet}
-              onOpenRegionSheet={handleOpenRegionSheet}
-              onResetSelectedComplex={resetComplexSelection}
             />
           ) : (
             <RegionRecordTab

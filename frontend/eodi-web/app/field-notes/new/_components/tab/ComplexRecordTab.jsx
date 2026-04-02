@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/container/ToastProvider";
-import SelectedComplexCard from "@/app/field-notes/new/_components/field/SelectedComplexCard";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
 import MemoField from "@/app/field-notes/new/_components/field/MemoField";
@@ -28,11 +27,8 @@ const INITIAL_FORM = {
 
 export default function ComplexRecordTab({
   selectedComplex,
-  autoFilledRegion,
   selectedRegion,
   onOpenComplexSheet,
-  onOpenRegionSheet,
-  onResetSelectedComplex,
 }) {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
@@ -66,10 +62,6 @@ export default function ComplexRecordTab({
 
   const floorErrorMessage =
     form.floorType === "DIRECT" && !form.floorValue ? "직접 입력 층수를 입력해주세요" : "";
-
-  const hasManualRegionChange = Boolean(
-    autoFilledRegion && selectedRegion && autoFilledRegion.value !== selectedRegion.value
-  );
 
   const handleChangeField = (field, value) => {
     setForm((prev) => ({
@@ -112,23 +104,6 @@ export default function ComplexRecordTab({
 
       {selectedComplex && selectedRegion ? (
         <>
-          {/* 선택된 단지 요약 필드 */}
-          <SelectedComplexCard
-            complexName={selectedComplex.name}
-            address={selectedComplex.address ?? selectedComplex.meta}
-            regionLabel={selectedRegion.label}
-            helperText={
-              hasManualRegionChange
-                ? "자동 입력된 지역을 변경했어요"
-                : "선택한 단지의 지역이 함께 반영됐어요"
-            }
-            statusLabel={hasManualRegionChange ? "지역 변경됨" : "선택 완료"}
-            regionTagLabel={hasManualRegionChange ? "수동 변경" : "자동 입력"}
-            actionLabel="단지 변경"
-            onAction={onResetSelectedComplex}
-            onChangeRegion={onOpenRegionSheet}
-          />
-
           <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
             <FieldTitle main={"기본 기록"} sub={"선택한 단지 기준으로 바로 기록을 남겨보세요"} />
 
