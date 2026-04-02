@@ -10,7 +10,7 @@ import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRe
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 import OptionField from "@/app/field-notes/new/_components/field/OptionField";
-import SelectionField from "@/app/field-notes/new/_components/field/SelectionField";
+import InputButtonField from "@/app/field-notes/new/_components/field/InputButtonField";
 
 const INITIAL_FORM = {
   floorType: null,
@@ -25,11 +25,7 @@ const INITIAL_FORM = {
   agencyName: "",
 };
 
-export default function ComplexRecordTab({
-  selectedComplex,
-  selectedRegion,
-  onOpenComplexSheet,
-}) {
+export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOpenComplexSheet }) {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -95,7 +91,7 @@ export default function ComplexRecordTab({
   return (
     <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
       {/* 단지 선택 필드 */}
-      <SelectionField
+      <InputButtonField
         title={{ main: "단지 선택", sub: "단지명을 검색해 선택하세요" }}
         value={selectedComplex?.name ?? ""}
         placeholder="단지명을 검색해 선택하세요"
@@ -160,7 +156,10 @@ export default function ComplexRecordTab({
           {isDetailOpen ? (
             <DetailRecordFields form={form} onChangeField={handleChangeField}>
               {/* 메모 필드 */}
-              <MemoField memo={form.memo} onChangeMemo={(value) => handleChangeField("memo", value)} />
+              <MemoField
+                memo={form.memo}
+                onChangeMemo={(value) => handleChangeField("memo", value)}
+              />
             </DetailRecordFields>
           ) : null}
 
