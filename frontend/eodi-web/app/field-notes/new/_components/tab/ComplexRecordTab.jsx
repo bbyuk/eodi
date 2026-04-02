@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, ChevronRight, LoaderCircle } from "lucide-react";
-import SearchField from "@/components/ui/SearchField";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import SelectedComplexCard from "@/app/field-notes/new/_components/field/SelectedComplexCard";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
@@ -13,6 +11,7 @@ import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRe
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 import OptionField from "@/app/field-notes/new/_components/field/OptionField";
+import SelectionField from "@/app/field-notes/new/_components/field/SelectionField";
 
 const INITIAL_FORM = {
   floorType: null,
@@ -28,16 +27,12 @@ const INITIAL_FORM = {
 };
 
 export default function ComplexRecordTab({
-  searchQuery,
-  searchResults,
-  isSearching,
   selectedComplex,
   autoFilledRegion,
   selectedRegion,
-  onChangeSearchQuery,
-  onSelectComplexSuggestion,
-  onResetSelectedComplex,
+  onOpenComplexSheet,
   onOpenRegionSheet,
+  onResetSelectedComplex,
 }) {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
@@ -72,11 +67,6 @@ export default function ComplexRecordTab({
   const floorErrorMessage =
     form.floorType === "DIRECT" && !form.floorValue ? "직접 입력 층수를 입력해주세요" : "";
 
-  const hasSearchQuery = searchQuery.trim().length > 0;
-  const isSelectionComplete = Boolean(selectedComplex && selectedRegion);
-  const hasSearchResults = hasSearchQuery && !isSearching && searchResults.length > 0 && !isSelectionComplete;
-  const shouldShowIdleState = !hasSearchQuery && !isSelectionComplete;
-  const shouldShowEmptyState = hasSearchQuery && !isSearching && searchResults.length === 0 && !isSelectionComplete;
   const hasManualRegionChange = Boolean(
     autoFilledRegion && selectedRegion && autoFilledRegion.value !== selectedRegion.value
   );
@@ -112,121 +102,29 @@ export default function ComplexRecordTab({
 
   return (
     <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
-      <section className="space-y-3">
-        <FieldTitle
-          main={"단지 선택"}
-          sub={
-            isSelectionComplete
-              ? "선택한 단지를 확인하고 바로 기록을 이어가세요"
-              : "단지명을 검색하고 결과 카드 전체를 눌러 선택하세요"
-          }
-        />
+      {/* 단지 선택 필드 */}
+      <SelectionField
+        title={{ main: "단지 선택", sub: "단지명을 검색해 선택하세요" }}
+        value={selectedComplex?.name ?? ""}
+        placeholder="단지명을 검색해 선택하세요"
+        onClick={onOpenComplexSheet}
+      />
 
-        {!isSelectionComplete ? (
-          <SearchField
-            value={searchQuery}
-            onChange={onChangeSearchQuery}
-            placeholder="단지명을 입력해 검색하세요"
-          />
-        ) : (
-          <div className="rounded-[1.25rem] border border-emerald-200 bg-emerald-50/70 px-4 py-3">
-            <p className="text-sm font-semibold text-emerald-800">단지 선택이 완료됐어요</p>
-            <p className="mt-1 text-xs font-medium text-emerald-700/80">
-              자동 입력된 지역을 확인하고 필요한 경우만 변경하세요.
-            </p>
-          </div>
-        )}
-
-        {shouldShowIdleState ? (
-          <p className="px-1 text-xs font-medium text-slate-500">
-            단지명을 입력하면 검색 결과가 바로 아래 카드 리스트로 나타납니다.
-          </p>
-        ) : null}
-      </section>
-
-      {isSearching && !isSelectionComplete ? (
-        <section className="space-y-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <LoaderCircle className="h-4 w-4 animate-spin text-slate-500" />
-            검색 중
-          </div>
-          <div className="space-y-2">
-            {[0, 1, 2].map((item) => (
-              <div key={item} className="rounded-[1.25rem] border border-slate-200 bg-white px-4 py-4">
-                <div className="h-4 w-28 animate-pulse rounded bg-slate-200" />
-                <div className="mt-3 h-3 w-full animate-pulse rounded bg-slate-100" />
-                <div className="mt-2 h-3 w-2/3 animate-pulse rounded bg-slate-100" />
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {hasSearchResults ? (
-        <section className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <p className="text-sm font-semibold text-slate-900">검색 결과</p>
-            <p className="text-xs font-medium text-slate-500">{searchResults.length}개</p>
-          </div>
-
-          <div className="space-y-2">
-            {searchResults.map((suggestion) => {
-              const locationDetail = suggestion.address?.includes(suggestion.regionLabel)
-                ? null
-                : suggestion.regionLabel;
-
-              return (
-                <button
-                  key={suggestion.id}
-                  type="button"
-                  onClick={() => onSelectComplexSuggestion?.(suggestion)}
-                  className="group w-full rounded-[1.45rem] border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.99] active:border-slate-400"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-base font-semibold tracking-tight text-slate-950">
-                        {suggestion.name}
-                      </p>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">{suggestion.address}</p>
-                      {locationDetail ? (
-                        <p className="mt-2 text-xs font-medium text-slate-400">{locationDetail}</p>
-                      ) : null}
-                    </div>
-
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition group-hover:border-slate-300 group-hover:bg-white group-hover:text-slate-600 group-active:border-slate-400">
-                      <ChevronRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
-
-      {shouldShowEmptyState ? (
-        <section className="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-4 py-5">
-          <p className="text-sm font-semibold text-slate-900">검색 결과가 없어요</p>
-          <p className="mt-1 text-sm leading-6 text-slate-500">
-            단지명 일부만 입력하거나 지역명으로 다시 검색해보세요.
-          </p>
-        </section>
-      ) : null}
-
-      {isSelectionComplete ? (
+      {selectedComplex && selectedRegion ? (
         <>
+          {/* 선택된 단지 요약 필드 */}
           <SelectedComplexCard
             complexName={selectedComplex.name}
             address={selectedComplex.address ?? selectedComplex.meta}
             regionLabel={selectedRegion.label}
             helperText={
               hasManualRegionChange
-                ? "자동 입력된 지역을 수동으로 변경했어요"
-                : "단지 선택과 함께 지역이 자동 입력됐어요"
+                ? "자동 입력된 지역을 변경했어요"
+                : "선택한 단지의 지역이 함께 반영됐어요"
             }
             statusLabel={hasManualRegionChange ? "지역 변경됨" : "선택 완료"}
             regionTagLabel={hasManualRegionChange ? "수동 변경" : "자동 입력"}
-            actionLabel="단지 다시 선택"
+            actionLabel="단지 변경"
             onAction={onResetSelectedComplex}
             onChangeRegion={onOpenRegionSheet}
           />
@@ -235,11 +133,14 @@ export default function ComplexRecordTab({
             <FieldTitle main={"기본 기록"} sub={"선택한 단지 기준으로 바로 기록을 남겨보세요"} />
 
             <div className="mt-5 space-y-5">
+              {/* 호가 필드 */}
               <AskingPriceField
                 title={{ main: "호가" }}
                 askingPrice={form.askingPrice}
                 onChangeAskingPrice={(value) => handleChangeField("askingPrice", value)}
               />
+
+              {/* 층수 필드 */}
               <FloorTypeField
                 floorType={form.floorType}
                 floorValue={form.floorValue}
@@ -249,6 +150,7 @@ export default function ComplexRecordTab({
                 title={{ main: "층수", sub: "옵션을 선택하거나 직접 입력해보세요" }}
               />
 
+              {/* 관리 상태 필드 */}
               <OptionField
                 options={[
                   { label: "좋음", value: "GOOD" },
@@ -260,6 +162,7 @@ export default function ComplexRecordTab({
                 value={form.managementStatus}
               />
 
+              {/* 소음 필드 */}
               <OptionField
                 options={[
                   { label: "조용함", value: "LOW" },
@@ -273,6 +176,7 @@ export default function ComplexRecordTab({
             </div>
           </section>
 
+          {/* 상세 기록 펼치기 필드 */}
           <DetailSectionToggle
             isOpen={isDetailOpen}
             onToggle={() => setIsDetailOpen((prev) => !prev)}
@@ -280,10 +184,12 @@ export default function ComplexRecordTab({
 
           {isDetailOpen ? (
             <DetailRecordFields form={form} onChangeField={handleChangeField}>
+              {/* 메모 필드 */}
               <MemoField memo={form.memo} onChangeMemo={(value) => handleChangeField("memo", value)} />
             </DetailRecordFields>
           ) : null}
 
+          {/* 저장 버튼 필드 */}
           <SaveButtonBar
             disabled={Boolean(floorErrorMessage)}
             helperText={floorErrorMessage}

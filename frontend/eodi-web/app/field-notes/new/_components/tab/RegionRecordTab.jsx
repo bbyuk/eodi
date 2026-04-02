@@ -1,6 +1,6 @@
 "use client";
 
-import SearchField from "@/components/ui/SearchField";
+import SelectionField from "@/app/field-notes/new/_components/field/SelectionField";
 
 export default function RegionRecordTab({
   selectedRegionLabel,
@@ -10,15 +10,13 @@ export default function RegionRecordTab({
 }) {
   return (
     <div className="space-y-6">
-      <div className="space-y-3">
-        <label className="text-sm font-semibold text-slate-900">지역 검색</label>
-        <SearchField
-          value={selectedRegionLabel ?? ""}
-          placeholder="지역명을 검색해보세요"
-          readOnly
-          onClick={onOpenRegionSheet}
-        />
-      </div>
+      {/* 지역 선택 필드 */}
+      <SelectionField
+        title={{ main: "지역 선택", sub: "지역명을 검색해 선택하세요" }}
+        value={selectedRegionLabel ?? ""}
+        placeholder="지역명을 검색해 선택하세요"
+        onClick={onOpenRegionSheet}
+      />
 
       {selectedRegionLabel ? (
         <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">

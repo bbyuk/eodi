@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ComplexRecordTab from "@/app/field-notes/new/_components/tab/ComplexRecordTab";
 import RegionRecordTab from "@/app/field-notes/new/_components/tab/RegionRecordTab";
-import RegionSearchSheet from "@/app/field-notes/new/_components/form/RegionSearchSheet";
+import SelectionSearchSheet from "@/app/field-notes/new/_components/form/SelectionSearchSheet";
 import FormHeader from "@/components/layout/FormHeader";
 import FormContainer from "@/components/layout/FormContainer";
 import Select from "@/components/ui/Select";
@@ -84,26 +84,46 @@ const REGION_OPTIONS = [
 ];
 
 const RECORD_TYPE_OPTIONS = [
-  { value: "complex", label: "단지 기록", description: "단지 선택 후 상세 기록을 남겨요" },
-  { value: "region", label: "지역 기록", description: "지역을 검색해 빠르게 메모해요" },
+  { value: "complex", label: "단지 기록", description: "단지를 선택하고 핵심 기록을 남겨요" },
+  { value: "region", label: "지역 기록", description: "지역을 선택하고 메모를 남겨요" },
 ];
 
 const RECOMMENDED_REGION_VALUES = ["nowon-sanggye", "mapo-ahyeon", "suwon-yeongtong"];
 
+function mapRegionToSheetItem(region) {
+  return {
+    key: region.value,
+    title: region.label,
+    raw: region,
+  };
+}
+
+function mapComplexToSheetItem(complex) {
+  return {
+    key: complex.id,
+    title: complex.name,
+    subtitle: complex.address,
+    meta: complex.regionLabel,
+    raw: complex,
+  };
+}
+
 export default function NewFieldNoteForm() {
   const [recordType, setRecordType] = useState("complex");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedComplex, setSelectedComplex] = useState(null);
   const [autoFilledRegion, setAutoFilledRegion] = useState(null);
   const [selectedRegionValue, setSelectedRegionValue] = useState("");
-  const [isRegionSheetOpen, setIsRegionSheetOpen] = useState(false);
-  const [regionSearchQuery, setRegionSearchQuery] = useState("");
-  const [regionSearchResults, setRegionSearchResults] = useState([]);
-  const [isRegionSearching, setIsRegionSearching] = useState(false);
-  const [recentRegionValues, setRecentRegionValues] = useState(RECOMMENDED_REGION_VALUES.slice(0, 2));
   const [regionMemo, setRegionMemo] = useState("");
+  const [isRegionSheetOpen, setIsRegionSheetOpen] = useState(false);
+  const [isComplexSheetOpen, setIsComplexSheetOpen] = useState(false);
+  const [regionSearchQuery, setRegionSearchQuery] = useState("");
+  const [complexSearchQuery, setComplexSearchQuery] = useState("");
+  const [regionSearchResults, setRegionSearchResults] = useState([]);
+  const [complexSearchResults, setComplexSearchResults] = useState([]);
+  const [isRegionSearching, setIsRegionSearching] = useState(false);
+  const [isComplexSearching, setIsComplexSearching] = useState(false);
+  const [recentRegionValues, setRecentRegionValues] = useState(RECOMMENDED_REGION_VALUES.slice(0, 2));
+  const [recentComplexIds, setRecentComplexIds] = useState([]);
 
   const currentRecordType = useMemo(
     () => RECORD_TYPE_OPTIONS.find((option) => option.value === recordType) ?? RECORD_TYPE_OPTIONS[0],
@@ -128,9 +148,11 @@ export default function NewFieldNoteForm() {
   );
 
   const recentRegions = useMemo(
-    () => recentRegionValues
-      .map((value) => REGION_OPTIONS.find((option) => option.value === value))
-      .filter(Boolean),
+    () =>
+      recentRegionValues
+        .map((value) => REGION_OPTIONS.find((option) => option.value === value))
+        .filter(Boolean)
+        .map(mapRegionToSheetItem),
     [recentRegionValues]
   );
 
@@ -140,37 +162,28 @@ export default function NewFieldNoteForm() {
         (option) =>
           RECOMMENDED_REGION_VALUES.includes(option.value) &&
           !recentRegionValues.includes(option.value)
-      ),
+      ).map(mapRegionToSheetItem),
     [recentRegionValues]
   );
 
-  useEffect(() => {
-    const keyword = searchQuery.trim().toLowerCase();
+  const recentComplexes = useMemo(
+    () =>
+      recentComplexIds
+        .map((id) => flattenedComplexes.find((complex) => complex.id === id))
+        .filter(Boolean)
+        .map(mapComplexToSheetItem),
+    [flattenedComplexes, recentComplexIds]
+  );
 
-    if (!keyword || selectedComplex) {
-      setSearchResults([]);
-      setIsSearching(false);
-      return undefined;
-    }
+  const recommendedComplexes = useMemo(() => {
+    const priorityRegionValues = recentRegionValues.length > 0 ? recentRegionValues : RECOMMENDED_REGION_VALUES;
 
-    setIsSearching(true);
-
-    const timer = window.setTimeout(() => {
-      const nextResults = flattenedComplexes.filter(
-        (complex) =>
-          complex.name.toLowerCase().includes(keyword) ||
-          complex.address.toLowerCase().includes(keyword) ||
-          complex.regionLabel.toLowerCase().includes(keyword)
-      );
-
-      setSearchResults(nextResults);
-      setIsSearching(false);
-    }, 240);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [flattenedComplexes, searchQuery, selectedComplex]);
+    return flattenedComplexes
+      .filter((complex) => priorityRegionValues.includes(complex.regionValue))
+      .filter((complex) => !recentComplexIds.includes(complex.id))
+      .slice(0, 6)
+      .map(mapComplexToSheetItem);
+  }, [flattenedComplexes, recentComplexIds, recentRegionValues]);
 
   useEffect(() => {
     const keyword = regionSearchQuery.trim().toLowerCase();
@@ -186,7 +199,7 @@ export default function NewFieldNoteForm() {
     const timer = window.setTimeout(() => {
       const nextResults = REGION_OPTIONS.filter((option) =>
         option.label.toLowerCase().includes(keyword)
-      );
+      ).map(mapRegionToSheetItem);
 
       setRegionSearchResults(nextResults);
       setIsRegionSearching(false);
@@ -197,29 +210,64 @@ export default function NewFieldNoteForm() {
     };
   }, [regionSearchQuery]);
 
+  useEffect(() => {
+    const keyword = complexSearchQuery.trim().toLowerCase();
+
+    if (!keyword) {
+      setComplexSearchResults([]);
+      setIsComplexSearching(false);
+      return undefined;
+    }
+
+    setIsComplexSearching(true);
+
+    const timer = window.setTimeout(() => {
+      const nextResults = flattenedComplexes
+        .filter(
+          (complex) =>
+            complex.name.toLowerCase().includes(keyword) ||
+            complex.address.toLowerCase().includes(keyword) ||
+            complex.regionLabel.toLowerCase().includes(keyword)
+        )
+        .map(mapComplexToSheetItem);
+
+      setComplexSearchResults(nextResults);
+      setIsComplexSearching(false);
+    }, 240);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [complexSearchQuery, flattenedComplexes]);
+
   const rememberRegion = (value) => {
     setRecentRegionValues((prev) => [value, ...prev.filter((item) => item !== value)].slice(0, 4));
   };
 
-  const handleSelectComplexRecord = () => {
-    setRecordType("complex");
-    setSearchQuery("");
-    setSearchResults([]);
-    setIsSearching(false);
+  const rememberComplex = (complexId) => {
+    setRecentComplexIds((prev) => [complexId, ...prev.filter((item) => item !== complexId)].slice(0, 4));
+  };
+
+  const resetComplexSelection = () => {
     setSelectedComplex(null);
     setAutoFilledRegion(null);
     setSelectedRegionValue("");
+    setComplexSearchQuery("");
+    setComplexSearchResults([]);
+    setIsComplexSearching(false);
+  };
+
+  const handleSelectComplexRecord = () => {
+    setRecordType("complex");
+    resetComplexSelection();
     setRegionMemo("");
   };
 
   const handleSelectRegionRecord = () => {
     setRecordType("region");
-    setSearchQuery("");
-    setSearchResults([]);
-    setIsSearching(false);
-    setSelectedComplex(null);
-    setAutoFilledRegion(null);
+    resetComplexSelection();
     setSelectedRegionValue("");
+    setAutoFilledRegion(null);
   };
 
   const handleChangeRecordType = (value) => {
@@ -231,29 +279,6 @@ export default function NewFieldNoteForm() {
     handleSelectComplexRecord();
   };
 
-  const handleSelectComplexSuggestion = (suggestion) => {
-    const matchedRegion = REGION_OPTIONS.find((option) => option.value === suggestion.regionValue) ?? null;
-
-    setSelectedComplex(suggestion);
-    setSearchQuery(suggestion.name);
-    setSearchResults([]);
-    setAutoFilledRegion(matchedRegion);
-    setSelectedRegionValue(matchedRegion?.value ?? "");
-
-    if (matchedRegion) {
-      rememberRegion(matchedRegion.value);
-    }
-  };
-
-  const handleResetSelectedComplex = () => {
-    setSelectedComplex(null);
-    setAutoFilledRegion(null);
-    setSelectedRegionValue("");
-    setSearchQuery("");
-    setSearchResults([]);
-    setIsSearching(false);
-  };
-
   const handleOpenRegionSheet = () => {
     setRegionSearchQuery("");
     setRegionSearchResults([]);
@@ -261,12 +286,39 @@ export default function NewFieldNoteForm() {
     setIsRegionSheetOpen(true);
   };
 
-  const handleSelectRegion = (value) => {
-    setSelectedRegionValue(value);
-    rememberRegion(value);
+  const handleOpenComplexSheet = () => {
+    setComplexSearchQuery("");
+    setComplexSearchResults([]);
+    setIsComplexSearching(false);
+    setIsComplexSheetOpen(true);
+  };
+
+  const handleSelectRegion = (item) => {
+    const region = item.raw;
+
+    setSelectedRegionValue(region.value);
+    rememberRegion(region.value);
     setIsRegionSheetOpen(false);
     setRegionSearchQuery("");
     setRegionSearchResults([]);
+  };
+
+  const handleSelectComplex = (item) => {
+    const complex = item.raw;
+    const matchedRegion = REGION_OPTIONS.find((option) => option.value === complex.regionValue) ?? null;
+
+    setSelectedComplex(complex);
+    setSelectedRegionValue(matchedRegion?.value ?? "");
+    setAutoFilledRegion(matchedRegion);
+    rememberComplex(complex.id);
+
+    if (matchedRegion) {
+      rememberRegion(matchedRegion.value);
+    }
+
+    setIsComplexSheetOpen(false);
+    setComplexSearchQuery("");
+    setComplexSearchResults([]);
   };
 
   return (
@@ -291,21 +343,12 @@ export default function NewFieldNoteForm() {
 
           {recordType === "complex" ? (
             <ComplexRecordTab
-              searchQuery={searchQuery}
-              searchResults={searchResults}
-              isSearching={isSearching}
               selectedComplex={selectedComplex}
               autoFilledRegion={autoFilledRegion}
               selectedRegion={selectedRegionOption}
-              onChangeSearchQuery={(value) => {
-                setSearchQuery(value);
-                setSelectedComplex(null);
-                setAutoFilledRegion(null);
-                setSelectedRegionValue("");
-              }}
-              onSelectComplexSuggestion={handleSelectComplexSuggestion}
-              onResetSelectedComplex={handleResetSelectedComplex}
+              onOpenComplexSheet={handleOpenComplexSheet}
               onOpenRegionSheet={handleOpenRegionSheet}
+              onResetSelectedComplex={resetComplexSelection}
             />
           ) : (
             <RegionRecordTab
@@ -318,23 +361,44 @@ export default function NewFieldNoteForm() {
         </FormContainer>
       </div>
 
-      <RegionSearchSheet
+      <SelectionSearchSheet
         open={isRegionSheetOpen}
-        title={recordType === "complex" ? "지역 변경" : "지역 선택"}
-        description={
-          recordType === "complex"
-            ? "단지를 선택하면 지역이 자동 입력됩니다. 필요할 때만 검색해서 바꿔주세요."
-            : "기록할 지역명을 검색해서 빠르게 선택하세요."
-        }
-        searchQuery={regionSearchQuery}
+        title="지역 선택"
+        description="지역명을 검색해 선택하세요"
+        searchLabel="지역 검색"
+        searchValue={regionSearchQuery}
+        onSearchChange={setRegionSearchQuery}
+        searchPlaceholder="지역명을 입력하세요"
+        recentTitle="최근 선택 지역"
+        recentItems={recentRegions}
+        recommendedTitle="추천 지역"
+        recommendedItems={recommendedRegions}
         searchResults={regionSearchResults}
         isSearching={isRegionSearching}
-        recentOptions={recentRegions}
-        recommendedOptions={recommendedRegions}
-        selectedValue={selectedRegionValue}
-        onChangeSearchQuery={setRegionSearchQuery}
+        emptyDescription="시, 구, 동 이름으로 다시 검색해보세요."
+        selectedKey={selectedRegionValue}
         onSelect={handleSelectRegion}
         onClose={() => setIsRegionSheetOpen(false)}
+      />
+
+      <SelectionSearchSheet
+        open={isComplexSheetOpen}
+        title="단지 선택"
+        description="단지명을 검색해 선택하세요"
+        searchLabel="단지 검색"
+        searchValue={complexSearchQuery}
+        onSearchChange={setComplexSearchQuery}
+        searchPlaceholder="단지명을 입력하세요"
+        recentTitle="최근 선택 단지"
+        recentItems={recentComplexes}
+        recommendedTitle="추천 단지"
+        recommendedItems={recommendedComplexes}
+        searchResults={complexSearchResults}
+        isSearching={isComplexSearching}
+        emptyDescription="단지명이나 지역명으로 다시 검색해보세요."
+        selectedKey={selectedComplex?.id}
+        onSelect={handleSelectComplex}
+        onClose={() => setIsComplexSheetOpen(false)}
       />
     </>
   );
