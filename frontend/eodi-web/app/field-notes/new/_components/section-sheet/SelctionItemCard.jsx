@@ -1,4 +1,4 @@
-import { Check, Search } from "lucide-react";
+import { Check, Circle } from "lucide-react";
 
 export default function SelectionItemCard({ item, active, onSelect }) {
   return (
@@ -33,7 +33,7 @@ export default function SelectionItemCard({ item, active, onSelect }) {
               : "border-[var(--picker-item-badge-border)] bg-[var(--picker-item-badge-bg)] text-[var(--picker-item-badge-icon)]"
           }`}
         >
-          {active ? <Check className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+          {active ? <Check className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
         </div>
       </div>
     </button>

@@ -124,10 +124,10 @@ export default function SelectionSearchSheet({
         type="button"
         aria-label={closeLabel}
         onClick={onClose}
-        className="absolute inset-0 bg-slate-950/38 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"
       />
 
-      <div className="absolute inset-x-0 bottom-0 flex h-[85vh] flex-col rounded-t-[2rem] bg-white px-5 pb-8 pt-4 shadow-[0_-24px_80px_rgba(15,23,42,0.22)]">
+      <div className="absolute inset-x-0 bottom-0 top-3 flex flex-col rounded-t-[2rem] bg-white px-5 pb-8 pt-4 shadow-[0_-24px_80px_rgba(15,23,42,0.22)]">
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-200" />
 
         <div className="flex items-start justify-between gap-4">
