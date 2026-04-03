@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import ComplexRecordTab from "@/app/field-notes/new/_components/tab/ComplexRecordTab";
 import RegionRecordTab from "@/app/field-notes/new/_components/tab/RegionRecordTab";
-import SelectionSearchSheet from "@/app/field-notes/new/_components/form/SelectionSearchSheet";
 import FormHeader from "@/components/layout/FormHeader";
 import FormContainer from "@/components/layout/FormContainer";
 import Select from "@/components/ui/Select";
+import SelectionSearchSheet from "@/app/field-notes/new/_components/section-sheet/SelectionSearchSection";
 
 const REGION_OPTIONS = [
   {
@@ -143,13 +143,16 @@ export default function NewFieldNoteForm() {
   const [complexSearchResults, setComplexSearchResults] = useState([]);
   const [isRegionSearching, setIsRegionSearching] = useState(false);
   const [isComplexSearching, setIsComplexSearching] = useState(false);
-  const [recentRegionValues, setRecentRegionValues] = useState(RECOMMENDED_REGION_VALUES.slice(0, 2));
+  const [recentRegionValues, setRecentRegionValues] = useState(
+    RECOMMENDED_REGION_VALUES.slice(0, 2)
+  );
   const [recentComplexIds, setRecentComplexIds] = useState([]);
   const debouncedRegionSearchQuery = useDebouncedValue(regionSearchQuery, 260);
   const debouncedComplexSearchQuery = useDebouncedValue(complexSearchQuery, 260);
 
   const currentRecordType = useMemo(
-    () => RECORD_TYPE_OPTIONS.find((option) => option.value === recordType) ?? RECORD_TYPE_OPTIONS[0],
+    () =>
+      RECORD_TYPE_OPTIONS.find((option) => option.value === recordType) ?? RECORD_TYPE_OPTIONS[0],
     [recordType]
   );
 
@@ -199,7 +202,8 @@ export default function NewFieldNoteForm() {
   );
 
   const recommendedComplexes = useMemo(() => {
-    const priorityRegionValues = recentRegionValues.length > 0 ? recentRegionValues : RECOMMENDED_REGION_VALUES;
+    const priorityRegionValues =
+      recentRegionValues.length > 0 ? recentRegionValues : RECOMMENDED_REGION_VALUES;
 
     return flattenedComplexes
       .filter((complex) => priorityRegionValues.includes(complex.regionValue))
@@ -268,7 +272,9 @@ export default function NewFieldNoteForm() {
   };
 
   const rememberComplex = (complexId) => {
-    setRecentComplexIds((prev) => [complexId, ...prev.filter((item) => item !== complexId)].slice(0, 4));
+    setRecentComplexIds((prev) =>
+      [complexId, ...prev.filter((item) => item !== complexId)].slice(0, 4)
+    );
   };
 
   const resetComplexSelection = () => {
@@ -328,7 +334,8 @@ export default function NewFieldNoteForm() {
 
   const handleSelectComplex = (item) => {
     const complex = item.raw;
-    const matchedRegion = REGION_OPTIONS.find((option) => option.value === complex.regionValue) ?? null;
+    const matchedRegion =
+      REGION_OPTIONS.find((option) => option.value === complex.regionValue) ?? null;
 
     setSelectedComplex(complex);
     setSelectedRegionValue(matchedRegion?.value ?? "");
