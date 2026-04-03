@@ -1,11 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Clock3, Sparkles, X } from "lucide-react";
 import SearchField from "@/components/ui/SearchField";
 import SelectionAuxiliarySections from "@/app/field-notes/new/_components/section-sheet/SelectionAuxiliarySections";
 import SelectionResultPanel from "@/app/field-notes/new/_components/section-sheet/SelectionResultPanel";
 import SelectionItemCard from "@/app/field-notes/new/_components/section-sheet/SelctionItemCard";
+import SelectionPinnedItemCard from "@/app/field-notes/new/_components/section-sheet/SelectionPinnedItemCard";
+import SelectionSectionHeader from "@/app/field-notes/new/_components/section-sheet/SelectionSectionHeader";
+
+function normalizeSheetItem(item) {
+  if (!item) {
+    return null;
+  }
+
+  return {
+    key: item.key ?? item.id ?? item.value ?? "",
+    title: item.title ?? item.name ?? item.label ?? "",
+    subtitle: item.subtitle ?? item.address ?? "",
+    meta: item.meta ?? "",
+    raw: item.raw ?? item,
+  };
+}
 
 export default function SelectionSearchSheet({
   open = false,
@@ -24,9 +40,14 @@ export default function SelectionSearchSheet({
   emptyTitle = "검색 결과가 없어요",
   emptyDescription = "다른 검색어로 다시 찾아보세요.",
   selectedKey,
+  selectedItem = null,
+  selectedSectionLabel = "현재 선택",
+  selectedEmptyMessage = "선택한 항목이 여기에 표시돼요.",
   onSelect,
+  onDeselect,
   onClose,
   closeLabel = "닫기",
+  deselectLabel = "해제",
 }) {
   const [settledSearchValue, setSettledSearchValue] = useState("");
   const [resolvedSearchValue, setResolvedSearchValue] = useState("");
@@ -83,6 +104,58 @@ export default function SelectionSearchSheet({
     setResolvedSearchValue(settledSearchValue);
   }, [isSearching, searchResults, settledSearchValue]);
 
+  const resolvedSelectedItem = useMemo(() => {
+    if (selectedItem) {
+      return normalizeSheetItem(selectedItem);
+    }
+
+    if (selectedKey == null) {
+      return null;
+    }
+
+    const allItems = [...searchResults, ...recentItems, ...recommendedItems];
+    const matchedItem = allItems.find((item) => item.key === selectedKey);
+
+    return normalizeSheetItem(matchedItem);
+  }, [selectedItem, selectedKey, searchResults, recentItems, recommendedItems]);
+
+  const filteredResults = useMemo(() => {
+    if (selectedKey == null) {
+      return displayedResults;
+    }
+
+    return displayedResults.filter((item) => item.key !== selectedKey);
+  }, [displayedResults, selectedKey]);
+
+  const auxiliarySections = useMemo(() => {
+    const filterItems = (items = []) => {
+      if (selectedKey == null) {
+        return items;
+      }
+
+      return items.filter((item) => item.key !== selectedKey);
+    };
+
+    return [
+      {
+        name: "recent",
+        icon: Clock3,
+        label: recentTitle,
+        items: filterItems(recentItems),
+        selectedKey,
+        onSelect,
+      },
+      {
+        name: "recommended",
+        icon: Sparkles,
+        label: recommendedTitle,
+        items: filterItems(recommendedItems),
+        selectedKey,
+        onSelect,
+      },
+    ];
+  }, [recentTitle, recentItems, recommendedTitle, recommendedItems, selectedKey, onSelect]);
+
   if (!open) {
     return null;
   }
@@ -90,7 +163,7 @@ export default function SelectionSearchSheet({
   const hasCommittedSearch = settledSearchValue.length > 0;
   const hasResolvedSearch =
     hasCommittedSearch && resolvedSearchValue === settledSearchValue && !isSearching;
-  const hasVisibleResults = displayedResults.length > 0;
+  const hasVisibleResults = filteredResults.length > 0;
   const showIdlePanel = !hasCommittedSearch;
   const showLoadingState = hasCommittedSearch && isSearching;
   const showLoadingSkeleton = showLoadingState && !hasVisibleResults;
@@ -98,25 +171,6 @@ export default function SelectionSearchSheet({
   const showSearchResults = hasVisibleResults && (hasResolvedSearch || showLoadingOverlay);
   const showEmptyState = hasResolvedSearch && !hasVisibleResults;
   const showAuxiliarySections = !hasCommittedSearch || showLoadingState || showEmptyState;
-
-  const auxiliarySections = [
-    {
-      name: "recent",
-      icon: Clock3,
-      label: recentTitle,
-      items: recentItems,
-      selectedKey,
-      onSelect,
-    },
-    {
-      name: "recommended",
-      icon: Sparkles,
-      label: recommendedTitle,
-      items: recommendedItems,
-      selectedKey,
-      onSelect,
-    },
-  ];
 
   return (
     <div className="fixed inset-0 z-[70]">
@@ -156,6 +210,24 @@ export default function SelectionSearchSheet({
             />
           </div>
 
+          <div className="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-3.5">
+            <SelectionSectionHeader label={selectedSectionLabel} />
+
+            <div className="mt-3 min-h-[5.75rem]">
+              {resolvedSelectedItem ? (
+                <SelectionPinnedItemCard
+                  item={resolvedSelectedItem}
+                  onDeselect={onDeselect}
+                  clearLabel={deselectLabel}
+                />
+              ) : (
+                <div className="flex min-h-[5.75rem] items-center justify-center rounded-[1.1rem] border border-dashed border-slate-200 bg-white px-4 py-4 text-center">
+                  <p className="text-sm font-medium text-slate-500">{selectedEmptyMessage}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div
             className="mt-5 min-h-0 flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"
             style={{ scrollbarGutter: "stable" }}
@@ -163,13 +235,13 @@ export default function SelectionSearchSheet({
             <div className="space-y-5">
               <SelectionResultPanel
                 label="검색 결과"
-                count={displayedResults.length}
+                count={filteredResults.length}
                 showIdlePanel={showIdlePanel}
                 showLoadingSkeleton={showLoadingSkeleton}
                 showSearchResults={showSearchResults}
                 showEmptyState={showEmptyState}
                 showLoadingOverlay={showLoadingOverlay}
-                results={displayedResults}
+                results={filteredResults}
                 emptyTitle={emptyTitle}
                 emptyDescription={emptyDescription}
                 renderItem={(item) => (
@@ -181,6 +253,7 @@ export default function SelectionSearchSheet({
                   />
                 )}
               />
+
               {/*<SelectionAuxiliarySections*/}
               {/*  open={showAuxiliarySections}*/}
               {/*  sections={auxiliarySections}*/}

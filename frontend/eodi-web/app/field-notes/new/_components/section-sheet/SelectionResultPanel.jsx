@@ -59,7 +59,7 @@ export default function SelectionResultPanel({
 
         {showEmptyState ? (
           <div
-            className={`flex ${minHeightClassName} items-center rounded-[1.25rem] border border-dashed border-slate-200 bg-white px-4 py-5`}
+            className={`flex ${minHeightClassName} items-center justify-center rounded-[1.25rem] border border-dashed border-slate-200 bg-white px-4 py-5 text-center`}
           >
             <div>
               <p className="text-sm font-semibold text-slate-900">{emptyTitle}</p>

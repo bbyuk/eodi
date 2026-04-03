@@ -1,6 +1,11 @@
 import { Check, Circle } from "lucide-react";
 
-export default function SelectionItemCard({ item, active, onSelect }) {
+export default function SelectionItemCard({
+  item,
+  active = false,
+  onSelect,
+  showSelectionIndicator = true,
+}) {
   return (
     <button
       type="button"
@@ -26,15 +31,17 @@ export default function SelectionItemCard({ item, active, onSelect }) {
           ) : null}
         </div>
 
-        <div
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border ${
-            active
-              ? "border-[var(--picker-item-badge-selected-border)] bg-[var(--picker-item-badge-selected-bg)] text-[var(--picker-item-badge-selected-icon)]"
-              : "border-[var(--picker-item-badge-border)] bg-[var(--picker-item-badge-bg)] text-[var(--picker-item-badge-icon)]"
-          }`}
-        >
-          {active ? <Check className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
-        </div>
+        {showSelectionIndicator ? (
+          <div
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border ${
+              active
+                ? "border-[var(--picker-item-badge-selected-border)] bg-[var(--picker-item-badge-selected-bg)] text-[var(--picker-item-badge-selected-icon)]"
+                : "border-[var(--picker-item-badge-border)] bg-[var(--picker-item-badge-bg)] text-[var(--picker-item-badge-icon)]"
+            }`}
+          >
+            {active ? <Check className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
+          </div>
+        ) : null}
       </div>
     </button>
   );
