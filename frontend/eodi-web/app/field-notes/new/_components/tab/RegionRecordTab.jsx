@@ -21,7 +21,7 @@ export default function RegionRecordTab({
       {selectedRegionLabel ? (
         <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-slate-900">지역 메모 폼</p>
+            <p className="text-sm font-semibold text-slate-900">지역 메모</p>
             <p className="text-sm text-slate-600">{selectedRegionLabel}</p>
           </div>
 
@@ -30,7 +30,7 @@ export default function RegionRecordTab({
             <textarea
               value={regionMemo}
               onChange={(event) => onChangeRegionMemo(event.target.value)}
-              placeholder="지역에 대해 남기고 싶은 내용을 적어보세요"
+              placeholder="이 지역에 대한 기록을 남겨보세요"
               className="min-h-32 w-full rounded-[1.25rem] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
             />
           </div>

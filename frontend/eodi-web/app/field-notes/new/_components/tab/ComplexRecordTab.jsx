@@ -101,7 +101,7 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
       {selectedComplex && selectedRegion ? (
         <>
           <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
-            <FieldTitle main={"기본 기록"} sub={"선택한 단지 기준으로 바로 기록을 남겨보세요"} />
+            <FieldTitle main={"기본 기록"} sub={"기본 정보부터 빠르게 남겨보세요"} />
 
             <div className="mt-5 space-y-5">
               {/* 호가 필드 */}
@@ -118,7 +118,7 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
                 onChangeFloorType={handleChangeFloorType}
                 onChangeFloorValue={(value) => handleChangeField("floorValue", value)}
                 errorMessage={floorErrorMessage}
-                title={{ main: "층수", sub: "옵션을 선택하거나 직접 입력해보세요" }}
+                title={{ main: "층수" }}
               />
 
               {/* 관리 상태 필드 */}

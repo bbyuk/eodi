@@ -93,8 +93,8 @@ const REGION_OPTIONS = [
 ];
 
 const RECORD_TYPE_OPTIONS = [
-  { value: "complex", label: "단지 기록", description: "단지를 선택하고 핵심 기록을 남겨요" },
-  { value: "region", label: "지역 기록", description: "지역을 선택하고 메모를 남겨요" },
+  { value: "complex", label: "단지 기록" },
+  { value: "region", label: "지역 기록" },
 ];
 
 const RECOMMENDED_REGION_VALUES = ["nowon-sanggye", "mapo-ahyeon", "suwon-yeongtong"];

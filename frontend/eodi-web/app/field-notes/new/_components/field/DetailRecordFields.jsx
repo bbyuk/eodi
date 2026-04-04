@@ -8,7 +8,7 @@ export default function DetailRecordFields({ form, onChangeField, children }) {
       <div className="space-y-1">
         <p className="text-sm font-semibold text-slate-900">상세 기록</p>
         <p className="text-xs font-medium text-slate-500">
-          주차, 채광, 부동산명, 메모까지 더 남길 수 있어요
+          더 꼼꼼하게 비교할 수 있도록 추가 정보를 남겨보세요
         </p>
       </div>
 
