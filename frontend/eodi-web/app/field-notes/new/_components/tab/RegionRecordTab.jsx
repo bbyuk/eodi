@@ -1,6 +1,7 @@
 "use client";
 
 import InputButtonField from "@/app/field-notes/new/_components/field/InputButtonField";
+import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 
 export default function RegionRecordTab({
   selectedRegionLabel,
@@ -20,13 +21,10 @@ export default function RegionRecordTab({
 
       {selectedRegionLabel ? (
         <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-slate-900">지역 메모</p>
-            <p className="text-sm text-slate-600">{selectedRegionLabel}</p>
-          </div>
+          <FieldTitle main={"지역 메모"} sub={selectedRegionLabel} />
 
           <div className="mt-4 space-y-3">
-            <label className="text-sm font-semibold text-slate-900">메모</label>
+            <FieldTitle main={"메모ㄴ"} />
             <textarea
               value={regionMemo}
               onChange={(event) => onChangeRegionMemo(event.target.value)}
