@@ -70,29 +70,26 @@ export default function SearchLayout({ children }) {
   }, []);
 
   return (
-    <section className="relative flex flex-col min-h-screen bg-white overflow-hidden">
-      {/* 콘텐츠 */}
-
-      <div className="flex-1 flex justify-center px-10">
-        <div className="w-full max-w-[70rem] transition-opacity duration-300 ease-in-out">
+    <section className="relative flex min-h-screen flex-col overflow-hidden bg-slate-50">
+      <div className="flex flex-1 justify-center px-4 pb-28 sm:px-6 sm:pb-32 lg:px-8">
+        <div className="w-full max-w-[72rem] transition-opacity duration-300 ease-in-out">
           <SearchContext.Provider value={{ goNext, goPrev, goFirst }}>
             {children}
           </SearchContext.Provider>
         </div>
       </div>
 
-      {/* 하단 버튼바 */}
-      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-border py-4 px-10 z-50">
-        <div className="max-w-[90rem] mx-auto flex justify-between items-center">
+      <div className="fixed bottom-0 left-0 z-50 w-full border-t border-border bg-white/92 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4 [padding-bottom:calc(env(safe-area-inset-bottom)+0.75rem)]">
+        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-3">
           {currentContext.prevButton ? (
             <button
               onClick={goPrev}
-              className="px-6 py-3 rounded-xl border text-sm font-medium text-text-secondary hover:bg-primary-bg transition-all"
+              className="min-h-12 flex-1 rounded-xl border px-4 py-3 text-sm font-medium text-text-secondary transition-all hover:bg-primary-bg sm:flex-none sm:px-6"
             >
               {currentContext.prevButton.label}
             </button>
           ) : (
-            <div />
+            <div className="hidden sm:block" />
           )}
 
           {currentContext.nextButton ? (
@@ -102,7 +99,7 @@ export default function SearchLayout({ children }) {
                   goNext();
                 }
               }}
-              className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm 
+              className={`min-h-12 flex-1 rounded-xl px-4 py-3 text-sm font-semibold shadow-sm transition-all sm:flex-none sm:px-6
             ${
               isNextButtonActive[currentContext.step]
                 ? "bg-primary text-white hover:bg-primary-hover"

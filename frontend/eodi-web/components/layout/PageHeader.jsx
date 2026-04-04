@@ -3,14 +3,14 @@ import InfoTooltip from "@/components/etc/InfoTooltip";
 
 export default function PageHeader({ title, description, info, children }) {
   return (
-    <header className="mb-14">
-      <div className="flex items-center gap-2 mb-3">
-        <h1 className="text-3xl md:text-4xl font-semibold text-text-primary leading-tight">
+    <header className="mb-8 sm:mb-10 lg:mb-12">
+      <div className="mb-3 flex items-start gap-2">
+        <h1 className="text-2xl font-semibold leading-tight text-text-primary sm:text-3xl lg:text-4xl">
           {title}
         </h1>
         {info && <InfoTooltip position="bottom" content={info} />}
       </div>
-      <p className="text-base text-text-secondary leading-relaxed">
+      <p className="text-sm leading-6 text-text-secondary sm:text-base">
         {description.map((line, idx) => (
           <Fragment key={idx}>
             {idx > 0 && <br className="hidden sm:block" />}

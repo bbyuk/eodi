@@ -1,9 +1,9 @@
 "use client";
 
-import PageHeader from "@/components/ui/header/PageHeader";
+import PageHeader from "@/components/layout/PageHeader";
 import GridGroup from "@/app/search/_components/GridGroup";
 import InnerNavContainer from "@/components/layout/InnerNavContainer";
-import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
+import FloatingContainer from "@/components/ui/container/FloatingContainer";
 import { SlidersHorizontal } from "lucide-react";
 
 import RegionFilterBar from "@/app/search/step2/_components/RegionFilterBar";
@@ -11,12 +11,12 @@ import DealResultSection from "@/app/search/step2/_components/DealResultSection"
 import FloatingFilterCardContents from "@/app/search/step2/_components/FloatingFilterCardContents";
 import { useDealListPageController } from "@/app/search/step2/_hooks/useDealListPageController";
 import HousingTypeFilterBar from "@/app/search/step2/_components/HousingTypeFilterBar";
-import RadioGroup from "@/components/ui/input/RadioGroup";
+import RadioGroup from "@/components/ui/RadioGroup";
 
 export default function DealListPage() {
   const controller = useDealListPageController();
   return (
-    <main className="min-h-[80vh] max-w-6xl mx-auto px-6 py-12 relative">
+    <main className="relative mx-auto min-h-[80vh] max-w-6xl px-0 py-0">
       <FloatingContainer
         isOpen={controller.floatingFilter.isOpen}
         open={controller.floatingFilter.open}

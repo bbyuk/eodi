@@ -1,10 +1,10 @@
 "use client";
 
-import PageHeader from "@/components/ui/header/PageHeader";
+import PageHeader from "@/components/layout/PageHeader";
 import { useController } from "@/app/search/step1/_hooks/useController";
-import SectionHeader from "@/components/ui/header/SectionHeader";
-import RadioGroup from "@/components/ui/input/RadioGroup";
-import NumberInput from "@/components/ui/input/NumberInput";
+import SectionHeader from "@/components/layout/SectionHeader";
+import RadioGroup from "@/components/ui/RadioGroup";
+import NumberInput from "@/components/ui/NumberInput";
 
 export default function CapitalInputPage() {
   const controller = useController();
@@ -61,11 +61,10 @@ export default function CapitalInputPage() {
   };
 
   return (
-    <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
+    <section className="mx-auto w-full max-w-3xl overflow-x-hidden px-0 pb-6">
       <PageHeader {...controller.page} />
 
-      <div className="space-y-10">
-        {/* 보유 현금 */}
+      <div className="space-y-8 sm:space-y-10">
         <section className="space-y-3">
           <SectionHeader
             title={"보유 현금"}
@@ -83,7 +82,6 @@ export default function CapitalInputPage() {
           />
         </section>
 
-        {/* 대출 설정 여부 */}
         <section className="space-y-3">
           <SectionHeader title={"대출을 포함해 예산을 계산할까요?"} />
           <RadioGroup
@@ -94,9 +92,8 @@ export default function CapitalInputPage() {
           />
         </section>
 
-        {/* 대출 설정 상세 */}
         {controller.loan.withLoan && (
-          <div className="space-y-6 rounded-2xl border border-slate-200 bg-white/70 p-5">
+          <div className="space-y-6 rounded-2xl border border-slate-200 bg-white/70 p-4 sm:p-5">
             <section className="space-y-3">
               <SectionHeader title={"매매를 고려중이신가요?"} />
               <RadioGroup

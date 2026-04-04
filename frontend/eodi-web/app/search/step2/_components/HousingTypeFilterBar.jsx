@@ -1,4 +1,4 @@
-import CategoryButton from "@/components/ui/input/CategoryButton";
+import CategoryButton from "@/components/ui/CategoryButton";
 
 /**
  * 주택유형 선택 필터 bar

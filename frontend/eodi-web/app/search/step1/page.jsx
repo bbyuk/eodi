@@ -11,7 +11,7 @@ export default function Step1Page() {
   return (
     <motion.div
       {...animation[direction[currentDirection].animation]}
-      className="w-full px-8 pt-[12vh] md:pt-[18vh] pb-[8vh] overflow-x-hidden"
+      className="w-full overflow-x-hidden px-0 pb-4 pt-24 sm:pt-28 lg:pt-32"
     >
       <CapitalInputPage />
     </motion.div>

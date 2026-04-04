@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHeader from "@/components/ui/header/PageHeader";
-import CategoryTab from "@/components/ui/input/CategoryTab";
+import PageHeader from "@/components/layout/PageHeader";
+import CategoryTab from "@/components/ui/CategoryTab";
 import MultiButtonSelectGrid from "@/app/search/region-select-step/_components/MultiButtonSelectGrid";
 import GridGroup from "@/app/search/_components/GridGroup";
 import { redirect } from "next/navigation";
@@ -11,7 +11,7 @@ import { context } from "@/app/search/_const/context";
 import { formatWon } from "@/app/search/_util/util";
 import { api } from "@/lib/apiClient";
 import HorizontalSwipeContainer from "@/components/ui/container/HorizontalSwipeContainer";
-import FloatingContainer from "@/components/ui/container/floating/FloatingContainer";
+import FloatingContainer from "@/components/ui/container/FloatingContainer";
 import { CheckCircle2, CheckSquare } from "lucide-react";
 import SelectedRegionsCardContents from "@/app/search/region-select-step/_components/SelectedRegionsCardContents";
 import { definedHousingType } from "@/const/code";
@@ -128,7 +128,7 @@ export default function RegionsGrid() {
 
   const selectedCount = selectedSellRegions.size + selectedLeaseRegions.size;
   return (
-    <section className="w-full px-8 pt-[1vh] pb-[5vh] overflow-x-hidden">
+    <section className="mx-auto w-full max-w-6xl overflow-x-hidden px-0 pb-6">
       <FloatingContainer
         isOpen={isFloatingCardOpen}
         close={() => setIsFloatingCardOpen(false)}

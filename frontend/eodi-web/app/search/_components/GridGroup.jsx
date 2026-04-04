@@ -7,10 +7,9 @@
  */
 export default function GridGroup({ children, title }) {
   return (
-    <section className={"mb-14"}>
-      <h2 className="text-xl font-semibold text-text-primary mb-4">{title}</h2>
-      {/* ✅ 자식들 간 일정 간격 부여 */}
-      <div className="flex flex-col gap-5">{children}</div>
+    <section className="mb-10 sm:mb-12">
+      {title ? <h2 className="mb-4 text-lg font-semibold text-text-primary sm:text-xl">{title}</h2> : null}
+      <div className="flex flex-col gap-4 sm:gap-5">{children}</div>
     </section>
   );
 }

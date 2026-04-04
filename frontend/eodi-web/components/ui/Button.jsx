@@ -14,7 +14,7 @@ export default function Button({
   const Component = as;
 
   const base =
-    "inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none";
+    "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus:outline-none";
 
   const variants = {
     primary: "bg-primary text-white hover:bg-primary/90",

@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko">
-      <body className="flex flex-col min-h-screen">
+      <body className="min-h-screen bg-slate-50 text-text-primary">
         <ToastProvider>
           <Navbar />
           <main className="flex-1 w-full">{children}</main>
