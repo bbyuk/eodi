@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
-import MemoField from "@/app/field-notes/new/_components/field/MemoField";
+import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import DetailSectionToggle from "../../../../../components/ui/DetailSectionToggle";
 import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRecordFields";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
@@ -156,9 +156,9 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
           {isDetailOpen ? (
             <DetailRecordFields form={form} onChangeField={handleChangeField}>
               {/* 메모 필드 */}
-              <MemoField
-                memo={form.memo}
-                onChangeMemo={(value) => handleChangeField("memo", value)}
+              <TextAreaField
+                value={form.memo}
+                onChange={(value) => handleChangeField("memo", value)}
               />
             </DetailRecordFields>
           ) : null}
