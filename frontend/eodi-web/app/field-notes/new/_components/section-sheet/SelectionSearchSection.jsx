@@ -3,11 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Clock3, Sparkles, X } from "lucide-react";
 import SearchField from "@/components/ui/SearchField";
+import Field from "@/app/field-notes/new/_components/field/Field";
+import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
+import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
 import SelectionAuxiliarySections from "@/app/field-notes/new/_components/section-sheet/SelectionAuxiliarySections";
 import SelectionResultPanel from "@/app/field-notes/new/_components/section-sheet/SelectionResultPanel";
 import SelectionItemCard from "@/app/field-notes/new/_components/section-sheet/SelctionItemCard";
 import SelectionPinnedItemCard from "@/app/field-notes/new/_components/section-sheet/SelectionPinnedItemCard";
-import SelectionSectionHeader from "@/app/field-notes/new/_components/section-sheet/SelectionSectionHeader";
 
 function normalizeSheetItem(item) {
   if (!item) {
@@ -185,10 +187,14 @@ export default function SelectionSearchSheet({
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-200" />
 
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-slate-950">{title}</h3>
-            {description ? <p className="text-sm leading-6 text-slate-600">{description}</p> : null}
-          </div>
+          <FormTitle
+            main={title}
+            sub={description}
+            preserveSubSpace={Boolean(description)}
+            mainAs="h3"
+            mainClassName="text-lg font-semibold text-slate-950"
+            subClassName="text-sm leading-6 text-slate-600"
+          />
 
           <button
             type="button"
@@ -201,19 +207,22 @@ export default function SelectionSearchSheet({
         </div>
 
         <div className="mt-5 flex min-h-0 flex-1 flex-col">
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-slate-900">{searchLabel}</p>
+          <Field title={{ main: searchLabel }} preserveSubSpace={false} className="space-y-2">
             <SearchField
               value={searchValue}
               onChange={onSearchChange}
               placeholder={searchPlaceholder}
             />
-          </div>
+          </Field>
 
-          <div className="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-3.5">
-            <SelectionSectionHeader label={selectedSectionLabel} />
-
-            <div className="mt-3 min-h-[5.75rem]">
+          <FieldNoteSection className="mt-4 bg-slate-50" paddingClassName="p-3.5">
+            <Field
+              title={{ main: selectedSectionLabel }}
+              preserveSubSpace={false}
+              className="space-y-3"
+              headerClassName="flex items-center justify-between gap-3 px-1"
+              titleProps={{ className: "space-y-0" }}
+            >
               {resolvedSelectedItem ? (
                 <SelectionPinnedItemCard
                   item={resolvedSelectedItem}
@@ -225,8 +234,8 @@ export default function SelectionSearchSheet({
                   <p className="text-sm font-medium text-slate-500">{selectedEmptyMessage}</p>
                 </div>
               )}
-            </div>
-          </div>
+            </Field>
+          </FieldNoteSection>
 
           <div
             className="mt-5 min-h-0 flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"

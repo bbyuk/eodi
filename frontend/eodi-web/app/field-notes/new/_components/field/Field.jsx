@@ -6,16 +6,19 @@ export default function Field({
   className = "space-y-3",
   titleAside = null,
   preserveSubSpace = true,
+  headerClassName = "flex items-end justify-between gap-3",
+  titleProps = {},
 }) {
   return (
     <section className={className}>
       {title ? (
         titleAside ? (
-          <div className="flex items-end justify-between gap-3">
+          <div className={headerClassName}>
             <FormTitle
               main={title.main}
               sub={title.sub}
               preserveSubSpace={preserveSubSpace}
+              {...titleProps}
             />
             {titleAside}
           </div>
@@ -24,6 +27,7 @@ export default function Field({
             main={title.main}
             sub={title.sub}
             preserveSubSpace={preserveSubSpace}
+            {...titleProps}
           />
         )
       ) : null}
