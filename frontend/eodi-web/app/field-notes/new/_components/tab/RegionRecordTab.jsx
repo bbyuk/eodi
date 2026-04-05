@@ -1,6 +1,6 @@
 "use client";
 
-import InputButtonField from "@/app/field-notes/new/_components/field/InputButtonField";
+import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
 import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 
 export default function RegionRecordTab({
@@ -12,7 +12,7 @@ export default function RegionRecordTab({
   return (
     <div className="space-y-6">
       {/* 지역 선택 필드 */}
-      <InputButtonField
+      <ButtonInputField
         title={{ main: "지역 선택", sub: "지역명을 검색해 선택하세요" }}
         value={selectedRegionLabel ?? ""}
         placeholder="지역명을 검색해 선택하세요"

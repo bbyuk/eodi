@@ -10,7 +10,7 @@ import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRe
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 import OptionField from "@/app/field-notes/new/_components/field/OptionField";
-import InputButtonField from "@/app/field-notes/new/_components/field/InputButtonField";
+import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
 
 const INITIAL_FORM = {
   floorType: null,
@@ -91,7 +91,7 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
   return (
     <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
       {/* 단지 선택 필드 */}
-      <InputButtonField
+      <ButtonInputField
         title={{ main: "단지 선택", sub: "단지명을 검색해 선택하세요" }}
         value={selectedComplex?.name ?? ""}
         placeholder="단지명을 검색해 선택하세요"

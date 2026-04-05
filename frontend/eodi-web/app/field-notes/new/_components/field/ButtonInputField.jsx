@@ -3,7 +3,7 @@
 import { ChevronRight, Search } from "lucide-react";
 import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 
-export default function InputButtonField({ title, value, placeholder, onClick }) {
+export default function ButtonInputField({ title, value, placeholder, onClick }) {
   return (
     <section className="space-y-3">
       <FieldTitle main={title.main} sub={title.sub} />
