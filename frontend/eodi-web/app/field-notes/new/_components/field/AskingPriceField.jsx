@@ -1,16 +1,15 @@
 "use client";
 
-import NumberInput from "@/components/ui/NumberInput";
 import { formatWon } from "@/app/search/_util/util";
-import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
+import Field from "@/app/field-notes/new/_components/field/Field";
+import NumberFieldInput from "@/app/field-notes/new/_components/input/NumberFieldInput";
 
 export default function AskingPriceField({ askingPrice, onChangeAskingPrice, title }) {
   const hasValue = askingPrice !== "";
 
   return (
-    <section className="space-y-3">
-      <FieldTitle main={title.main} sub={title.sub} />
-      <NumberInput
+    <Field title={title}>
+      <NumberFieldInput
         value={askingPrice}
         onChange={onChangeAskingPrice}
         placeholder="50000"
@@ -23,6 +22,6 @@ export default function AskingPriceField({ askingPrice, onChangeAskingPrice, tit
       >
         {hasValue ? formatWon(Number(askingPrice)) : "숫자만 입력"}
       </p>
-    </section>
+    </Field>
   );
 }

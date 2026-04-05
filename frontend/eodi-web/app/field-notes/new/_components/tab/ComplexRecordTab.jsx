@@ -2,15 +2,19 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/container/ToastProvider";
+import { RECOMMENDED_REGION_VALUES } from "@/app/field-notes/new/_data/fieldNoteOptions";
+import useComplexSelection from "@/app/field-notes/new/_hooks/useComplexSelection";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
 import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import DetailSectionToggle from "../../../../../components/ui/DetailSectionToggle";
-import DetailRecordFields from "@/app/field-notes/new/_components/field/DetailRecordFields";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
-import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
 import OptionField from "@/app/field-notes/new/_components/field/OptionField";
 import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
+import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
+import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
+import SelectionSearchSheet from "@/app/field-notes/new/_components/section-sheet/SelectionSearchSection";
+import TextInputField from "@/app/field-notes/new/_components/field/TextInputField";
 
 const INITIAL_FORM = {
   floorType: null,
@@ -25,10 +29,46 @@ const INITIAL_FORM = {
   agencyName: "",
 };
 
-export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOpenComplexSheet }) {
+export function ComplexRecordTab() {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [autoFilledRegion, setAutoFilledRegion] = useState(null);
+  const [recentRegionValues, setRecentRegionValues] = useState(
+    RECOMMENDED_REGION_VALUES.slice(0, 2)
+  );
+
+  const rememberRegion = (value) => {
+    if (!value) {
+      return;
+    }
+
+    setRecentRegionValues((prev) => [value, ...prev.filter((item) => item !== value)].slice(0, 4));
+  };
+
+  const {
+    selectedComplex,
+    selectedComplexSheetItem,
+    recentComplexes,
+    recommendedComplexes,
+    complexSearchQuery,
+    setComplexSearchQuery,
+    complexSearchResults,
+    isComplexSearching,
+    isComplexSheetOpen,
+    openComplexSheet,
+    closeComplexSheet,
+    selectComplex,
+    clearComplexSelection,
+  } = useComplexSelection({
+    recentRegionValues,
+    onSelectComplex: (_complex, matchedRegion) => {
+      setAutoFilledRegion(matchedRegion);
+      rememberRegion(matchedRegion?.value);
+    },
+  });
+
+  const selectedRegion = autoFilledRegion;
 
   useEffect(() => {
     setForm(INITIAL_FORM);
@@ -74,6 +114,11 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
     }));
   };
 
+  const handleClearComplex = () => {
+    clearComplexSelection();
+    setAutoFilledRegion(null);
+  };
+
   const handleSave = () => {
     if (!savePayload) {
       return;
@@ -95,13 +140,13 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
         title={{ main: "단지 선택", sub: "단지명을 검색해 선택하세요" }}
         value={selectedComplex?.name ?? ""}
         placeholder="단지명을 검색해 선택하세요"
-        onClick={onOpenComplexSheet}
+        onClick={openComplexSheet}
       />
 
       {selectedComplex && selectedRegion ? (
         <>
-          <section className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
-            <FieldTitle main={"기본 기록"} sub={"기본 정보부터 빠르게 남겨보세요"} />
+          <FieldNoteSection className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
+            <FormTitle main="기본 기록" sub="기본 정보부터 빠르게 남겨보세요" />
 
             <div className="mt-5 space-y-5">
               {/* 호가 필드 */}
@@ -145,7 +190,7 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
                 value={form.noiseLevel}
               />
             </div>
-          </section>
+          </FieldNoteSection>
 
           {/* 상세 기록 펼치기 필드 */}
           <DetailSectionToggle
@@ -154,13 +199,58 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
           />
 
           {isDetailOpen ? (
-            <DetailRecordFields form={form} onChangeField={handleChangeField}>
-              {/* 메모 필드 */}
-              <TextAreaField
-                value={form.memo}
-                onChange={(value) => handleChangeField("memo", value)}
+            <FieldNoteSection className="bg-white shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
+              <FormTitle
+                main="상세 기록"
+                sub="더 꼼꼼하게 비교할 수 있도록 추가 정보를 남겨보세요"
               />
-            </DetailRecordFields>
+
+              <div className="mt-5 space-y-5">
+                <section className="space-y-3">
+                  <OptionField
+                    title={{ main: "주차" }}
+                    value={form.parkingStatus}
+                    options={[
+                      { label: "좋음", value: "GOOD" },
+                      { label: "보통", value: "NORMAL" },
+                      { label: "아쉬움", value: "BAD" },
+                    ]}
+                    onChange={(value) => handleChangeField("parkingStatus", value)}
+                  />
+                  <OptionField
+                    title={{ main: "채광" }}
+                    value={form.sunlightStatus}
+                    options={[
+                      { label: "좋음", value: "GOOD" },
+                      { label: "보통", value: "NORMAL" },
+                      { label: "아쉬움", value: "BAD" },
+                    ]}
+                    onChange={(value) => handleChangeField("sunlightStatus", value)}
+                  />
+                  <OptionField
+                    title={{ main: "상권" }}
+                    value={form.commercialAreaStatus}
+                    options={[
+                      { label: "좋음", value: "GOOD" },
+                      { label: "보통", value: "NORMAL" },
+                      { label: "아쉬움", value: "BAD" },
+                    ]}
+                    onChange={(value) => handleChangeField("commercialAreaStatus", value)}
+                  />
+                  <TextInputField
+                    title={{ main: "부동산명" }}
+                    value={form.agencyName}
+                    onChange={(event) => handleChangeField("agencyName", event.target.value)}
+                    placeholder={"공인중개사"}
+                  />
+                </section>
+
+                <TextAreaField
+                  value={form.memo}
+                  onChange={(value) => handleChangeField("memo", value)}
+                />
+              </div>
+            </FieldNoteSection>
           ) : null}
 
           {/* 저장 버튼 필드 */}
@@ -171,6 +261,28 @@ export default function ComplexRecordTab({ selectedComplex, selectedRegion, onOp
           />
         </>
       ) : null}
+
+      <SelectionSearchSheet
+        open={isComplexSheetOpen}
+        title="단지 선택"
+        description="단지명을 검색해 선택하세요"
+        searchLabel="단지 검색"
+        searchValue={complexSearchQuery}
+        onSearchChange={setComplexSearchQuery}
+        searchPlaceholder="단지명이나 지역명을 입력하세요"
+        recentTitle="최근 선택 단지"
+        recentItems={recentComplexes}
+        recommendedTitle="추천 단지"
+        recommendedItems={recommendedComplexes}
+        searchResults={complexSearchResults}
+        isSearching={isComplexSearching}
+        emptyDescription="단지명이나 지역명으로 다시 검색해보세요."
+        selectedKey={selectedComplex?.id}
+        selectedItem={selectedComplexSheetItem}
+        onSelect={selectComplex}
+        onDeselect={handleClearComplex}
+        onClose={closeComplexSheet}
+      />
     </div>
   );
 }

@@ -1,16 +1,10 @@
-import FieldTitle from "@/app/field-notes/new/_components/field/FieldTitle";
+import Field from "@/app/field-notes/new/_components/field/Field";
+import TextEntryInput from "@/app/field-notes/new/_components/input/TextEntryInput";
 
 export default function TextInputField({ title, value, onChange, placeholder }) {
   return (
-    <>
-      <FieldTitle main={title.main} sub={title.sub} />
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="min-h-14 w-full rounded-[1.25rem] border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-      />
-    </>
+    <Field title={title}>
+      <TextEntryInput value={value} onChange={onChange} placeholder={placeholder} />
+    </Field>
   );
 }

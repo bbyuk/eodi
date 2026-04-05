@@ -1,10 +1,5 @@
-import NewFieldNotePageContents from "@/app/field-notes/new/NewFieldNotePageContents";
-
-export const metadata = {
-  title: "새 임장노트 | 어디살까",
-  description: "새 임장노트를 시작하는 화면",
-};
+import { redirect } from "next/navigation";
 
 export default function NewFieldNotePage() {
-  return <NewFieldNotePageContents />;
+  redirect("/field-notes/new/complex");
 }
