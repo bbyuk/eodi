@@ -24,7 +24,7 @@ export default function RegionRecordTab({
           <FieldTitle main={"지역 메모"} sub={selectedRegionLabel} />
 
           <div className="mt-4 space-y-3">
-            <FieldTitle main={"메모ㄴ"} />
+            <FieldTitle main={"메모"} />
             <textarea
               value={regionMemo}
               onChange={(event) => onChangeRegionMemo(event.target.value)}
