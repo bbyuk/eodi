@@ -1,4 +1,4 @@
-import NewFieldNoteForm from "@/app/field-notes/new/_components/form/NewFieldNoteForm";
+import NewFieldNotePageContents from "@/app/field-notes/new/NewFieldNotePageContents";
 
 export const metadata = {
   title: "새 임장노트 | 어디살까",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function NewFieldNotePage() {
-  return <NewFieldNoteForm />;
+  return <NewFieldNotePageContents />;
 }

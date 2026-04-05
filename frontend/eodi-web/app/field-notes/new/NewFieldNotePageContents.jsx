@@ -140,7 +140,7 @@ function useDebouncedValue(value, delay) {
   return debouncedValue;
 }
 
-export default function NewFieldNoteForm() {
+export default function NewFieldNotePageContents() {
   const [recordType, setRecordType] = useState("complex");
   const [selectedComplex, setSelectedComplex] = useState(null);
   const [autoFilledRegion, setAutoFilledRegion] = useState(null);
