@@ -10,6 +10,7 @@ import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField
 import DetailSectionToggle from "../../../../../components/ui/DetailSectionToggle";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import OptionField from "@/app/field-notes/new/_components/field/OptionField";
+import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
 import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
 import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
 import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
@@ -167,27 +168,17 @@ export function ComplexRecordTab() {
               />
 
               {/* 관리 상태 필드 */}
-              <OptionField
-                options={[
-                  { label: "좋음", value: "GOOD" },
-                  { label: "보통", value: "NORMAL" },
-                  { label: "아쉬움", value: "BAD" },
-                ]}
-                onChange={(value) => handleChangeField("managementStatus", value)}
+              <StarRatingField
                 title={{ main: "관리 상태" }}
                 value={form.managementStatus}
+                onChange={(value) => handleChangeField("managementStatus", value)}
               />
 
               {/* 소음 필드 */}
-              <OptionField
-                options={[
-                  { label: "조용함", value: "LOW" },
-                  { label: "보통", value: "NORMAL" },
-                  { label: "시끄러움", value: "HIGH" },
-                ]}
-                onChange={(value) => handleChangeField("noiseLevel", value)}
+              <StarRatingField
                 title={{ main: "소음" }}
                 value={form.noiseLevel}
+                onChange={(value) => handleChangeField("noiseLevel", value)}
               />
             </div>
           </FieldNoteSection>
@@ -207,34 +198,19 @@ export function ComplexRecordTab() {
 
               <div className="mt-5 space-y-5">
                 <section className="space-y-3">
-                  <OptionField
+                  <StarRatingField
                     title={{ main: "주차" }}
                     value={form.parkingStatus}
-                    options={[
-                      { label: "좋음", value: "GOOD" },
-                      { label: "보통", value: "NORMAL" },
-                      { label: "아쉬움", value: "BAD" },
-                    ]}
                     onChange={(value) => handleChangeField("parkingStatus", value)}
                   />
-                  <OptionField
+                  <StarRatingField
                     title={{ main: "채광" }}
                     value={form.sunlightStatus}
-                    options={[
-                      { label: "좋음", value: "GOOD" },
-                      { label: "보통", value: "NORMAL" },
-                      { label: "아쉬움", value: "BAD" },
-                    ]}
                     onChange={(value) => handleChangeField("sunlightStatus", value)}
                   />
-                  <OptionField
+                  <StarRatingField
                     title={{ main: "상권" }}
                     value={form.commercialAreaStatus}
-                    options={[
-                      { label: "좋음", value: "GOOD" },
-                      { label: "보통", value: "NORMAL" },
-                      { label: "아쉬움", value: "BAD" },
-                    ]}
                     onChange={(value) => handleChangeField("commercialAreaStatus", value)}
                   />
                   <TextInputField
