@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import {
+  FACING_OPTIONS,
   RECOMMENDED_REGION_VALUES,
   STAR_SCORE_LABELS,
 } from "@/app/field-notes/new/_data/fieldNoteOptions";
 import useComplexSelection from "@/app/field-notes/new/_hooks/useComplexSelection";
+import FacingField from "@/app/field-notes/new/_components/field/FacingField";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
 import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
@@ -22,6 +24,7 @@ import TextInputField from "@/app/field-notes/new/_components/field/TextInputFie
 const INITIAL_FORM = {
   floorType: null,
   floorValue: "",
+  facing: "",
   askingPrice: "",
   memo: "",
   managementStatus: null,
@@ -32,7 +35,7 @@ const INITIAL_FORM = {
   agencyName: "",
 };
 
-export function ComplexRecordTab() {
+function ComplexRecordTab() {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -88,6 +91,7 @@ export function ComplexRecordTab() {
       regionId: selectedRegion.value,
       floorType: form.floorType,
       floorValue: form.floorType === "DIRECT" && form.floorValue ? Number(form.floorValue) : null,
+      facing: form.facing || null,
       askingPrice: form.askingPrice ? Number(form.askingPrice) : null,
       memo: form.memo,
       managementStatus: form.managementStatus,
@@ -214,6 +218,12 @@ export function ComplexRecordTab() {
                     scoreLabels={STAR_SCORE_LABELS.sunlight}
                     onChange={(value) => handleChangeField("sunlightStatus", value)}
                   />
+                  <FacingField
+                    title={{ main: "향" }}
+                    value={form.facing}
+                    options={FACING_OPTIONS}
+                    onChange={(value) => handleChangeField("facing", value)}
+                  />
                   <StarRatingField
                     title={{ main: "상권" }}
                     value={form.commercialAreaStatus}
@@ -269,3 +279,5 @@ export function ComplexRecordTab() {
     </div>
   );
 }
+
+export default ComplexRecordTab;

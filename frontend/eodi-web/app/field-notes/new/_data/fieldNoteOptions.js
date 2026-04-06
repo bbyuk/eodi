@@ -91,11 +91,11 @@ export const RECORD_TYPE_OPTIONS = [
 
 export const STAR_SCORE_LABELS = {
   parking: {
-    1: "매우 부족",
-    2: "부족함",
+    1: "매우 불편",
+    2: "불편",
     3: "보통",
-    4: "넉넉함",
-    5: "매우 넉넉함",
+    4: "편리",
+    5: "매우 편리",
   },
   sunlight: {
     1: "매우 부족",
@@ -105,11 +105,11 @@ export const STAR_SCORE_LABELS = {
     5: "매우 좋음",
   },
   commercialArea: {
-    1: "매우 아쉬움",
-    2: "아쉬움",
+    1: "매우 부족",
+    2: "부족",
     3: "보통",
-    4: "좋음",
-    5: "매우 좋음",
+    4: "편리",
+    5: "매우 편리",
   },
   management: {
     1: "매우 아쉬움",
@@ -126,6 +126,17 @@ export const STAR_SCORE_LABELS = {
     5: "매우 조용함",
   },
 };
+
+export const FACING_OPTIONS = [
+  { label: "북서향", value: "북서향", row: 1, col: 1 },
+  { label: "북향", value: "북향", row: 1, col: 2 },
+  { label: "북동향", value: "북동향", row: 1, col: 3 },
+  { label: "서향", value: "서향", row: 2, col: 1 },
+  { label: "동향", value: "동향", row: 2, col: 3 },
+  { label: "남서향", value: "남서향", row: 3, col: 1 },
+  { label: "남향", value: "남향", row: 3, col: 2 },
+  { label: "남동향", value: "남동향", row: 3, col: 3 },
+];
 
 export const FLATTENED_COMPLEXES = REGION_OPTIONS.flatMap((region) =>
   region.complexes.map((complex) => ({
