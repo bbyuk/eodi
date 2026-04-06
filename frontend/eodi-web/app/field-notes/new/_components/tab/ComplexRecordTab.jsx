@@ -12,12 +12,10 @@ import FacingField from "@/app/field-notes/new/_components/field/FacingField";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
 import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
-import DetailSectionToggle from "../../../../../components/ui/DetailSectionToggle";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
 import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
-import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
-import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
+import CollapsibleFormSection from "@/app/field-notes/new/_components/section/CollapsibleFormSection";
 import SelectionSearchSheet from "@/app/field-notes/new/_components/section-sheet/SelectionSearchSection";
 import TextInputField from "@/app/field-notes/new/_components/field/TextInputField";
 
@@ -38,7 +36,12 @@ const INITIAL_FORM = {
 function ComplexRecordTab() {
   const { showToast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [openSections, setOpenSections] = useState({
+    basicInfo: true,
+    buildingStatus: false,
+    householdExperience: false,
+    memo: false,
+  });
   const [autoFilledRegion, setAutoFilledRegion] = useState(null);
   const [recentRegionValues, setRecentRegionValues] = useState(
     RECOMMENDED_REGION_VALUES.slice(0, 2)
@@ -78,7 +81,12 @@ function ComplexRecordTab() {
 
   useEffect(() => {
     setForm(INITIAL_FORM);
-    setIsDetailOpen(false);
+    setOpenSections({
+      basicInfo: true,
+      buildingStatus: false,
+      householdExperience: false,
+      memo: false,
+    });
   }, [selectedComplex?.id]);
 
   const savePayload = useMemo(() => {
@@ -121,6 +129,13 @@ function ComplexRecordTab() {
     }));
   };
 
+  const toggleSection = (sectionKey) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey],
+    }));
+  };
+
   const handleClearComplex = () => {
     clearComplexSelection();
     setAutoFilledRegion(null);
@@ -152,99 +167,100 @@ function ComplexRecordTab() {
 
       {selectedComplex && selectedRegion ? (
         <>
-          <FieldNoteSection className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
-            <FormTitle main="기본 기록" sub="기본 정보부터 빠르게 남겨보세요" />
+          <CollapsibleFormSection
+            title="기본정보"
+            description="기본 정보부터 빠르게 남겨보세요"
+            isOpen={openSections.basicInfo}
+            onToggle={() => toggleSection("basicInfo")}
+            className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
+          >
+            <AskingPriceField
+              title={{ main: "호가" }}
+              askingPrice={form.askingPrice}
+              onChangeAskingPrice={(value) => handleChangeField("askingPrice", value)}
+            />
 
-            <div className="mt-5 space-y-5">
-              {/* 호가 필드 */}
-              <AskingPriceField
-                title={{ main: "호가" }}
-                askingPrice={form.askingPrice}
-                onChangeAskingPrice={(value) => handleChangeField("askingPrice", value)}
-              />
+            <FloorTypeField
+              floorType={form.floorType}
+              floorValue={form.floorValue}
+              onChangeFloorType={handleChangeFloorType}
+              onChangeFloorValue={(value) => handleChangeField("floorValue", value)}
+              errorMessage={floorErrorMessage}
+              title={{ main: "층수" }}
+            />
 
-              {/* 층수 필드 */}
-              <FloorTypeField
-                floorType={form.floorType}
-                floorValue={form.floorValue}
-                onChangeFloorType={handleChangeFloorType}
-                onChangeFloorValue={(value) => handleChangeField("floorValue", value)}
-                errorMessage={floorErrorMessage}
-                title={{ main: "층수" }}
-              />
+            <FacingField
+              title={{ main: "향" }}
+              value={form.facing}
+              options={FACING_OPTIONS}
+              onChange={(value) => handleChangeField("facing", value)}
+            />
 
-              {/* 관리 상태 필드 */}
-              <StarRatingField
-                title={{ main: "관리 상태" }}
-                value={form.managementStatus}
-                scoreLabels={STAR_SCORE_LABELS.management}
-                onChange={(value) => handleChangeField("managementStatus", value)}
-              />
+            <TextInputField
+              title={{ main: "부동산명" }}
+              value={form.agencyName}
+              onChange={(event) => handleChangeField("agencyName", event.target.value)}
+              placeholder={"공인중개사"}
+            />
+          </CollapsibleFormSection>
 
-              {/* 소음 필드 */}
-              <StarRatingField
-                title={{ main: "소음" }}
-                value={form.noiseLevel}
-                scoreLabels={STAR_SCORE_LABELS.noise}
-                onChange={(value) => handleChangeField("noiseLevel", value)}
-              />
-            </div>
-          </FieldNoteSection>
+          <CollapsibleFormSection
+            title="건물 / 단지 / 주변"
+            description="건물과 주변 환경 전반의 상태를 정리해보세요"
+            isOpen={openSections.buildingStatus}
+            onToggle={() => toggleSection("buildingStatus")}
+          >
+            <StarRatingField
+              title={{ main: "관리 상태" }}
+              value={form.managementStatus}
+              scoreLabels={STAR_SCORE_LABELS.management}
+              onChange={(value) => handleChangeField("managementStatus", value)}
+            />
+            <StarRatingField
+              title={{ main: "주차" }}
+              value={form.parkingStatus}
+              scoreLabels={STAR_SCORE_LABELS.parking}
+              onChange={(value) => handleChangeField("parkingStatus", value)}
+            />
+            <StarRatingField
+              title={{ main: "상권" }}
+              value={form.commercialAreaStatus}
+              scoreLabels={STAR_SCORE_LABELS.commercialArea}
+              onChange={(value) => handleChangeField("commercialAreaStatus", value)}
+            />
+          </CollapsibleFormSection>
 
-          {/* 상세 기록 펼치기 필드 */}
-          <DetailSectionToggle
-            isOpen={isDetailOpen}
-            onToggle={() => setIsDetailOpen((prev) => !prev)}
-          />
+          <CollapsibleFormSection
+            title="세대 내 체감"
+            description="실내에서 직접 느낀 요소를 남겨보세요"
+            isOpen={openSections.householdExperience}
+            onToggle={() => toggleSection("householdExperience")}
+          >
+            <StarRatingField
+              title={{ main: "채광" }}
+              value={form.sunlightStatus}
+              scoreLabels={STAR_SCORE_LABELS.sunlight}
+              onChange={(value) => handleChangeField("sunlightStatus", value)}
+            />
+            <StarRatingField
+              title={{ main: "소음" }}
+              value={form.noiseLevel}
+              scoreLabels={STAR_SCORE_LABELS.noise}
+              onChange={(value) => handleChangeField("noiseLevel", value)}
+            />
+          </CollapsibleFormSection>
 
-          {isDetailOpen ? (
-            <FieldNoteSection className="bg-white shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
-              <FormTitle
-                main="상세 기록"
-                sub="더 꼼꼼하게 비교할 수 있도록 추가 정보를 남겨보세요"
-              />
-
-              <div className="mt-5 space-y-5">
-                <section className="space-y-3">
-                  <StarRatingField
-                    title={{ main: "주차" }}
-                    value={form.parkingStatus}
-                    scoreLabels={STAR_SCORE_LABELS.parking}
-                    onChange={(value) => handleChangeField("parkingStatus", value)}
-                  />
-                  <StarRatingField
-                    title={{ main: "채광" }}
-                    value={form.sunlightStatus}
-                    scoreLabels={STAR_SCORE_LABELS.sunlight}
-                    onChange={(value) => handleChangeField("sunlightStatus", value)}
-                  />
-                  <FacingField
-                    title={{ main: "향" }}
-                    value={form.facing}
-                    options={FACING_OPTIONS}
-                    onChange={(value) => handleChangeField("facing", value)}
-                  />
-                  <StarRatingField
-                    title={{ main: "상권" }}
-                    value={form.commercialAreaStatus}
-                    scoreLabels={STAR_SCORE_LABELS.commercialArea}
-                    onChange={(value) => handleChangeField("commercialAreaStatus", value)}
-                  />
-                  <TextInputField
-                    title={{ main: "부동산명" }}
-                    value={form.agencyName}
-                    onChange={(event) => handleChangeField("agencyName", event.target.value)}
-                    placeholder={"공인중개사"}
-                  />
-                </section>
-
-                <TextAreaField
-                  value={form.memo}
-                  onChange={(value) => handleChangeField("memo", value)}
-                />
-              </div>
-            </FieldNoteSection>
-          ) : null}
+          <CollapsibleFormSection
+            title="메모"
+            description="자유롭게 남겨둘 내용을 정리해보세요"
+            isOpen={openSections.memo}
+            onToggle={() => toggleSection("memo")}
+          >
+            <TextAreaField
+              value={form.memo}
+              onChange={(value) => handleChangeField("memo", value)}
+            />
+          </CollapsibleFormSection>
 
           {/* 저장 버튼 필드 */}
           <SaveButtonBar
