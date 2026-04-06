@@ -14,10 +14,13 @@ export default function StarRatingInput({
   value,
   onChange,
   max = 5,
-  minLabel = "아쉬움",
-  maxLabel = "좋음",
+  minLabel,
+  maxLabel,
   scoreLabels = DEFAULT_SCORE_LABELS,
 }) {
+  const resolvedMinLabel = minLabel ?? scoreLabels?.[1] ?? "아쉬움";
+  const resolvedMaxLabel = maxLabel ?? scoreLabels?.[max] ?? "좋음";
+
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 rounded-[1.25rem] border border-slate-200 bg-white px-3 py-3">
@@ -45,11 +48,11 @@ export default function StarRatingInput({
       </div>
 
       <div className="flex items-center justify-between gap-3 px-1">
-        <span className="text-xs font-medium text-slate-500">{minLabel}</span>
+        <span className="text-xs font-medium text-slate-500">{resolvedMinLabel}</span>
         <span className="text-sm font-semibold text-slate-900">
-          {value ? `${value}점 · ${scoreLabels[value] ?? ""}` : "점수를 선택하세요"}
+          {value ? `${value}점 · ${scoreLabels[value] ?? ""}` : ""}
         </span>
-        <span className="text-xs font-medium text-slate-500">{maxLabel}</span>
+        <span className="text-xs font-medium text-slate-500">{resolvedMaxLabel}</span>
       </div>
     </div>
   );

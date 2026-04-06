@@ -89,6 +89,44 @@ export const RECORD_TYPE_OPTIONS = [
   { value: "region", label: "지역 기록", href: "/field-notes/new/region", description: "" },
 ];
 
+export const STAR_SCORE_LABELS = {
+  parking: {
+    1: "매우 부족",
+    2: "부족함",
+    3: "보통",
+    4: "넉넉함",
+    5: "매우 넉넉함",
+  },
+  sunlight: {
+    1: "매우 부족",
+    2: "부족",
+    3: "보통",
+    4: "좋음",
+    5: "매우 좋음",
+  },
+  commercialArea: {
+    1: "매우 아쉬움",
+    2: "아쉬움",
+    3: "보통",
+    4: "좋음",
+    5: "매우 좋음",
+  },
+  management: {
+    1: "매우 아쉬움",
+    2: "아쉬움",
+    3: "보통",
+    4: "좋음",
+    5: "매우 좋음",
+  },
+  noise: {
+    1: "매우 시끄러움",
+    2: "시끄러움",
+    3: "보통",
+    4: "조용함",
+    5: "매우 조용함",
+  },
+};
+
 export const FLATTENED_COMPLEXES = REGION_OPTIONS.flatMap((region) =>
   region.complexes.map((complex) => ({
     ...complex,

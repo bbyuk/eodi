@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/container/ToastProvider";
-import { RECOMMENDED_REGION_VALUES } from "@/app/field-notes/new/_data/fieldNoteOptions";
+import {
+  RECOMMENDED_REGION_VALUES,
+  STAR_SCORE_LABELS,
+} from "@/app/field-notes/new/_data/fieldNoteOptions";
 import useComplexSelection from "@/app/field-notes/new/_hooks/useComplexSelection";
 import FloorTypeField from "@/app/field-notes/new/_components/field/FloorTypeField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
 import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import DetailSectionToggle from "../../../../../components/ui/DetailSectionToggle";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
-import OptionField from "@/app/field-notes/new/_components/field/OptionField";
 import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
 import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
 import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
@@ -171,6 +173,7 @@ export function ComplexRecordTab() {
               <StarRatingField
                 title={{ main: "관리 상태" }}
                 value={form.managementStatus}
+                scoreLabels={STAR_SCORE_LABELS.management}
                 onChange={(value) => handleChangeField("managementStatus", value)}
               />
 
@@ -178,6 +181,7 @@ export function ComplexRecordTab() {
               <StarRatingField
                 title={{ main: "소음" }}
                 value={form.noiseLevel}
+                scoreLabels={STAR_SCORE_LABELS.noise}
                 onChange={(value) => handleChangeField("noiseLevel", value)}
               />
             </div>
@@ -201,16 +205,19 @@ export function ComplexRecordTab() {
                   <StarRatingField
                     title={{ main: "주차" }}
                     value={form.parkingStatus}
+                    scoreLabels={STAR_SCORE_LABELS.parking}
                     onChange={(value) => handleChangeField("parkingStatus", value)}
                   />
                   <StarRatingField
                     title={{ main: "채광" }}
                     value={form.sunlightStatus}
+                    scoreLabels={STAR_SCORE_LABELS.sunlight}
                     onChange={(value) => handleChangeField("sunlightStatus", value)}
                   />
                   <StarRatingField
                     title={{ main: "상권" }}
                     value={form.commercialAreaStatus}
+                    scoreLabels={STAR_SCORE_LABELS.commercialArea}
                     onChange={(value) => handleChangeField("commercialAreaStatus", value)}
                   />
                   <TextInputField
