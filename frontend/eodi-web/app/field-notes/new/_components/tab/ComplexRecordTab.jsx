@@ -30,14 +30,14 @@ const INITIAL_COMPLEX_RECORD = {
 };
 
 const COPY = {
-  complexSectionTitle: "단지와 주변",
-  complexSectionDescription: "집마다 반복하지 않아도 되는 내용을 남겨보세요",
+  complexSectionTitle: "기본 기록",
+  complexSectionDescription: "단지 분위기와 주변 환경을 먼저 기록해보세요",
 
-  homesTitle: "본 집 기록",
-  homesDescription: "집 안까지 본 경우에만 추가해 기록해보세요",
+  homesTitle: "세대 기록",
+  homesDescription: "내부를 확인한 세대만 추가해 기록해보세요",
 
-  homeTitle: (index) => `본 집 ${index}`,
-  homeDescription: "동·호수와 집 안에서 느낀 점을 남겨보세요",
+  homeTitle: (index) => `세대 ${index}`,
+  homeDescription: "동·호수와 내부에서 느낀 점을 남겨보세요",
 
   addHome: "+ 본 집 추가",
 
@@ -209,9 +209,9 @@ function ComplexRecordTab() {
     <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
       {/* 단지 선택 필드 */}
       <ButtonInputField
-        title={{ main: "단지 선택", sub: "단지명을 검색해 선택하세요" }}
+        title={{ main: "단지 선택", sub: "어느 단지를 보고 왔는지 선택해주세요" }}
         value={selectedComplex?.name ?? ""}
-        placeholder="단지명을 검색해 선택하세요"
+        placeholder="검색"
         onClick={openComplexSheet}
       />
 
