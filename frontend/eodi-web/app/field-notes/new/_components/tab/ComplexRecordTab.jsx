@@ -32,6 +32,8 @@ const INITIAL_COMPLEX_RECORD = {
 const COPY = {
   complexSectionTitle: "기본 기록",
   complexSectionDescription: "단지 분위기와 주변 환경을 먼저 기록해보세요",
+  complexCardTitle: "단지와 주변",
+  complexCardDescription: "관리 상태 · 주차 · 교통 편의 · 생활 편의",
 
   homesTitle: "세대 기록",
   homesDescription: "내부를 확인한 세대만 추가해 기록해보세요",
@@ -217,38 +219,46 @@ function ComplexRecordTab() {
 
       {selectedComplex && selectedRegion ? (
         <>
-          <CollapsibleFormSection
-            title={COPY.complexSectionTitle}
-            description={COPY.complexSectionDescription}
-            isOpen={openSections.complexRecord}
-            onToggle={() => toggleSection("complexRecord")}
-            className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
-          >
-            <StarRatingField
-              title={{ main: "관리 상태" }}
-              value={complexRecord.managementStatus}
-              scoreLabels={STAR_SCORE_LABELS.management}
-              onChange={(value) => handleChangeComplexRecord("managementStatus", value)}
+          <div className="space-y-3">
+            <FormTitle
+              main={COPY.complexSectionTitle}
+              sub={COPY.complexSectionDescription}
+              preserveSubSpace={false}
             />
-            <StarRatingField
-              title={{ main: "주차" }}
-              value={complexRecord.parkingStatus}
-              scoreLabels={STAR_SCORE_LABELS.parking}
-              onChange={(value) => handleChangeComplexRecord("parkingStatus", value)}
-            />
-            <StarRatingField
-              title={{ main: "교통 편의" }}
-              value={complexRecord.transportStatus}
-              scoreLabels={STAR_SCORE_LABELS.transport}
-              onChange={(value) => handleChangeComplexRecord("transportStatus", value)}
-            />
-            <StarRatingField
-              title={{ main: "생활 편의" }}
-              value={complexRecord.commercialAreaStatus}
-              scoreLabels={STAR_SCORE_LABELS.commercialArea}
-              onChange={(value) => handleChangeComplexRecord("commercialAreaStatus", value)}
-            />
-          </CollapsibleFormSection>
+
+            <CollapsibleFormSection
+              title={COPY.complexCardTitle}
+              description={COPY.complexCardDescription}
+              isOpen={openSections.complexRecord}
+              onToggle={() => toggleSection("complexRecord")}
+              className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
+            >
+              <StarRatingField
+                title={{ main: "관리 상태" }}
+                value={complexRecord.managementStatus}
+                scoreLabels={STAR_SCORE_LABELS.management}
+                onChange={(value) => handleChangeComplexRecord("managementStatus", value)}
+              />
+              <StarRatingField
+                title={{ main: "주차" }}
+                value={complexRecord.parkingStatus}
+                scoreLabels={STAR_SCORE_LABELS.parking}
+                onChange={(value) => handleChangeComplexRecord("parkingStatus", value)}
+              />
+              <StarRatingField
+                title={{ main: "교통 편의" }}
+                value={complexRecord.transportStatus}
+                scoreLabels={STAR_SCORE_LABELS.transport}
+                onChange={(value) => handleChangeComplexRecord("transportStatus", value)}
+              />
+              <StarRatingField
+                title={{ main: "생활 편의" }}
+                value={complexRecord.commercialAreaStatus}
+                scoreLabels={STAR_SCORE_LABELS.commercialArea}
+                onChange={(value) => handleChangeComplexRecord("commercialAreaStatus", value)}
+              />
+            </CollapsibleFormSection>
+          </div>
 
           <div className="space-y-3">
             <FormTitle
