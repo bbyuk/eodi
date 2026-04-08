@@ -8,7 +8,7 @@ const COMPLEX_RECORD_COPY = {
   recordTypePlaceholder: "기록 유형을 선택해주세요",
 
   visitDateLabel: "방문일",
-  visitDateDescription: "다녀온 날짜를 확인해주세요",
+  visitDateDescription: "다녀온 날짜를 선택해주세요",
 
   complexLabel: "단지 선택",
   complexDescription: "어느 단지를 보고 왔는지 선택해주세요",
