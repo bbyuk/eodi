@@ -50,12 +50,12 @@ export default function StarRatingInput({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-3 px-1">
+      <div className="grid min-h-5 grid-cols-[1fr_auto_1fr] items-center gap-3 px-1">
         <span className="text-xs font-medium text-slate-500">{resolvedMinLabel}</span>
-        <span className="text-sm font-semibold text-slate-900">
-          {value ? `${scoreLabels[value] ?? ""}` : ""}
+        <span className="min-w-16 text-center text-sm font-semibold leading-5 text-slate-900">
+          {value ? (scoreLabels[value] ?? "") : "\u00a0"}
         </span>
-        <span className="text-xs font-medium text-slate-500">{resolvedMaxLabel}</span>
+        <span className="text-right text-xs font-medium text-slate-500">{resolvedMaxLabel}</span>
       </div>
     </div>
   );
