@@ -3,6 +3,7 @@
 import Field from "@/app/field-notes/new/_components/field/Field";
 import FloorLevelSelectInput from "@/app/field-notes/new/_components/input/FloorLevelSelectInput";
 import NumberFieldInput from "@/app/field-notes/new/_components/input/NumberFieldInput";
+import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
 
 const FLOOR_OPTIONS = [
   { label: "저층", value: "LOW", highlightedFloors: [1] },
@@ -33,7 +34,7 @@ export default function FloorTypeField({
         onChange={onChangeFloorType}
       />
       {isDirect ? (
-        <div className="rounded-[1.25rem] border border-slate-200 bg-white p-4">
+        <div className={`border border-slate-200 bg-white p-4 ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}>
           <NumberFieldInput
             label="직접 입력 층수"
             value={floorValue}

@@ -20,7 +20,7 @@ export default function AskingPriceField({ askingPrice, onChangeAskingPrice, tit
       <p
         className={`text-right text-xs font-medium ${hasValue ? "text-slate-600" : "text-slate-400"}`}
       >
-        {hasValue ? formatWon(Number(askingPrice)) : "숫자만 입력"}
+        {hasValue ? formatWon(Number(askingPrice)) : null}
       </p>
     </Field>
   );

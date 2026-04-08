@@ -63,6 +63,7 @@ export default function NumberInput({
   decimalScale = 0,
   allowNegative = false,
   className = "",
+  inputClassName = "rounded-lg",
   ...props
 }) {
   const inputRef = useRef(null);
@@ -104,7 +105,11 @@ export default function NumberInput({
     <section className={`flex flex-col gap-2 ${className}`}>
       {(label || formatter) && (
         <div className="flex justify-between items-end">
-          {label ? <label className="text-sm font-medium text-text-secondary">{label}</label> : <span />}
+          {label ? (
+            <label className="text-sm font-medium text-text-secondary">{label}</label>
+          ) : (
+            <span />
+          )}
           {formatter && <span className="text-xs text-text-secondary">{formatter(value)}</span>}
         </div>
       )}
@@ -119,10 +124,10 @@ export default function NumberInput({
           onKeyUp={(e) => {
             if (e.code === "Enter") onEnter?.();
           }}
-          className={`w-full px-4 py-3 border border-border rounded-lg text-right text-text-primary
+          className={`w-full px-4 py-3 border border-border text-right text-text-primary
             placeholder:text-text-secondary focus:ring-2 focus:ring-[var(--input-focus-ring)]
             focus:border-[var(--input-focus-border)] focus:outline-none transition
-            ${unit ? "pr-16" : "pr-4"}`}
+            ${unit ? "pr-16" : "pr-4"} ${inputClassName}`}
           {...props}
         />
 

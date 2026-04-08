@@ -9,22 +9,59 @@ export default function CollapsibleFormSection({
   description = "",
   isOpen = false,
   onToggle,
+  headerAction = null,
+  headerActionPlacement = "afterToggle",
   children,
   className = "bg-white shadow-[0_18px_40px_rgba(15,23,42,0.04)]",
 }) {
+  const actionElement = headerAction ? <div className="mt-0.5 shrink-0">{headerAction}</div> : null;
+  const chevronIcon = isOpen ? (
+    <ChevronUp className="h-4 w-4" />
+  ) : (
+    <ChevronDown className="h-4 w-4" />
+  );
+  const chevronClassName =
+    "mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition";
+
   return (
     <FieldNoteSection className={className}>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="flex w-full items-start justify-between gap-4 text-left"
-      >
-        <FormTitle main={title} sub={description} preserveSubSpace={Boolean(description)} />
-        <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition">
-          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </span>
-      </button>
+      <div className="flex items-start gap-2">
+        {headerActionPlacement === "beforeToggle" ? (
+          <>
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-expanded={isOpen}
+              className="min-w-0 flex-1 text-left"
+            >
+              <FormTitle main={title} sub={description} preserveSubSpace={Boolean(description)} />
+            </button>
+            {actionElement}
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-expanded={isOpen}
+              aria-label={`${title} 펼치기`}
+              className={chevronClassName}
+            >
+              {chevronIcon}
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-expanded={isOpen}
+              className="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+            >
+              <FormTitle main={title} sub={description} preserveSubSpace={Boolean(description)} />
+              <span className={chevronClassName}>{chevronIcon}</span>
+            </button>
+            {actionElement}
+          </>
+        )}
+      </div>
 
       <div
         className={`grid transition-[grid-template-rows,opacity,margin] duration-200 ${

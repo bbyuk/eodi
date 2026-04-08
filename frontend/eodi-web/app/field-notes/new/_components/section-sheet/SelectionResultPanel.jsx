@@ -1,6 +1,7 @@
 import { LoaderCircle } from "lucide-react";
 import Field from "@/app/field-notes/new/_components/field/Field";
 import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
+import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
 
 export default function SelectionResultPanel({
   label = "검색 결과",
@@ -35,7 +36,7 @@ export default function SelectionResultPanel({
         <div className={`relative ${minHeightClassName}`}>
           {showIdlePanel ? (
             <div
-              className={`flex ${minHeightClassName} items-center justify-center rounded-[1.25rem] border border-dashed border-slate-200 bg-white px-4 py-5`}
+              className={`flex ${minHeightClassName} items-center justify-center border border-dashed border-slate-200 bg-white px-4 py-5 ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}
             >
               <p className="text-sm font-medium text-slate-500">{idleMessage}</p>
             </div>
@@ -46,7 +47,7 @@ export default function SelectionResultPanel({
               {[0, 1, 2].map((item) => (
                 <div
                   key={item}
-                  className="rounded-[1.25rem] border border-slate-200 bg-white px-4 py-4"
+                  className={`border border-slate-200 bg-white px-4 py-4 ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}
                 >
                   <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
                   <div className="mt-3 h-3 w-2/3 animate-pulse rounded bg-slate-100" />
@@ -67,7 +68,7 @@ export default function SelectionResultPanel({
 
           {showEmptyState ? (
             <div
-              className={`flex ${minHeightClassName} items-center justify-center rounded-[1.25rem] border border-dashed border-slate-200 bg-white px-4 py-5 text-center`}
+              className={`flex ${minHeightClassName} items-center justify-center border border-dashed border-slate-200 bg-white px-4 py-5 text-center ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}
             >
               <div>
                 <p className="text-sm font-semibold text-slate-900">{emptyTitle}</p>

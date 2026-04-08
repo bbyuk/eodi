@@ -1,6 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
+import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
 
 const DEFAULT_SCORE_LABELS = {
   1: "아쉬움",
@@ -23,7 +24,9 @@ export default function StarRatingInput({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 rounded-[1.25rem] border border-slate-200 bg-white px-3 py-3">
+      <div
+        className={`flex items-center gap-2 border border-slate-200 bg-white px-3 py-3 ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}
+      >
         {Array.from({ length: max }, (_, index) => {
           const score = index + 1;
           const active = Number(value) >= score;
@@ -50,7 +53,7 @@ export default function StarRatingInput({
       <div className="flex items-center justify-between gap-3 px-1">
         <span className="text-xs font-medium text-slate-500">{resolvedMinLabel}</span>
         <span className="text-sm font-semibold text-slate-900">
-          {value ? `${value}점 · ${scoreLabels[value] ?? ""}` : ""}
+          {value ? `${scoreLabels[value] ?? ""}` : ""}
         </span>
         <span className="text-xs font-medium text-slate-500">{resolvedMaxLabel}</span>
       </div>

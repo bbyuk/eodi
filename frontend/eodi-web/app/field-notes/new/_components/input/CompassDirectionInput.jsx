@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Compass } from "lucide-react";
+import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
 
 export default function CompassDirectionInput({ value, options, onChange }) {
   return (
@@ -38,7 +39,9 @@ export default function CompassDirectionInput({ value, options, onChange }) {
           );
         })}
 
-        <div className="flex items-center justify-center rounded-[1.25rem] border border-slate-200 bg-slate-50 text-slate-500 shadow-inner">
+        <div
+          className={`flex items-center justify-center border border-slate-200 bg-slate-50 text-slate-500 shadow-inner ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}
+        >
           <div className="flex flex-col items-center gap-1">
             <Compass className="h-5 w-5 text-[var(--choice-chip-selected-bg)]" />
             <span className="text-xs font-semibold tracking-[0.02em]">향</span>
