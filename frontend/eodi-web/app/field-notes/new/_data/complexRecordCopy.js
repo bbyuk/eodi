@@ -30,7 +30,7 @@ const COMPLEX_RECORD_COPY = {
 
   visitDecisionTitle: "이 단지는 다시 볼 가치가 있었나요?",
   visitDecisionDescription: "이번 방문을 바탕으로 다시 볼 가치가 있는지 정리해보세요",
-  complexInterestLabel: "이 단지는 다시 볼 가치가 있었나요?",
+  complexInterestLabel: "다시 볼지 아직 정하지 않았어요",
   complexInterestDescription: "방문 후 전체 인상을 기준으로 선택해주세요",
   complexInterestOptionHigh: "다시 보고 싶어요",
   complexInterestOptionMedium: "조금 더 고민해볼래요",
