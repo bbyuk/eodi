@@ -62,6 +62,18 @@ const createVisitedHome = (index) => ({
   isHighlighted: false,
 });
 
+const getHomeTitle = (home, index) => {
+  if (home.building && home.unit) {
+    return `${home.building}동 ${home.unit}호`;
+  }
+
+  if (home.building) {
+    return `${home.building}동`;
+  }
+
+  return COPY.homeTitle(index + 1);
+};
+
 function ComplexRecordTab() {
   const { showToast } = useToast();
   const pathname = usePathname();
@@ -408,105 +420,109 @@ function ComplexRecordTab() {
             />
 
             <div className="space-y-4">
-              {visitedHomes.map((home, index) => (
-                <CollapsibleFormSection
-                  key={home.id}
-                  title={COPY.homeTitle(index + 1)}
-                  isOpen={Boolean(openVisitedHomeIds[home.id])}
-                  onToggle={() => toggleVisitedHome(home.id)}
-                  headerActionPlacement="beforeToggle"
-                  headerAction={
-                    <button
-                      type="button"
-                      onClick={() => removeVisitedHome(home.id)}
-                      aria-label={`${COPY.homeTitle(index + 1)} 삭제`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-100"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  }
-                >
-                  <div className="grid grid-cols-2 gap-3">
-                    <NumberInputField
-                      title={{ main: COPY.buildingLabel }}
-                      value={home.building}
-                      onChange={(value) => handleChangeVisitedHome(home.id, "building", value)}
-                      placeholder={COPY.buildingPlaceholder}
-                      maxValue={9999}
-                    />
-                    <NumberInputField
-                      title={{ main: COPY.unitLabel }}
-                      value={home.unit}
-                      onChange={(value) => handleChangeVisitedHome(home.id, "unit", value)}
-                      placeholder={COPY.unitPlaceholder}
-                      maxValue={99999}
-                    />
-                  </div>
+              {visitedHomes.map((home, index) => {
+                const homeTitle = getHomeTitle(home, index);
 
-                  <AskingPriceField
-                    title={{ main: COPY.priceLabel }}
-                    askingPrice={home.askingPrice}
-                    onChangeAskingPrice={(value) =>
-                      handleChangeVisitedHome(home.id, "askingPrice", value)
+                return (
+                  <CollapsibleFormSection
+                    key={home.id}
+                    title={homeTitle}
+                    isOpen={Boolean(openVisitedHomeIds[home.id])}
+                    onToggle={() => toggleVisitedHome(home.id)}
+                    headerActionPlacement="beforeToggle"
+                    headerAction={
+                      <button
+                        type="button"
+                        onClick={() => removeVisitedHome(home.id)}
+                        aria-label={`${homeTitle} 삭제`}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-100"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     }
-                    placeholder={COPY.pricePlaceholder}
-                  />
-
-                  <FacingField
-                    title={{ main: COPY.facingLabel }}
-                    value={home.facing}
-                    options={FACING_OPTIONS}
-                    onChange={(value) => handleChangeVisitedHome(home.id, "facing", value)}
-                  />
-
-                  <NumberInputField
-                    title={{ main: COPY.floorLabel }}
-                    value={home.floor}
-                    onChange={(value) => handleChangeVisitedHome(home.id, "floor", value)}
-                    placeholder={COPY.floorPlaceholder}
-                    maxValue={999}
-                  />
-
-                  <TextAreaField
-                    title={{ main: COPY.homeMemoLabel }}
-                    value={home.memo}
-                    onChange={(value) => handleChangeVisitedHome(home.id, "memo", value)}
-                    placeholder={COPY.homeMemoPlaceholder}
-                    showCount={false}
-                  />
-
-                  <Field
-                    title={{
-                      main: COPY.highlightHomeLabel,
-                      sub: COPY.highlightHomeDescription,
-                    }}
                   >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleChangeVisitedHome(home.id, "isHighlighted", !home.isHighlighted)
+                    <div className="grid grid-cols-2 gap-3">
+                      <NumberInputField
+                        title={{ main: COPY.buildingLabel }}
+                        value={home.building}
+                        onChange={(value) => handleChangeVisitedHome(home.id, "building", value)}
+                        placeholder={COPY.buildingPlaceholder}
+                        maxValue={9999}
+                      />
+                      <NumberInputField
+                        title={{ main: COPY.unitLabel }}
+                        value={home.unit}
+                        onChange={(value) => handleChangeVisitedHome(home.id, "unit", value)}
+                        placeholder={COPY.unitPlaceholder}
+                        maxValue={99999}
+                      />
+                    </div>
+
+                    <AskingPriceField
+                      title={{ main: COPY.priceLabel }}
+                      askingPrice={home.askingPrice}
+                      onChangeAskingPrice={(value) =>
+                        handleChangeVisitedHome(home.id, "askingPrice", value)
                       }
-                      aria-pressed={home.isHighlighted}
-                      className={`flex min-h-12 w-full items-center gap-3 border px-4 text-left text-sm font-semibold transition ${FIELD_NOTE_INPUT_RADIUS_CLASS} ${
-                        home.isHighlighted
-                          ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)] text-[var(--choice-chip-selected-text)] shadow-[var(--choice-chip-selected-shadow)]"
-                          : "border-slate-200 bg-white text-slate-700 hover:border-[var(--choice-chip-hover-border)] hover:bg-[var(--choice-chip-hover-bg)]"
-                      }`}
+                      placeholder={COPY.pricePlaceholder}
+                    />
+
+                    <FacingField
+                      title={{ main: COPY.facingLabel }}
+                      value={home.facing}
+                      options={FACING_OPTIONS}
+                      onChange={(value) => handleChangeVisitedHome(home.id, "facing", value)}
+                    />
+
+                    <NumberInputField
+                      title={{ main: COPY.floorLabel }}
+                      value={home.floor}
+                      onChange={(value) => handleChangeVisitedHome(home.id, "floor", value)}
+                      placeholder={COPY.floorPlaceholder}
+                      maxValue={999}
+                    />
+
+                    <TextAreaField
+                      title={{ main: COPY.homeMemoLabel }}
+                      value={home.memo}
+                      onChange={(value) => handleChangeVisitedHome(home.id, "memo", value)}
+                      placeholder={COPY.homeMemoPlaceholder}
+                      showCount={false}
+                    />
+
+                    <Field
+                      title={{
+                        main: COPY.highlightHomeLabel,
+                        sub: COPY.highlightHomeDescription,
+                      }}
                     >
-                      <span
-                        className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleChangeVisitedHome(home.id, "isHighlighted", !home.isHighlighted)
+                        }
+                        aria-pressed={home.isHighlighted}
+                        className={`flex min-h-12 w-full items-center gap-3 border px-4 text-left text-sm font-semibold transition ${FIELD_NOTE_INPUT_RADIUS_CLASS} ${
                           home.isHighlighted
-                            ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)]"
-                            : "border-slate-300 bg-white"
+                            ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)] text-[var(--choice-chip-selected-text)] shadow-[var(--choice-chip-selected-shadow)]"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-[var(--choice-chip-hover-border)] hover:bg-[var(--choice-chip-hover-bg)]"
                         }`}
                       >
-                        {home.isHighlighted ? <Check className="h-3 w-3" /> : null}
-                      </span>
-                      {COPY.highlightHomeLabel}
-                    </button>
-                  </Field>
-                </CollapsibleFormSection>
-              ))}
+                        <span
+                          className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                            home.isHighlighted
+                              ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)]"
+                              : "border-slate-300 bg-white"
+                          }`}
+                        >
+                          {home.isHighlighted ? <Check className="h-3 w-3" /> : null}
+                        </span>
+                        {COPY.highlightHomeLabel}
+                      </button>
+                    </Field>
+                  </CollapsibleFormSection>
+                );
+              })}
             </div>
 
             <button
