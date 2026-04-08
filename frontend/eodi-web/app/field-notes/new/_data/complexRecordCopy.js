@@ -9,6 +9,9 @@ const COMPLEX_RECORD_COPY = {
 
   visitDateLabel: "방문일",
   visitDateDescription: "다녀온 날짜를 선택해주세요",
+  futureVisitStateTitle: "아직 방문 전이에요",
+  futureVisitStateDescription: "방문 후에 기록을 남길 수 있어요.",
+  futureVisitStateAction: "오늘 날짜로 바꾸기",
 
   complexLabel: "단지 선택",
   complexDescription: "어느 단지를 보고 왔는지 선택해주세요",

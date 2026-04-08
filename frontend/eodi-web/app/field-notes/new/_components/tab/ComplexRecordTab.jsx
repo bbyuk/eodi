@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Check, Trash2 } from "lucide-react";
+import { CalendarClock, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import Select from "@/components/ui/Select";
 import OptionButton from "@/components/ui/OptionButton";
@@ -51,6 +51,19 @@ const getTodayDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
+const parseDateString = (value) => {
+  const matchedDate = value?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if (!matchedDate) {
+    return new Date();
+  }
+
+  return new Date(Number(matchedDate[1]), Number(matchedDate[2]) - 1, Number(matchedDate[3]));
+};
+
+const getDateOnlyTime = (date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
 const createVisitedHome = (index) => ({
   id: `visited-home-${index}`,
   building: "",
@@ -94,6 +107,7 @@ function ComplexRecordTab() {
   );
 
   const recordType = pathname?.startsWith("/field-notes/new/region") ? "region" : "complex";
+  const isFutureVisit = getDateOnlyTime(parseDateString(visitDate)) > getDateOnlyTime(new Date());
   const basicRecordCompletionItems = [
     { key: "complexMood", label: COPY.complexMoodLabel },
     { key: "surroundings", label: COPY.surroundingsLabel },
@@ -323,7 +337,36 @@ function ComplexRecordTab() {
         </div>
       </FieldNoteSection>
 
-      {selectedComplex && selectedRegion ? (
+      {isFutureVisit ? (
+        <FieldNoteSection
+          className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
+          paddingClassName="p-5"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-500 shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+              <CalendarClock className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1 space-y-3">
+              <div className="space-y-1">
+                <p className="text-base font-semibold text-slate-950">
+                  {COPY.futureVisitStateTitle}
+                </p>
+                <p className="text-sm leading-6 text-slate-600">
+                  {COPY.futureVisitStateDescription}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setVisitDate(getTodayDateString())}
+                className="inline-flex min-h-9 items-center rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              >
+                {COPY.futureVisitStateAction}
+              </button>
+            </div>
+          </div>
+        </FieldNoteSection>
+      ) : selectedComplex && selectedRegion ? (
         <>
           <div className="space-y-3">
             <FormTitle
