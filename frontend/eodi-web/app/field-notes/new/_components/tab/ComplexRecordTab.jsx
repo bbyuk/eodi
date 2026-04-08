@@ -82,7 +82,43 @@ function ComplexRecordTab() {
   );
 
   const recordType = pathname?.startsWith("/field-notes/new/region") ? "region" : "complex";
-  const basicRecordFilled = Object.values(basicRecord).some(Boolean);
+  const basicRecordCompletionItems = [
+    { key: "complexMood", label: COPY.complexMoodLabel },
+    { key: "surroundings", label: COPY.surroundingsLabel },
+    { key: "parking", label: COPY.parkingLabel },
+    { key: "commonMemo", label: COPY.commonMemoLabel },
+  ];
+  const completedBasicRecordLabels = basicRecordCompletionItems
+    .filter(({ key }) => {
+      if (key === "commonMemo") {
+        return basicRecord.commonMemo.trim().length > 0;
+      }
+
+      return Boolean(basicRecord[key]);
+    })
+    .map(({ label }) => label);
+  const completedBasicRecordCount = completedBasicRecordLabels.length;
+  const completedBasicRecordSummary =
+    completedBasicRecordCount > 2
+      ? `${completedBasicRecordLabels.slice(0, 2).join(" · ")} 외 ${
+          completedBasicRecordCount - 2
+        }개`
+      : completedBasicRecordLabels.join(" · ");
+  const basicRecordStatus =
+    completedBasicRecordCount === 0
+      ? {
+          title: COPY.basicRecordCollapsedEmpty,
+          summary: "",
+        }
+      : completedBasicRecordCount === basicRecordCompletionItems.length
+        ? {
+            title: COPY.basicRecordCollapsedComplete,
+            summary: COPY.basicRecordCollapsedCompleteSummary,
+          }
+        : {
+            title: COPY.basicRecordCollapsedPartial,
+            summary: completedBasicRecordSummary,
+          };
   const highlightedHomesCount = visitedHomes.filter((home) => home.isHighlighted).length;
   const selectedComplexInterestLabel = INTEREST_OPTIONS.find(
     (option) => option.value === complexInterest
@@ -285,11 +321,22 @@ function ComplexRecordTab() {
             />
 
             <CollapsibleFormSection
-              title={
-                basicRecordFilled ? COPY.basicRecordCollapsedFilled : COPY.basicRecordCollapsedEmpty
+              title={basicRecordStatus.title}
+              headerContent={
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <p className="shrink-0 text-sm font-semibold text-slate-900">
+                    {basicRecordStatus.title}
+                  </p>
+                  {basicRecordStatus.summary ? (
+                    <p className="min-w-0 truncate text-right text-xs font-medium text-slate-500">
+                      {basicRecordStatus.summary}
+                    </p>
+                  ) : null}
+                </div>
               }
               isOpen={openSections.basicRecord}
               onToggle={() => toggleSection("basicRecord")}
+              toggleOnHeader={false}
               headerActionPlacement="beforeToggle"
               className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
             >

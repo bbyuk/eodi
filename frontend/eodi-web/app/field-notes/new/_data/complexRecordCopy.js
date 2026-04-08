@@ -24,7 +24,9 @@ const COMPLEX_RECORD_COPY = {
   commonMemoLabel: "메모",
   commonMemoPlaceholder: "단지에 대한 메모를 추가로 남겨보세요",
   basicRecordCollapsedEmpty: "아직 작성한 내용이 없어요",
-  basicRecordCollapsedFilled: "작성중",
+  basicRecordCollapsedPartial: "일부 입력",
+  basicRecordCollapsedComplete: "작성 완료",
+  basicRecordCollapsedCompleteSummary: "기본 기록을 모두 작성했어요",
 
   visitDecisionTitle: "이 단지는 다시 볼 가치가 있었나요?",
   visitDecisionDescription: "이번 방문을 바탕으로 다시 볼 가치가 있는지 정리해보세요",

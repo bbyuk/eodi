@@ -6,8 +6,10 @@ import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNot
 
 export default function CollapsibleFormSection({
   title,
+  headerContent = null,
   isOpen = false,
   onToggle,
+  toggleOnHeader = true,
   headerAction = null,
   headerActionPlacement = "afterToggle",
   children,
@@ -21,20 +23,27 @@ export default function CollapsibleFormSection({
   );
   const chevronClassName =
     "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition";
+  const resolvedHeaderContent = headerContent ?? (
+    <FormTitle main={title} preserveSubSpace={false} />
+  );
 
   return (
     <FieldNoteSection className={className}>
       <div className="flex items-center gap-2">
         {headerActionPlacement === "beforeToggle" ? (
           <>
-            <button
-              type="button"
-              onClick={onToggle}
-              aria-expanded={isOpen}
-              className="min-w-0 flex-1 text-left"
-            >
-              <FormTitle main={title} preserveSubSpace={false} />
-            </button>
+            {toggleOnHeader ? (
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-expanded={isOpen}
+                className="min-w-0 flex-1 text-left"
+              >
+                {resolvedHeaderContent}
+              </button>
+            ) : (
+              <div className="min-w-0 flex-1">{resolvedHeaderContent}</div>
+            )}
             {actionElement}
             <button
               type="button"
@@ -54,7 +63,7 @@ export default function CollapsibleFormSection({
               aria-expanded={isOpen}
               className="flex min-w-0 flex-1 items-center justify-between gap-4 text-left"
             >
-              <FormTitle main={title} preserveSubSpace={false} />
+              {resolvedHeaderContent}
               <span className={chevronClassName}>{chevronIcon}</span>
             </button>
             {actionElement}
