@@ -90,12 +90,26 @@ export const RECORD_TYPE_OPTIONS = [
 ];
 
 export const STAR_SCORE_LABELS = {
+  complexMood: {
+    1: "매우 아쉬움",
+    2: "아쉬움",
+    3: "보통",
+    4: "좋음",
+    5: "매우 좋음",
+  },
+  surroundings: {
+    1: "매우 아쉬움",
+    2: "아쉬움",
+    3: "보통",
+    4: "좋음",
+    5: "매우 좋음",
+  },
   parking: {
     1: "매우 불편",
     2: "불편",
     3: "보통",
-    4: "편리",
-    5: "매우 편리",
+    4: "좋음",
+    5: "매우 좋음",
   },
   sunlight: {
     1: "매우 부족",

@@ -6,7 +6,6 @@ import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNot
 
 export default function CollapsibleFormSection({
   title,
-  description = "",
   isOpen = false,
   onToggle,
   headerAction = null,
@@ -14,18 +13,18 @@ export default function CollapsibleFormSection({
   children,
   className = "bg-white shadow-[0_18px_40px_rgba(15,23,42,0.04)]",
 }) {
-  const actionElement = headerAction ? <div className="mt-0.5 shrink-0">{headerAction}</div> : null;
+  const actionElement = headerAction ? <div className="shrink-0">{headerAction}</div> : null;
   const chevronIcon = isOpen ? (
     <ChevronUp className="h-4 w-4" />
   ) : (
     <ChevronDown className="h-4 w-4" />
   );
   const chevronClassName =
-    "mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition";
+    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition";
 
   return (
     <FieldNoteSection className={className}>
-      <div className="flex items-start gap-2">
+      <div className="flex items-center gap-2">
         {headerActionPlacement === "beforeToggle" ? (
           <>
             <button
@@ -34,7 +33,7 @@ export default function CollapsibleFormSection({
               aria-expanded={isOpen}
               className="min-w-0 flex-1 text-left"
             >
-              <FormTitle main={title} sub={description} preserveSubSpace={Boolean(description)} />
+              <FormTitle main={title} preserveSubSpace={false} />
             </button>
             {actionElement}
             <button
@@ -53,9 +52,9 @@ export default function CollapsibleFormSection({
               type="button"
               onClick={onToggle}
               aria-expanded={isOpen}
-              className="flex min-w-0 flex-1 items-start justify-between gap-4 text-left"
+              className="flex min-w-0 flex-1 items-center justify-between gap-4 text-left"
             >
-              <FormTitle main={title} sub={description} preserveSubSpace={Boolean(description)} />
+              <FormTitle main={title} preserveSubSpace={false} />
               <span className={chevronClassName}>{chevronIcon}</span>
             </button>
             {actionElement}

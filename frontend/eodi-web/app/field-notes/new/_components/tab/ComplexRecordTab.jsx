@@ -1,81 +1,92 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Check, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/container/ToastProvider";
+import Select from "@/components/ui/Select";
+import OptionButton from "@/components/ui/OptionButton";
 import {
   FACING_OPTIONS,
   RECOMMENDED_REGION_VALUES,
+  RECORD_TYPE_OPTIONS,
   STAR_SCORE_LABELS,
 } from "@/app/field-notes/new/_data/fieldNoteOptions";
-import { Trash2 } from "lucide-react";
+import COPY from "@/app/field-notes/new/_data/complexRecordCopy";
 import useComplexSelection from "@/app/field-notes/new/_hooks/useComplexSelection";
+import Field from "@/app/field-notes/new/_components/field/Field";
 import FacingField from "@/app/field-notes/new/_components/field/FacingField";
 import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
 import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
-import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
 import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
 import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
 import NumberInputField from "@/app/field-notes/new/_components/field/NumberInputField";
+import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
+import DateInputField from "@/app/field-notes/new/_components/field/DateInputField";
 import CollapsibleFormSection from "@/app/field-notes/new/_components/section/CollapsibleFormSection";
+import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
 import SelectionSearchSheet from "@/app/field-notes/new/_components/section-sheet/SelectionSearchSection";
 import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
-import TextInputField from "@/app/field-notes/new/_components/field/TextInputField";
 
-const INITIAL_COMPLEX_RECORD = {
-  managementStatus: null,
-  parkingStatus: null,
-  transportStatus: null,
-  commercialAreaStatus: null,
+const INTEREST_OPTIONS = [
+  { value: "HIGH", label: COPY.complexInterestOptionHigh },
+  { value: "MEDIUM", label: COPY.complexInterestOptionMedium },
+  { value: "LOW", label: COPY.complexInterestOptionLow },
+];
+
+const INITIAL_BASIC_RECORD = {
+  complexMood: null,
+  surroundings: null,
+  parking: null,
+  commonMemo: "",
 };
 
-const COPY = {
-  complexSectionTitle: "기본 기록",
-  complexSectionDescription: "단지 분위기와 주변 환경을 먼저 기록해보세요",
-  complexCardTitle: "단지와 주변",
-  complexCardDescription: "관리 상태 · 주차 · 교통 편의 · 생활 편의",
+const getTodayDateString = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
 
-  homesTitle: "세대 기록",
-  homesDescription: "내부를 확인한 세대만 추가해 기록해보세요",
-
-  homeTitle: (index) => `세대 ${index}`,
-  homeDescription: "동·호수와 내부에서 느낀 점을 남겨보세요",
-
-  addHome: "+ 본 집 추가",
-
-  saveSuccess: "임장 기록을 저장했어요",
-
-  agencyLabel: "중개사무소",
-  agencyPlaceholder: "예: ○○공인중개사",
-
-  memoPlaceholder: "특이사항이나 다시 확인할 점을 적어보세요",
+  return `${year}-${month}-${day}`;
 };
 
 const createVisitedHome = (index) => ({
   id: `visited-home-${index}`,
-  dong: "",
+  building: "",
   unit: "",
-  facing: "",
   askingPrice: "",
+  facing: "",
+  floor: "",
   memo: "",
-  noiseLevel: null,
-  sunlightStatus: null,
-  agencyName: "",
+  isHighlighted: false,
 });
 
 function ComplexRecordTab() {
   const { showToast } = useToast();
+  const pathname = usePathname();
+  const router = useRouter();
   const visitedHomeNextIdRef = useRef(1);
-  const [complexRecord, setComplexRecord] = useState(INITIAL_COMPLEX_RECORD);
+  const [visitDate, setVisitDate] = useState(() => getTodayDateString());
+  const [basicRecord, setBasicRecord] = useState(INITIAL_BASIC_RECORD);
+  const [complexInterest, setComplexInterest] = useState(null);
+  const [isComplexInterestOpen, setIsComplexInterestOpen] = useState(true);
   const [visitedHomes, setVisitedHomes] = useState([]);
   const [openSections, setOpenSections] = useState({
-    complexRecord: true,
+    basicRecord: true,
   });
   const [openVisitedHomeIds, setOpenVisitedHomeIds] = useState({});
   const [autoFilledRegion, setAutoFilledRegion] = useState(null);
   const [recentRegionValues, setRecentRegionValues] = useState(
     RECOMMENDED_REGION_VALUES.slice(0, 2)
   );
+
+  const recordType = pathname?.startsWith("/field-notes/new/region") ? "region" : "complex";
+  const basicRecordFilled = Object.values(basicRecord).some(Boolean);
+  const highlightedHomesCount = visitedHomes.filter((home) => home.isHighlighted).length;
+  const selectedComplexInterestLabel = INTEREST_OPTIONS.find(
+    (option) => option.value === complexInterest
+  )?.label;
 
   const rememberRegion = (value) => {
     if (!value) {
@@ -110,11 +121,13 @@ function ComplexRecordTab() {
   const selectedRegion = autoFilledRegion;
 
   useEffect(() => {
-    setComplexRecord(INITIAL_COMPLEX_RECORD);
+    setBasicRecord(INITIAL_BASIC_RECORD);
+    setComplexInterest(null);
+    setIsComplexInterestOpen(true);
     setVisitedHomes([]);
     visitedHomeNextIdRef.current = 1;
     setOpenSections({
-      complexRecord: true,
+      basicRecord: true,
     });
     setOpenVisitedHomeIds({});
   }, [selectedComplex?.id]);
@@ -125,30 +138,50 @@ function ComplexRecordTab() {
     }
 
     return {
+      recordType,
+      visitDate,
       complexId: selectedComplex.id,
+      complexName: selectedComplex.name,
       regionId: selectedRegion.value,
-      complexRecord: {
-        managementStatus: complexRecord.managementStatus,
-        parkingStatus: complexRecord.parkingStatus,
-        transportStatus: complexRecord.transportStatus,
-        commercialAreaStatus: complexRecord.commercialAreaStatus,
+      basicRecord,
+      visitDecision: {
+        complexInterest,
+        highlightedHomesCount,
       },
-      visitedHomes: visitedHomes.map((home, index) => ({
+      homes: visitedHomes.map((home, index) => ({
         sequence: index + 1,
-        dong: home.dong,
+        building: home.building,
         unit: home.unit,
-        facing: home.facing || null,
         askingPrice: home.askingPrice ? Number(home.askingPrice) : null,
+        facing: home.facing || null,
+        floor: home.floor ? Number(home.floor) : null,
         memo: home.memo,
-        noiseLevel: home.noiseLevel,
-        sunlightStatus: home.sunlightStatus,
-        agencyName: home.agencyName,
+        isHighlighted: home.isHighlighted,
       })),
     };
-  }, [complexRecord, selectedComplex, selectedRegion, visitedHomes]);
+  }, [
+    basicRecord,
+    complexInterest,
+    highlightedHomesCount,
+    recordType,
+    selectedComplex,
+    selectedRegion,
+    visitDate,
+    visitedHomes,
+  ]);
 
-  const handleChangeComplexRecord = (field, value) => {
-    setComplexRecord((prev) => ({
+  const handleChangeRecordType = (value) => {
+    const nextOption = RECORD_TYPE_OPTIONS.find((option) => option.value === value);
+
+    if (!nextOption || nextOption.value === recordType) {
+      return;
+    }
+
+    router.push(nextOption.href);
+  };
+
+  const handleChangeBasicRecord = (field, value) => {
+    setBasicRecord((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -209,54 +242,114 @@ function ComplexRecordTab() {
 
   return (
     <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
-      {/* 단지 선택 필드 */}
-      <ButtonInputField
-        title={{ main: "단지 선택", sub: "어느 단지를 보고 왔는지 선택해주세요" }}
-        value={selectedComplex?.name ?? ""}
-        placeholder="검색"
-        onClick={openComplexSheet}
-      />
+      <FieldNoteSection className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
+        <FormTitle
+          main={COPY.visitInfoTitle}
+          sub={COPY.visitInfoDescription}
+          preserveSubSpace={false}
+        />
+
+        <div className="mt-5 space-y-5">
+          <Field title={{ main: COPY.recordTypeLabel }}>
+            <Select
+              options={RECORD_TYPE_OPTIONS}
+              value={recordType}
+              onChange={handleChangeRecordType}
+              placeholder={COPY.recordTypePlaceholder}
+              width="w-full"
+            />
+          </Field>
+
+          <DateInputField
+            title={{ main: COPY.visitDateLabel, sub: COPY.visitDateDescription }}
+            value={visitDate}
+            onChange={setVisitDate}
+          />
+
+          <ButtonInputField
+            title={{ main: COPY.complexLabel, sub: COPY.complexDescription }}
+            value={selectedComplex?.name ?? ""}
+            placeholder={COPY.complexPlaceholder}
+            onClick={openComplexSheet}
+          />
+        </div>
+      </FieldNoteSection>
 
       {selectedComplex && selectedRegion ? (
         <>
           <div className="space-y-3">
             <FormTitle
-              main={COPY.complexSectionTitle}
-              sub={COPY.complexSectionDescription}
+              main={COPY.basicRecordTitle}
+              sub={COPY.basicRecordDescription}
               preserveSubSpace={false}
             />
 
             <CollapsibleFormSection
-              title={COPY.complexCardTitle}
-              description={COPY.complexCardDescription}
-              isOpen={openSections.complexRecord}
-              onToggle={() => toggleSection("complexRecord")}
+              title={
+                basicRecordFilled ? COPY.basicRecordCollapsedFilled : COPY.basicRecordCollapsedEmpty
+              }
+              isOpen={openSections.basicRecord}
+              onToggle={() => toggleSection("basicRecord")}
+              headerActionPlacement="beforeToggle"
               className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
             >
               <StarRatingField
-                title={{ main: "관리 상태" }}
-                value={complexRecord.managementStatus}
-                scoreLabels={STAR_SCORE_LABELS.management}
-                onChange={(value) => handleChangeComplexRecord("managementStatus", value)}
+                title={{ main: COPY.complexMoodLabel }}
+                value={basicRecord.complexMood}
+                onChange={(value) => handleChangeBasicRecord("complexMood", value)}
+                scoreLabels={STAR_SCORE_LABELS.complexMood}
               />
               <StarRatingField
-                title={{ main: "주차" }}
-                value={complexRecord.parkingStatus}
+                title={{ main: COPY.surroundingsLabel }}
+                value={basicRecord.surroundings}
+                onChange={(value) => handleChangeBasicRecord("surroundings", value)}
+                scoreLabels={STAR_SCORE_LABELS.surroundings}
+              />
+              <StarRatingField
+                title={{ main: COPY.parkingLabel }}
+                value={basicRecord.parking}
+                onChange={(value) => handleChangeBasicRecord("parking", value)}
                 scoreLabels={STAR_SCORE_LABELS.parking}
-                onChange={(value) => handleChangeComplexRecord("parkingStatus", value)}
               />
-              <StarRatingField
-                title={{ main: "교통 편의" }}
-                value={complexRecord.transportStatus}
-                scoreLabels={STAR_SCORE_LABELS.transport}
-                onChange={(value) => handleChangeComplexRecord("transportStatus", value)}
+              <TextAreaField
+                title={{ main: COPY.commonMemoLabel }}
+                value={basicRecord.commonMemo}
+                onChange={(value) => handleChangeBasicRecord("commonMemo", value)}
+                placeholder={COPY.commonMemoPlaceholder}
+                showCount={false}
               />
-              <StarRatingField
-                title={{ main: "생활 편의" }}
-                value={complexRecord.commercialAreaStatus}
-                scoreLabels={STAR_SCORE_LABELS.commercialArea}
-                onChange={(value) => handleChangeComplexRecord("commercialAreaStatus", value)}
-              />
+            </CollapsibleFormSection>
+          </div>
+
+          <div className="space-y-3">
+            <FormTitle
+              main={COPY.visitDecisionTitle}
+              sub={COPY.visitDecisionDescription}
+              preserveSubSpace={false}
+            />
+
+            <CollapsibleFormSection
+              title={selectedComplexInterestLabel ?? COPY.complexInterestLabel}
+              isOpen={isComplexInterestOpen}
+              onToggle={() => setIsComplexInterestOpen((prev) => !prev)}
+              headerActionPlacement="beforeToggle"
+              className="bg-white shadow-[0_18px_40px_rgba(15,23,42,0.04)]"
+            >
+              <Field>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {INTEREST_OPTIONS.map((option) => (
+                    <OptionButton
+                      key={option.value}
+                      label={option.label}
+                      active={complexInterest === option.value}
+                      onClick={() => {
+                        setComplexInterest(option.value);
+                        setIsComplexInterestOpen(false);
+                      }}
+                    />
+                  ))}
+                </div>
+              </Field>
             </CollapsibleFormSection>
           </div>
 
@@ -272,7 +365,6 @@ function ComplexRecordTab() {
                 <CollapsibleFormSection
                   key={home.id}
                   title={COPY.homeTitle(index + 1)}
-                  description={COPY.homeDescription}
                   isOpen={Boolean(openVisitedHomeIds[home.id])}
                   onToggle={() => toggleVisitedHome(home.id)}
                   headerActionPlacement="beforeToggle"
@@ -289,63 +381,83 @@ function ComplexRecordTab() {
                 >
                   <div className="grid grid-cols-2 gap-3">
                     <NumberInputField
-                      title={{ main: "동" }}
-                      value={home.dong}
-                      onChange={(value) => handleChangeVisitedHome(home.id, "dong", value)}
-                      placeholder="101"
+                      title={{ main: COPY.buildingLabel }}
+                      value={home.building}
+                      onChange={(value) => handleChangeVisitedHome(home.id, "building", value)}
+                      placeholder={COPY.buildingPlaceholder}
                       maxValue={9999}
                     />
                     <NumberInputField
-                      title={{ main: "호수" }}
+                      title={{ main: COPY.unitLabel }}
                       value={home.unit}
                       onChange={(value) => handleChangeVisitedHome(home.id, "unit", value)}
-                      placeholder="1203"
+                      placeholder={COPY.unitPlaceholder}
                       maxValue={99999}
                     />
                   </div>
 
                   <AskingPriceField
-                    title={{ main: "호가" }}
+                    title={{ main: COPY.priceLabel }}
                     askingPrice={home.askingPrice}
                     onChangeAskingPrice={(value) =>
                       handleChangeVisitedHome(home.id, "askingPrice", value)
                     }
+                    placeholder={COPY.pricePlaceholder}
                   />
 
                   <FacingField
-                    title={{ main: "향" }}
+                    title={{ main: COPY.facingLabel, sub: COPY.facingPlaceholder }}
                     value={home.facing}
                     options={FACING_OPTIONS}
                     onChange={(value) => handleChangeVisitedHome(home.id, "facing", value)}
                   />
 
-                  <TextInputField
-                    title={{ main: COPY.agencyLabel }}
-                    value={home.agencyName}
-                    onChange={(event) =>
-                      handleChangeVisitedHome(home.id, "agencyName", event.target.value)
-                    }
-                    placeholder={COPY.agencyPlaceholder}
-                  />
-
-                  <StarRatingField
-                    title={{ main: "채광" }}
-                    value={home.sunlightStatus}
-                    scoreLabels={STAR_SCORE_LABELS.sunlight}
-                    onChange={(value) => handleChangeVisitedHome(home.id, "sunlightStatus", value)}
-                  />
-                  <StarRatingField
-                    title={{ main: "소음" }}
-                    value={home.noiseLevel}
-                    scoreLabels={STAR_SCORE_LABELS.noise}
-                    onChange={(value) => handleChangeVisitedHome(home.id, "noiseLevel", value)}
+                  <NumberInputField
+                    title={{ main: COPY.floorLabel }}
+                    value={home.floor}
+                    onChange={(value) => handleChangeVisitedHome(home.id, "floor", value)}
+                    placeholder={COPY.floorPlaceholder}
+                    maxValue={999}
                   />
 
                   <TextAreaField
+                    title={{ main: COPY.homeMemoLabel }}
                     value={home.memo}
                     onChange={(value) => handleChangeVisitedHome(home.id, "memo", value)}
-                    placeholder={COPY.memoPlaceholder}
+                    placeholder={COPY.homeMemoPlaceholder}
+                    showCount={false}
                   />
+
+                  <Field
+                    title={{
+                      main: COPY.highlightHomeLabel,
+                      sub: COPY.highlightHomeDescription,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleChangeVisitedHome(home.id, "isHighlighted", !home.isHighlighted)
+                      }
+                      aria-pressed={home.isHighlighted}
+                      className={`flex min-h-12 w-full items-center gap-3 border px-4 text-left text-sm font-semibold transition ${FIELD_NOTE_INPUT_RADIUS_CLASS} ${
+                        home.isHighlighted
+                          ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)] text-[var(--choice-chip-selected-text)] shadow-[var(--choice-chip-selected-shadow)]"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-[var(--choice-chip-hover-border)] hover:bg-[var(--choice-chip-hover-bg)]"
+                      }`}
+                    >
+                      <span
+                        className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                          home.isHighlighted
+                            ? "border-[var(--choice-chip-selected-border)] bg-[var(--choice-chip-selected-bg)]"
+                            : "border-slate-300 bg-white"
+                        }`}
+                      >
+                        {home.isHighlighted ? <Check className="h-3 w-3" /> : null}
+                      </span>
+                      {COPY.highlightHomeLabel}
+                    </button>
+                  </Field>
                 </CollapsibleFormSection>
               ))}
             </div>
@@ -355,23 +467,22 @@ function ComplexRecordTab() {
               onClick={addVisitedHome}
               className={`flex min-h-12 w-full items-center justify-center border border-dashed border-slate-300 bg-white text-sm font-semibold text-slate-600 transition hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 ${FIELD_NOTE_INPUT_RADIUS_CLASS}`}
             >
-              {COPY.addHome}
+              {COPY.addHomeButton}
             </button>
           </div>
 
-          {/* 저장 버튼 필드 */}
           <SaveButtonBar onSave={handleSave} />
         </>
       ) : null}
 
       <SelectionSearchSheet
         open={isComplexSheetOpen}
-        title="단지 선택"
-        description="단지명을 검색해 선택하세요"
+        title={COPY.complexLabel}
+        description={COPY.complexPlaceholder}
         searchLabel="단지 검색"
         searchValue={complexSearchQuery}
         onSearchChange={setComplexSearchQuery}
-        searchPlaceholder="단지명이나 지역명을 입력하세요"
+        searchPlaceholder={COPY.complexPlaceholder}
         recentTitle="최근 선택 단지"
         recentItems={recentComplexes}
         recommendedTitle="추천 단지"

@@ -4,7 +4,12 @@ import { formatWon } from "@/app/search/_util/util";
 import Field from "@/app/field-notes/new/_components/field/Field";
 import NumberFieldInput from "@/app/field-notes/new/_components/input/NumberFieldInput";
 
-export default function AskingPriceField({ askingPrice, onChangeAskingPrice, title }) {
+export default function AskingPriceField({
+  askingPrice,
+  onChangeAskingPrice,
+  title,
+  placeholder = "50000",
+}) {
   const hasValue = askingPrice !== "";
 
   return (
@@ -12,7 +17,7 @@ export default function AskingPriceField({ askingPrice, onChangeAskingPrice, tit
       <NumberFieldInput
         value={askingPrice}
         onChange={onChangeAskingPrice}
-        placeholder="50000"
+        placeholder={placeholder}
         unit="만원"
         minValue={1}
         maxValue={999999999}
