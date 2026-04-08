@@ -14,7 +14,7 @@ export default function CompassDirectionInput({ value, options, onChange }) {
             <button
               key={option.value}
               type="button"
-              onClick={() => onChange(option.value)}
+              onClick={() => onChange(active ? "" : option.value)}
               aria-pressed={active}
               style={{ gridRow: option.row, gridColumn: option.col }}
               className={`relative flex min-h-14 items-center justify-center rounded-[1.1rem] border px-2 py-3 text-center text-sm font-semibold transition duration-200 active:scale-[0.98] ${

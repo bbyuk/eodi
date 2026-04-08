@@ -35,7 +35,7 @@ export default function StarRatingInput({
             <button
               key={score}
               type="button"
-              onClick={() => onChange(score)}
+              onClick={() => onChange(value === score ? null : score)}
               aria-pressed={value === score}
               aria-label={`${score}점 선택`}
               className={`flex h-11 flex-1 items-center justify-center rounded-full border transition ${
