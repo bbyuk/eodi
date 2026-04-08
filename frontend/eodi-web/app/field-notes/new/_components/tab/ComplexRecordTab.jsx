@@ -453,7 +453,7 @@ function ComplexRecordTab() {
                   />
 
                   <FacingField
-                    title={{ main: COPY.facingLabel, sub: COPY.facingPlaceholder }}
+                    title={{ main: COPY.facingLabel }}
                     value={home.facing}
                     options={FACING_OPTIONS}
                     onChange={(value) => handleChangeVisitedHome(home.id, "facing", value)}

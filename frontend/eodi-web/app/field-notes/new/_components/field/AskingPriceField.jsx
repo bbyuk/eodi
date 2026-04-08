@@ -23,9 +23,9 @@ export default function AskingPriceField({
         maxValue={999999999}
       />
       <p
-        className={`text-right text-xs font-medium ${hasValue ? "text-slate-600" : "text-slate-400"}`}
+        className={`min-h-4 text-right text-xs font-medium leading-4 ${hasValue ? "text-slate-600" : "text-slate-400"}`}
       >
-        {hasValue ? formatWon(Number(askingPrice)) : null}
+        {hasValue ? formatWon(Number(askingPrice)) : "\u00a0"}
       </p>
     </Field>
   );
