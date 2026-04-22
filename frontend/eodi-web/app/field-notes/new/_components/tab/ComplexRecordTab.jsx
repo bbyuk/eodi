@@ -1,29 +1,35 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CalendarClock, Check, Trash2 } from "lucide-react";
+import { CalendarClock } from "lucide-react";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import OptionButton from "@/components/ui/OptionButton";
 import {
-  FACING_OPTIONS,
   RECOMMENDED_REGION_VALUES,
   STAR_SCORE_LABELS,
 } from "@/app/field-notes/new/_data/fieldNoteOptions";
 import COPY from "@/app/field-notes/new/_data/complexRecordCopy";
+import {
+  BASIC_RECORD_FIELDS,
+  VISITED_HOME_FIELDS,
+} from "@/app/field-notes/new/_data/complexRecordFields";
 import useComplexSelection from "@/app/field-notes/new/_hooks/useComplexSelection";
 import Field from "@/app/field-notes/new/_components/field/Field";
-import FacingField from "@/app/field-notes/new/_components/field/FacingField";
-import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
-import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import SaveButtonBar from "../../../../../components/ui/SaveButtonBar";
 import ButtonInputField from "@/app/field-notes/new/_components/field/ButtonInputField";
 import FormTitle from "@/app/field-notes/new/_components/field/FormTitle";
-import NumberInputField from "@/app/field-notes/new/_components/field/NumberInputField";
-import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
 import DateInputField from "@/app/field-notes/new/_components/field/DateInputField";
 import CollapsibleFormSection from "@/app/field-notes/new/_components/section/CollapsibleFormSection";
 import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
 import SelectionSearchSheet from "@/app/field-notes/new/_components/section-sheet/SelectionSearchSection";
+import BasicRecordSection from "@/app/field-notes/new/_components/tab/complex/BasicRecordSection";
+import VisitedHomesSection from "@/app/field-notes/new/_components/tab/complex/VisitedHomesSection";
+import {
+  createInitialValues,
+  createVisitedHome,
+} from "@/app/field-notes/new/_components/tab/complex/complexRecordFormUtils";
+import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
+import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
 
 const INTEREST_OPTIONS = [
@@ -32,12 +38,7 @@ const INTEREST_OPTIONS = [
   { value: "LOW", label: COPY.complexInterestOptionLow },
 ];
 
-const INITIAL_BASIC_RECORD = {
-  complexMood: null,
-  surroundings: null,
-  parking: null,
-  commonMemo: "",
-};
+const INITIAL_BASIC_RECORD = createInitialValues(BASIC_RECORD_FIELDS);
 
 const getTodayDateString = () => {
   const date = new Date();
@@ -60,17 +61,6 @@ const parseDateString = (value) => {
 
 const getDateOnlyTime = (date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-
-const createVisitedHome = (index) => ({
-  id: `visited-home-${index}`,
-  building: "",
-  unit: "",
-  askingPrice: "",
-  facing: "",
-  floor: "",
-  memo: "",
-  isHighlighted: false,
-});
 
 const getHomeTitle = (home, index) => {
   if (home.building && home.unit) {
