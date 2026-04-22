@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { CalendarClock, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/container/ToastProvider";
-import Select from "@/components/ui/Select";
 import OptionButton from "@/components/ui/OptionButton";
 import {
   FACING_OPTIONS,
   RECOMMENDED_REGION_VALUES,
-  RECORD_TYPE_OPTIONS,
   STAR_SCORE_LABELS,
 } from "@/app/field-notes/new/_data/fieldNoteOptions";
 import COPY from "@/app/field-notes/new/_data/complexRecordCopy";
@@ -89,8 +86,6 @@ const getHomeTitle = (home, index) => {
 
 function ComplexRecordTab() {
   const { showToast } = useToast();
-  const pathname = usePathname();
-  const router = useRouter();
   const visitedHomeNextIdRef = useRef(1);
   const [visitDate, setVisitDate] = useState(() => getTodayDateString());
   const [basicRecord, setBasicRecord] = useState(INITIAL_BASIC_RECORD);
@@ -106,7 +101,7 @@ function ComplexRecordTab() {
     RECOMMENDED_REGION_VALUES.slice(0, 2)
   );
 
-  const recordType = pathname?.startsWith("/field-notes/new/region") ? "region" : "complex";
+  const recordType = "complex";
   const isFutureVisit = getDateOnlyTime(parseDateString(visitDate)) > getDateOnlyTime(new Date());
   const basicRecordCompletionItems = [
     { key: "complexMood", label: COPY.complexMoodLabel },
@@ -232,16 +227,6 @@ function ComplexRecordTab() {
     visitedHomes,
   ]);
 
-  const handleChangeRecordType = (value) => {
-    const nextOption = RECORD_TYPE_OPTIONS.find((option) => option.value === value);
-
-    if (!nextOption || nextOption.value === recordType) {
-      return;
-    }
-
-    router.push(nextOption.href);
-  };
-
   const handleChangeBasicRecord = (field, value) => {
     setBasicRecord((prev) => ({
       ...prev,
@@ -304,38 +289,30 @@ function ComplexRecordTab() {
 
   return (
     <div className="space-y-6 pb-32 [padding-bottom:calc(env(safe-area-inset-bottom)+8.5rem)]">
-      <FieldNoteSection className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
+      <div className="space-y-3">
         <FormTitle
           main={COPY.visitInfoTitle}
           sub={COPY.visitInfoDescription}
           preserveSubSpace={false}
         />
 
-        <div className="mt-5 space-y-5">
-          <Field title={{ main: COPY.recordTypeLabel }}>
-            <Select
-              options={RECORD_TYPE_OPTIONS}
-              value={recordType}
-              onChange={handleChangeRecordType}
-              placeholder={COPY.recordTypePlaceholder}
-              width="w-full"
+        <FieldNoteSection className="bg-slate-50 shadow-[0_18px_40px_rgba(15,23,42,0.04)]">
+          <div className="space-y-5">
+            <DateInputField
+              title={{ main: COPY.visitDateLabel, sub: COPY.visitDateDescription }}
+              value={visitDate}
+              onChange={setVisitDate}
             />
-          </Field>
 
-          <DateInputField
-            title={{ main: COPY.visitDateLabel, sub: COPY.visitDateDescription }}
-            value={visitDate}
-            onChange={setVisitDate}
-          />
-
-          <ButtonInputField
-            title={{ main: COPY.complexLabel, sub: COPY.complexDescription }}
-            value={selectedComplex?.name ?? ""}
-            placeholder={COPY.complexPlaceholder}
-            onClick={openComplexSheet}
-          />
-        </div>
-      </FieldNoteSection>
+            <ButtonInputField
+              title={{ main: COPY.complexLabel, sub: COPY.complexDescription }}
+              value={selectedComplex?.name ?? ""}
+              placeholder={COPY.complexPlaceholder}
+              onClick={openComplexSheet}
+            />
+          </div>
+        </FieldNoteSection>
+      </div>
 
       {isFutureVisit ? (
         <FieldNoteSection
