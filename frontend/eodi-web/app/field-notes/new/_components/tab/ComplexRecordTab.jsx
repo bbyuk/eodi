@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/container/ToastProvider";
 import OptionButton from "@/components/ui/OptionButton";
 import {
+  FACING_OPTIONS,
   RECOMMENDED_REGION_VALUES,
   STAR_SCORE_LABELS,
 } from "@/app/field-notes/new/_data/fieldNoteOptions";
@@ -22,8 +23,6 @@ import DateInputField from "@/app/field-notes/new/_components/field/DateInputFie
 import CollapsibleFormSection from "@/app/field-notes/new/_components/section/CollapsibleFormSection";
 import FieldNoteSection from "@/app/field-notes/new/_components/section/FieldNoteSection";
 import SelectionSearchSheet from "@/app/field-notes/new/_components/section-sheet/SelectionSearchSection";
-import BasicRecordSection from "@/app/field-notes/new/_components/tab/complex/BasicRecordSection";
-import VisitedHomesSection from "@/app/field-notes/new/_components/tab/complex/VisitedHomesSection";
 import {
   createInitialValues,
   createVisitedHome,
@@ -31,6 +30,9 @@ import {
 import StarRatingField from "@/app/field-notes/new/_components/field/StarRatingField";
 import TextAreaField from "@/app/field-notes/new/_components/field/TextAreaField";
 import { FIELD_NOTE_INPUT_RADIUS_CLASS } from "@/app/field-notes/new/_components/styles";
+import NumberInputField from "@/app/field-notes/new/_components/field/NumberInputField";
+import AskingPriceField from "@/app/field-notes/new/_components/field/AskingPriceField";
+import FacingField from "@/app/field-notes/new/_components/field/FacingField";
 
 const INTEREST_OPTIONS = [
   { value: "HIGH", label: COPY.complexInterestOptionHigh },
@@ -245,7 +247,7 @@ function ComplexRecordTab() {
   };
 
   const addVisitedHome = () => {
-    const nextHome = createVisitedHome(visitedHomeNextIdRef.current);
+    const nextHome = createVisitedHome(visitedHomeNextIdRef.current, VISITED_HOME_FIELDS);
     visitedHomeNextIdRef.current += 1;
 
     setVisitedHomes((prev) => [...prev, nextHome]);
